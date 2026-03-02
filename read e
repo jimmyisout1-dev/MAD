@@ -1,0 +1,15 @@
+hello my app 
+Yeah—now I see why you're stuck. On a brand-new empty repo like yours (no files yet), GitHub hides the upload button until you add something first—like a README. It's annoying, but super common.
+
+One tiny step:
+Look at that blue box "Quick setup" — right under it, there's text: "Get started by creating a new file or uploading an existing file."
+
+Click the blue link that says "creating a new file" (it's underlined).
+
+That opens a blank editor. Just type anything—like "# My App" in the box, then scroll down and click "Commit new file" (green button).
+
+Once that's done, refresh the page—now you'll see the "+" icon (or "Add file" dropdown) next to the "Code" button.
+
+From there: click "+" → "Upload files" → drag your app folder in.
+
+Do that commit first? Tell me when the page refreshes and you spot the plus.
