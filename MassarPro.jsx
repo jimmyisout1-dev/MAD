@@ -1,6 +1,6 @@
 // MassarPro — self-contained single-file build
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
 
 
@@ -2096,21 +2096,24 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}) {
   const identityType = reality.identityType || "unsure";
   const priority     = reality.priority     || "stability";
   const strengths    = reality.strengths    || [];
-  const t_id  = t.realityIdentityOptions?.[identityType]?.label || identityType;
-  const t_pri = t.realityPriorityOptions?.[priority]?.label     || priority;
+  const t_pri = t.realityPriorityOptions?.[priority]?.label || priority;
   const t_str = strengths.slice(0,2).map(k => t.realityStrengths?.[k] || k).join(", ");
+  const topStrength  = t_str || tl[topTrait];
 
-  const s = top3[0].scores;
-  const academicNote = s.academic >= 0.6
-    ? { ar:"أداء أكاديمي قوي", fr:"bon profil académique", en:"strong academic profile" }
-    : s.academic >= 0.35
-    ? { ar:"أداء أكاديمي متوسط", fr:"profil académique moyen", en:"moderate academic performance" }
-    : { ar:"ضعف في بعض المواد الدراسية", fr:"notes académiques faibles", en:"weaker academic marks" };
+  // Task 1 FIX: empowering, strength-first narrative for all paths.
+  // "unsure" path never mentions doubt — leads with what the profile shows.
+  if (identityType === "unsure") {
+    return {
+      ar: `ملفك يكشف قدرة حقيقية في <strong>${topStrength}</strong> — وهذا يوجّهك نحو <strong>${name}</strong>. استكشف هذا المجال بخطوة واحدة صغيرة: مشروع، تجربة، أو لقاء مع متخصص. هذه النتيجة نقطة انطلاق، وليست حكماً نهائياً.`,
+      fr: `Ton profil montre une forte capacité en <strong>${topStrength}</strong>. Le domaine <strong>${name}</strong> correspond bien à ta façon de penser et d'agir. Considère ce résultat comme une direction à explorer — pas une décision définitive.`,
+      en: `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think and what you enjoy doing. Treat this as a direction to explore — not a final answer.`,
+    }[lang] || `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think. Treat this as a direction to explore, not a final decision.`;
+  }
 
   const narratives = {
-    ar: `ملفك يُشير إلى <strong>${name}</strong> — الأقرب لشخصيتك ولواقع السوق. قوتك الحقيقية: <strong>${t_str||tl[topTrait]}</strong>. هذا ليس وعداً، بل توجيه مبني على بياناتك.`,
-    fr: `Vous êtes <strong>${t_id}</strong> avec des forces réelles en <strong>${t_str||tl[topTrait]}</strong>. Votre priorité : <strong>${t_pri}</strong>. Sur la base de votre filière ${bacTrack} et de votre profil complet, <strong>${name}</strong> correspond davantage à votre réalité – avec un ${academicNote.fr}. Pas de promesses garanties, mais c'est la direction la plus cohérente avec qui vous êtes.`,
-    en: `You are a <strong>${t_id}</strong> with genuine strengths in <strong>${t_str||tl[topTrait]}</strong>. Your current priority: <strong>${t_pri}</strong>. Based on your ${bacTrack} track and full profile, <strong>${name}</strong> fits your reality better than other paths – with ${academicNote.en}. No guarantees, but this is the direction most consistent with who you are.`,
+    ar: `قوتك الأساسية في <strong>${topStrength}</strong> تجعل <strong>${name}</strong> الخيار الأقرب لشخصيتك وواقع السوق. أولويتك الحالية — <strong>${t_pri}</strong> — تتوافق مع هذا المسار. هذه البوصلة، لا القيد.`,
+    fr: `Tes forces réelles en <strong>${topStrength}</strong> pointent vers <strong>${name}</strong> — le domaine qui correspond le mieux à ton profil. Ta priorité <strong>${t_pri}</strong> s'aligne avec cette direction. C'est un cap à explorer, pas un verdict.`,
+    en: `Your strengths in <strong>${topStrength}</strong> point toward <strong>${name}</strong> — the domain that best matches your full profile. Your priority of <strong>${t_pri}</strong> aligns with this path. This is a compass, not a cage.`,
   };
   return narratives[lang] || narratives.en;
 }
@@ -3758,176 +3761,1159 @@ function FamilyPressureAdaptiveCard({ t, lang, marks, traits, info, rankedCluste
 }
 
 // ─────────────────────────────────────────────────────────────────
-// ShareCard Phase 7 — Status Symbol, RTL-first for Arabic
+// LEGENDARY CARD SYSTEM — Trading Card / Game Card aesthetic
+// Spec-driven: rarity aura, multi-ring halo, texture, serial ID,
+// chip icons, proper RTL, safe area, no overflow in any mode.
 // ─────────────────────────────────────────────────────────────────
-function ShareCard({ t, lang, massarType, topCluster, confidence }) {
-  const [copied, setCopied] = useState(false);
-  const clusterName = t[CLUSTER_KEY_MAP[topCluster?.id]] || (topCluster?.id||"");
-  const archetype = getArchetype(massarType);
-  const archName  = archetype.name?.[lang] || archetype.name?.en || massarType;
-  const tagline   = archetype.tagline?.[lang] || archetype.tagline?.en || "";
-  const rarity    = getRarity(confidence);
-  const displayCode = archetype.code || massarType;
 
-  // Arabic-first tier badge labels
-  const tierLabels = {
-    common:   { ar:"عادي",   fr:"Commun",   en:"Common"   },
-    advanced: { ar:"متقدم",  fr:"Avancé",   en:"Advanced" },
-    elite:    { ar:"متميز",  fr:"Élite",    en:"Elite"    },
-    rare:     { ar:"نادر",   fr:"Rare",     en:"Rare"     },
-  };
-  const tierLabel = tierLabels[rarity]?.[lang] || tierLabels[rarity]?.en || "";
+// Shared texture overlay (CSS-only diagonal lines + dot grid)
+const CARD_TEXTURE = `
+  repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.012) 0px,
+    rgba(255,255,255,0.012) 1px,
+    transparent 1px,
+    transparent 12px
+  ),
+  repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0.008) 0px,
+    rgba(255,255,255,0.008) 1px,
+    transparent 1px,
+    transparent 12px
+  )
+`.replace(/\n\s*/g, " ");
 
-  const caption = (t.shareCaptionTpl||"مسار: {type} — {archetype}\nأفضل مسار: {cluster} ({confidence}% توافق)\namassar.ma")
-    .replace("{type}", displayCode)
-    .replace("{archetype}", archName)
-    .replace("{cluster}", clusterName)
-    .replace("{confidence}", confidence);
+// Corner ornament SVG (used as data URI)
+function cornerSVG(color) {
+  const c = encodeURIComponent(color);
+  return `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2 L12 2 M2 2 L2 12' stroke='${c}' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`;
+}
 
-  const copyCaption = () => {
-    try {
-      navigator.clipboard.writeText(caption).then(()=>{
-        setCopied(true); setTimeout(()=>setCopied(false), 2500);
-      });
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = caption;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopied(true); setTimeout(()=>setCopied(false), 2500);
-    }
-  };
+// CardShell — upgraded: 3-layer bg, texture, neon border, corner ornaments
+// Exposes --cardScale CSS var (set from container width) for clamp()-based internal scaling.
+function CardShell({ accent, glow, rarity, width, aspectRatio, maxHeight, borderRadius, children, dir }) {
+  const shellRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    if (!shellRef.current) return;
+    const obs = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect?.width || 300;
+      setScale(Math.min(1, w / 320));
+    });
+    obs.observe(shellRef.current);
+    return () => obs.disconnect();
+  }, []);
 
-  const buildSvg = () => {
-    const isRTL = lang==="ar";
-    const rarityGold = { common:"#6b7280", advanced:"#3b82f6", elite:"#e8a124", rare:"#a855f7" };
-    const accentColor = rarityGold[rarity] || "#e8a124";
-
-    // Truncation helpers
-    const trunc = (s, n) => s && s.length > n ? s.substring(0,n-1)+"…" : (s||"");
-    const shortName    = trunc(archName, 22);
-    const shortCluster = trunc(clusterName, 30);
-    const shortTag     = trunc(tagline, 50);
-    const tierText     = tierLabel;
-
-    // RTL layout: name/content anchored RIGHT, icon placed LEFT
-    // LTR layout: name/content anchored LEFT, icon placed RIGHT
-    const contentX  = isRTL ? "360" : "92";
-    const contentAnchor = isRTL ? "end" : "start";
-    const labelX    = isRTL ? "360" : "24";
-    const iconBoxX  = isRTL ? "24" : "310";
-    const iconCX    = isRTL ? "53" : "339";
-    const accentLineX = isRTL ? "326" : "24";
-
-    // Archetype SVG symbol for badge (simplified geometric per archetype code)
-    const archSVGShapes = {
-      BENA: `<rect x="41" y="63" width="7" height="10" rx="1" fill="${accentColor}80"/><rect x="49.5" y="58" width="7" height="15" rx="1" fill="${accentColor}99"/><rect x="58" y="53" width="7" height="20" rx="1" fill="${accentColor}"/>`,
-      MHNI: `<path d="M53 55l6 6H47l-4-6 4-6h12z" fill="none" stroke="${accentColor}" stroke-width="1.5"/><path d="M51 65l2 3 4-5" stroke="${accentColor}" stroke-width="1.8" stroke-linecap="round"/>`,
-      HRRK: `<path d="M56 53l-7 9h5.5l-1 7 7.5-10h-5.5z" fill="${accentColor}" fill-opacity="0.8"/>`,
-      TGRI: `<path d="M46 70L61 57M61 57H52M61 57v9" stroke="${accentColor}" stroke-width="1.8" stroke-linecap="round"/><circle cx="46" cy="70" r="2.5" fill="${accentColor}"/><circle cx="61" cy="57" r="2.5" fill="${accentColor}"/>`,
-      MLAH: `<circle cx="53" cy="63" r="12" fill="none" stroke="${accentColor}" stroke-width="1.5"/><line x1="53" y1="51" x2="53" y2="63" stroke="${accentColor}" stroke-width="1.8"/><line x1="53" y1="63" x2="60" y2="58" stroke="${accentColor}" stroke-width="1.8"/><circle cx="53" cy="63" r="2.5" fill="${accentColor}"/>`,
-      SDGI: `<rect x="43" y="54" width="6" height="6" rx="0.5" fill="${accentColor}"/><rect x="51" y="54" width="6" height="6" rx="0.5" fill="${accentColor}80"/><rect x="59" y="54" width="6" height="6" rx="0.5" fill="${accentColor}40"/><rect x="43" y="62" width="6" height="6" rx="0.5" fill="${accentColor}80"/><rect x="59" y="62" width="6" height="6" rx="0.5" fill="${accentColor}80"/><rect x="43" y="70" width="6" height="6" rx="0.5" fill="${accentColor}40"/><rect x="59" y="70" width="6" height="6" rx="0.5" fill="${accentColor}"/>`,
-      RAID: `<path d="M53 51c0 0 5 5 5 11a5 5 0 01-10 0c0-6 5-11 5-11z" fill="none" stroke="${accentColor}" stroke-width="1.6"/><path d="M49 68l-2 5M57 68l2 5M50 73h6" stroke="${accentColor}" stroke-width="1.5" stroke-linecap="round"/>`,
-      MTQN: `<circle cx="53" cy="63" r="4" fill="${accentColor}"/><path d="M53 51v4M53 71v4M41 63h4M61 63h4M44.9 52.9l2.8 2.8M58.3 72.3l2.8 2.8M58.3 52.9l-2.8 2.8M44.9 72.3l-2.8 2.8" stroke="${accentColor}" stroke-width="1.5" stroke-linecap="round"/>`,
-    };
-    const iconShape = archSVGShapes[archetype.code] || archSVGShapes.MLAH;
-
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="230" viewBox="0 0 400 230">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#050810"/>
-      <stop offset="100%" style="stop-color:#0c1525"/>
-    </linearGradient>
-    <linearGradient id="acc" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:${accentColor}"/>
-      <stop offset="100%" style="stop-color:#fbbf24"/>
-    </linearGradient>
-    <linearGradient id="bdr" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:${accentColor};stop-opacity:0.9"/>
-      <stop offset="100%" style="stop-color:${accentColor};stop-opacity:0.15"/>
-    </linearGradient>
-  </defs>
-
-  <!-- Background -->
-  <rect width="400" height="230" rx="16" fill="url(#bg)"/>
-  <rect x="1.5" y="1.5" width="397" height="227" rx="15" fill="none" stroke="url(#bdr)" stroke-width="1.8"/>
-
-  <!-- Accent strip top -->
-  <rect x="${accentLineX}" y="18" width="48" height="2.5" rx="1.5" fill="url(#acc)" opacity="0.9"/>
-
-  <!-- Brand label -->
-  <text x="${labelX}" y="35" text-anchor="${contentAnchor}" font-family="system-ui,sans-serif" font-size="8.5" fill="#374151" letter-spacing="2.5">مسار | MASSAR</text>
-
-  <!-- Icon box -->
-  <rect x="${iconBoxX}" y="48" width="62" height="62" rx="13" fill="${accentColor}14" stroke="${accentColor}38" stroke-width="1.5"/>
-  ${iconShape}
-
-  <!-- Archetype name -->
-  <text x="${contentX}" y="74" text-anchor="${contentAnchor}" font-family="${isRTL ? "IBM Plex Sans Arabic,system-ui" : "system-ui"},sans-serif" font-size="${isRTL ? "22" : "20"}" font-weight="900" fill="url(#acc)" direction="${isRTL ? "rtl" : "ltr"}">${shortName}</text>
-
-  <!-- Moroccan code -->
-  <text x="${contentX}" y="94" text-anchor="${contentAnchor}" font-family="system-ui,sans-serif" font-size="11" font-weight="800" fill="#3b82f6" letter-spacing="3">${displayCode}</text>
-
-  <!-- Tagline -->
-  <text x="${labelX}" y="127" text-anchor="${contentAnchor}" font-family="${isRTL ? "IBM Plex Sans Arabic,system-ui" : "system-ui"},sans-serif" font-size="10" fill="#5a6a80" direction="${isRTL ? "rtl" : "ltr"}" font-style="italic">${shortTag}</text>
-
-  <!-- Divider -->
-  <line x1="24" y1="143" x2="376" y2="143" stroke="#131f30" stroke-width="1"/>
-
-  <!-- Tier badge -->
-  <rect x="${isRTL ? "270" : "24"}" y="154" width="${isRTL ? "106" : "96"}" height="24" rx="12" fill="${accentColor}18" stroke="${accentColor}45" stroke-width="1"/>
-  <text x="${isRTL ? "323" : "72"}" y="170" text-anchor="middle" font-family="${isRTL ? "IBM Plex Sans Arabic," : ""}system-ui,sans-serif" font-size="${isRTL ? "11" : "10"}" font-weight="800" fill="${accentColor}" direction="${isRTL ? "rtl" : "ltr"}">${isRTL ? "✦ " + tierText : "TIER: " + tierText.toUpperCase()}</text>
-
-  <!-- Top career label -->
-  <text x="${isRTL ? "257" : "133"}" y="166" text-anchor="${contentAnchor}" font-family="${isRTL ? "IBM Plex Sans Arabic," : ""}system-ui,sans-serif" font-size="12" fill="#b8c8d8" direction="${isRTL ? "rtl" : "ltr"}">${shortCluster}</text>
-
-  <!-- Match percentage -->
-  <text x="${isRTL ? "257" : "133"}" y="183" text-anchor="${contentAnchor}" font-family="system-ui,sans-serif" font-size="11.5" fill="${accentColor}" font-weight="700">${confidence}%  ${isRTL ? "توافق" : "match"}</text>
-
-  <!-- Footer -->
-  <rect x="24" y="206" width="352" height="1" fill="#0e1928"/>
-  <text x="${labelX}" y="220" text-anchor="${contentAnchor}" font-family="system-ui,sans-serif" font-size="8.5" fill="#253040">massar.ma · ${new Date().getFullYear()}</text>
-</svg>`;
-  };
-
-  const downloadSvg = () => {
-    const svg = buildSvg();
-    const blob = new Blob([svg], {type:"image/svg+xml"});
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href = url;
-    a.download = `massar-${displayCode}.svg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  const svgPreview = buildSvg();
+  const glowAnim = rarity.key === "legendary" ? "scGlowLegendary 3s ease-in-out infinite"
+                 : rarity.key === "epic"       ? "scGlowEpic 3s ease-in-out infinite"
+                 : rarity.key === "rare"       ? "scGlowRare 4s ease-in-out infinite"
+                 : undefined;
+  const foilStrip = (rarity.key !== "common")
+    ? `linear-gradient(105deg, transparent 25%, ${accent}14 48%, transparent 72%)`
+    : "none";
 
   return (
     <div style={{
-      background:"linear-gradient(135deg,rgba(5,8,16,0.98),rgba(12,21,37,0.95))",
-      border:"1.5px solid rgba(232,161,36,0.3)",
-      borderRadius:18,padding:"24px",margin:"24px 0",
+      width, aspectRatio, maxHeight,
+      margin: "0 auto 16px",
+      position: "relative",
+      borderRadius: borderRadius || 16,
+      overflow: "hidden",
+      flexShrink: 0,
+      // CSS variable for internal scaling — set from ResizeObserver
+      "--cardScale": scale,
+      // 3-layer box-shadow: tight neon ring + mid glow + deep shadow
+      boxShadow: `0 0 0 1.5px ${accent}99,
+                  0 0 0 3px ${accent}22,
+                  0 0 28px ${glow},
+                  0 0 ${rarity.key==="legendary"?"72px":"0px"} ${rarity.key==="legendary"?glow:"transparent"},
+                  0 16px 56px rgba(0,0,0,0.8)`,
+      animation: glowAnim,
+    }} dir={dir} ref={shellRef}>
+
+      {/* Layer 1: deep background gradient */}
+      <div style={{ position:"absolute", inset:0, zIndex:0,
+        background: "linear-gradient(160deg, #06091a 0%, #0a1020 40%, #0d1530 75%, #080c1e 100%)"
+      }}/>
+
+      {/* Layer 2: rarity aura tint (bottom-up radial) */}
+      <div style={{ position:"absolute", inset:0, zIndex:1, pointerEvents:"none",
+        background: `radial-gradient(ellipse 90% 55% at 50% 100%, ${accent}1a 0%, transparent 70%),
+                     radial-gradient(ellipse 60% 40% at 80% 10%, ${accent}14 0%, transparent 65%)`
+      }}/>
+
+      {/* Layer 3: CSS texture — diagonal crosshatch + holographic foil */}
+      <div style={{ position:"absolute", inset:0, zIndex:2, pointerEvents:"none",
+        backgroundImage: CARD_TEXTURE, opacity: 1
+      }}/>
+      {foilStrip !== "none" && (
+        <div style={{ position:"absolute", inset:0, zIndex:3, pointerEvents:"none",
+          background: foilStrip, opacity: 0.6
+        }}/>
+      )}
+
+      {/* Corner ornaments */}
+      {["topLeft","topRight","bottomLeft","bottomRight"].map(pos => {
+        const s = {
+          position:"absolute", width:20, height:20, zIndex:4, pointerEvents:"none",
+          backgroundImage: cornerSVG(accent + "99"),
+          backgroundRepeat:"no-repeat", backgroundSize:"contain",
+          ...(pos==="topLeft"    ? {top:8,   left:8,   transform:"none"} :
+              pos==="topRight"   ? {top:8,   right:8,  transform:"scaleX(-1)"} :
+              pos==="bottomLeft" ? {bottom:8,left:8,   transform:"scaleY(-1)"} :
+                                   {bottom:8,right:8,  transform:"scale(-1)"})
+        };
+        return <div key={pos} style={s}/>;
+      })}
+
+      {/* Content */}
+      <div style={{ position:"relative", zIndex:5, height:"100%" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Shared sub-components ─────────────────────────────────────────
+
+// Multi-ring halo icon emblem — box-shadow rings avoid layout overflow
+function CardEmblem({ archIcon, accent, glow, size }) {
+  const s = size || 72;
+  const fontSize = Math.round(s * 0.50);
+  // Using box-shadow for rings: layout stays exact s×s, no overflow clipping
+  const r1 = Math.round(s * 0.09);   // mid ring gap
+  const r2 = Math.round(s * 0.18);   // outer ring gap
+  return (
+    <div style={{
+      width: s, height: s, flexShrink: 0, alignSelf: "center",
+      borderRadius: "50%", position: "relative",
+      // Inner glow disc background
+      background: `radial-gradient(circle, ${accent}30 0%, ${accent}12 55%, transparent 85%)`,
+      // Rings as box-shadow: spread-only (no blur = crisp rings; add blur for glow)
+      boxShadow: [
+        // Main border
+        `0 0 0 2px ${accent}`,
+        // Inner glow
+        `inset 0 0 ${Math.round(s*0.22)}px ${accent}30`,
+        // Mid ring (outline-like, with glow)
+        `0 0 0 ${r1+2}px ${accent}20`,
+        `0 0 0 ${r1+2}px ${glow}`,
+        // Outer ring (subtle)
+        `0 0 0 ${r2+3}px ${accent}10`,
+        // Overall aura
+        `0 0 ${Math.round(s*0.5)}px ${glow}`,
+        `0 0 ${Math.round(s*0.8)}px ${glow}`,
+      ].join(", "),
     }}>
-      <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:16}}>
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize, lineHeight: 1,
+        // Subtle icon glow
+        filter: `drop-shadow(0 0 ${Math.round(s*0.1)}px ${glow})`,
+      }}>
+        {archIcon}
+      </div>
+    </div>
+  );
+}
+
+// Rarity pill with tier-specific styling
+function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
+  const fs = fontSize || 9;
+  // Special styling per tier — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
+  const tierStyle = {
+    legendary: { background:`linear-gradient(90deg,#92400e,#78350f)`, color:"#fde68a", border:`1px solid #f59e0b`, textShadow:"0 0 8px rgba(245,158,11,0.8)" },
+    epic:      { background:`linear-gradient(90deg,#4c1d95,#3b0764)`, color:"#e9d5ff", border:`1px solid #a855f7`, textShadow:"0 0 8px rgba(168,85,247,0.7)" },
+    rare:      { background:`linear-gradient(90deg,#164e63,#083344)`, color:"#a5f3fc", border:`1px solid #22d3ee`, textShadow:"0 0 6px rgba(34,211,238,0.6)" },
+    common:    { background:"rgba(30,41,59,0.7)",                     color:"#94a3b8", border:"1px solid rgba(148,163,184,0.35)", textShadow:"none" },
+  }[rarity.key] || {};
+
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:3,
+      padding:`${Math.round(fs*0.33)}px ${Math.round(fs*1.1)}px`,
+      borderRadius:20, fontSize:fs, fontWeight:800, letterSpacing:".06em",
+      boxShadow: rarity.key !== "common" ? `0 0 10px ${glow}` : "none",
+      ...tierStyle,
+    }}>
+      {rarity.emoji}&nbsp;{rarityLabel.toUpperCase()}
+    </span>
+  );
+}
+
+// Trait chip with emoji icon
+function TraitChip({ label, icon, accent, fontSize }) {
+  const fs = fontSize || 9;
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:3,
+      padding:`${Math.round(fs*0.33)}px ${Math.round(fs*0.9)}px`,
+      borderRadius:20, fontSize:fs, fontWeight:600,
+      color:"#a5f3fc", background:"rgba(30,41,59,0.85)",
+      border:`1px solid ${accent}3a`,
+      whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+      maxWidth:"100%",
+    }}>
+      <span style={{fontSize:fs+1, lineHeight:1}}>{icon}</span>
+      {label}
+    </span>
+  );
+}
+
+// Thick progress bar
+function MatchBar({ pct, accent, glow, height }) {
+  const h = height || 8;
+  return (
+    <div style={{ width:"100%", height:h, background:"rgba(15,23,42,0.8)",
+      borderRadius:h, overflow:"hidden", flexShrink:0,
+      boxShadow:`inset 0 1px 3px rgba(0,0,0,0.5)` }}>
+      <div style={{
+        height:"100%", width:`${pct}%`, borderRadius:h,
+        background:`linear-gradient(90deg, ${accent}, #fbbf24)`,
+        boxShadow:`0 0 8px ${glow}`,
+        transition:"width .5s cubic-bezier(0.34,1.56,0.64,1)",
+      }}/>
+    </div>
+  );
+}
+
+// Serial ID (deterministic from archCode)
+function serialId(archCode) {
+  let h = 0;
+  for (let i = 0; i < archCode.length; i++) h = (h * 31 + archCode.charCodeAt(i)) & 0xffffffff;
+  const n = ((h >>> 0) % 99) + 1;
+  return `MS-${archCode}-${n.toString().padStart(2,"0")}`;
+}
+
+// Icon mapping for trait chips
+const CHIP_ICON = {
+  // Arabic
+  "موثوقية عالية":"🛡️","انضباط متواصل":"⚙️","تنفيذ دقيق":"🎯",
+  "موثوقية لا تُضاهى":"🛡️","تحليل ميداني دقيق":"🔬","شبكة مهنية قوية":"🌐",
+  "قيادة إلهامية":"🌟","طاقة تنظيمية عالية":"⚡","حسم وسرعة":"🚀",
+  "حدس تجاري حاد":"💡","شبكة علاقات واسعة":"🤝","مفاوض طبيعي":"🎙️",
+  "تفكير استراتيجي عميق":"🧭","تحليل دقيق":"🔭","رؤية بعيدة المدى":"🌅",
+  "إبداع تقني متميز":"🔧","بناء شبكات رقمية":"🌐","ابتكار ملموس":"💡",
+  "إبداع نظري جريء":"💫","استقلالية فكرية عميقة":"🧠","حدس حاد":"⚡",
+  "إتقان تقني عالٍ":"⚙️","صبر وتركيز عميق":"🎯","جودة لا تُساوم":"💎",
+  // French
+  "Haute fiabilité":"🛡️","Discipline constante":"⚙️","Exécution précise":"🎯",
+  "Fiabilité incomparable":"🛡️","Analyse terrain précise":"🔬","Fort réseau professionnel":"🌐",
+  "Leadership inspirant":"🌟","Haute énergie organisationnelle":"⚡","Décision rapide":"🚀",
+  "Flair commercial aigu":"💡","Large réseau":"🤝","Négociateur naturel":"🎙️",
+  "Pensée stratégique profonde":"🧭","Analyse précise":"🔭","Vision long terme":"🌅",
+  "Créativité technique distincte":"🔧","Construction réseaux numériques":"🌐","Innovation concrète":"💡",
+  "Créativité théorique audacieuse":"💫","Indépendance intellectuelle":"🧠","Intuition aiguë":"⚡",
+  "Haute maîtrise technique":"⚙️","Patience et concentration":"🎯","Qualité sans compromis":"💎",
+  // English
+  "High reliability":"🛡️","Consistent discipline":"⚙️","Precise execution":"🎯",
+  "Unmatched reliability":"🛡️","Precise field analysis":"🔬","Strong professional network":"🌐",
+  "Inspiring leadership":"🌟","High organisational energy":"⚡","Quick decisiveness":"🚀",
+  "Sharp commercial instinct":"💡","Wide network":"🤝","Natural negotiator":"🎙️",
+  "Deep strategic thinking":"🧭","Precise analysis":"🔭","Long-term vision":"🌅",
+  "Distinctive technical creativity":"🔧","Digital network building":"🌐","Concrete innovation":"💡",
+  "Bold theoretical creativity":"💫","Deep intellectual independence":"🧠","Sharp intuition":"⚡",
+  "High technical mastery":"⚙️","Patience and deep focus":"🎯","Uncompromising quality":"💎",
+};
+function chipIcon(label) { return CHIP_ICON[label] || "✦"; }
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardClassic — Card format (5:7) — legendary trading card
+// ─────────────────────────────────────────────────────────────────
+function ShareCardClassic({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL
+    ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif"
+    : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(320px,86vw)" aspectRatio="5/7" maxHeight="62vh"
+      borderRadius={18} dir={dir}>
+      <div style={{
+        position:"absolute", inset:0, display:"flex", flexDirection:"column",
+        padding:"5.5% 6.5%", fontFamily:ff,
+        direction: dir, unicodeBidi:"plaintext",
+      }}>
+
+        {/* ── TOP BAR: brand left, rarity right ── */}
+        <div style={{
+          display:"flex", alignItems:"center", justifyContent:"space-between",
+          marginBottom:"3.5%", flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <div style={{ display:"flex", flexDirection:"column",
+            alignItems: isRTL ? "flex-end" : "flex-start" }}>
+            <span style={{ fontSize:"clamp(7px,1.7vw,9.5px)", fontWeight:800,
+              color:"#6b7280", letterSpacing:"0.22em", textTransform:"uppercase" }}>
+              {isRTL ? "مسار" : "MASSAR"}
+            </span>
+            <span style={{ fontSize:"clamp(5px,1.2vw,7px)", fontWeight:600,
+              color:"#374151", letterSpacing:"0.14em", marginTop:1 }}>
+              {isRTL ? "بوابة مسارك المهني" : "Career Identity Engine"}
+            </span>
+          </div>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8}/>
+        </div>
+
+        {/* ── EMBLEM — wrapped with glow padding ── */}
+        <div style={{ display:"flex", justifyContent:"center",
+          marginBottom:"4%", marginTop:"1%", flexShrink:0,
+          // Padding absorbs the box-shadow ring glow without clipping
+          padding: "10px 0",
+        }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={62}/>
+        </div>
+
+        {/* ── ARCHETYPE TITLE BLOCK ── */}
+        {/* Profile label */}
+        <div style={{ textAlign:"center", fontSize:"clamp(5.5px,1.3%,7.5px)", fontWeight:800,
+          color:"#4b5563", letterSpacing:"0.24em", textTransform:"uppercase", marginBottom:"1.5%" }}>
+          {lang==="ar" ? "النوع المهني" : lang==="fr" ? "PROFIL MASSAR" : "MASSAR PROFILE"}
+        </div>
+        {/* Name */}
+        <div style={{
+          textAlign:"center", fontSize:"clamp(14px,5.2%,22px)", fontWeight:900, lineHeight:1.1,
+          marginBottom:"1.5%",
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+          overflowWrap:"break-word",
+        }}>
+          {archName}
+        </div>
+        {/* Code + Level on same row */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center",
+          gap:5, marginBottom:"1.5%", flexWrap:"wrap" }}>
+          <span style={{
+            padding:"2px 11px", borderRadius:20, fontWeight:800, letterSpacing:".16em",
+            fontSize:"clamp(8px,2.7%,12px)", color:"#60a5fa",
+            background:"rgba(30,58,95,0.9)", border:"1.5px solid rgba(59,130,246,0.7)",
+            boxShadow:"0 0 8px rgba(59,130,246,0.3)",
+          }}>{archCode}</span>
+          <span style={{
+            padding:"2px 8px", borderRadius:20, fontWeight:700, letterSpacing:".05em",
+            fontSize:"clamp(7px,1.9%,10px)", color:accent+"dd",
+            background:accent+"12", border:`1px solid ${accent}3a`,
+          }}>{level.text}</span>
+        </div>
+        {/* Motto / tagline */}
+        <div style={{
+          textAlign:"center", fontStyle:"italic", fontWeight:500, lineHeight:1.4,
+          fontSize:"clamp(7px,2.4%,11px)", color:"#94a3b8", marginBottom:"2.5%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>
+          {archTagline}
+        </div>
+
+        {/* ── DIVIDER ── */}
+        <div style={{
+          height:1, marginBottom:"2.5%", flexShrink:0,
+          background:`linear-gradient(90deg, transparent 0%, ${accent}55 30%, ${accent}55 70%, transparent 100%)`,
+        }}/>
+
+        {/* ── TOP PATH BLOCK ── */}
+        <div style={{
+          fontSize:"clamp(6px,1.6%,8px)", fontWeight:700, color:"#6b7280",
+          letterSpacing:".1em", textTransform:"uppercase", marginBottom:"1%",
+          textAlign: isRTL ? "right" : "left",
+        }}>
+          {lang==="ar" ? "أفضل مسار" : lang==="fr" ? "VOIE #1" : "TOP PATH"}
+        </div>
+        <div style={{
+          fontSize:"clamp(9px,3.4%,15px)", fontWeight:700, color:"#f1f5f9",
+          marginBottom:"1.5%", textAlign: isRTL ? "right" : "left",
+          whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+        }}>
+          {clusterName}
+        </div>
+        {/* Match row */}
+        <div style={{
+          display:"flex", alignItems:"center", justifyContent:"space-between",
+          marginBottom:"1%", flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:"clamp(6px,1.6%,8px)", fontWeight:700, color:"#6b7280", letterSpacing:".06em" }}>
+            {lang==="ar" ? "التوافق" : lang==="fr" ? "Compatibilité" : "Match"}
+          </span>
+          {/* LTR span for number to prevent % jumping in RTL */}
+          <span dir="ltr" style={{ fontSize:"clamp(10px,3.2%,14px)", fontWeight:900, color:accent,
+            textShadow:`0 0 8px ${glow}`, letterSpacing:".02em" }}>
+            {confidence}%
+          </span>
+        </div>
+        <div style={{ marginBottom:"3%" }}>
+          <MatchBar pct={confidence} accent={accent} glow={glow} height={7}/>
+        </div>
+
+        {/* ── TRAIT CHIPS ── */}
+        <div style={{
+          display:"flex", gap:4, flexWrap:"wrap", marginTop:"auto",
+          justifyContent: isRTL ? "flex-end" : "flex-start",
+        }}>
+          {strengths.map((s,i) => (
+            <TraitChip key={i} label={s} icon={chipIcon(s)} accent={accent} fontSize={8}/>
+          ))}
+        </div>
+
+        {/* ── FOOTER ── */}
+        <div style={{
+          marginTop:"3%", paddingTop:"2%", flexShrink:0,
+          borderTop:`1px solid ${accent}1e`,
+          display:"flex", justifyContent:"space-between", alignItems:"center",
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:"clamp(5px,1.4%,7px)", fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
+            letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardSquare — 1:1 format — compact collectible
+// ─────────────────────────────────────────────────────────────────
+function ShareCardSquare({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif" : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(320px,86vw)" aspectRatio="1/1" maxHeight="86vw"
+      borderRadius={18} dir={dir}>
+      <div style={{
+        position:"absolute", inset:0, display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"space-between",
+        padding:"5% 6%", fontFamily:ff,
+        direction:dir, unicodeBidi:"plaintext",
+      }}>
+
+        {/* Top row: brand + rarity */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:".2em" }}>
+            {isRTL ? "مسار" : "MASSAR"}
+          </span>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+        </div>
+
+        {/* Emblem — 60px with glow breathing room */}
+        <div style={{ padding:"8px 0" }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={60}/>
+        </div>
+
+        {/* Name */}
+        <div style={{
+          textAlign:"center", fontSize:"clamp(14px,5vw,20px)", fontWeight:900, lineHeight:1.1,
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+          overflowWrap:"break-word", width:"100%",
+        }}>{archName}</div>
+
+        {/* Code row */}
+        <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center", flexWrap:"wrap" }}>
+          <span style={{ padding:"2px 10px", borderRadius:20, background:"rgba(30,58,95,0.9)",
+            border:"1.5px solid rgba(59,130,246,0.7)", fontSize:10, fontWeight:800,
+            color:"#60a5fa", letterSpacing:".14em" }}>{archCode}</span>
+          <span style={{ padding:"2px 7px", borderRadius:20, background:accent+"12",
+            border:`1px solid ${accent}3a`, fontSize:9, fontWeight:700,
+            color:accent+"dd", letterSpacing:".04em" }}>{level.text}</span>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width:"100%", height:1,
+          background:`linear-gradient(90deg, transparent, ${accent}55, ${accent}55, transparent)` }}/>
+
+        {/* Path + match */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:9, fontWeight:600, color:"#94a3b8",
+            overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"60%" }}>
+            {clusterName}
+          </span>
+          <span dir="ltr" style={{ fontSize:13, fontWeight:900, color:accent, flexShrink:0,
+            textShadow:`0 0 8px ${glow}` }}>{confidence}%</span>
+        </div>
+        <MatchBar pct={confidence} accent={accent} glow={glow} height={6}/>
+
+        {/* Footer */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:7, fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardPortrait — 9:16 TikTok/Story — vertical stacking
+// Pure flex column, fixed-pixel spacing, no position:absolute.
+// Typography: title 22px, subtitle 14px, labels 12px, icon 76px.
+// ─────────────────────────────────────────────────────────────────
+function ShareCardPortrait({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif" : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(270px,78vw)" aspectRatio="9/16" maxHeight="78vh"
+      borderRadius={22} dir={dir}>
+      <div style={{
+        display:"flex", flexDirection:"column", alignItems:"center",
+        padding:"20px 18px", gap:0, height:"100%",
+        fontFamily:ff, boxSizing:"border-box",
+        direction:dir, unicodeBidi:"plaintext",
+        overflowY:"hidden",
+      }}>
+
+        {/* Top bar */}
+        <div style={{ width:"100%", display:"flex", alignItems:"center",
+          justifyContent:"space-between", marginBottom:10,
+          flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:"0.2em" }}>
+            {isRTL ? "مسار" : "MASSAR"}
+          </span>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+        </div>
+
+        {/* Emblem — 72px with glow breathing room */}
+        <div style={{ padding:"10px 0", marginBottom:2 }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={72}/>
+        </div>
+
+        {/* Profile label */}
+        <div style={{ fontSize:7.5, fontWeight:800, color:"#4b5563", letterSpacing:"0.22em",
+          textTransform:"uppercase", marginBottom:5, textAlign:"center" }}>
+          {lang==="ar" ? "النوع المهني" : lang==="fr" ? "PROFIL MASSAR" : "MASSAR PROFILE"}
+        </div>
+
+        {/* Name — 22px */}
+        <div style={{
+          textAlign:"center", fontSize:22, fontWeight:900, lineHeight:1.15,
+          marginBottom:6,
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          overflowWrap:"break-word", width:"100%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>{archName}</div>
+
+        {/* Code + level */}
+        <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center",
+          flexWrap:"wrap", marginBottom:6 }}>
+          <span style={{ padding:"3px 13px", borderRadius:20,
+            background:"rgba(30,58,95,0.9)", border:"1.5px solid rgba(59,130,246,0.7)",
+            fontSize:11, fontWeight:800, color:"#60a5fa", letterSpacing:".14em" }}>
+            {archCode}
+          </span>
+          <span style={{ padding:"2px 8px", borderRadius:20,
+            background:accent+"12", border:`1px solid ${accent}3a`,
+            fontSize:10, fontWeight:700, color:accent+"dd", letterSpacing:".04em" }}>
+            {level.text}
+          </span>
+        </div>
+
+        {/* Tagline — 14px italic */}
+        <div style={{
+          textAlign:"center", fontStyle:"italic", fontWeight:500,
+          fontSize:13, color:"#94a3b8", lineHeight:1.4, marginBottom:10,
+          overflowWrap:"break-word", width:"100%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>{archTagline}</div>
+
+        {/* Divider */}
+        <div style={{ width:"100%", height:1, marginBottom:10, flexShrink:0,
+          background:`linear-gradient(90deg, transparent, ${accent}55, ${accent}55, transparent)` }}/>
+
+        {/* Top path label — 12px */}
+        <div style={{
+          width:"100%", fontSize:11, fontWeight:700, color:"#6b7280",
+          letterSpacing:".08em", textTransform:"uppercase", marginBottom:3,
+          textAlign: isRTL ? "right" : "left",
+        }}>
+          {lang==="ar" ? "أفضل مسار" : lang==="fr" ? "VOIE #1" : "TOP PATH"}
+        </div>
+        <div style={{
+          width:"100%", fontSize:14, fontWeight:700, color:"#f1f5f9",
+          marginBottom:8, textAlign: isRTL ? "right" : "left",
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+        }}>{clusterName}</div>
+
+        {/* Match */}
+        <div style={{
+          width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", marginBottom:5,
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:11, fontWeight:700, color:"#6b7280", letterSpacing:".06em" }}>
+            {lang==="ar" ? "التوافق" : lang==="fr" ? "Compatibilité" : "Match"}
+          </span>
+          <span dir="ltr" style={{ fontSize:15, fontWeight:900, color:accent,
+            textShadow:`0 0 8px ${glow}` }}>{confidence}%</span>
+        </div>
+        <div style={{ width:"100%", marginBottom:10 }}>
+          <MatchBar pct={confidence} accent={accent} glow={glow} height={8}/>
+        </div>
+
+        {/* Trait chips */}
+        <div style={{
+          width:"100%", display:"flex", gap:4, flexWrap:"wrap", marginBottom:"auto",
+          justifyContent: isRTL ? "flex-end" : "flex-start",
+        }}>
+          {strengths.map((s,i) => (
+            <TraitChip key={i} label={s} icon={chipIcon(s)} accent={accent} fontSize={9.5}/>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          width:"100%", marginTop:8, paddingTop:7, flexShrink:0,
+          borderTop:`1px solid ${accent}1e`,
+          display:"flex", justifyContent:"space-between", alignItems:"center",
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:7.5, fontWeight:700, color:"#374151", letterSpacing:".12em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCard: responsive collectible card (DOM preview + canvas export, no deps)
+// Preview = pure CSS/DOM — three separate layout components per format.
+// Export  = Canvas API — runs only on download click.
+// ─────────────────────────────────────────────────────────────────
+function ShareCard({ t, lang, massarType, topCluster, confidence }) {
+  const [copied,  setCopied]  = useState(false);
+  // format: "card" (5:7) | "square" (1:1) | "story" (9:16)
+  const [fmt, setFmt] = useState("card");
+
+  const archetype   = getArchetype(massarType);
+  const archName    = archetype.name?.[lang]    || archetype.name?.en    || massarType;
+  const archCode    = archetype.code            || massarType;
+  const archIcon    = archetype.icon            || "🧭";
+  const archTagline = archetype.tagline?.[lang] || archetype.tagline?.en || archName;
+  const rawStrengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
+  const strengths   = rawStrengths.slice(0, 3).map(s => s.length > 22 ? s.slice(0, 21) + "…" : s);
+  const clusterName = t[CLUSTER_KEY_MAP[topCluster?.id]] || topCluster?.id || "";
+  const isRTL       = lang === "ar";
+  const dir         = isRTL ? "rtl" : "ltr";
+
+  // Level from confidence
+  function cardLevel(conf) {
+    const lvl = Math.min(5, Math.max(1, Math.ceil(conf / 20)));
+    const labels = {
+      1:{ ar:"مبتدئ",   fr:"Débutant",    en:"Beginner"  },
+      2:{ ar:"متقدم",   fr:"Avancé",      en:"Advanced"  },
+      3:{ ar:"مستكشف", fr:"Explorateur", en:"Explorer"  },
+      4:{ ar:"خبير",    fr:"Expert",      en:"Expert"    },
+      5:{ ar:"أسطوري", fr:"Légendaire",  en:"Legendary" },
+    };
+    const lbl    = labels[lvl]?.[lang] || labels[lvl]?.en || "Explorer";
+    const numLbl = lang==="ar"?`المستوى ${lvl}`:lang==="fr"?`Niveau ${lvl}`:`Level ${lvl}`;
+    return { lvl, text:`${numLbl} • ${lbl}` };
+  }
+  const level = cardLevel(confidence);
+
+  // Rarity tiers — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
+  function cardRarity(conf) {
+    if (conf>=85) return { key:"legendary", label:{ar:"أسطوري",fr:"Légendaire",en:"Legendary"}, emoji:"👑", color:"#f59e0b", glow:"rgba(245,158,11,0.55)" };
+    if (conf>=70) return { key:"epic",      label:{ar:"ملحمي",  fr:"Épique",    en:"Epic"      }, emoji:"⚡", color:"#a855f7", glow:"rgba(168,85,247,0.5)"  };
+    if (conf>=55) return { key:"rare",      label:{ar:"نادر",   fr:"Rare",      en:"Rare"      }, emoji:"💎", color:"#22d3ee", glow:"rgba(34,211,238,0.45)" };
+    return             { key:"common",    label:{ar:"عادي",   fr:"Commun",    en:"Common"    }, emoji:"🪨", color:"#94a3b8", glow:"rgba(148,163,184,0.3)" };
+  }
+  const rarity      = cardRarity(confidence);
+  const rarityLabel = rarity.label[lang] || rarity.label.en;
+  const accent      = rarity.color;
+  const glow        = rarity.glow;
+
+  // Viral caption (unchanged)
+  const caption = lang==="ar"
+    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
+    : lang==="fr"
+    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
+    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
+
+  // Format metadata
+  const FMT = {
+    card:   { label:"Card", exportW:1260, exportH:1764 },
+    square: { label:"1:1",  exportW:1080, exportH:1080 },
+    story:  { label:"9:16", exportW:1080, exportH:1920 },
+  };
+  const fmtMeta = FMT[fmt] || FMT.card;
+
+  // Copy caption (unchanged)
+  const copyCaption = () => {
+    const doSet = () => { setCopied(true); setTimeout(()=>setCopied(false), 2500); };
+    try { navigator.clipboard.writeText(caption).then(doSet).catch(()=>fallbackCopy(doSet)); }
+    catch { fallbackCopy(doSet); }
+  };
+  const fallbackCopy = (cb) => {
+    const ta=document.createElement("textarea"); ta.value=caption;
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta); cb();
+  };
+
+  // ── Canvas export ─────────────────────────────────────────────
+  function buildCanvas() {
+    const W=fmtMeta.exportW, H=fmtMeta.exportH;
+    const PAD=Math.round(W*0.074);
+    const canvas=document.createElement("canvas");
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext("2d");
+    const arF="Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
+    const enF="system-ui,-apple-system,Segoe UI,sans-serif";
+    const bF=isRTL?arF:enF;
+
+    function rr(x,y,w,h,r){
+      ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+      ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+      ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+      ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+      ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+    }
+    const dtC=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText(txt,W/2,y,mw||W-PAD*2); ctx.restore();
+    };
+    const dtL=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textBaseline="alphabetic";
+      if(isRTL){ const tw=ctx.measureText(txt).width; ctx.fillText(txt,W-PAD-Math.min(tw,mw||W),y,mw||W-PAD*2); }
+      else { ctx.fillText(txt,PAD,y,mw||W-PAD*2); }
+      ctx.restore();
+    };
+
+    // Background + grain + blobs (shared)
+    const bg=ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#060a14"); bg.addColorStop(0.5,"#0a1020"); bg.addColorStop(1,"#0d1628");
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    for(let i=0;i<12000;i++){
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.018})`;
+      ctx.fillRect(Math.floor(Math.random()*W),Math.floor(Math.random()*H),1,1);
+    }
+    const gx=isRTL?W*0.2:W*0.8;
+    const blob=ctx.createRadialGradient(gx,H*0.06,0,gx,H*0.06,W*0.45);
+    blob.addColorStop(0,accent+"30"); blob.addColorStop(1,"transparent");
+    ctx.fillStyle=blob; ctx.fillRect(0,0,W,H);
+
+    // Neon border
+    ctx.save(); ctx.strokeStyle=accent; ctx.lineWidth=5;
+    ctx.shadowColor=accent; ctx.shadowBlur=40;
+    rr(10,10,W-20,H-20,Math.round(W*0.036)); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.strokeStyle=accent+"22"; ctx.lineWidth=2;
+    rr(26,26,W-52,H-52,Math.round(W*0.026)); ctx.stroke(); ctx.restore();
+
+    // ── Portrait (9:16) canvas: centred vertical layout ──────────
+    if (fmt === "story") {
+      const cx = W/2;
+      let y = PAD*1.3;
+
+      // Rarity pill — tier-colored (matches DOM)
+      const rarityPillColorsP = {
+        legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+        epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+        rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+        common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+      };
+      const rpcP = rarityPillColorsP[rarity.key] || rarityPillColorsP.common;
+
+      // Brand line (centred)
+      dtC(isRTL ? "مسار" : "MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+
+      // Rarity pill (centred)
+      y += Math.round(H*0.038);
+      const rarTxt = `${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+      const rpF = `bold ${Math.round(W*0.030)}px ${bF}`;
+      ctx.font = rpF;
+      const rtw = ctx.measureText(rarTxt).width;
+      const rpW=rtw+W*0.06, rpH=W*0.065, rpX=cx-rpW/2;
+      ctx.save(); ctx.fillStyle=rpcP.bg; ctx.strokeStyle=rpcP.border;
+      ctx.lineWidth=2.5; ctx.shadowColor=accent; ctx.shadowBlur=14;
+      rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.font=rpF; ctx.fillStyle=rpcP.text; ctx.textBaseline="alphabetic";
+      ctx.textAlign="center"; ctx.fillText(rarTxt, cx, y, rpW); ctx.restore();
+
+      // Icon circle — 72px-equivalent scaled
+      y += Math.round(H*0.07);
+      const ibR = Math.round(W*0.17);
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR+5, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"55"; ctx.lineWidth=3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.fillStyle=accent+"18"; ctx.shadowBlur=50; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke();
+      ctx.restore();
+      ctx.save(); ctx.font=`${Math.round(ibR*1.1)}px serif`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText(archIcon, cx, y+ibR+ibR*0.06); ctx.restore();
+      y += ibR*2 + Math.round(H*0.04);
+
+      // Profile label
+      dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+        y, `bold ${Math.round(W*0.022)}px ${bF}`, "#4b5563");
+      y += Math.round(H*0.044);
+
+      // Archetype name — white→accent→gold gradient
+      ctx.save(); ctx.font=`900 ${Math.round(W*0.072)}px ${bF}`;
+      ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=ng; ctx.fillText(archName,cx,y,W-PAD*2); ctx.restore();
+      y += Math.round(H*0.046);
+
+      // Code pill
+      const cF=`bold ${Math.round(W*0.034)}px monospace,${bF}`;
+      ctx.font=cF;
+      const ctw=ctx.measureText(archCode).width;
+      const cpW=ctw+W*0.055, cpH=W*0.060, cpX=cx-cpW/2;
+      ctx.save(); ctx.fillStyle="#1e3a5f"; ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
+      rr(cpX,y,cpW,cpH,cpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(archCode, y+cpH*0.68, cF, "#60a5fa");
+      y += cpH + Math.round(H*0.018);
+
+      // Level badge
+      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`;
+      ctx.font=lvF;
+      const ltw=ctx.measureText(level.text).width;
+      const lpW=ltw+W*0.04, lpH=W*0.044, lpX=cx-lpW/2;
+      ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+      rr(lpX,y,lpW,lpH,lpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(level.text, y+lpH*0.68, lvF, accent+"cc");
+      y += lpH + Math.round(H*0.032);
+
+      // Tagline (14px-equivalent italic)
+      const tgF=`italic ${Math.round(W*0.034)}px ${isRTL?arF:"Georgia,"+enF}`;
+      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5);
+      y += Math.round(H*0.055);
+
+      // Divider
+      ctx.save();
+      const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      dg.addColorStop(0,"transparent"); dg.addColorStop(0.2,accent+"44");
+      dg.addColorStop(0.8,accent+"44"); dg.addColorStop(1,"transparent");
+      ctx.strokeStyle=dg; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
+      y += Math.round(H*0.048);
+
+      // Top path label + name
+      const pK=lang==="ar"?"أفضل مسار":lang==="fr"?"Voie #1":"Top Path";
+      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      y += Math.round(H*0.044);
+      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2);
+      y += Math.round(H*0.056);
+
+      // Match label + value
+      const mK=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+      dtC(mK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      ctx.save(); ctx.font=`bold ${Math.round(W*0.046)}px monospace,${bF}`;
+      ctx.fillStyle=accent; ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      ctx.fillText(`${confidence}%`, cx, y); ctx.restore();
+      y += Math.round(H*0.022);
+
+      // Confidence bar
+      const barW=W-PAD*2, barH=Math.round(H*0.016);
+      ctx.save(); ctx.fillStyle="#1e293b"; rr(PAD,y,barW,barH,barH/2); ctx.fill();
+      const fw=Math.max(barH,Math.round((confidence/100)*barW));
+      const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);
+      fg.addColorStop(0,accent); fg.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=fg; ctx.shadowColor=accent; ctx.shadowBlur=10;
+      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore();
+      y += barH + Math.round(H*0.04);
+
+      // Chips (centred row)
+      if(strengths.length>0){
+        const chipH=Math.round(H*0.038), chipFont=`600 ${Math.round(W*0.026)}px ${bF}`;
+        ctx.font=chipFont;
+        const chips=strengths.map(s=>({ text:s, w:ctx.measureText(s).width+W*0.04 }));
+        const totalW=chips.reduce((a,c)=>a+c.w+W*0.014,0)-W*0.014;
+        let chipX=cx-totalW/2;
+        for(const chip of chips){
+          ctx.save(); ctx.fillStyle="#1e293b"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+          rr(chipX,y,chip.w,chipH,chipH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.font=chipFont; ctx.fillStyle="#93c5fd"; ctx.textBaseline="alphabetic";
+          ctx.fillText(chip.text, chipX+W*0.02, y+chipH*0.68); ctx.restore();
+          chipX+=chip.w+W*0.014;
+        }
+      }
+
+      // Footer
+      const fy=H-PAD*0.9;
+      ctx.save();
+      const fl=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      fl.addColorStop(0,"transparent"); fl.addColorStop(0.15,accent+"28");
+      fl.addColorStop(0.85,accent+"28"); fl.addColorStop(1,"transparent");
+      ctx.strokeStyle=fl; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PAD,fy-PAD*0.28); ctx.lineTo(W-PAD,fy-PAD*0.28); ctx.stroke(); ctx.restore();
+      dtC(`massar.ma • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+      // Serial ID (right-aligned)
+      const sidP = serialId(archCode);
+      const sidFP = `500 ${Math.round(W*0.018)}px monospace,${bF}`;
+      ctx.font = sidFP;
+      const sidWP = ctx.measureText(sidP).width;
+      ctx.save(); ctx.font=sidFP; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+      ctx.fillText(sidP, W-PAD-sidWP, fy); ctx.restore();
+
+      return canvas;
+    }
+
+    // ── Card / Square canvas: legendary layout ──────────────────
+    // Rarity pill tier colors (canvas approximation)
+    const rarityPillColors = {
+      legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+      epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+      rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+      common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+    };
+    const rpc = rarityPillColors[rarity.key] || rarityPillColors.common;
+
+    // Header accent strip
+    const stripW=W*0.08, sx=isRTL?W-PAD-stripW:PAD;
+    const sg=ctx.createLinearGradient(sx,0,sx+stripW,0);
+    sg.addColorStop(0,accent); sg.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=sg; rr(sx,PAD*0.78,stripW,4,2); ctx.fill(); ctx.restore();
+
+    // Brand mark
+    const brandY=PAD*1.44;
+    const brandStr = isRTL ? "مسار" : "MASSAR";
+    dtL(brandStr, brandY, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+    const subStr = isRTL ? "بوابة مسارك المهني" : "Career Identity Engine";
+    dtL(subStr, brandY+Math.round(H*0.018), `${Math.round(W*0.018)}px ${bF}`, "#374151");
+
+    // Rarity pill — tier-colored
+    const rarityTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+    const rpFont=`bold ${Math.round(W*0.027)}px ${bF}`;
+    ctx.font=rpFont;
+    const rtw=ctx.measureText(rarityTxt).width;
+    const rpW2=rtw+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
+    const rpY2=brandY-rpH2*0.72;
+    ctx.save(); ctx.fillStyle=rpc.bg; ctx.strokeStyle=rpc.border;
+    ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(rpX2,rpY2,rpW2,rpH2,rpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc.text; ctx.textBaseline="alphabetic";
+    ctx.fillText(rarityTxt, rpX2+rpW2*0.1, brandY, rpW2); ctx.restore();
+
+    // Multi-ring halo icon
+    const ibSz=Math.round(W*0.26);
+    const ibCX=W/2, ibCY=Math.round(H*0.185)+ibSz/2;
+    // Outermost ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.044),0,Math.PI*2);
+    ctx.strokeStyle=accent+"1e"; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
+    // Mid ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.022),0,Math.PI*2);
+    ctx.strokeStyle=accent+"44"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Glow disc
+    const discGrad=ctx.createRadialGradient(ibCX,ibCY,0,ibCX,ibCY,ibSz/2);
+    discGrad.addColorStop(0,accent+"28"); discGrad.addColorStop(0.6,accent+"10"); discGrad.addColorStop(1,"transparent");
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.fillStyle=discGrad; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
+    // Border ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.strokeStyle=accent+"88"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Emoji
+    ctx.save(); ctx.font=`${Math.round(ibSz*0.5)}px serif`;
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(archIcon, ibCX, ibCY+ibSz*0.03); ctx.restore();
+
+    // Profile label
+    const profileHeaderY=ibCY+ibSz/2+Math.round(H*0.030);
+    dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+      profileHeaderY, `bold ${Math.round(W*0.021)}px ${bF}`, "#4b5563");
+
+    // Archetype name — white→accent→gold gradient
+    const nameY=profileHeaderY+Math.round(H*0.050);
+    ctx.save(); ctx.font=`900 ${Math.round(W*0.078)}px ${bF}`;
+    ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+    const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+    ctx.fillStyle=ng; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
+
+    // Code pill
+    const codeY2=nameY+Math.round(H*0.044);
+    const cFont=`bold ${Math.round(W*0.036)}px monospace,${bF}`;
+    ctx.font=cFont;
+    const ctw2=ctx.measureText(archCode).width;
+    const cpW2=ctw2+W*0.050, cpH2=W*0.058, cpX2=(W-cpW2)/2-W*0.035;
+    ctx.save(); ctx.fillStyle="rgba(30,58,95,0.9)"; ctx.strokeStyle="rgba(59,130,246,0.7)";
+    ctx.lineWidth=2; ctx.shadowColor="#3b82f6"; ctx.shadowBlur=8;
+    rr(cpX2,codeY2,cpW2,cpH2,cpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=cFont; ctx.fillStyle="#60a5fa"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(archCode, cpX2+cpW2/2, codeY2+cpH2*0.68); ctx.restore();
+    // Level badge (right of code)
+    const lvlFont=`600 ${Math.round(W*0.024)}px ${bF}`;
+    ctx.font=lvlFont;
+    const ltw2=ctx.measureText(level.text).width;
+    const lpW2=ltw2+W*0.038, lpH2=W*0.040, lpX2=cpX2+cpW2+W*0.018;
+    const lpY2=codeY2+(cpH2-lpH2)/2;
+    ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+    rr(lpX2,lpY2,lpW2,lpH2,lpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=lvlFont; ctx.fillStyle=accent+"cc"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(level.text, lpX2+lpW2/2, lpY2+lpH2*0.68); ctx.restore();
+
+    // Tagline italic
+    const sigY2=codeY2+cpH2+Math.round(H*0.036);
+    dtC(archTagline, sigY2, `italic ${Math.round(W*0.035)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2);
+
+    // Divider
+    const divY2=sigY2+Math.round(H*0.044);
+    ctx.save();
+    const dg2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    dg2.addColorStop(0,"transparent"); dg2.addColorStop(0.2,accent+"55");
+    dg2.addColorStop(0.8,accent+"55"); dg2.addColorStop(1,"transparent");
+    ctx.strokeStyle=dg2; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD,divY2); ctx.lineTo(W-PAD,divY2); ctx.stroke(); ctx.restore();
+
+    // Top path
+    const pLabelY2=divY2+Math.round(H*0.050);
+    const pKey=lang==="ar"?"أفضل مسار":lang==="fr"?"VOIE #1":"TOP PATH";
+    dtL(pKey, pLabelY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pNameY2=pLabelY2+Math.round(H*0.048);
+    dtL(clusterName, pNameY2, `bold ${Math.round(W*0.044)}px ${bF}`, "#f1f5f9", W-PAD*2);
+
+    // Match % (RTL-safe)
+    const confY2=pNameY2+Math.round(H*0.060);
+    const cKey=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+    dtL(cKey, confY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pctStr=`${confidence}%`;
+    const pFont=`900 ${Math.round(W*0.046)}px monospace,${bF}`;
+    ctx.font=pFont;
+    const ptw=ctx.measureText(pctStr).width;
+    const pctX=isRTL?PAD:W-PAD-ptw;
+    ctx.save(); ctx.font=pFont; ctx.fillStyle=accent;
+    ctx.textBaseline="alphabetic"; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    ctx.fillText(pctStr,pctX,confY2); ctx.restore();
+
+    // Confidence bar
+    const barY2=confY2+Math.round(H*0.018), barH2=Math.round(H*0.018), barW2=W-PAD*2;
+    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,barY2,barW2,barH2,barH2/2); ctx.fill(); ctx.restore();
+    const fw2=Math.max(barH2,Math.round((confidence/100)*barW2));
+    const fg2=ctx.createLinearGradient(PAD,0,PAD+fw2,0);
+    fg2.addColorStop(0,accent); fg2.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=fg2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(PAD,barY2,fw2,barH2,barH2/2); ctx.fill(); ctx.restore();
+
+    // Trait chips
+    if(strengths.length>0){
+      const chipY2=barY2+barH2+Math.round(H*0.044);
+      const chipH2=Math.round(H*0.046), chipFont2=`600 ${Math.round(W*0.026)}px ${bF}`;
+      ctx.font=chipFont2;
+      let cxp = isRTL ? W-PAD : PAD;
+      for(const s of strengths){
+        const icon2 = CHIP_ICON[s] || "✦";
+        const chipTxt = `${icon2} ${s}`;
+        const cw=ctx.measureText(chipTxt).width+W*0.040;
+        if(isRTL){ cxp-=cw; if(cxp<PAD) break; }
+        else { if(cxp+cw>W-PAD) break; }
+        ctx.save(); ctx.fillStyle="rgba(30,41,59,0.9)"; ctx.strokeStyle=accent+"3a"; ctx.lineWidth=1.5;
+        rr(cxp,chipY2,cw,chipH2,chipH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.font=chipFont2; ctx.fillStyle="#a5f3fc"; ctx.textBaseline="alphabetic";
+        ctx.fillText(chipTxt, cxp+W*0.018, chipY2+chipH2*0.68); ctx.restore();
+        if(isRTL){ cxp-=W*0.014; } else { cxp+=cw+W*0.014; }
+      }
+    }
+
+    // Footer: brand + serial ID
+    const fy2=H-PAD*0.85;
+    ctx.save();
+    const fl2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    fl2.addColorStop(0,"transparent"); fl2.addColorStop(0.15,accent+"28");
+    fl2.addColorStop(0.85,accent+"28"); fl2.addColorStop(1,"transparent");
+    ctx.strokeStyle=fl2; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD,fy2-PAD*0.3); ctx.lineTo(W-PAD,fy2-PAD*0.3); ctx.stroke(); ctx.restore();
+    dtL(`massar.ma • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+    const sid2=serialId(archCode);
+    const sidFont=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
+    ctx.font=sidFont;
+    const sidW2=ctx.measureText(sid2).width;
+    const sidX2=isRTL?PAD:W-PAD-sidW2;
+    ctx.save(); ctx.font=sidFont; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+    ctx.fillText(sid2, sidX2, fy2); ctx.restore();
+
+    return canvas;
+  }
+
+  const downloadPng = () => {
+    try {
+      const canvas=buildCanvas();
+      canvas.toBlob(blob=>{
+        if(!blob) return;
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=`massar-${archCode}-${fmt}.png`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+      },"image/png");
+    } catch {}
+  };
+
+  // Shared props bundle passed to each layout component
+  const cardProps = {
+    archIcon, archName, archCode, archTagline, clusterName, strengths,
+    confidence, rarity, rarityLabel, accent, glow, level, isRTL, dir, lang,
+  };
+
+  const fmtLabels = { card:"Card", square:"1:1", story:"9:16" };
+
+  return (
+    <div style={{ margin:"24px 0" }}>
+      {/* Section label */}
+      <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,
+        textTransform:"uppercase",marginBottom:14}}>
         {t.shareTitle}
       </div>
 
-      {/* Badge preview */}
-      <div style={{display:"flex",justifyContent:"center",marginBottom:18,overflow:"hidden",borderRadius:14,
-        boxShadow:"0 8px 32px rgba(0,0,0,0.6)"}}>
-        <div dangerouslySetInnerHTML={{__html:svgPreview}} style={{maxWidth:400,width:"100%"}}/>
+      {/* Format segmented control */}
+      <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+        {["card","square","story"].map(f=>(
+          <button key={f} onClick={()=>setFmt(f)} style={{
+            padding:"5px 14px",borderRadius:20,fontSize:11,fontWeight:700,
+            border:`1.5px solid ${fmt===f?accent+"cc":"var(--border)"}`,
+            background:fmt===f?accent+"18":"var(--surface2)",
+            color:fmt===f?accent:"var(--muted)",cursor:"pointer",letterSpacing:.5,
+            transition:"all .18s",
+          }}>{fmtLabels[f]}</button>
+        ))}
       </div>
 
-      <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:120}}>
+      {/* Dispatch to separate layout component based on format */}
+      {fmt==="story"  && <ShareCardPortrait p={cardProps}/>}
+      {fmt==="square" && <ShareCardSquare   p={cardProps}/>}
+      {fmt==="card"   && <ShareCardClassic  p={cardProps}/>}
+
+      {/* Buttons */}
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",maxWidth:360,margin:"0 auto"}}>
+        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:110}}>
           {copied ? t.shareCopied : t.copyCaptionBtn}
         </button>
-        <button className="btn btn-secondary" onClick={downloadSvg} style={{flex:1,minWidth:120}}>
+        <button className="btn btn-secondary" onClick={downloadPng} style={{flex:1,minWidth:110}}>
           {t.downloadBadgeBtn}
         </button>
       </div>
@@ -3936,7 +4922,17 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 }
 
 
+
+
 function XPProgressionTracker({ top3, t, lang, massarType }) {
+  // FIX: define getXP locally to avoid sandbox scope issues
+  function getXP(weekIdx, itemIdx) {
+    const _xp = [20, 15, 10, 5, 8, 12, 18, 6, 10, 15, 8, 5, 20, 10, 5, 12];
+    const wi = Number.isFinite(weekIdx) ? weekIdx : 0;
+    const ii = Number.isFinite(itemIdx) ? itemIdx : 0;
+    return _xp[(wi * 4 + ii) % _xp.length] || 10;
+  }
+
   const cluster = top3[0];
   const storageKey = `massar_xp_${massarType}_${cluster?.id||"x"}`;
 
@@ -4305,15 +5301,27 @@ function StepResults({
 // CSS  (kept inline so the component is self-contained)
 // ─────────────────────────────────────────────────────────────────
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:#0a0e1a;color:#e8ecf0;font-family:'DM Sans',sans-serif;min-height:100vh;}
-  [dir="rtl"]{font-family:'IBM Plex Sans Arabic',sans-serif;}
+  [dir="rtl"]{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;}
 
   /* ── Phase 10: Micro animations ── */
   @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
   @keyframes barGrow{from{width:0;}to{width:var(--bar-w,100%);}}
   @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
+  @keyframes scGlowLegendary{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(245,158,11,0.7),0 0 0 3px rgba(245,158,11,0.15),0 0 28px rgba(245,158,11,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(245,158,11,1),0 0 0 4px rgba(245,158,11,0.25),0 0 48px rgba(245,158,11,0.6),0 0 80px rgba(245,158,11,0.3),0 16px 56px rgba(0,0,0,0.8);}
+  }
+  @keyframes scGlowEpic{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(168,85,247,0.6),0 0 0 3px rgba(168,85,247,0.12),0 0 24px rgba(168,85,247,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(168,85,247,0.95),0 0 0 4px rgba(168,85,247,0.2),0 0 40px rgba(168,85,247,0.55),0 0 60px rgba(168,85,247,0.2),0 16px 56px rgba(0,0,0,0.8);}
+  }
+  @keyframes scGlowRare{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(34,211,238,0.55),0 0 0 3px rgba(34,211,238,0.1),0 0 20px rgba(34,211,238,0.35),0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(34,211,238,0.9),0 0 0 4px rgba(34,211,238,0.18),0 0 36px rgba(34,211,238,0.5),0 16px 56px rgba(0,0,0,0.8);}
+  }
   @keyframes rarePulse{0%,100%{box-shadow:0 0 8px rgba(168,85,247,0.2);}50%{box-shadow:0 0 22px rgba(168,85,247,0.55),0 0 40px rgba(168,85,247,0.18);}}
   @keyframes xpPop{0%{transform:scale(1);}40%{transform:scale(1.25);}100%{transform:scale(1);}}
   @keyframes iconPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
