@@ -1,6 +1,6 @@
 // MassarPro — self-contained single-file build
 
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
 
 
@@ -1893,6 +1893,38 @@ function saveCtaEmail(email) {
 
 
 
+// ─────────────────────────────────────────────────────────────────
+// FIX: prevent white screen on results — catches any render throw
+// ─────────────────────────────────────────────────────────────────
+class ResultsErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { crashed: false, error: null }; }
+  static getDerivedStateFromError(error) { return { crashed: true, error }; }
+  componentDidCatch(error, info) { console.error("[Massar Results crash]", error, info); }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div style={{
+          padding:"32px 24px", textAlign:"center", maxWidth:480, margin:"0 auto",
+          background:"var(--surface)", borderRadius:16, border:"1px solid var(--border)",
+        }}>
+          <div style={{fontSize:36, marginBottom:16}}>⚠️</div>
+          <p style={{fontSize:15, color:"var(--text)", marginBottom:8, fontWeight:700}}>
+            {/* FIX: prevent white screen on results */}
+            We couldn&apos;t build your full profile yet.
+          </p>
+          <p style={{fontSize:13, color:"var(--muted)", marginBottom:24}}>
+            Please restart the test.
+          </p>
+          <button className="btn btn-primary" onClick={this.props.onRestart}>
+            {this.props.restartLabel || "Restart"}
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 // ── Traits ────────────────────────────────────────────────────────
 function computeTraits(answers) {
   const traits = { analytical:0, social:0, structure:0, creativity:0, risk:0, leadership:0 };
@@ -2131,12 +2163,14 @@ const RADAR_LABELS = {
 };
 
 function RadarChart({ traits, lang }) {
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
   const keys = ["analytical","social","structure","creativity","risk","leadership"];
   const labels = RADAR_LABELS[lang] || RADAR_LABELS.en;
   const n=keys.length, cx=120, cy=120, r=80;
   const toCart = (a,rad) => ({ x:cx+rad*Math.cos(a-Math.PI/2), y:cy+rad*Math.sin(a-Math.PI/2) });
   const angles = keys.map((_,i)=>(2*Math.PI*i)/n);
-  const points = keys.map((k,i)=>toCart(angles[i],(traits[k]||0.5)*r));
+  const points = keys.map((k,i)=>toCart(angles[i],(safeTr[k]||0.5)*r));
 
   return (
     <svg width="240" height="240" viewBox="0 0 240 240">
@@ -2871,17 +2905,19 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
 // Dims: A/C  S/I  P/O  R/K
 // ─────────────────────────────────────────────────────────────────
 function computeMassarType(traits, reality) {
+  // FIX: results page null-safety — guard traits object being undefined/incomplete
+  const safeTr = traits && typeof traits === "object" ? traits : {};
   const ps = reality?.preferredStyle || "";
   // Dim 1: A(nalytical) vs C(reative)
-  const d1 = traits.analytical >= traits.creativity ? "A" : "C";
+  const d1 = (safeTr.analytical || 0) >= (safeTr.creativity || 0) ? "A" : "C";
   // Dim 2: S(ocial) vs I(ndependent)
-  const d2 = traits.social >= 0.5 ? "S" : "I";
-  // Dim 3: P(ractical) vs O(theoretical) — weighted by preferredStyle
+  const d2 = (safeTr.social || 0) >= 0.5 ? "S" : "I";
+  // Dim 3: P(ractical) vs O(theoretical)
   const practicalBias = ps === "handson" ? 0.15 : ps === "academic" ? -0.15 : 0;
-  const practicalScore = (traits.structure + (1 - traits.creativity)) / 2 + practicalBias;
+  const practicalScore = ((safeTr.structure || 0) + (1 - (safeTr.creativity || 0))) / 2 + practicalBias;
   const d3 = practicalScore >= 0.5 ? "P" : "O";
   // Dim 4: R(isk-taker) vs K(stable)
-  const d4 = traits.risk >= 0.5 ? "R" : "K";
+  const d4 = (safeTr.risk || 0) >= 0.5 ? "R" : "K";
   return d1 + d2 + d3 + d4;
 }
 
@@ -3044,7 +3080,9 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
 
   const sn      = reality.strengthsNow   || [];
   const style   = reality.preferredStyle || "";
-  const top3    = rankedClusters.slice(0,3);
+  // FIX: results page null-safety — guard rankedClusters being undefined/empty
+  const safeRanked = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const top3    = safeRanked.slice(0,3);
 
   // ── Upgrade targets (deterministic) ──────────────────────────────
   // 1. Distance to health threshold
@@ -3087,7 +3125,8 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
   const tipText = style ? (styleTip[style]?.[styleLang]||styleTip[style]?.en||"") : "";
 
   // 4. Cluster unlock message
-  const nearCluster = rankedClusters.find((c,i)=>i>=3 && c.scores.final > rankedClusters[2].scores.final*0.85);
+  // FIX: results page null-safety — safeRanked[2] may be undefined
+  const nearCluster = safeRanked.find((c,i)=>i>=3 && safeRanked[2] && c.scores.final > safeRanked[2].scores.final*0.85);
 
   return (
     <div style={{
@@ -3139,7 +3178,7 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
               border:"1px solid rgba(239,68,68,0.2)",borderRadius:10}}>
               <div style={{fontSize:13,fontWeight:600,color:"#f87171",marginBottom:6}}>⚕️ Distance to Medicine Threshold</div>
               <div style={{fontSize:13,color:"var(--muted)"}}>
-                {t.improveDistanceHealth
+                {(t.improveDistanceHealth || "")
                   .replace("{avg}", healthGapAvg)
                   .replace("{bio}", healthGapBio)
                   .replace("{chem}", healthGapChem)}
@@ -3186,7 +3225,7 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
           {/* Near-unlock cluster */}
           {nearCluster && (
             <div style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>
-              {t.improveClusterUp.replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
+              {(t.improveClusterUp || "").replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
             </div>
           )}
 
@@ -3459,7 +3498,9 @@ const TRAIT_LABELS_FULL = {
 };
 
 function AbilitiesSection({ traits, lang }) {
-  const sorted = Object.entries(traits).sort((a,b)=>b[1]-a[1]);
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
+  const sorted = Object.entries(safeTr).sort((a,b)=>b[1]-a[1]);
   const topTwo = new Set([sorted[0]?.[0], sorted[1]?.[0]].filter(Boolean));
   const labels = TRAIT_LABELS_FULL[lang] || TRAIT_LABELS_FULL.en;
   const dominantLabel = lang==="ar"?"سمة مهيمنة":lang==="fr"?"Trait dominant":"Dominant Trait";
@@ -3510,16 +3551,16 @@ function CompetitionMode({ traits, lang }) {
   const [enabled, setEnabled] = useState(false);
   const label = lang==="ar"?"🏆 وضع المنافسة":lang==="fr"?"🏆 Mode Classement":"🏆 Ranking Mode";
   const labels = TRAIT_LABELS_FULL[lang] || TRAIT_LABELS_FULL.en;
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
 
-  // Deterministic but varied percentiles derived from trait values
   const percentiles = useMemo(()=>{
     const seed = (k, v) => {
-      const base = Math.round((1 - v) * 70 + 15); // low score = low percentile rank → low = rare → we invert: high trait → top%
       const pct  = Math.round((v * 55 + 15) + ((k.charCodeAt(0) % 11) - 5));
       return Math.min(92, Math.max(8, pct));
     };
-    return Object.fromEntries(Object.entries(traits).map(([k,v])=>[k, seed(k,v)]));
-  }, [traits]);
+    return Object.fromEntries(Object.entries(safeTr).map(([k,v])=>[k, seed(k,v)]));
+  }, [safeTr]);
 
   const topLabel = lang==="ar"?"أفضل":lang==="fr"?"Top":"Top";
 
@@ -3532,7 +3573,7 @@ function CompetitionMode({ traits, lang }) {
       {enabled && (
         <div style={{background:"var(--surface)",border:"1px solid var(--border)",
           borderRadius:14,padding:"20px 22px",animation:"fadeIn 0.3s ease"}}>
-          {Object.entries(traits).sort((a,b)=>b[1]-a[1]).map(([k])=>{
+          {Object.entries(safeTr).sort((a,b)=>b[1]-a[1]).map(([k])=>{
             const p = percentiles[k] || 50;
             return (
               <div key={k} className="percentile-row">
@@ -3577,11 +3618,12 @@ function CollapsibleSection({ title, defaultOpen=false, children, accent }) {
 // TruthModeCard — structured risk analysis (Section 7)
 // ─────────────────────────────────────────────────────────────────
 function TruthModeCard({ t, lang, traits, top3 }) {
-  // Deterministic risk scores from traits
-  const disciplineScore = traits.structure || 0.5;
-  const riskScore       = traits.risk      || 0.5;
-  const creativeScore   = traits.creativity|| 0.5;
-  const socialScore     = traits.social    || 0.5;
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
+  const disciplineScore = safeTr.structure  || 0.5;
+  const riskScore       = safeTr.risk       || 0.5;
+  const creativeScore   = safeTr.creativity || 0.5;
+  const socialScore     = safeTr.social     || 0.5;
 
   // Burnout risk: high creativity + low structure in rigid field
   const burnoutRaw = (creativeScore * 0.5 + (1-disciplineScore) * 0.5);
@@ -3596,12 +3638,17 @@ function TruthModeCard({ t, lang, traits, top3 }) {
   const income = incomeRaw > 0.6 ? "high" : incomeRaw > 0.4 ? "med" : "low";
 
   const riskColor = { low:"#10b981", med:"#f59e0b", high:"#e8743a" };
-  const riskLabel = { low:t.truthLow, med:t.truthMed, high:t.truthHigh };
+  // FIX: fallback for missing archetype — guard translation keys for truth mode labels
+  const riskLabel = {
+    low:  t?.truthLow  || "Low",
+    med:  t?.truthMed  || "Medium",
+    high: t?.truthHigh || "High",
+  };
 
   const rows = [
-    { key:"burnout", label:t.burnoutRisk,     level:burnout, explain:t.burnoutExplain?.[burnout] },
-    { key:"stress",  label:t.stressRisk,      level:stress,  explain:t.stressExplain?.[stress] },
-    { key:"income",  label:t.incomeVolatility, level:income,  explain:t.incomeExplain?.[income] },
+    { key:"burnout", label:t?.burnoutRisk     || "Burnout Risk",      level:burnout, explain:t?.burnoutExplain?.[burnout] || "" },
+    { key:"stress",  label:t?.stressRisk      || "Stress Risk",       level:stress,  explain:t?.stressExplain?.[stress]   || "" },
+    { key:"income",  label:t?.incomeVolatility || "Income Volatility", level:income,  explain:t?.incomeExplain?.[income]   || "" },
   ];
 
   const pct = { low:25, med:60, high:90 };
@@ -5033,30 +5080,63 @@ function StepResults({
   effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
   reality, setReality, restart,
 }) {
-  const subjs   = SUBJECTS_BY_TRACK[info.bacTrack] || [];
-  const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(marks[k])||0),0)/subjs.length : 0;
-  const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks[k]||0),0)/subjs.length : 0;
-  const hasDeltas = Object.values(whatIfDeltas).some(d=>Number(d)!==0);
-  const isAfterBac = info.bacStatus === "after";
+  // ── FIX: prevent white screen on results ───────────────────────
+  // Guard every critical input; if fundamentally missing, show fallback UI.
+  const safeRanked  = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const safeTraits  = (traits && typeof traits === "object") ? traits : {};
+  const safeMarks   = (marks  && typeof marks  === "object") ? marks  : {};
+  const safeInfo    = (info   && typeof info   === "object") ? info   : {};
+  const safeReality = (reality && typeof reality === "object") ? reality : {};
+  const safeConf    = typeof confidence === "number" ? confidence : 0;
 
-  const top3     = rankedClusters.slice(0,3);
-  const fallback = rankedClusters.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||rankedClusters[3];
+  // FIX: prevent white screen on results — critical data gate
+  if (safeRanked.length === 0) {
+    return (
+      <div style={{
+        padding:"32px 24px", textAlign:"center", maxWidth:480, margin:"0 auto",
+        background:"var(--surface)", borderRadius:16, border:"1px solid var(--border)",
+      }}>
+        <div style={{fontSize:36, marginBottom:16}}>⚠️</div>
+        <p style={{fontSize:15, color:"var(--text)", marginBottom:8, fontWeight:700}}>
+          We couldn&apos;t build your full profile yet.
+        </p>
+        <p style={{fontSize:13, color:"var(--muted)", marginBottom:24}}>
+          Please restart the test.
+        </p>
+        <button className="btn btn-primary" onClick={restart}>
+          {t?.restart || "Restart"}
+        </button>
+      </div>
+    );
+  }
+  // ── End null-safety gate ────────────────────────────────────────
 
-  const confClass = confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low";
-  const massarType = computeMassarType(traits, reality);
+  const subjs   = SUBJECTS_BY_TRACK[safeInfo.bacTrack] || [];
+  const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(safeMarks[k])||0),0)/subjs.length : 0;
+  const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks?.[k]||0),0)/subjs.length : 0;
+  const hasDeltas = Object.values(whatIfDeltas || {}).some(d=>Number(d)!==0);
+  const isAfterBac = safeInfo.bacStatus === "after";
+
+  // FIX: results page null-safety — safeTop / safeTop3
+  const top3     = safeRanked.slice(0,3);
+  const safeTop  = top3[0] || null;   // FIX: results page null-safety
+  const fallback = safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
+
+  const confClass = safeConf>=70?"confidence-high":safeConf>=50?"confidence-med":"confidence-low";
+  const massarType = computeMassarType(safeTraits, safeReality);
   const typeDesc   = massarTypeDesc(massarType, t);
   const traitLabels = {
     ar:{ analytical:"تحليلي", social:"اجتماعي", structure:"منظم", creativity:"مبدع", risk:"مبادر", leadership:"قيادي" },
     fr:{ analytical:"Analytique", social:"Social", structure:"Rigoureux", creativity:"Créatif", risk:"Risque", leadership:"Leader" },
     en:{ analytical:"Analytical", social:"Social", structure:"Organized", creativity:"Creative", risk:"Risk-taker", leadership:"Leader" },
-  }[lang];
+  }[lang] || {};
 
   // Build change summary string
   const changeSummary = subjs
-    .map(s=>{ const d=Number(whatIfDeltas[s])||0; return d!==0?`${SUBJECT_LABELS[s]?.[lang]||s} ${d>0?"+":""}${d}`:null; })
+    .map(s=>{ const d=Number((whatIfDeltas||{})[s])||0; return d!==0?`${SUBJECT_LABELS[s]?.[lang]||s} ${d>0?"+":""}${d}`:null; })
     .filter(Boolean);
 
-  const topCluster = top3[0];
+  const topCluster = safeTop;  // FIX: results page null-safety
 
   return (
     <div className="results-wrap" dir={dir}>
@@ -5067,29 +5147,29 @@ function StepResults({
       )}
 
       {/* ── Phase 1: Archetype Hero Identity ── */}
-      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={traits} top3={top3} confidence={confidence}/>
+      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf}/>
 
       {/* ── Phase 2: Abilities System ── */}
-      <AbilitiesSection traits={traits} lang={lang}/>
+      <AbilitiesSection traits={safeTraits} lang={lang}/>
 
       {/* ── Phase 8: Competition Mode ── */}
-      <CompetitionMode traits={traits} lang={lang}/>
+      <CompetitionMode traits={safeTraits} lang={lang}/>
 
       {/* ── Phase 9: Family Pressure — collapsed by default ── */}
-      {reality.familyPressure && (
+      {safeReality.familyPressure && (
         <CollapsibleSection
           title={lang==="ar"?"💬 الضغط العائلي":lang==="fr"?"💬 Pression Familiale":"💬 Family Pressure"}
           defaultOpen={false}
           accent="var(--warn)">
           <FamilyPressureAdaptiveCard
-            t={t} lang={lang} marks={marks} traits={traits} info={info} rankedClusters={rankedClusters} reality={reality}/>
+            t={t} lang={lang} marks={safeMarks} traits={safeTraits} info={safeInfo} rankedClusters={safeRanked} reality={safeReality}/>
         </CollapsibleSection>
       )}
 
       {/* Confidence badge */}
       <div className="confidence-row">
         <span className={`confidence-badge ${confClass}`}>
-          {t.confidenceLabel}: {confidence}%
+          {t.confidenceLabel}: {safeConf}%
         </span>
       </div>
 
@@ -5102,14 +5182,14 @@ function StepResults({
         {/* Radar */}
         <div className="result-card highlight">
           <h3>{t.traitRadar}</h3>
-          <div className="radar-wrap"><RadarChart traits={traits} lang={lang}/></div>
+          <div className="radar-wrap"><RadarChart traits={safeTraits} lang={lang}/></div>
         </div>
 
         {/* Academic marks — original values */}
         <div className="result-card">
           <h3>{t.academic}</h3>
           {subjs.map(s=>{
-            const v=Number(marks[s])||0;
+            const v=Number(safeMarks[s])||0;
             const color=v>=15?"#10b981":v>=10?"#3b82f6":"#ef4444";
             return (
               <div key={s} style={{marginBottom:8}}>
@@ -5145,8 +5225,8 @@ function StepResults({
           ) : (
             <>
               {subjs.map(s=>{
-                const delta   = Number(whatIfDeltas[s])||0;
-                const effMark = effectiveMarks[s]||0;
+                const delta   = Number((whatIfDeltas||{})[s])||0;
+                const effMark = effectiveMarks?.[s]||0;
                 const effColor= effMark>=15?"#10b981":effMark>=10?"#3b82f6":"#ef4444";
                 const deltaColor = delta>0?"#10b981":delta<0?"#ef4444":"var(--muted)";
                 const deltaStr   = delta===0?"0":`${delta>0?"+":""}${delta}`;
@@ -5194,14 +5274,14 @@ function StepResults({
       {/* ── Improve Mode (before bac only) ── */}
       {!isAfterBac && (
         <ImproveModeCard
-          t={t} lang={lang} marks={marks} traits={traits}
-          rankedClusters={rankedClusters} reality={reality} setReality={setReality}/>
+          t={t} lang={lang} marks={safeMarks} traits={safeTraits}
+          rankedClusters={safeRanked} reality={safeReality} setReality={setReality}/>
       )}
 
       {/* ── Phase 5: TOP 3 careers ── */}
       <div className="section-title">{t.topCareers}</div>
       {top3.map((c,i)=>(
-        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={info.bacTrack}/>
+        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}/>
       ))}
 
       {/* ── Phase 9: Alternative Path — collapsed ── */}
@@ -5211,9 +5291,10 @@ function StepResults({
         accent="#10b981">
         <div className="fallback-card">
           <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            {/* FIX: results page null-safety — fallback may be undefined */}
             <span style={{fontSize:24}}>{fallback?.icon}</span>
             <div>
-              <div style={{fontWeight:700}}>{fallback&&t[CLUSTER_KEY_MAP[fallback.id]]}</div>
+              <div style={{fontWeight:700}}>{fallback && t[CLUSTER_KEY_MAP[fallback.id]]}</div>
               <div style={{fontSize:12,color:"var(--warn)"}}>{t.fallbackDesc}</div>
             </div>
           </div>
@@ -5222,7 +5303,7 @@ function StepResults({
       </CollapsibleSection>
 
       {/* ── Phase 9: International — collapsed ── */}
-      {info.studyAbroad && (
+      {safeInfo.studyAbroad && (
         <CollapsibleSection
           title={"🌍 "+t.intlPathwayTitle}
           defaultOpen={false}
@@ -5233,7 +5314,7 @@ function StepResults({
           }}>
             {[
               { title:t.intlRequirementsTitle, body:t.intlRequirementsText },
-              { title:t.intlTranslationTitle, body: `${t[CLUSTER_KEY_MAP[topCluster?.id]]||""} — ${lang==="ar"?"تُترجم عالمياً بمؤهلات تقنية وإطار نظري قابل للنقل.":lang==="fr"?"se traduit à l'international avec des compétences techniques et un cadre théorique transférable.":"translates internationally with transferable technical skills and theoretical framework."}` },
+              { title:t.intlTranslationTitle,  body: `${t[CLUSTER_KEY_MAP[topCluster?.id]]||""} — ${lang==="ar"?"تُترجم عالمياً بمؤهلات تقنية وإطار نظري قابل للنقل.":lang==="fr"?"se traduit à l'international avec des compétences techniques et un cadre théorique transférable.":"translates internationally with transferable technical skills and theoretical framework."}` },
               { title:t.intlFinanceTitle, body:t.intlFinanceText },
               { title:t.intlDifferenceTitle, body:t.intlDifferenceText },
             ].map(item=>(
@@ -5254,11 +5335,12 @@ function StepResults({
 
       {/* ── Phase 9: Truth Mode — collapsed ── */}
       <CollapsibleSection title={t.truthModeBtn} defaultOpen={false} accent="var(--muted)">
-        <TruthModeCard t={t} lang={lang} traits={traits} top3={top3}/>
+        <TruthModeCard t={t} lang={lang} traits={safeTraits} top3={top3}/>
       </CollapsibleSection>
 
       {/* ── Phase 7: Share Card — status symbol ── */}
-      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={top3[0]} confidence={confidence}/>
+      {/* FIX: results page null-safety — topCluster may be null; ShareCard handles it internally */}
+      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf}/>
 
       {/* ── Phase 6: Action plan → XP Progression Tracker ── */}
       <div className="section-title">{t.actionPlan}</div>
@@ -5723,13 +5805,16 @@ export default function App() {
             onNext={()=>setStep(6)} onBack={()=>setStep(4)} t={t} dir={dir}/>
         )}
         {step === 6 && (
-          <StepResults
-            t={t} lang={lang} dir={dir} info={info}
-            marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
-            effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
-            traits={traits} confidence={confidence} mixedSignals={mixedSignals}
-            narrative={narrative} reality={reality} setReality={setReality} restart={restart}
-          />
+          // FIX: prevent white screen on results — ErrorBoundary catches any render throw
+          <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
+            <StepResults
+              t={t} lang={lang} dir={dir} info={info}
+              marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
+              effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
+              traits={traits} confidence={confidence} mixedSignals={mixedSignals}
+              narrative={narrative} reality={reality} setReality={setReality} restart={restart}
+            />
+          </ResultsErrorBoundary>
         )}
       </div>
     </>
