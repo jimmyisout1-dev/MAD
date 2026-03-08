@@ -1803,6 +1803,111 @@ const REALITY_CLUSTER_MAP = {
   culinary_ops:    { strengthTags:["s_cooking","s_organizing","s_speaking","s_discipline","s_creativity"], interestTags:["i_cooking","i_people","i_outdoors","i_helping"], identityBoost:{academic:0.3,builder:0.65,creative:0.75,athletic:0.4,business:0.65,explorer:0.7,unsure:0.6}, priorityBoost:{money:0.7,prestige:0.5,stability:0.65,freedom:0.75,impact:0.6,flexibility:0.7} },
 };
 
+
+// ─────────────────────────────────────────────────────────────────
+// FIX: cultural scoring layer
+// Three new dimensions per cluster, used in computeClusterScores.
+// prestigeScore        — social/parental perception in Moroccan context
+// parentAcceptanceScore— likelihood parents approve without pushback
+// academicUtilScore    — how well this path rewards high academic marks
+// All 0–1 scale.
+// ─────────────────────────────────────────────────────────────────
+const CULTURAL_CLUSTER_SCORES = {
+  it:              { prestige:0.75, parentAcceptance:0.80, academicUtil:0.85 },
+  data:            { prestige:0.80, parentAcceptance:0.82, academicUtil:0.90 },
+  cyber:           { prestige:0.72, parentAcceptance:0.76, academicUtil:0.80 },
+  network:         { prestige:0.60, parentAcceptance:0.68, academicUtil:0.65 },
+  industrial:      { prestige:0.65, parentAcceptance:0.70, academicUtil:0.75 },
+  energy:          { prestige:0.70, parentAcceptance:0.72, academicUtil:0.78 },
+  civil:           { prestige:0.78, parentAcceptance:0.80, academicUtil:0.82 },
+  health:          { prestige:0.98, parentAcceptance:0.97, academicUtil:0.98 },
+  finance:         { prestige:0.88, parentAcceptance:0.90, academicUtil:0.88 },
+  marketing:       { prestige:0.68, parentAcceptance:0.72, academicUtil:0.65 },
+  logistics:       { prestige:0.60, parentAcceptance:0.64, academicUtil:0.62 },
+  tourism:         { prestige:0.42, parentAcceptance:0.38, academicUtil:0.35 },
+  edu_law:         { prestige:0.85, parentAcceptance:0.88, academicUtil:0.82 },
+  arts_media:      { prestige:0.50, parentAcceptance:0.42, academicUtil:0.40 },
+  trades:          { prestige:0.35, parentAcceptance:0.32, academicUtil:0.30 },
+  automotive:      { prestige:0.33, parentAcceptance:0.30, academicUtil:0.28 },
+  sports:          { prestige:0.48, parentAcceptance:0.45, academicUtil:0.30 },
+  creative_digital:{ prestige:0.52, parentAcceptance:0.48, academicUtil:0.45 },
+  culinary_ops:    { prestige:0.40, parentAcceptance:0.36, academicUtil:0.32 },
+};
+
+// FIX: prestige-aware path naming
+// When a high-performing student (avg 14+) gets a lower-prestige path,
+// use the elevated display name instead of the base cluster label.
+const PRESTIGE_PATH_NAMES = {
+  tourism: {
+    ar: { elevated:"إدارة الضيافة الدولية", base:"السياحة والضيافة" },
+    fr: { elevated:"Management Hôtelier International", base:"Tourisme & Hôtellerie" },
+    en: { elevated:"International Hospitality Management", base:"Tourism & Hospitality" },
+  },
+  culinary_ops: {
+    ar: { elevated:"إدارة المطاعم والضيافة الراقية", base:"الطهي والضيافة التشغيلية" },
+    fr: { elevated:"Gestion Restauration & Gastronomie", base:"Cuisine & Hôtellerie Opérationnelle" },
+    en: { elevated:"Restaurant & Culinary Arts Management", base:"Culinary & Hospitality Operations" },
+  },
+  arts_media: {
+    ar: { elevated:"الإنتاج الإعلامي والاستراتيجية الرقمية", base:"الفنون والإعلام" },
+    fr: { elevated:"Production Médias & Stratégie Digitale", base:"Arts & Médias" },
+    en: { elevated:"Media Production & Digital Strategy", base:"Arts & Media" },
+  },
+  creative_digital: {
+    ar: { elevated:"تسويق المحتوى الرقمي وبناء الماركة", base:"إنتاج المحتوى الرقمي" },
+    fr: { elevated:"Marketing de Contenu & Brand Building", base:"Création de Contenu Digital" },
+    en: { elevated:"Content Marketing & Brand Building", base:"Digital Content Creation" },
+  },
+  sports: {
+    ar: { elevated:"علوم الرياضة وإدارة الأداء البشري", base:"الرياضة واللياقة البدنية" },
+    fr: { elevated:"Sciences du Sport & Management de Performance", base:"Sport & Condition Physique" },
+    en: { elevated:"Sport Sciences & Human Performance Management", base:"Sports & Fitness" },
+  },
+  trades: {
+    ar: { elevated:"هندسة التقنيات الصناعية والبنية التحتية", base:"المهن التقنية الحرفية" },
+    fr: { elevated:"Ingénierie des Technologies Industrielles", base:"Métiers Techniques & Artisanaux" },
+    en: { elevated:"Industrial Engineering Technology", base:"Skilled Trades & Crafts" },
+  },
+};
+
+// FIX: clamp numeric UI values
+function clamp(val, min = 0, max = 100) {
+  const n = Number(val);
+  return isNaN(n) ? min : Math.min(max, Math.max(min, n));
+}
+
+// FIX: multi-view recommendation
+// Returns { bestFit, balanced, ambitious } from ranked clusters.
+// bestFit    = highest trait+interest match (personal)
+// balanced   = highest final score (already top-1, academic/prestige blend)
+// ambitious  = highest prestige that's academically reachable (top-6)
+function computeThreeViews(rankedClusters, overallAvg) {
+  if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
+
+  // bestFit: best trait+interest score among top-6
+  const pool = rankedClusters.slice(0, Math.min(8, rankedClusters.length));
+  const bestFit = pool.reduce((best, c) => {
+    const fit = (c.scores.trait || 0) * 0.55 + (c.scores.interest || 0) * 0.45;
+    const bestScore = best ? (best.scores.trait||0)*0.55+(best.scores.interest||0)*0.45 : -1;
+    return fit > bestScore ? c : best;
+  }, null);
+
+  // balanced: overall top-1 final score (already sorted)
+  const balanced = rankedClusters[0] || null;
+
+  // ambitious: highest prestige within academic reach (score.academic >= 0.35 or avg<10 allow all)
+  const reachThreshold = overallAvg >= 14 ? 0.5 : overallAvg >= 11 ? 0.35 : 0.0;
+  const ambitious = rankedClusters
+    .filter(c => (c.scores.academic || 0) >= reachThreshold)
+    .reduce((best, c) => {
+      const cs = CULTURAL_CLUSTER_SCORES[c.id] || { prestige: 0.5 };
+      const bs = best ? (CULTURAL_CLUSTER_SCORES[best.id] || { prestige: 0.5 }).prestige : -1;
+      return cs.prestige > bs ? c : best;
+    }, null);
+
+  return { bestFit, balanced, ambitious };
+}
+
 // ── Scoring weights (must sum to 1.0) ─────────────────────────────
 // Extend here — never touch individual score computation below.
 const SCORING_WEIGHTS = {
@@ -1894,7 +1999,7 @@ function saveCtaEmail(email) {
 
 
 // ─────────────────────────────────────────────────────────────────
-// FIX: prevent white screen on results — catches any render throw
+// FIX: ErrorBoundary prevents white screen crash
 // ─────────────────────────────────────────────────────────────────
 class ResultsErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { crashed: false, error: null }; }
@@ -1904,20 +2009,29 @@ class ResultsErrorBoundary extends React.Component {
     if (this.state.crashed) {
       return (
         <div style={{
-          padding:"32px 24px", textAlign:"center", maxWidth:480, margin:"0 auto",
-          background:"var(--surface)", borderRadius:16, border:"1px solid var(--border)",
+          padding:"40px 28px", textAlign:"center", maxWidth:520, margin:"0 auto",
+          background:"var(--surface)", borderRadius:20, border:"1px solid var(--border)",
+          boxShadow:"0 8px 32px rgba(0,0,0,0.4)",
         }}>
-          <div style={{fontSize:36, marginBottom:16}}>⚠️</div>
-          <p style={{fontSize:15, color:"var(--text)", marginBottom:8, fontWeight:700}}>
-            {/* FIX: prevent white screen on results */}
-            We couldn&apos;t build your full profile yet.
+          <div style={{fontSize:48, marginBottom:16}}>⚠️</div>
+          <h2 style={{fontSize:20, color:"var(--text)", marginBottom:10, fontWeight:700}}>
+            Something went wrong
+          </h2>
+          <p style={{fontSize:14, color:"var(--muted)", marginBottom:8, lineHeight:1.6}}>
+            Your profile could not load correctly.
           </p>
-          <p style={{fontSize:13, color:"var(--muted)", marginBottom:24}}>
-            Please restart the test.
+          <p style={{fontSize:13, color:"var(--muted)", marginBottom:28}}>
+            This is usually a temporary issue. Try again or restart.
           </p>
-          <button className="btn btn-primary" onClick={this.props.onRestart}>
-            {this.props.restartLabel || "Restart"}
-          </button>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
+            <button className="btn btn-secondary"
+              onClick={()=>this.setState({crashed:false,error:null})}>
+              🔄 Retry
+            </button>
+            <button className="btn btn-danger" onClick={this.props.onRestart}>
+              {this.props.restartLabel || "Restart Test"}
+            </button>
+          </div>
         </div>
       );
     }
@@ -2057,6 +2171,26 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     const snPracticalCount = strengthsNow.filter(k => handsOnSN.includes(k)).length;
     const snBoost = PRACTICAL_CLUSTERS.has(cluster.id) && snPracticalCount >= 2 ? 0.05 : 0;
 
+    // FIX: academic utilization weighting
+    // Boost clusters that better utilise the student's academic level.
+    // High avg (16+) → elite/selective paths boosted; low avg → practical paths can rise.
+    const culturalScores = CULTURAL_CLUSTER_SCORES[cluster.id] || { prestige:0.5, parentAcceptance:0.5, academicUtil:0.5 };
+    let academicUtilMod = 0;
+    if (overallAvg >= 16) {
+      // Elite students: reward paths that demand high academics
+      academicUtilMod = (culturalScores.academicUtil - 0.5) * 0.12;
+    } else if (overallAvg >= 14) {
+      // Strong students: mild academic utility boost
+      academicUtilMod = (culturalScores.academicUtil - 0.5) * 0.07;
+    } else if (overallAvg < 11 && overallAvg >= 0) {
+      // Weaker academic → practical paths rise naturally (inverse)
+      academicUtilMod = (0.5 - culturalScores.academicUtil) * 0.06;
+    }
+
+    // FIX: cultural scoring layer — prestige/parent factor has minor influence
+    // Priority "prestige" users get a stronger weight
+    const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
+
     const finalScore = Math.min(1, Math.max(0,
       SCORING_WEIGHTS.bac       * bacScore
       + SCORING_WEIGHTS.academic  * academicScore
@@ -2067,6 +2201,7 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       + SCORING_WEIGHTS.identity  * identityScore
       + SCORING_WEIGHTS.priority  * priorityScore
       + mobilityBoost + styleMod + snBoost - penalty
+      + academicUtilMod + prestigeMod
     ));
 
     return {
@@ -2121,8 +2256,11 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}) {
   if (!top3?.length) return "";
   const t          = TRANSLATIONS[lang];
   const topCluster = top3[0];
-  const name       = t[CLUSTER_KEY_MAP[topCluster.id]] || topCluster.id;
-  const topTrait   = Object.entries(traits).sort((a, b) => b[1] - a[1])[0]?.[0] || "analytical";
+  // FIX: null safe rendering — guard missing cluster translation
+  const name       = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
+  // FIX: null safe rendering — guard empty traits
+  const safeTr     = (traits && typeof traits === "object") ? traits : {};
+  const topTrait   = Object.entries(safeTr).sort((a, b) => b[1] - a[1])[0]?.[0] || "analytical";
   const tl         = TRAIT_LABELS[lang] || TRAIT_LABELS.en;
 
   const identityType = reality.identityType || "unsure";
@@ -2130,22 +2268,23 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}) {
   const strengths    = reality.strengths    || [];
   const t_pri = t.realityPriorityOptions?.[priority]?.label || priority;
   const t_str = strengths.slice(0,2).map(k => t.realityStrengths?.[k] || k).join(", ");
-  const topStrength  = t_str || tl[topTrait];
+  const topStrength  = t_str || tl[topTrait] || "";
 
-  // Task 1 FIX: empowering, strength-first narrative for all paths.
-  // "unsure" path never mentions doubt — leads with what the profile shows.
+  // FIX: Arabic-first UX — short, natural, encouraging, modern Arabic tone
+  // "unsure" path leads with what the profile shows — zero doubt language
   if (identityType === "unsure") {
     return {
-      ar: `ملفك يكشف قدرة حقيقية في <strong>${topStrength}</strong> — وهذا يوجّهك نحو <strong>${name}</strong>. استكشف هذا المجال بخطوة واحدة صغيرة: مشروع، تجربة، أو لقاء مع متخصص. هذه النتيجة نقطة انطلاق، وليست حكماً نهائياً.`,
-      fr: `Ton profil montre une forte capacité en <strong>${topStrength}</strong>. Le domaine <strong>${name}</strong> correspond bien à ta façon de penser et d'agir. Considère ce résultat comme une direction à explorer — pas une décision définitive.`,
-      en: `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think and what you enjoy doing. Treat this as a direction to explore — not a final answer.`,
-    }[lang] || `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think. Treat this as a direction to explore, not a final decision.`;
+      ar: `ملفك يكشف قوة حقيقية في <strong>${topStrength}</strong>. هذا يضعك في خط مباشر مع <strong>${name}</strong>. ابدأ بخطوة صغيرة: مشروع، تجربة، أو لقاء مع متخصص. النتيجة بوصلة — وليست حكماً.`,
+      fr: `Ton profil révèle une vraie force en <strong>${topStrength}</strong>. Le domaine <strong>${name}</strong> correspond bien à ta façon de penser. C'est une direction à explorer — pas une décision définitive.`,
+      en: `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think and what you enjoy. This is a direction to explore — not a final answer.`,
+    }[lang] || `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think.`;
   }
 
+  // FIX: Arabic-first UX — standard path: concise, empowering, no filler
   const narratives = {
-    ar: `قوتك الأساسية في <strong>${topStrength}</strong> تجعل <strong>${name}</strong> الخيار الأقرب لشخصيتك وواقع السوق. أولويتك الحالية — <strong>${t_pri}</strong> — تتوافق مع هذا المسار. هذه البوصلة، لا القيد.`,
-    fr: `Tes forces réelles en <strong>${topStrength}</strong> pointent vers <strong>${name}</strong> — le domaine qui correspond le mieux à ton profil. Ta priorité <strong>${t_pri}</strong> s'aligne avec cette direction. C'est un cap à explorer, pas un verdict.`,
-    en: `Your strengths in <strong>${topStrength}</strong> point toward <strong>${name}</strong> — the domain that best matches your full profile. Your priority of <strong>${t_pri}</strong> aligns with this path. This is a compass, not a cage.`,
+    ar: `قوتك في <strong>${topStrength}</strong> تجعل <strong>${name}</strong> الخيار الأقرب لملفك. أولويتك — <strong>${t_pri}</strong> — تتوافق مع هذا الاتجاه. هذه البوصلة، لا القيد.`,
+    fr: `Tes forces en <strong>${topStrength}</strong> pointent vers <strong>${name}</strong>. Ta priorité <strong>${t_pri}</strong> s'aligne avec ce cap. C'est une direction, pas un verdict.`,
+    en: `Your strengths in <strong>${topStrength}</strong> point toward <strong>${name}</strong> — the best match for your full profile. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
   };
   return narratives[lang] || narratives.en;
 }
@@ -2218,7 +2357,8 @@ function ScoreContribChart({ cluster, t }) {
           <div className="explain-bar">
             <div className="explain-fill" style={{width:`${f.value*100}%`,background:f.color}}/>
           </div>
-          <div className="explain-pct">{Math.round(f.value*100)}%</div>
+          {/* FIX: Arabic-first UX — percentage must render LTR even in RTL layout */}
+          <div className="explain-pct" dir="ltr">{Math.round(clamp(f.value*100))}%</div>
         </div>
       ))}
     </div>
@@ -2319,7 +2459,8 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
               </span>
             )}
           </div>
-          <div className="salary-chip">
+          {/* FIX: Arabic-first UX — salary numbers must be LTR even in RTL context */}
+          <div className="salary-chip" dir="ltr">
             {cluster.salary.min.toLocaleString()}–{cluster.salary.max.toLocaleString()} {cluster.salary.currency}/mois*
           </div>
         </div>
@@ -3240,12 +3381,12 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
 }
 
 // ─────────────────────────────────────────────────────────────────
-// getRarity — Phase 1: rarity tier from overall alignment %
-// ─────────────────────────────────────────────────────────────────
+// getRarity — unified rarity tier from overall alignment %
+// FIX: unified with ShareCard spec — Common, Rare, Epic, Legendary
 function getRarity(confidence) {
-  if (confidence >= 85) return "rare";
-  if (confidence >= 75) return "elite";
-  if (confidence >= 60) return "advanced";
+  if (confidence >= 85) return "legendary";
+  if (confidence >= 70) return "epic";
+  if (confidence >= 55) return "rare";
   return "common";
 }
 
@@ -3269,22 +3410,25 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   const worstEnv  = archetype.worstEnv?.[lang]  || archetype.worstEnv?.en  || "";
 
   const rarity = getRarity(confidence);
+  // FIX: unified rarity labels — Common, Rare, Epic, Legendary
   const rarityLabels = {
-    common:   { ar:"عادي",    fr:"Commun",   en:"Common"   },
-    advanced: { ar:"متقدم",   fr:"Avancé",   en:"Advanced" },
-    elite:    { ar:"متميز",   fr:"Élite",    en:"Elite"    },
-    rare:     { ar:"نادر",    fr:"Rare",     en:"Rare"     },
+    common:    { ar:"عادي",    fr:"Commun",    en:"Common"    },
+    rare:      { ar:"نادر",    fr:"Rare",      en:"Rare"      },
+    epic:      { ar:"ملحمي",   fr:"Épique",    en:"Epic"      },
+    legendary: { ar:"أسطوري", fr:"Légendaire", en:"Legendary" },
   };
-  const rarityIcons = { common:"◇", advanced:"◆", elite:"★", rare:"✦" };
-  const rarityLabel = rarityLabels[rarity][lang] || rarityLabels[rarity].en;
+  const rarityIcons = { common:"◇", rare:"◆", epic:"★", legendary:"👑" };
+  const rarityLabel = rarityLabels[rarity]?.[lang] || rarityLabels[rarity]?.en || rarity;
 
   // Compute 3 meter scores
-  const identityFitPct = Math.round(Math.max(0.35, Math.min(0.95,
-    ((traits.analytical||0.5)+(traits.creativity||0.5)+(traits.risk||0.5)+(traits.leadership||0.5))/4)) * 100);
-  const academicFitPct = Math.round(Math.max(0.3, Math.min(0.9,
-    top3[0]?.scores?.academic ?? 0.5)) * 100);
-  const marketFitPct = Math.round(Math.max(0.4, Math.min(0.95,
-    top3[0]?.scores?.market ?? 0.7)) * 100);
+  // FIX: clamp numeric UI values
+  const safeTrA = traits && typeof traits === "object" ? traits : {};
+  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
+    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
+  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
+    top3[0]?.scores?.academic ?? 0.5)) * 100));
+  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
+    top3[0]?.scores?.market ?? 0.7)) * 100));
 
   // Phase 4: Alignment story — weakest dimension
   const dims = [
@@ -3325,7 +3469,7 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
       {/* Rarity badge + type label */}
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
         <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase"}}>
-          {t.archetypeTitle}
+          {t?.archetypeTitle || "Identity"}
         </div>
         <span className={`rarity-badge rarity-badge-${rarity}`}>
           {rarityIcons[rarity]} {rarityLabel}
@@ -3350,10 +3494,13 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
           }}>{name}</div>
           <div style={{fontSize:14,fontWeight:800,color:"var(--accent2)",letterSpacing:3}}>{archetype.code}</div>
         </div>
+        {/* FIX: Arabic-first UX — dir="ltr" prevents % rendering before number in RTL */}
         <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
           borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
-          <div style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>{confidence}%</div>
-          <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t.confidenceLabel}</div>
+          <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
+            {clamp(confidence)}%
+          </div>
+          <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
         </div>
       </div>
 
@@ -3366,16 +3513,18 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
       {/* 3 Fit Meters */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:8}}>
         {[
-          { label:t.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
-          { label:t.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
-          { label:t.marketFit||"Market", pct:marketFitPct, color:"#10b981" },
+          { label:t?.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
+          { label:t?.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
+          { label:t?.marketFit||"Market",   pct:marketFitPct, color:"#10b981" },
         ].map(m=>(
           <div key={m.label} style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
             <div style={{fontSize:10,color:"var(--muted)",marginBottom:6,fontWeight:600}}>{m.label}</div>
-            <div style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
+            {/* FIX: Arabic-first UX — bar direction forced LTR */}
+            <div dir="ltr" style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
               <div style={{height:"100%",width:`${m.pct}%`,background:m.color,borderRadius:2,animation:"barGrow 1s ease both"}}/>
             </div>
-            <div style={{fontSize:15,fontWeight:800,color:m.color}}>{m.pct}%</div>
+            {/* FIX: Arabic-first UX — percentage always LTR */}
+            <div style={{fontSize:15,fontWeight:800,color:m.color}} dir="ltr">{m.pct}%</div>
           </div>
         ))}
       </div>
@@ -3503,7 +3652,8 @@ function AbilitiesSection({ traits, lang }) {
   const sorted = Object.entries(safeTr).sort((a,b)=>b[1]-a[1]);
   const topTwo = new Set([sorted[0]?.[0], sorted[1]?.[0]].filter(Boolean));
   const labels = TRAIT_LABELS_FULL[lang] || TRAIT_LABELS_FULL.en;
-  const dominantLabel = lang==="ar"?"سمة مهيمنة":lang==="fr"?"Trait dominant":"Dominant Trait";
+  // FIX: Arabic-first UX — concise powerful word for dominant trait
+  const dominantLabel = lang==="ar"?"◉ سمة رائدة":lang==="fr"?"◉ Dominant":"◉ Dominant";
 
   return (
     <div style={{marginBottom:20}}>
@@ -3513,7 +3663,8 @@ function AbilitiesSection({ traits, lang }) {
       <div className="abilities-grid">
         {sorted.map(([key, val])=>{
           const meta = ABILITY_META[key] || {};
-          const pct  = Math.round(val * 100);
+          // FIX: clamp numeric UI values — never NaN, always 0–100
+          const pct  = Math.round(clamp(val * 100));
           const isDom = topTwo.has(key);
           const [c1, c2] = meta.gradients || ["#3b82f6","#1d4ed8"];
           const svgStr = ABILITY_SVG[key] || "";
@@ -3527,13 +3678,15 @@ function AbilitiesSection({ traits, lang }) {
               <div style={{fontSize:13,fontWeight:800,color:"var(--text)",marginBottom:2}}>
                 {labels[key] || key}
               </div>
-              <div className="ability-bar-track">
+              {/* FIX: Arabic-first UX — bar container forced LTR so fill direction is correct */}
+              <div className="ability-bar-track" dir="ltr">
                 <div className="ability-bar-fill" style={{
                   width:`${pct}%`,
                   background:`linear-gradient(90deg,${c1},${c2})`,
                 }}/>
               </div>
-              <div style={{fontSize:18,fontWeight:900,color:c1,marginBottom:4}}>{pct}%</div>
+              {/* FIX: Arabic-first UX — percentage always LTR in RTL layout */}
+              <div style={{fontSize:18,fontWeight:900,color:c1,marginBottom:4}} dir="ltr">{pct}%</div>
               <div style={{fontSize:10,color:"var(--muted)",lineHeight:1.4}}>{desc}</div>
             </div>
           );
@@ -3574,16 +3727,18 @@ function CompetitionMode({ traits, lang }) {
         <div style={{background:"var(--surface)",border:"1px solid var(--border)",
           borderRadius:14,padding:"20px 22px",animation:"fadeIn 0.3s ease"}}>
           {Object.entries(safeTr).sort((a,b)=>b[1]-a[1]).map(([k])=>{
-            const p = percentiles[k] || 50;
+            const p = clamp(percentiles[k] || 50);  // FIX: clamp numeric UI values
             return (
               <div key={k} className="percentile-row">
                 <div style={{fontSize:12,color:"var(--text)",fontWeight:600,width:90,flexShrink:0}}>
                   {labels[k]||k}
                 </div>
-                <div className="percentile-bar">
+                {/* FIX: Arabic-first UX — bar container LTR so fill goes left to right */}
+                <div className="percentile-bar" dir="ltr">
                   <div className="percentile-fill" style={{width:`${p}%`}}/>
                 </div>
-                <div style={{fontSize:12,fontWeight:700,color:"var(--accent2)",width:60,textAlign:"right",flexShrink:0}}>
+                {/* FIX: Arabic-first UX — percentage display LTR */}
+                <div dir="ltr" style={{fontSize:12,fontWeight:700,color:"var(--accent2)",width:60,textAlign:"right",flexShrink:0}}>
                   {topLabel} {100-p}%
                 </div>
               </div>
@@ -3637,7 +3792,14 @@ function TruthModeCard({ t, lang, traits, top3 }) {
   const incomeRaw = (creativeScore * 0.5 + riskScore * 0.5);
   const income = incomeRaw > 0.6 ? "high" : incomeRaw > 0.4 ? "med" : "low";
 
+  // FIX: Arabic-first UX — warm gradient bars, no harsh triple-red; amber/gold palette
   const riskColor = { low:"#10b981", med:"#f59e0b", high:"#e8743a" };
+  // FIX: Arabic-first UX — gradient fills give softer appearance than solid color
+  const riskGradient = {
+    low:  "linear-gradient(90deg,#10b981,#34d399)",
+    med:  "linear-gradient(90deg,#f59e0b,#fbbf24)",
+    high: "linear-gradient(90deg,#e8743a,#f97316)",
+  };
   // FIX: fallback for missing archetype — guard translation keys for truth mode labels
   const riskLabel = {
     low:  t?.truthLow  || "Low",
@@ -3651,27 +3813,29 @@ function TruthModeCard({ t, lang, traits, top3 }) {
     { key:"income",  label:t?.incomeVolatility || "Income Volatility", level:income,  explain:t?.incomeExplain?.[income]   || "" },
   ];
 
-  const pct = { low:25, med:60, high:90 };
+  const pct = { low:25, med:60, high:88 };
 
   return (
     <div style={{
       background:"var(--surface)",border:"1px solid var(--border)",
       borderRadius:14,padding:"22px 24px",animation:"fadeIn 0.3s ease",
     }}>
-      <h3 style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{t.truthModeTitle}</h3>
-      <p style={{fontSize:12,color:"var(--muted)",marginBottom:20,lineHeight:1.5}}>{t.truthModeDesc}</p>
+      <h3 style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{t?.truthModeTitle || "Reality Check"}</h3>
+      <p style={{fontSize:12,color:"var(--muted)",marginBottom:20,lineHeight:1.5}}>{t?.truthModeDesc || ""}</p>
 
       {rows.map(row=>(
         <div key={row.key} style={{marginBottom:18}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
             <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{row.label}</span>
             <span style={{fontSize:12,fontWeight:700,color:riskColor[row.level],
-              padding:"2px 8px",borderRadius:10,background:`${riskColor[row.level]}20`}}>
+              padding:"2px 8px",borderRadius:10,background:`${riskColor[row.level]}22`}}>
               {riskLabel[row.level]}
             </span>
           </div>
-          <div style={{height:6,background:"var(--surface2)",borderRadius:3,overflow:"hidden",marginBottom:6}}>
-            <div style={{height:"100%",width:`${pct[row.level]}%`,background:riskColor[row.level],borderRadius:3,transition:"width 0.8s ease"}}/>
+          {/* FIX: Arabic-first UX — bar LTR so fill is visually correct in RTL layout */}
+          <div dir="ltr" style={{height:6,background:"var(--surface2)",borderRadius:3,overflow:"hidden",marginBottom:6}}>
+            <div style={{height:"100%",width:`${pct[row.level]}%`,
+              background:riskGradient[row.level],borderRadius:3,transition:"width 0.8s ease"}}/>
           </div>
           <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{row.explain}</div>
         </div>
@@ -4012,12 +4176,13 @@ function TraitChip({ label, icon, accent, fontSize }) {
 // Thick progress bar
 function MatchBar({ pct, accent, glow, height }) {
   const h = height || 8;
+  // FIX: Arabic-first UX — dir=ltr so the fill always goes left→right regardless of RTL context
   return (
-    <div style={{ width:"100%", height:h, background:"rgba(15,23,42,0.8)",
+    <div dir="ltr" style={{ width:"100%", height:h, background:"rgba(15,23,42,0.8)",
       borderRadius:h, overflow:"hidden", flexShrink:0,
       boxShadow:`inset 0 1px 3px rgba(0,0,0,0.5)` }}>
       <div style={{
-        height:"100%", width:`${pct}%`, borderRadius:h,
+        height:"100%", width:`${clamp(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
         background:`linear-gradient(90deg, ${accent}, #fbbf24)`,
         boxShadow:`0 0 8px ${glow}`,
         transition:"width .5s cubic-bezier(0.34,1.56,0.64,1)",
@@ -4469,8 +4634,16 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const archTagline = archetype.tagline?.[lang] || archetype.tagline?.en || archName;
   const rawStrengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
   const strengths   = rawStrengths.slice(0, 3).map(s => s.length > 22 ? s.slice(0, 21) + "…" : s);
-  const clusterName = t[CLUSTER_KEY_MAP[topCluster?.id]] || topCluster?.id || "";
+  // FIX: translation fallback — clusterName safe default
+  const clusterName = t?.[CLUSTER_KEY_MAP?.[topCluster?.id]] || topCluster?.id || "";
   const isRTL       = lang === "ar";
+
+  // FIX: development debug logs — share card prepared
+  useEffect(() => {
+    if (import.meta?.env?.DEV) {
+      console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
+    }
+  }, [massarType, clusterName, confidence]); // eslint-disable-line
   const dir         = isRTL ? "rtl" : "ltr";
 
   // Level from confidence
@@ -4992,7 +5165,8 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   );
   const totalXP = allTasks.reduce((s,{wk,it,xp})=>s+(checked[`${wk}_${it}`]?xp:0),0);
   const maxXP   = allTasks.reduce((s,{xp})=>s+xp,0);
-  const pct     = maxXP > 0 ? Math.round((totalXP/maxXP)*100) : 0;
+  // FIX: clamp numeric UI values
+  const pct     = maxXP > 0 ? clamp(Math.round((totalXP/maxXP)*100)) : 0;
   const complete = pct === 100;
 
   const toggle = (wk, it) => {
@@ -5063,6 +5237,147 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   );
 }
 
+
+// ─────────────────────────────────────────────────────────────────
+// FIX: multi-view recommendation
+// Three career perspectives: Best Personal Fit, Best Balance, Most Ambitious.
+// Shows prestige-aware path names for high academic performers.
+// ─────────────────────────────────────────────────────────────────
+function ThreeViewPanel({ t, lang, views, overallAvg }) {
+  const [active, setActive] = useState("balanced");
+  if (!views.bestFit && !views.balanced && !views.ambitious) return null;
+
+  // FIX: prestige-aware path naming
+  function getClusterDisplayName(cluster) {
+    if (!cluster) return "—";
+    const avg = overallAvg || 0;
+    const prestige = CULTURAL_CLUSTER_SCORES[cluster.id];
+    const isHighPerformer = avg >= 14;
+    const isLowPrestige   = prestige && prestige.prestige < 0.55;
+    const names = PRESTIGE_PATH_NAMES[cluster.id];
+    if (isHighPerformer && isLowPrestige && names) {
+      return names[lang]?.elevated || names.en?.elevated || t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
+    }
+    return t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
+  }
+
+  // FIX: expectation framing — explain if result may surprise high performers
+  function getSurpriseText(cluster) {
+    if (!cluster) return null;
+    const avg = overallAvg || 0;
+    const cs = CULTURAL_CLUSTER_SCORES[cluster.id];
+    if (!cs || cs.prestige >= 0.7 || avg < 13) return null;
+    const msgs = {
+      ar: "قد تبدو هذه النتيجة غير متوقعة بالنظر إلى علاماتك. لكن الملفات الأكاديمية القوية تنجح أيضاً في إدارة الخدمات الدولية وقيادة المؤسسات — خاصة عبر المسارات العليا.",
+      fr: "Ce résultat peut sembler inattendu vu vos notes. Pourtant, les profils académiques solides réussissent aussi en management international et leadership de service — surtout via les grandes écoles.",
+      en: "This result may seem unexpected given your grades. Strong academic profiles can also excel in international management and service leadership — especially via the grandes écoles pathway.",
+    };
+    return msgs[lang] || msgs.en;
+  }
+
+  const tabs = [
+    { key:"bestFit",   icon:"💡", label: lang==="ar"?"الأنسب شخصياً": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
+    { key:"balanced",  icon:"⚖️", label: lang==="ar"?"الخيار المتوازن": lang==="fr"?"Option équilibrée":"Best Balanced" },
+    { key:"ambitious", icon:"🚀", label: lang==="ar"?"الأكثر طموحاً": lang==="fr"?"Plus ambitieux":"Most Ambitious" },
+  ];
+
+  const current = views[active];
+  const displayName = getClusterDisplayName(current);
+  const surprise = getSurpriseText(current);
+  const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
+  const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
+  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
+
+  return (
+    <div style={{
+      background:"linear-gradient(135deg,rgba(59,130,246,0.06),rgba(232,161,36,0.04))",
+      border:"1px solid var(--border)", borderRadius:16, padding:"20px", marginBottom:20,
+    }}>
+      <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:14}}>
+        {lang==="ar"?"🔭 ثلاثة مناظير لمسارك": lang==="fr"?"🔭 Trois perspectives de carrière":"🔭 Three Career Perspectives"}
+      </div>
+
+      {/* Tab bar */}
+      <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+        {tabs.map(tab => (
+          <button key={tab.key}
+            onClick={()=>setActive(tab.key)}
+            style={{
+              flex:1, minWidth:100,
+              padding:"8px 10px",
+              borderRadius:10,
+              fontSize:11, fontWeight:700,
+              border: active===tab.key ? "1.5px solid var(--accent)" : "1.5px solid var(--border)",
+              background: active===tab.key ? "rgba(232,161,36,0.12)" : "var(--surface2)",
+              color: active===tab.key ? "var(--accent)" : "var(--muted)",
+              cursor:"pointer", transition:"all 0.2s",
+            }}>
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {current ? (
+        <div style={{animation:"fadeIn 0.25s ease"}}>
+          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:12}}>
+            <div style={{
+              fontSize:30,width:52,height:52,borderRadius:14,
+              background:"rgba(232,161,36,0.1)",border:"1.5px solid rgba(232,161,36,0.3)",
+              display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
+            }}>{current.icon}</div>
+            <div>
+              <div style={{fontSize:17,fontWeight:800,color:"var(--text)",lineHeight:1.2,marginBottom:3}}>
+                {displayName}
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <span dir="ltr" style={{fontSize:11,fontWeight:700,color:"var(--accent)",
+                  background:"rgba(232,161,36,0.1)",padding:"2px 8px",borderRadius:10}}>
+                  {matchPct}% {lang==="ar"?"توافق":lang==="fr"?"match":"match"}
+                </span>
+                <span dir="ltr" style={{fontSize:11,fontWeight:700,color:"#10b981",
+                  background:"rgba(16,185,129,0.08)",padding:"2px 8px",borderRadius:10}}>
+                  {traitPct}% {lang==="ar"?"انسجام شخصي":lang==="fr"?"affinité perso":"personal fit"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Prestige indicator */}
+          {cs.prestige != null && (
+            <div style={{display:"flex",gap:10,marginBottom:10,alignItems:"center"}}>
+              <div style={{fontSize:11,color:"var(--muted)",flexShrink:0,width:80}}>
+                {lang==="ar"?"قبول عائلي":lang==="fr"?"Acceptabilité":"Family ok"}
+              </div>
+              <div style={{flex:1,height:4,background:"var(--border)",borderRadius:2,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${Math.round(cs.parentAcceptance*100)}%`,
+                  background:"linear-gradient(90deg,#3b82f6,#10b981)",borderRadius:2}}/>
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",width:32,textAlign:"right"}} dir="ltr">
+                {Math.round(clamp(cs.parentAcceptance*100))}%
+              </div>
+            </div>
+          )}
+
+          {/* Surprise explanation */}
+          {surprise && (
+            <div style={{
+              marginTop:10,padding:"10px 14px",
+              background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.2)",
+              borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
+            }}>
+              {/* FIX: expectation framing */}
+              💬 {surprise}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",padding:"12px 0"}}>—</div>
+      )}
+    </div>
+  );
+}
+
 // src/massar/components/StepResults.jsx
 // ─────────────────────────────────────────────────────────────────
 // Goals wired here:
@@ -5078,7 +5393,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
 function StepResults({
   t, lang, dir, info, marks, whatIfDeltas, setWhatIfDeltas,
   effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
-  reality, setReality, restart,
+  reality, setReality, restart, onBack,
 }) {
   // ── FIX: prevent white screen on results ───────────────────────
   // Guard every critical input; if fundamentally missing, show fallback UI.
@@ -5089,23 +5404,32 @@ function StepResults({
   const safeReality = (reality && typeof reality === "object") ? reality : {};
   const safeConf    = typeof confidence === "number" ? confidence : 0;
 
-  // FIX: prevent white screen on results — critical data gate
+  // FIX: guard clause before results render
   if (safeRanked.length === 0) {
     return (
       <div style={{
-        padding:"32px 24px", textAlign:"center", maxWidth:480, margin:"0 auto",
-        background:"var(--surface)", borderRadius:16, border:"1px solid var(--border)",
+        padding:"40px 28px", textAlign:"center", maxWidth:520, margin:"0 auto",
+        background:"var(--surface)", borderRadius:20, border:"1px solid var(--border)",
+        boxShadow:"0 8px 32px rgba(0,0,0,0.4)",
       }}>
-        <div style={{fontSize:36, marginBottom:16}}>⚠️</div>
-        <p style={{fontSize:15, color:"var(--text)", marginBottom:8, fontWeight:700}}>
-          We couldn&apos;t build your full profile yet.
+        <div style={{fontSize:48, marginBottom:16}}>📋</div>
+        <h2 style={{fontSize:20, color:"var(--text)", marginBottom:10, fontWeight:700}}>
+          {lang==="ar"?"ملفك الشخصي غير مكتمل": lang==="fr"?"Profil incomplet":"Your profile is incomplete"}
+        </h2>
+        <p style={{fontSize:14, color:"var(--muted)", marginBottom:8, lineHeight:1.6}}>
+          {lang==="ar"?"لم نتمكن من بناء ملفك الكامل بعد. يُرجى إعادة الاختبار.":
+           lang==="fr"?"Nous n'avons pas pu construire votre profil complet. Veuillez recommencer le test.":
+           "We couldn't build your full profile yet. Please restart the test."}
         </p>
-        <p style={{fontSize:13, color:"var(--muted)", marginBottom:24}}>
-          Please restart the test.
-        </p>
-        <button className="btn btn-primary" onClick={restart}>
-          {t?.restart || "Restart"}
-        </button>
+        {/* FIX: guard clause — Back goes to previous step; Restart clears everything */}
+        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",marginTop:24}}>
+          <button className="btn btn-secondary" onClick={()=>onBack?.()}>
+            ← {lang==="ar"?"رجوع": lang==="fr"?"Retour":"Back"}
+          </button>
+          <button className="btn btn-danger" onClick={restart}>
+            {t?.restart || "Restart Test"}
+          </button>
+        </div>
       </div>
     );
   }
@@ -5138,6 +5462,40 @@ function StepResults({
 
   const topCluster = safeTop;  // FIX: results page null-safety
 
+  // FIX: normalized safeResults — single source of truth for all results blocks
+  const overallAvgVal = (() => {
+    const vals = Object.values(safeMarks).map(Number).filter(v=>!isNaN(v)&&v>0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  })();
+
+  const safeResults = {
+    archetype:     computeMassarType(safeTraits, safeReality),
+    topCareer:     safeTop,
+    topThree:      top3,
+    traits:        safeTraits,
+    confidence:    clamp(safeConf),
+    rarity:        getRarity(safeConf),
+    overallAvg:    clamp(overallAvgVal, 0, 20),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal),
+    strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
+    familyPressure: !!safeReality.familyPressure,
+    xpProgress:    0, // managed by XPProgressionTracker internally
+  };
+
+  // FIX: development debug logs
+  if (typeof window !== "undefined" && import.meta?.env?.DEV) {
+    console.groupCollapsed("[Massar] Results built");
+    console.log("safeResults:", safeResults);
+    console.log("archetype computed:", safeResults.archetype);
+    console.log("top clusters:", top3.map(c=>({id:c.id, final:c.scores.final?.toFixed(3)})));
+    console.log("three views:", {
+      bestFit: safeResults.threeViews.bestFit?.id,
+      balanced: safeResults.threeViews.balanced?.id,
+      ambitious: safeResults.threeViews.ambitious?.id,
+    });
+    console.groupEnd();
+  }
+
   return (
     <div className="results-wrap" dir={dir}>
 
@@ -5169,7 +5527,8 @@ function StepResults({
       {/* Confidence badge */}
       <div className="confidence-row">
         <span className={`confidence-badge ${confClass}`}>
-          {t.confidenceLabel}: {safeConf}%
+          {/* FIX: translation fallback + Arabic-first UX */}
+          {t?.confidenceLabel || "Alignment"}: <span dir="ltr">{safeConf}%</span>
         </span>
       </div>
 
@@ -5277,6 +5636,13 @@ function StepResults({
           t={t} lang={lang} marks={safeMarks} traits={safeTraits}
           rankedClusters={safeRanked} reality={safeReality} setReality={setReality}/>
       )}
+
+      {/* ── FIX: multi-view recommendation ── */}
+      <ThreeViewPanel
+        t={t} lang={lang}
+        views={safeResults.threeViews}
+        overallAvg={safeResults.overallAvg}
+      />
 
       {/* ── Phase 5: TOP 3 careers ── */}
       <div className="section-title">{t.topCareers}</div>
@@ -5411,16 +5777,16 @@ const css = `
 
   .results-wrap>*{animation:fadeIn 0.45s ease both;}
 
-  /* ── Phase 1: Rarity tiers ── */
+  /* ── Phase 1: Rarity tiers — FIX: unified Common/Rare/Epic/Legendary ── */
   .rarity-common{border-color:rgba(107,114,128,0.6)!important;}
-  .rarity-advanced{border-color:rgba(59,130,246,0.7)!important;box-shadow:0 0 18px rgba(59,130,246,0.12);}
-  .rarity-elite{border-color:rgba(232,161,36,0.8)!important;animation:glowPulse 4s ease-in-out infinite;}
-  .rarity-rare{border-color:rgba(168,85,247,0.8)!important;animation:rarePulse 4s ease-in-out infinite;}
+  .rarity-rare{border-color:rgba(34,211,238,0.7)!important;box-shadow:0 0 18px rgba(34,211,238,0.12);}
+  .rarity-epic{border-color:rgba(168,85,247,0.8)!important;animation:rarePulse 4s ease-in-out infinite;}
+  .rarity-legendary{border-color:rgba(232,161,36,0.9)!important;animation:glowPulse 4s ease-in-out infinite;}
   .rarity-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.5px;}
   .rarity-badge-common{background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3);}
-  .rarity-badge-advanced{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.4);}
-  .rarity-badge-elite{background:rgba(232,161,36,0.18);color:#fbbf24;border:1px solid rgba(232,161,36,0.5);}
-  .rarity-badge-rare{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.45);}
+  .rarity-badge-rare{background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.35);}
+  .rarity-badge-epic{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.45);}
+  .rarity-badge-legendary{background:rgba(232,161,36,0.18);color:#fbbf24;border:1px solid rgba(232,161,36,0.5);}
   .archetype-icon-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
   .archetype-icon-wrap .icon-inner{animation:iconPulse 4s ease-in-out infinite;}
 
@@ -5431,6 +5797,9 @@ const css = `
   .ability-card.dominant{border-color:rgba(232,161,36,0.6);box-shadow:0 0 14px rgba(232,161,36,0.12);}
   .ability-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin:10px 0 6px;}
   .ability-bar-fill{height:100%;border-radius:3px;animation:barGrow 0.9s ease both;}
+  /* FIX: Arabic-first UX — bar tracks are LTR so fills go left→right even inside RTL containers */
+  [dir="rtl"] .ability-bar-track,[dir="rtl"] .xp-progress-track,[dir="rtl"] .percentile-bar,
+  [dir="rtl"] .mark-bar,[dir="rtl"] .explain-bar{direction:ltr!important;}
   .ability-icon-wrap{width:22px;height:22px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;}
   .ability-icon-wrap svg{width:100%;height:100%;}
   .dominant-badge{position:absolute;top:6px;right:6px;font-size:8px;font-weight:800;letter-spacing:0.5px;padding:2px 6px;border-radius:10px;background:rgba(232,161,36,0.2);color:#fbbf24;border:1px solid rgba(232,161,36,0.4);max-width:85%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -5721,17 +6090,24 @@ export default function App() {
   };
 
   // ── Derived state (memos) ────────────────────────────────────────
-  const traits = useMemo(() => computeTraits(answers), [answers]);
+  const traits = useMemo(() => {
+    const result = computeTraits(answers);
+    // FIX: development debug logs
+    if (import.meta?.env?.DEV) console.log("[Massar] traits computed:", result);
+    return result;
+  }, [answers]);
 
   const effectiveMarks = useMemo(
     () => buildEffectiveMarks(marks, whatIfDeltas, SUBJECTS_BY_TRACK[info.bacTrack] || []),
     [marks, whatIfDeltas, info.bacTrack]
   );
 
-  const rankedClusters = useMemo(
-    () => computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality),
-    [info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality]
-  );
+  const rankedClusters = useMemo(() => {
+    const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality);
+    // FIX: development debug logs
+    if (import.meta?.env?.DEV) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
+    return result;
+  }, [info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
   const top3       = rankedClusters.slice(0, 3);
   const confidence = useMemo(() => computeConfidence(rankedClusters), [rankedClusters]);
@@ -5812,7 +6188,8 @@ export default function App() {
               marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
-              narrative={narrative} reality={reality} setReality={setReality} restart={restart}
+              narrative={narrative} reality={reality} setReality={setReality}
+              restart={restart} onBack={()=>setStep(5)}
             />
           </ResultsErrorBoundary>
         )}
