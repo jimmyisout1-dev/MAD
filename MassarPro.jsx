@@ -87,6 +87,10 @@ const TRANSLATIONS = {
       "إدارة مستشفيات (ENCG / FSJES)",
       "تقني طب الأسنان",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 كيف تبلغ هذا المسار؟",
+    ambitiousUnlockMed:   "لفتح الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة ≥ 14 والكيمياء ≥ 13.",
+    ambitiousUnlockGen:   "ارفع معدلك العام إلى {avg}+ وحسّن المواد الأساسية لزيادة حظوظك.",
     // Feature 1: Exam timing
     examTimingStep: "توقيت التقييم",
     examTimingQuestion: "هل أجريت هذا التقييم قبل أم بعد امتحان الباكالوريا؟",
@@ -454,6 +458,10 @@ const TRANSLATIONS = {
       "Administration hospitalière (ENCG / FSJES)",
       "Technicien·ne en prothèse dentaire",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 Comment débloquer cette voie ?",
+    ambitiousUnlockMed:   "Pour la médecine publique : amène ta moyenne à 16+ et Bio/Chimie aux seuils requis.",
+    ambitiousUnlockGen:   "Vise une moyenne de {avg}+ et améliore tes matières clés pour augmenter tes chances.",
     // Feature 1: Exam timing
     examTimingStep: "Calendrier Bac",
     examTimingQuestion: "Cette évaluation est-elle réalisée avant ou après votre examen du Bac ?",
@@ -813,6 +821,10 @@ const TRANSLATIONS = {
       "Hospital administration (ENCG / FSJES)",
       "Dental prosthetics technician",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 How to unlock this path?",
+    ambitiousUnlockMed:   "For public medicine: raise your average to 16+ and Bio/Chem to required thresholds.",
+    ambitiousUnlockGen:   "Aim for an average of {avg}+ and improve key subjects to strengthen your chances.",
     // Feature 1: Exam timing
     examTimingStep: "Exam Timing",
     examTimingQuestion: "Is this evaluation before or after your final Bac exam?",
@@ -1900,26 +1912,29 @@ const CULTURAL_CLUSTER_SCORES = {
 // Cultural rerank layer — Step 2
 // prestigeIndex: 0–1, how prestigious this path is perceived in Morocco
 // trackType: classification used for rerank filtering
+// PrestigeIndex — Moroccan cultural perception of prestige per cluster (0–1).
+// NOT a value judgement; reflects "parent/family acceptance & social standing" in Moroccan context.
+// Values are heuristics based on observable social patterns.
 const CLUSTER_PRESTIGE = {
-  it:              { prestigeIndex:0.87, trackType:"academic_prestige" },
+  health:          { prestigeIndex:1.00, trackType:"academic_prestige" },
   data:            { prestigeIndex:0.90, trackType:"academic_prestige" },
-  cyber:           { prestigeIndex:0.85, trackType:"academic_prestige" },
-  network:         { prestigeIndex:0.82, trackType:"academic_prestige" },
-  industrial:      { prestigeIndex:0.80, trackType:"academic_prestige" },
-  energy:          { prestigeIndex:0.82, trackType:"academic_prestige" },
-  civil:           { prestigeIndex:0.84, trackType:"academic_prestige" },
-  health:          { prestigeIndex:0.95, trackType:"academic_prestige" },
-  finance:         { prestigeIndex:0.80, trackType:"business_prestige" },
-  marketing:       { prestigeIndex:0.68, trackType:"business_prestige" },
-  logistics:       { prestigeIndex:0.65, trackType:"business_prestige" },
-  tourism:         { prestigeIndex:0.55, trackType:"service" },
-  edu_law:         { prestigeIndex:0.78, trackType:"business_prestige" },
-  arts_media:      { prestigeIndex:0.58, trackType:"creative" },
-  trades:          { prestigeIndex:0.50, trackType:"hands_on" },
-  automotive:      { prestigeIndex:0.48, trackType:"hands_on" },
-  sports:          { prestigeIndex:0.50, trackType:"hands_on" },
-  creative_digital:{ prestigeIndex:0.62, trackType:"creative" },
-  culinary_ops:    { prestigeIndex:0.45, trackType:"hands_on" },
+  it:              { prestigeIndex:0.85, trackType:"academic_prestige" },
+  cyber:           { prestigeIndex:0.80, trackType:"academic_prestige" },
+  finance:         { prestigeIndex:0.75, trackType:"business_prestige" },
+  industrial:      { prestigeIndex:0.75, trackType:"academic_prestige" },
+  civil:           { prestigeIndex:0.70, trackType:"academic_prestige" },
+  energy:          { prestigeIndex:0.68, trackType:"academic_prestige" },
+  network:         { prestigeIndex:0.65, trackType:"academic_prestige" },
+  marketing:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  logistics:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  edu_law:         { prestigeIndex:0.60, trackType:"business_prestige" },
+  creative_digital:{ prestigeIndex:0.50, trackType:"creative" },
+  arts_media:      { prestigeIndex:0.45, trackType:"creative" },
+  tourism:         { prestigeIndex:0.45, trackType:"service" },
+  trades:          { prestigeIndex:0.42, trackType:"hands_on" },
+  sports:          { prestigeIndex:0.40, trackType:"hands_on" },
+  automotive:      { prestigeIndex:0.40, trackType:"hands_on" },
+  culinary_ops:    { prestigeIndex:0.38, trackType:"hands_on" },
 };
 
 // Cultural rerank layer — Step 4
@@ -2026,29 +2041,116 @@ function getAcademicTier(overallAvg) {
 // bestFit    = highest trait+interest match (personal)
 // balanced   = highest final score (already top-1, academic/prestige blend)
 // ambitious  = highest prestige that's academically reachable (top-6)
-function computeThreeViews(rankedClusters, overallAvg) {
+// PrestigeIndex / Guardrails — computeThreeViews
+// Implements three distinct scoring perspectives as per spec:
+//   ambitiousScore  = 0.35*prestige + 0.25*market + 0.2*bac + 0.2*academic - penalties
+//   balancedScore   = existingFinalScore + 0.08*(prestige-0.5)
+//   personalScore   = 0.45*trait + 0.2*market + 0.2*academic + 0.15*bac - penalties
+// Guardrails: high-avg students can't have low-prestige cluster as #1 unless explicit passion.
+function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
-  // bestFit: best trait+interest score among top-6
-  const pool = rankedClusters.slice(0, Math.min(8, rankedClusters.length));
-  const bestFit = pool.reduce((best, c) => {
-    const fit = (c.scores.trait || 0) * 0.55 + (c.scores.interest || 0) * 0.45;
-    const bestScore = best ? (best.scores.trait||0)*0.55+(best.scores.interest||0)*0.45 : -1;
-    return fit > bestScore ? c : best;
-  }, null);
+  const avg           = clamp(Number(overallAvg) || 0, 0, 20);
+  const safeInfo      = (info && typeof info === "object") ? info : {};
+  const goalMode      = safeInfo.goalMode || "unsure";
+  const privateBudget = !!safeInfo.privateBudget;
 
-  // balanced: overall top-1 final score (already sorted)
-  const balanced = rankedClusters[0] || null;
+  // Interests from reality — used for passion-mode exemption check
+  // (GoalMode "fit" = "Passion" in spec language)
+  const TOURISM_INTERESTS  = new Set(["i_people","i_helping","i_outdoors","i_content"]);
+  const SPORTS_INTERESTS   = new Set(["i_sports","i_leading","i_people","i_outdoors"]);
+  const ARTS_INTERESTS     = new Set(["i_content","i_gaming","i_alone","i_people"]);
 
-  // ambitious: highest prestige within academic reach (score.academic >= 0.35 or avg<10 allow all)
-  const reachThreshold = overallAvg >= 14 ? 0.5 : overallAvg >= 11 ? 0.35 : 0.0;
-  const ambitious = rankedClusters
-    .filter(c => (c.scores.academic || 0) >= reachThreshold)
-    .reduce((best, c) => {
-      const cs = CULTURAL_CLUSTER_SCORES[c.id] || { prestige: 0.5 };
-      const bs = best ? (CULTURAL_CLUSTER_SCORES[best.id] || { prestige: 0.5 }).prestige : -1;
-      return cs.prestige > bs ? c : best;
-    }, null);
+  // Low-prestige clusters that must not be #1 for high-avg non-passion students
+  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
+
+  function hasPassionExemption(clusterId) {
+    if (goalMode !== "fit") return false;
+    // "fit" = Passion in spec language. Also check relevant interests.
+    return true; // fit/passion mode always lifts the block
+  }
+
+  // Guardrails — Patch D
+  // Returns true if cluster can legitimately be #1 for this student
+  function passesGuardrail(cluster, thisScore, allScored) {
+    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
+    if (avg < 14.5) return true;
+    if (hasPassionExemption(cluster.id)) return true;
+    // Check: is this score dominant (exceeds next best by >=0.12)?
+    const sorted = [...allScored].sort((a,b)=>b.s-a.s);
+    const rank1 = sorted[0];
+    const rank2 = sorted[1];
+    if (rank1?.c?.id === cluster.id && rank2) {
+      return (thisScore - rank2.s) >= 0.12;
+    }
+    return false;
+  }
+
+  // Pull best candidate from scored array, applying guardrail
+  function pickBest(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    for (const item of sorted) {
+      if (passesGuardrail(item.c, item.s, scored)) return item.c;
+    }
+    return sorted[0]?.c || null; // fallback if all blocked
+  }
+
+  // ── C: ambitious scoring ──────────────────────────────────────
+  const ambitiousScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const penalty = (() => {
+      let p = 0;
+      // Eligibility: notEligiblePublic and no private budget → cap enforced separately
+      if (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") {
+        p += 0.08;
+      }
+      // Avg gap heuristic (labelled as such): if avg < cluster minAvg by >2, reduce
+      const cc = CLUSTER_CONSTRAINTS[c.id];
+      if (cc && cc.minAvg && avg < cc.minAvg - 2) {
+        p += 0.08;
+      }
+      return p;
+    })();
+    let s = 0.35*cp.prestigeIndex + 0.25*(c.scores.market||0) + 0.2*(c.scores.bac||0) + 0.2*(c.scores.academic||0) - penalty;
+    // Eligibility realism guard: notEligiblePublic with no private budget → cap at 0.65
+    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
+      s = Math.min(s, 0.65);
+    }
+    s = Math.min(1, Math.max(0, s));
+    return { c, s };
+  });
+  const ambitious = pickBest(ambitiousScored);
+
+  // ── C: balanced scoring ───────────────────────────────────────
+  const balancedScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const s = Math.min(1, Math.max(0, (c.scores.final||0) + 0.08*(cp.prestigeIndex - 0.5)));
+    return { c, s };
+  });
+  const balanced = pickBest(balancedScored);
+
+  // ── C: personal fit scoring ───────────────────────────────────
+  const personalScored = rankedClusters.map(c => {
+    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
+    const s = Math.min(1, Math.max(0,
+      0.45*(c.scores.trait||0) + 0.2*(c.scores.market||0) + 0.2*(c.scores.academic||0) + 0.15*(c.scores.bac||0) - penalty
+    ));
+    return { c, s };
+  });
+  // bestFit: guardrail still applies for very high avg — but less strict (0.08 gap)
+  function pickBestFit(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    if (avg < 14.5) return sorted[0]?.c || null;
+    for (const item of sorted) {
+      if (!LOW_PRESTIGE_BLOCKED.has(item.c.id)) return item.c;
+      if (hasPassionExemption(item.c.id)) return item.c;
+      // dominance check: 0.08 gap (more lenient for personal fit)
+      const rank2 = sorted.find(x => x.c.id !== item.c.id);
+      if (rank2 && (item.s - rank2.s) >= 0.08) return item.c;
+    }
+    return sorted[0]?.c || null;
+  }
+  const bestFit = pickBestFit(personalScored);
 
   return { bestFit, balanced, ambitious };
 }
@@ -2563,41 +2665,63 @@ const TRAIT_LABELS = {
   en: { analytical:"Analytical thinking", social:"Social skills", structure:"Organization", creativity:"Creativity", risk:"Risk tolerance", leadership:"Leadership" },
 };
 
-function generateNarrative(top3, traits, bacTrack, lang, reality = {}) {
+// Narrative fix — subject-calibrated wording. Never overclaims.
+// strong: ≥15, solid: 13–14.9, developing: <13.
+// Uses best 1–2 subjects by mark, not generic strings.
+function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effectiveMarks = {}) {
   if (!top3?.length) return "";
   const t          = TRANSLATIONS[lang];
   const topCluster = top3[0];
-  // FIX: null safe rendering — guard missing cluster translation
   const name       = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
-  // FIX: null safe rendering — guard empty traits
   const safeTr     = (traits && typeof traits === "object") ? traits : {};
-  const topTrait   = Object.entries(safeTr).sort((a, b) => b[1] - a[1])[0]?.[0] || "analytical";
-  const tl         = TRAIT_LABELS[lang] || TRAIT_LABELS.en;
 
   const identityType = reality.identityType || "unsure";
   const priority     = reality.priority     || "stability";
-  const strengths    = reality.strengths    || [];
-  const t_pri = t.realityPriorityOptions?.[priority]?.label || priority;
-  const t_str = strengths.slice(0,2).map(k => t.realityStrengths?.[k] || k).join(", ");
-  const topStrength  = t_str || tl[topTrait] || "";
+  const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
-  // FIX: Arabic-first UX — short, natural, encouraging, modern Arabic tone
-  // "unsure" path leads with what the profile shows — zero doubt language
-  if (identityType === "unsure") {
-    return {
-      ar: `ملفك يكشف قوة حقيقية في <strong>${topStrength}</strong>. هذا يضعك في خط مباشر مع <strong>${name}</strong>. ابدأ بخطوة صغيرة: مشروع، تجربة، أو لقاء مع متخصص. النتيجة بوصلة — وليست حكماً.`,
-      fr: `Ton profil révèle une vraie force en <strong>${topStrength}</strong>. Le domaine <strong>${name}</strong> correspond bien à ta façon de penser. C'est une direction à explorer — pas une décision définitive.`,
-      en: `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think and what you enjoy. This is a direction to explore — not a final answer.`,
-    }[lang] || `Your profile shows real strength in <strong>${topStrength}</strong>. <strong>${name}</strong> aligns well with how you think.`;
+  // Narrative fix — pick best 1–2 subjects by mark and calibrate wording
+  const trackSubjects = SUBJECTS_BY_TRACK[bacTrack] || [];
+  const SUBJ_LABELS   = SUBJECT_LABELS || {};
+  const markedSubjs   = trackSubjects
+    .map(s => ({ s, v: Number(effectiveMarks[s]) || 0 }))
+    .filter(x => x.v > 0)
+    .sort((a,b) => b.v - a.v);
+
+  function strengthWord(v) {
+    if (v >= 15)   return { ar:"متميز", fr:"excellent", en:"strong" };
+    if (v >= 13)   return { ar:"جيد", fr:"solide", en:"solid" };
+    return           { ar:"في طور التطور", fr:"en progression", en:"developing" };
   }
 
-  // FIX: Arabic-first UX — standard path: concise, empowering, no filler
-  const narratives = {
-    ar: `قوتك في <strong>${topStrength}</strong> تجعل <strong>${name}</strong> الخيار الأقرب لملفك. أولويتك — <strong>${t_pri}</strong> — تتوافق مع هذا الاتجاه. هذه البوصلة، لا القيد.`,
-    fr: `Tes forces en <strong>${topStrength}</strong> pointent vers <strong>${name}</strong>. Ta priorité <strong>${t_pri}</strong> s'aligne avec ce cap. C'est une direction, pas un verdict.`,
-    en: `Your strengths in <strong>${topStrength}</strong> point toward <strong>${name}</strong> — the best match for your full profile. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
-  };
-  return narratives[lang] || narratives.en;
+  const top2Subjs = markedSubjs.slice(0,2).map(({s,v}) => {
+    const label = SUBJ_LABELS[s]?.[lang] || s;
+    const word  = strengthWord(v)[lang];
+    return `${label} (${word})`;
+  });
+
+  // Fallback to reality.strengths if no marks available
+  const strengthsFromReality = (reality.strengths || [])
+    .slice(0,2).map(k => t.realityStrengths?.[k] || k);
+
+  const subjectDesc = top2Subjs.length ? top2Subjs.join(", ") : strengthsFromReality.join(", ");
+  const hasAnySubject = subjectDesc.length > 0;
+
+  // Narrative fix — unsure path: encouraging + guiding, not "you are not sure yet"
+  if (identityType === "unsure") {
+    const dir2 = top3.slice(0,2).map(c => t[CLUSTER_KEY_MAP[c.id]] || c.id).join(lang==="ar"?" و":" & ");
+    return {
+      ar: `ملفك يشير إلى ${hasAnySubject ? `مستوى ${subjectDesc}` : "شخصية متعددة المواهب"}. ما زلت في مرحلة الاستكشاف — وهذا صحيح تماماً. بناءً على ملفك، جرّب هذين الاتجاهين هذا الشهر: <strong>${dir2}</strong>.`,
+      fr: `Ton profil révèle ${hasAnySubject ? `un niveau ${subjectDesc}` : "une personnalité polyvalente"}. Tu explores encore — c'est une bonne chose. D'après ton profil, deux directions à tester ce mois-ci : <strong>${dir2}</strong>.`,
+      en: `Your profile shows ${hasAnySubject ? subjectDesc : "a versatile personality"}. You're still exploring — that's perfectly fine. Based on your profile, here are 2 directions to try this month: <strong>${dir2}</strong>.`,
+    }[lang] || "";
+  }
+
+  // Standard path: subject-calibrated, short, credible
+  return {
+    ar: `${hasAnySubject ? `مستواك في ${subjectDesc} يضعك` : "ملفك يضعك"} على مسار <strong>${name}</strong> كأقرب توافق. أولويتك في <strong>${t_pri}</strong> تُعزز هذا الاتجاه.`,
+    fr: `${hasAnySubject ? `Ton niveau en ${subjectDesc} t'oriente` : "Ton profil t'oriente"} vers <strong>${name}</strong> comme meilleure correspondance. Ta priorité <strong>${t_pri}</strong> renforce ce cap.`,
+    en: `${hasAnySubject ? `Your ${subjectDesc} level points toward` : "Your profile points toward"} <strong>${name}</strong> as the best match. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
+  }[lang] || "";
 }
 
 
@@ -5857,6 +5981,28 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
               💬 {surprise}
             </div>
           )}
+
+          {/* Guardrails / Narrative fix — "How to unlock" shown on ambitious tab when not yet eligible */}
+          {active === "ambitious" && current && (() => {
+            const cc = CLUSTER_CONSTRAINTS[current.id];
+            const notEligible = current.eligibilityTag === "notEligiblePublic" || current.eligibilityTag === "privateOnly";
+            if (!notEligible) return null;
+            const isMed = current.id === "health";
+            const targetAvg = cc?.minAvg ? Math.ceil(cc.minAvg + 0.5) : Math.ceil((overallAvg || 0) + 1.5);
+            const rawMsg = isMed
+              ? (t.ambitiousUnlockMed || "🔓 To unlock public medicine: raise average to 16+ and Bio/Chem thresholds.")
+              : (t.ambitiousUnlockGen || "🔓 Aim for {avg}+ average to strengthen your chances.").replace("{avg}", targetAvg);
+            return (
+              <div style={{
+                marginTop:10, padding:"10px 14px",
+                background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.22)",
+                borderRadius:10, fontSize:12, color:"var(--text)", lineHeight:1.6,
+              }}>
+                <strong style={{color:"#6366f1"}}>{t.ambitiousUnlockTitle || "🔓 How to unlock this path?"}</strong>
+                <div style={{marginTop:4}}>{rawMsg}</div>
+              </div>
+            );
+          })()}
         </div>
       ) : (
         <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",padding:"12px 0"}}>—</div>
@@ -5964,7 +6110,7 @@ function StepResults({
     confidence:    clamp(safeConf),
     rarity:        getRarity(safeConf),
     overallAvg:    clamp(overallAvgVal, 0, 20),
-    threeViews:    computeThreeViews(safeRanked, overallAvgVal),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure: !!safeReality.familyPressure,
     xpProgress:    0, // managed by XPProgressionTracker internally
@@ -6648,8 +6794,9 @@ export default function App() {
   // Narrative: useMemo so it updates live when sliders change
   const narrative = useMemo(() => {
     if (step !== 6 || !top3.length) return null;
-    return generateNarrative(top3, traits, info.bacTrack, lang, reality);
-  }, [top3, traits, info.bacTrack, lang, step, reality]); // eslint-disable-line
+    // Narrative fix — pass effectiveMarks for subject-calibrated wording
+    return generateNarrative(top3, traits, info.bacTrack, lang, reality, effectiveMarks);
+  }, [top3, traits, info.bacTrack, lang, step, reality, effectiveMarks]); // eslint-disable-line
 
   // When bac track changes, clear marks (different subject set)
   const handleSetInfo = (updater) => {
