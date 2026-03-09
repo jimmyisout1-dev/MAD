@@ -116,6 +116,14 @@ const TRANSLATIONS = {
     intlDifferenceTitle: "الفرق عن المنظومة المغربية",
     intlDifferenceText: "الانتقاء التنافسي في المغرب عبر المسابقات. في الخارج: معظم الجامعات تعتمد على ملف الطالب وبيان الأغراض. الشهادات الأجنبية تتطلب مسطرة معادلة عند العودة.",
     // Family pressure
+    // Cultural sensitivity patch (Tier + Goal) — study goal selector
+    studyGoalLabel: "ما هدفك من الدراسة؟",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"أفضل مسار عام / هيبة أكاديمية" },
+      balanced: { icon:"⚖️", label:"التوافق الشخصي + الجهد الواقعي" },
+      handsOn:  { icon:"🔧", label:"عمل يدوي / دخول سريع لسوق الشغل" },
+    },
+    practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
     familyPressureLabel: "هل تواجه ضغطاً عائلياً نحو تخصص معين؟",
     familyPressureTitle: "💬 كلمة صريحة بشأن الضغط العائلي",
     familyPressureText: "من الطبيعي أن تحمل عائلتك آمالاً كبيرة. لكن مسيرة مهنية موفقة تبنى على مزيج من الميول الحقيقية، والواقع الأكاديمي، وظروف سوق الشغل.",
@@ -703,6 +711,14 @@ const TRANSLATIONS = {
       impact:{ icon:"🌍", label:"Impact" },
       flexibility:{ icon:"⚖️", label:"Équilibre vie pro/perso" },
     },
+    // Cultural sensitivity patch (Tier + Goal)
+    studyGoalLabel: "Quel est ton objectif d'études ?",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"Meilleure voie publique / prestige académique" },
+      balanced: { icon:"⚖️", label:"Meilleur équilibre profil + effort réaliste" },
+      handsOn:  { icon:"🔧", label:"Formation pratique / emploi rapide" },
+    },
+    practicalFastTrack: "⚡ Option insertion rapide — idéal si tu préfères travailler avant l'université",
   },
 
   en: {
@@ -1041,6 +1057,14 @@ const TRANSLATIONS = {
       impact:{ icon:"🌍", label:"Impact" },
       flexibility:{ icon:"⚖️", label:"Work-life balance" },
     },
+    // Cultural sensitivity patch (Tier + Goal)
+    studyGoalLabel: "What is your study goal?",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"Best public / prestigious academic route" },
+      balanced: { icon:"⚖️", label:"Best personal fit + realistic effort" },
+      handsOn:  { icon:"🔧", label:"Hands-on / fast job entry" },
+    },
+    practicalFastTrack: "⚡ Fast-track option — ideal if you prefer job entry before university",
   },
 };
 
@@ -1876,6 +1900,17 @@ function clamp(val, min = 0, max = 100) {
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
 
+// Cultural sensitivity patch (Tier + Goal) — academic tier from overallAvg
+// HIGH ≥14.5 → public selective/grande école first
+// MID  ≥12   → university first
+// LOW  <12   → practical can be default
+function getAcademicTier(overallAvg) {
+  const avg = Number(overallAvg) || 0;
+  if (avg >= 14.5) return "HIGH";
+  if (avg >= 12)   return "MID";
+  return "LOW";
+}
+
 // FIX: multi-view recommendation
 // Returns { bestFit, balanced, ambitious } from ranked clusters.
 // bestFit    = highest trait+interest match (personal)
@@ -2191,6 +2226,28 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     // Priority "prestige" users get a stronger weight
     const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
 
+    // Cultural sensitivity patch (Tier + Goal) — penalty for practical-only clusters shown to high-avg students
+    // who did NOT choose handsOn goal. Keeps OFPPT/ISTA from dominating top slots for tier=HIGH.
+    const goal = reality.goal || "prestige";
+    const academicTier = getAcademicTier(overallAvg);
+    let goalTierPenalty = 0;
+    if (academicTier === "HIGH" && goal !== "handsOn") {
+      const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
+      const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
+      const hasPublicRoute = hasGrandeEcole || hasUniversity;
+      if (!hasPublicRoute) {
+        // Cluster has no university/grande-école pathway → penalise for high-avg non-handsOn students
+        goalTierPenalty = 0.15;
+      } else if (PRACTICAL_CLUSTERS.has(cluster.id) && !hasGrandeEcole) {
+        // Vocational-leaning cluster with university only — modest penalty
+        goalTierPenalty = 0.08;
+      }
+    } else if (academicTier === "MID" && goal === "prestige" && PRACTICAL_CLUSTERS.has(cluster.id)) {
+      // Mid-tier prestige students: gentle nudge away from purely vocational top slots
+      const hasPublicRoute = !!(cluster.pathways?.grandeEcole?.schools?.length || cluster.pathways?.university?.schools?.length);
+      if (!hasPublicRoute) goalTierPenalty = 0.06;
+    }
+
     const finalScore = Math.min(1, Math.max(0,
       SCORING_WEIGHTS.bac       * bacScore
       + SCORING_WEIGHTS.academic  * academicScore
@@ -2202,6 +2259,7 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       + SCORING_WEIGHTS.priority  * priorityScore
       + mobilityBoost + styleMod + snBoost - penalty
       + academicUtilMod + prestigeMod
+      - goalTierPenalty  // Cultural sensitivity patch (Tier + Goal)
     ));
 
     return {
@@ -2415,8 +2473,32 @@ function MedicineEligibilityPanel({ cluster, t }) {
   );
 }
 
-function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
-  const [pathwayTab, setPathwayTab] = useState("university");
+function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
+  // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
+  const academicTier = getAcademicTier(overallAvg);
+  const effectiveGoal = goal || "prestige";
+
+  function pickDefaultTab() {
+    if (effectiveGoal === "handsOn") return "practical";
+    const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
+    const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
+    if (academicTier === "HIGH") {
+      return hasGrandeEcole ? "grandeEcole" : hasUniversity ? "university" : "practical";
+    }
+    if (academicTier === "MID") {
+      return hasUniversity ? "university" : hasGrandeEcole ? "grandeEcole" : "practical";
+    }
+    // LOW tier → practical first if available, else university
+    return cluster.pathways?.practical?.schools?.length ? "practical" : hasUniversity ? "university" : "grandeEcole";
+  }
+
+  const [pathwayTab, setPathwayTab] = useState(pickDefaultTab);
+
+  // Reset default tab if tier/goal/cluster changes (e.g., user goes back and changes goal)
+  useEffect(() => {
+    setPathwayTab(pickDefaultTab());
+  }, [cluster.id, effectiveGoal, academicTier]); // eslint-disable-line
+
   const clusterName = t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
 
   const tabLabels = {
@@ -2429,6 +2511,11 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
   const schools  = pathway?.schools  || [];
   const duration = pathway?.duration || "";
   const hasPW    = schools.length > 0 || !!duration;
+
+  // Cultural sensitivity patch (Tier + Goal) — flag when practical shown to high-tier prestige student
+  const showFastTrackNote = pathwayTab === "practical"
+    && academicTier === "HIGH"
+    && effectiveGoal !== "handsOn";
 
   const whyText = lang==="ar"
     ? `هذا المسار يتوافق مع شعبة ${bacTrack} ومستواك في المواد الأساسية`
@@ -2491,6 +2578,17 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
           </button>
         ))}
       </div>
+
+      {/* Cultural sensitivity patch (Tier + Goal) — reframe practical for high-avg students */}
+      {showFastTrackNote && (
+        <div style={{
+          marginBottom:8, padding:"7px 12px",
+          background:"rgba(59,130,246,0.07)", borderRadius:8,
+          border:"1px solid rgba(59,130,246,0.2)", fontSize:12, color:"var(--accent2)",
+        }}>
+          {t.practicalFastTrack || "⚡ Fast-track option — ideal if you prefer job entry before university"}
+        </div>
+      )}
 
       {/* Pathway content — updates on every tab click */}
       <div className="pathway-content">
@@ -2863,6 +2961,32 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
               {l.label}
             </button>
           ))}
+        </div>
+      </div>
+
+      {/* Cultural sensitivity patch (Tier + Goal) — study goal selector */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.studyGoalLabel}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","balanced","handsOn"].map(key=>{
+            const opt = t.studyGoalOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goal || "prestige") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goal:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
+                  background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
+                  color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -5647,7 +5771,8 @@ function StepResults({
       {/* ── Phase 5: TOP 3 careers ── */}
       <div className="section-title">{t.topCareers}</div>
       {top3.map((c,i)=>(
-        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}/>
+        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}
+          goal={safeInfo.goal || "prestige"} overallAvg={safeResults.overallAvg}/>
       ))}
 
       {/* ── Phase 9: Alternative Path — collapsed ── */}
@@ -6026,6 +6151,7 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
+  goal: "prestige",  // Cultural sensitivity patch (Tier + Goal)
 };
 
 const DEFAULT_REALITY = {
@@ -6103,11 +6229,13 @@ export default function App() {
   );
 
   const rankedClusters = useMemo(() => {
-    const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality);
+    // Cultural sensitivity patch (Tier + Goal) — inject goal into reality so scorer can read it
+    const realityWithGoal = { ...reality, goal: info.goal || "prestige" };
+    const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
     // FIX: development debug logs
-    if (import.meta?.env?.DEV) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
+    if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
     return result;
-  }, [info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
+  }, [info.bacTrack, info.goal, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
   const top3       = rankedClusters.slice(0, 3);
   const confidence = useMemo(() => computeConfidence(rankedClusters), [rankedClusters]);
@@ -6197,3 +6325,41 @@ export default function App() {
     </>
   );
 }
+
+/*
+ * ─────────────────────────────────────────────────────────────────
+ * Cultural sensitivity patch (Tier + Goal) — ACCEPTANCE TESTS
+ * Manual scenario verification. Run these scenarios through the app
+ * and confirm the described behaviour.
+ *
+ * TEST 1 — High average, prestige goal
+ *   Input:  bacTrack=SMA, overallAvg=15/20, goal="prestige"
+ *   Expected scoring: clusters with no public route (OFPPT-only) receive
+ *     a -0.15 penalty → they cannot rank in top-3 for this profile.
+ *   Expected ClusterCard: default tab opens on "grandeEcole" (if available)
+ *     else "university". Practical tab is present but NOT the default.
+ *   Expected label: if user manually clicks "Formation pratique", the
+ *     blue "fast-track option" note is shown.
+ *
+ * TEST 2 — High average, handsOn goal
+ *   Input:  bacTrack=SMA, overallAvg=15/20, goal="handsOn"
+ *   Expected scoring: goalTierPenalty = 0 (handsOn exempts all penalties).
+ *     Practical-route clusters rank naturally.
+ *   Expected ClusterCard: default tab opens on "practical".
+ *   Expected label: no fast-track note shown (student chose this intentionally).
+ *
+ * TEST 3 — Low average, prestige goal
+ *   Input:  bacTrack=ECO, overallAvg=10/20, goal="prestige"
+ *   Expected scoring: academicTier=LOW → no goalTierPenalty applied
+ *     (penalty only applies to HIGH/MID tiers). Practical clusters rank freely.
+ *   Expected ClusterCard: default tab = "practical" (LOW tier default).
+ *   Expected label: no fast-track note (tier is LOW, not HIGH).
+ *
+ * TEST 4 — SVT 15/20, high bio+chem, goal=prestige
+ *   Input:  bacTrack=SVT, biology≥14, chemistry≥13, overallAvg≈15, goal="prestige"
+ *   Expected: "health" cluster is not penalised (it has grandeEcole + university paths).
+ *     MedicineEligibilityPanel still shows eligibility correctly.
+ *     Default pathway tab = grandeEcole (Faculté de Médecine / private if not eligible).
+ *     Public vs private eligibility logic (CLUSTER_CONSTRAINTS) unchanged.
+ * ─────────────────────────────────────────────────────────────────
+ */
