@@ -124,6 +124,19 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"عمل يدوي / دخول سريع لسوق الشغل" },
     },
     practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "شنو الأهم دابا بالنسبة ليك؟",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"أفضل مدرسة / المسار الأرفع مستوى" },
+      fit:       { icon:"🎯", label:"الأنسب لشخصيتي" },
+      practical: { icon:"🔧", label:"دخل سريع / مهارة ملموسة" },
+      unsure:    { icon:"🤷", label:"مش عارف — أريني الاثنين" },
+    },
+    prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
+    prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
+    bridgeOptionLabel: "خيار جسر",
+    bestFitTab: "الأنسب لك",
+    prestigeTrackTab: "المسار الأرفع",
     familyPressureLabel: "هل تواجه ضغطاً عائلياً نحو تخصص معين؟",
     familyPressureTitle: "💬 كلمة صريحة بشأن الضغط العائلي",
     familyPressureText: "من الطبيعي أن تحمل عائلتك آمالاً كبيرة. لكن مسيرة مهنية موفقة تبنى على مزيج من الميول الحقيقية، والواقع الأكاديمي، وظروف سوق الشغل.",
@@ -719,6 +732,19 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"Formation pratique / emploi rapide" },
     },
     practicalFastTrack: "⚡ Option insertion rapide — idéal si tu préfères travailler avant l'université",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "Qu'est-ce qui compte le plus pour toi maintenant ?",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"Meilleure école / voie la plus prestigieuse" },
+      fit:       { icon:"🎯", label:"Ce qui correspond le mieux à ma personnalité" },
+      practical: { icon:"🔧", label:"Revenu rapide / compétences concrètes" },
+      unsure:    { icon:"🤷", label:"Je ne sais pas — montre-moi les deux" },
+    },
+    prestigeAdjacentTitle: "Si votre famille veut une voie plus 'prestigieuse'",
+    prestigeAdjacentDesc: "D'après votre profil, voici des parcours adjacents à fort prestige académique :",
+    bridgeOptionLabel: "Option passerelle",
+    bestFitTab: "Meilleur profil",
+    prestigeTrackTab: "Voie prestige",
   },
 
   en: {
@@ -1065,6 +1091,19 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"Hands-on / fast job entry" },
     },
     practicalFastTrack: "⚡ Fast-track option — ideal if you prefer job entry before university",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "What matters most right now?",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"Best school / most prestigious route" },
+      fit:       { icon:"🎯", label:"Best fit for my personality" },
+      practical: { icon:"🔧", label:"Fast income / hands-on skills" },
+      unsure:    { icon:"🤷", label:"Not sure — show me both" },
+    },
+    prestigeAdjacentTitle: "If your family wants a more 'prestigious' path",
+    prestigeAdjacentDesc: "Based on your profile, here are adjacent paths with stronger academic prestige:",
+    bridgeOptionLabel: "Bridge option",
+    bestFitTab: "Best Fit",
+    prestigeTrackTab: "Prestige Track",
   },
 };
 
@@ -1858,6 +1897,77 @@ const CULTURAL_CLUSTER_SCORES = {
   culinary_ops:    { prestige:0.40, parentAcceptance:0.36, academicUtil:0.32 },
 };
 
+// Cultural rerank layer — Step 2
+// prestigeIndex: 0–1, how prestigious this path is perceived in Morocco
+// trackType: classification used for rerank filtering
+const CLUSTER_PRESTIGE = {
+  it:              { prestigeIndex:0.87, trackType:"academic_prestige" },
+  data:            { prestigeIndex:0.90, trackType:"academic_prestige" },
+  cyber:           { prestigeIndex:0.85, trackType:"academic_prestige" },
+  network:         { prestigeIndex:0.82, trackType:"academic_prestige" },
+  industrial:      { prestigeIndex:0.80, trackType:"academic_prestige" },
+  energy:          { prestigeIndex:0.82, trackType:"academic_prestige" },
+  civil:           { prestigeIndex:0.84, trackType:"academic_prestige" },
+  health:          { prestigeIndex:0.95, trackType:"academic_prestige" },
+  finance:         { prestigeIndex:0.80, trackType:"business_prestige" },
+  marketing:       { prestigeIndex:0.68, trackType:"business_prestige" },
+  logistics:       { prestigeIndex:0.65, trackType:"business_prestige" },
+  tourism:         { prestigeIndex:0.55, trackType:"service" },
+  edu_law:         { prestigeIndex:0.78, trackType:"business_prestige" },
+  arts_media:      { prestigeIndex:0.58, trackType:"creative" },
+  trades:          { prestigeIndex:0.50, trackType:"hands_on" },
+  automotive:      { prestigeIndex:0.48, trackType:"hands_on" },
+  sports:          { prestigeIndex:0.50, trackType:"hands_on" },
+  creative_digital:{ prestigeIndex:0.62, trackType:"creative" },
+  culinary_ops:    { prestigeIndex:0.45, trackType:"hands_on" },
+};
+
+// Cultural rerank layer — Step 4
+// Hardcoded adjacent prestigious paths per low-prestige cluster id.
+// Used when a low-prestige cluster tops Best Fit for a high-avg prestige/unsure student.
+const PRESTIGE_ADJACENT_PATHS = {
+  sports: {
+    ar: ["إدارة الرياضة (FSJES/ENCG)", "الفيزيوتيراپي وإعادة التأهيل (IFCS)", "شهادات التدريب والأداء البشري"],
+    fr: ["Management du Sport (FSJES/ENCG)", "Kinésithérapie & rééducation (IFCS)", "Certifications coaching & performance humaine"],
+    en: ["Sport Management (FSJES/ENCG)", "Physiotherapy & Rehabilitation (IFCS)", "Coaching & Human Performance certifications"],
+  },
+  tourism: {
+    ar: ["ENCG – تدبير المقاولات", "إدارة الضيافة (grandes écoles privées)", "تسويق السياحة وإدارة الأحداث"],
+    fr: ["ENCG – Gestion d'entreprise", "Management Hôtelier (grandes écoles privées)", "Marketing touristique & management d'événements"],
+    en: ["ENCG – Business Management", "Hospitality Management (private grandes écoles)", "Tourism Marketing & Event Management"],
+  },
+  arts_media: {
+    ar: ["التسويق والاتصال (ENCG/ISCAE)", "تصميم تجربة المستخدم (UX)", "الإشهار والعلامة التجارية"],
+    fr: ["Marketing & Communication (ENCG/ISCAE)", "Design UX/UI", "Publicité & stratégie de marque"],
+    en: ["Marketing & Communication (ENCG/ISCAE)", "UX/UI Design", "Advertising & Brand Strategy"],
+  },
+  creative_digital: {
+    ar: ["التسويق الرقمي (ENCG)", "استراتيجية العلامة التجارية", "إدارة وسائل التواصل الاجتماعي"],
+    fr: ["Marketing digital (ENCG)", "Stratégie de marque", "Gestion des réseaux sociaux"],
+    en: ["Digital Marketing (ENCG)", "Brand Strategy", "Social Media Management"],
+  },
+  logistics: {
+    ar: ["ENCG – الاقتصاد والإدارة", "هندسة الأنظمة الصناعية (ENSA)", "إدارة سلسلة التوريد (Master)"],
+    fr: ["ENCG – Économie & gestion", "Génie industriel (ENSA)", "Supply Chain Management (Master)"],
+    en: ["ENCG – Economics & Management", "Industrial Engineering (ENSA)", "Supply Chain Management (Master)"],
+  },
+  culinary_ops: {
+    ar: ["إدارة الضيافة والمطاعم (ISIT/privé)", "علوم الأغذية (FST)", "إدارة الأعمال الغذائية"],
+    fr: ["Hôtellerie-Restauration Management (ISIT/privé)", "Sciences alimentaires (FST)", "Gestion d'entreprise agroalimentaire"],
+    en: ["Hospitality & Restaurant Management (ISIT/private)", "Food Science (FST)", "Agri-food Business Management"],
+  },
+  trades: {
+    ar: ["هندسة تقنيات صناعية (ENSA/FST)", "تقنيات الطاقة والكهرباء (OFPPT BTS ثم licence)", "هندسة ميكانيكية تطبيقية"],
+    fr: ["Génie technologique industriel (ENSA/FST)", "Électrotechnique & Énergie (BTS puis licence)", "Génie mécanique appliqué"],
+    en: ["Industrial Technology Engineering (ENSA/FST)", "Electrotechnics & Energy (BTS then degree)", "Applied Mechanical Engineering"],
+  },
+  automotive: {
+    ar: ["هندسة ميكاترونيك وأنظمة السيارات (ENSA)", "صناعة السيارات (ENSAM/FST)", "هندسة كهربائية للمركبات"],
+    fr: ["Génie mécatronique & automobile (ENSA)", "Génie automobile (ENSAM/FST)", "Génie électrique pour véhicules"],
+    en: ["Mechatronics & Automotive Engineering (ENSA)", "Automotive Engineering (ENSAM/FST)", "Automotive Electrical Engineering"],
+  },
+};
+
 // FIX: prestige-aware path naming
 // When a high-performing student (avg 14+) gets a lower-prestige path,
 // use the elevated display name instead of the base cluster label.
@@ -1956,6 +2066,149 @@ const SCORING_WEIGHTS = {
   priority:  0.05,   // Life priority modifier
 };
 // Sum check: 0.18+0.18+0.14+0.08+0.16+0.12+0.09+0.05 = 1.00
+
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 3
+// Pure post-processing on rankedClusters. Does NOT mutate engine output.
+// Returns { primary: Cluster[], secondary: Cluster[] | null }
+//   primary   = ordered clusters to show as "Top Careers"
+//   secondary = alternate prestige ranking (only set when goalMode="unsure")
+// ─────────────────────────────────────────────────────────────────
+function culturallyRerankClusters(rankedClusters, info, overallAvg) {
+  if (!rankedClusters || rankedClusters.length === 0) return { primary: [], secondary: null };
+
+  const goalMode  = info.goalMode  || "unsure";
+  const avg       = clamp(Number(overallAvg) || 0, 0, 20);
+  const isHighAvg = avg >= 14.5;
+
+  // Helper: get prestige metadata for a cluster
+  function getMeta(c) {
+    return CLUSTER_PRESTIGE[c.id] || { prestigeIndex: 0.5, trackType: "service" };
+  }
+
+  // 3B: Clusters that should not top the list for high-avg non-practical students
+  const LOW_PRESTIGE_TYPES = new Set(["hands_on"]);
+  const LOW_PRESTIGE_IDS   = new Set(["tourism", "sports", "arts_media", "culinary_ops"]);
+
+  function isLowPrestigeCluster(c) {
+    const m = getMeta(c);
+    return LOW_PRESTIGE_TYPES.has(m.trackType) || LOW_PRESTIGE_IDS.has(c.id) || m.prestigeIndex < 0.58;
+  }
+
+  // 3B: Hard gate — low-prestige clusters can only be in top-3 if score is dominant
+  function applyHardGate(sorted) {
+    if (!isHighAvg || goalMode === "practical") return sorted;
+    const topScore = sorted[0]?.scores?.final || 0;
+    const top3 = [];
+    const rest = [];
+    for (const c of sorted) {
+      if (isLowPrestigeCluster(c)) {
+        const meta = getMeta(c);
+        const isDominant = c.scores.final >= (topScore - 0.03) && meta.prestigeIndex >= 0.60;
+        if (isDominant && top3.length < 3) {
+          top3.push(c);
+        } else {
+          rest.push(c);
+        }
+      } else {
+        if (top3.length < 3) top3.push(c);
+        else rest.push(c);
+      }
+    }
+    return [...top3, ...rest];
+  }
+
+  // 3C: Prestige mode scoring
+  function prestigeSort(clusters) {
+    return [...clusters].sort((a, b) => {
+      const ma = getMeta(a); const mb = getMeta(b);
+      const sa = 0.55 * (a.scores.final || 0) + 0.30 * ma.prestigeIndex + 0.15 * (a.scores.academic || 0);
+      const sb = 0.55 * (b.scores.final || 0) + 0.30 * mb.prestigeIndex + 0.15 * (b.scores.academic || 0);
+      return sb - sa;
+    });
+  }
+
+  // 3E: Practical mode scoring
+  function practicalSort(clusters) {
+    return [...clusters].sort((a, b) => {
+      const hasPractA = !!(a.pathways?.practical?.schools?.length);
+      const hasPractB = !!(b.pathways?.practical?.schools?.length);
+      const sa = 0.70 * (a.scores.final || 0) + 0.30 * (hasPractA ? 1 : 0);
+      const sb = 0.70 * (b.scores.final || 0) + 0.30 * (hasPractB ? 1 : 0);
+      return sb - sa;
+    });
+  }
+
+  let primary;
+  let secondary = null;
+
+  if (goalMode === "prestige") {
+    // 3C: sort by prestige composite, then gate
+    primary = applyHardGate(prestigeSort(rankedClusters));
+  } else if (goalMode === "fit") {
+    // 3D: keep existing ranking, apply gate
+    primary = applyHardGate([...rankedClusters]);
+  } else if (goalMode === "practical") {
+    // 3E: practical boost, no gating
+    primary = practicalSort(rankedClusters);
+  } else {
+    // 3F: unsure — best fit (gated) + prestige track for secondary panel
+    primary   = applyHardGate([...rankedClusters]);
+    secondary = applyHardGate(prestigeSort(rankedClusters));
+  }
+
+  return { primary, secondary };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Sanity checks — Step 5
+// Dev-only. Runs once at load if on localhost.
+// No import.meta. No crashes if checks fail.
+// ─────────────────────────────────────────────────────────────────
+function runSanityChecks() {
+  try {
+    const LOW_IDS = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
+
+    // Build minimal synthetic clusters for testing
+    const makeSC = (id, finalScore, academicScore) => ({
+      id, scores: { final: finalScore, academic: academicScore },
+      pathways: {},
+    });
+
+    // Check 1: overallAvg=15, goalMode=prestige → top-3 must not contain tourism/sports
+    const synth = [
+      makeSC("it",      0.74, 0.82),
+      makeSC("finance", 0.71, 0.78),
+      makeSC("data",    0.70, 0.79),
+      makeSC("tourism", 0.68, 0.40),  // should NOT be in top-3
+      makeSC("sports",  0.65, 0.30),  // should NOT be in top-3
+    ];
+    const info1 = { goalMode: "prestige" };
+    const { primary: p1 } = culturallyRerankClusters(synth, info1, 15);
+    const top3ids1 = p1.slice(0,3).map(c=>c.id);
+    if (top3ids1.some(id => LOW_IDS.has(id))) {
+      console.warn("[Massar] Sanity check FAILED (1): high-avg prestige still shows low-prestige cluster in top-3:", top3ids1);
+    }
+
+    // Check 2: goalMode=practical → tourism/sports ARE allowed in top-3
+    const info2 = { goalMode: "practical" };
+    const { primary: p2 } = culturallyRerankClusters(synth, info2, 15);
+    const top3ids2 = p2.slice(0,3).map(c=>c.id);
+    if (!top3ids2.some(id => LOW_IDS.has(id))) {
+      console.warn("[Massar] Sanity check WARN (2): practical mode should allow hands-on clusters in top-3:", top3ids2);
+    }
+
+    console.log("[Massar] Sanity checks passed. Check1 top3:", top3ids1, "Check2 top3:", top3ids2);
+  } catch (e) {
+    console.warn("[Massar] Sanity check error:", e);
+  }
+}
+
+// Run sanity checks on localhost only (no import.meta)
+if (typeof window !== "undefined" && typeof window.location !== "undefined"
+    && window.location.hostname === "localhost") {
+  setTimeout(runSanityChecks, 1200);
+}
 
 // src/massar/utils/storage.js
 // ─────────────────────────────────────────────────────────────────
@@ -2473,6 +2726,90 @@ function MedicineEligibilityPanel({ cluster, t }) {
   );
 }
 
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 4
+// PrestigeAdjacentPanel: shown when top Best-Fit cluster is low-prestige
+// and user is in prestige or unsure goalMode.
+// Uses PRESTIGE_ADJACENT_PATHS hardcoded map.
+// ─────────────────────────────────────────────────────────────────
+function PrestigeAdjacentPanel({ topClusterId, lang, t }) {
+  const paths = PRESTIGE_ADJACENT_PATHS[topClusterId];
+  if (!paths) return null;
+  const items = paths[lang] || paths.fr || [];
+  if (!items.length) return null;
+
+  return (
+    <div style={{
+      margin:"0 0 20px 0", padding:"16px 18px",
+      background:"rgba(99,102,241,0.06)",
+      border:"1.5px solid rgba(99,102,241,0.20)",
+      borderRadius:14,
+    }}>
+      <div style={{fontWeight:700, fontSize:14, marginBottom:6, color:"#6366f1"}}>
+        🎓 {t.prestigeAdjacentTitle || "If your family wants a more prestigious path"}
+      </div>
+      <div style={{fontSize:12, color:"var(--muted)", marginBottom:10, lineHeight:1.5}}>
+        {t.prestigeAdjacentDesc || "Based on your profile, here are adjacent paths with stronger academic prestige:"}
+      </div>
+      <div style={{display:"flex", flexDirection:"column", gap:6}}>
+        {items.map((item, i) => (
+          <div key={i} style={{
+            display:"flex", alignItems:"center", gap:8,
+            padding:"7px 12px", borderRadius:8,
+            background:"rgba(99,102,241,0.04)",
+            border:"1px solid rgba(99,102,241,0.12)",
+            fontSize:13, color:"var(--text)",
+          }}>
+            <span style={{color:"#6366f1", fontWeight:700}}>
+              {t.bridgeOptionLabel || "Bridge"} {i+1}
+            </span>
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 3F
+// GoalModeDualView: shown when goalMode="unsure"
+// Two tabs: Best Fit (existing ranking) + Prestige Track (prestige-sorted)
+// ─────────────────────────────────────────────────────────────────
+function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, overallAvg }) {
+  const [activeTab, setActiveTab] = useState("fit");
+  if (!secondary || !secondary.length) return null;
+
+  const clusters = activeTab === "fit" ? primary : secondary;
+  const tabStyle = (key) => ({
+    padding:"8px 20px", borderRadius:20, border:"none",
+    cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:600,
+    transition:"all 0.2s",
+    background: activeTab===key ? "#6366f1" : "var(--surface2)",
+    color:       activeTab===key ? "#fff"    : "var(--muted)",
+  });
+
+  return (
+    <div style={{marginBottom:24}}>
+      {/* Tab switcher */}
+      <div style={{display:"flex", gap:8, marginBottom:18}}>
+        <button style={tabStyle("fit")}     onClick={()=>setActiveTab("fit")}>
+          {t.bestFitTab     || "Best Fit"}
+        </button>
+        <button style={tabStyle("prestige")} onClick={()=>setActiveTab("prestige")}>
+          {t.prestigeTrackTab || "Prestige Track"}
+        </button>
+      </div>
+      {/* Cluster cards for the active tab */}
+      {clusters.slice(0,3).map((c,i) => (
+        <ClusterCard key={c.id+activeTab} cluster={c} rank={i+1}
+          t={t} lang={lang} bacTrack={bacTrack}
+          goal={goal} overallAvg={overallAvg}/>
+      ))}
+    </div>
+  );
+}
+
 function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
   // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
   const academicTier = getAcademicTier(overallAvg);
@@ -2980,6 +3317,32 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
                   border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
                   background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
                   color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Goal mode input (Cultural rerank layer) — prestige/fit/practical/unsure */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.goalModeLabel}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","fit","practical","unsure"].map(key=>{
+            const opt = t.goalModeOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goalMode || "unsure") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goalMode:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"#6366f1":"var(--border)"}`,
+                  background:sel?"rgba(99,102,241,0.08)":"var(--surface2)",
+                  color:sel?"#6366f1":"var(--text)",
                   cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
                 }}>
                 <span style={{fontSize:20}}>{opt.icon}</span>
@@ -5518,6 +5881,7 @@ function StepResults({
   t, lang, dir, info, marks, whatIfDeltas, setWhatIfDeltas,
   effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
   reality, setReality, restart, onBack,
+  secondaryTop3, overallAvg,
 }) {
   // ── FIX: prevent white screen on results ───────────────────────
   // Guard every critical input; if fundamentally missing, show fallback UI.
@@ -5768,12 +6132,37 @@ function StepResults({
         overallAvg={safeResults.overallAvg}
       />
 
-      {/* ── Phase 5: TOP 3 careers ── */}
+      {/* ── Phase 5: TOP 3 careers — Cultural rerank layer ── */}
       <div className="section-title">{t.topCareers}</div>
-      {top3.map((c,i)=>(
-        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}
-          goal={safeInfo.goal || "prestige"} overallAvg={safeResults.overallAvg}/>
-      ))}
+
+      {/* Cultural rerank layer — 3F: unsure mode shows dual-view (Best Fit + Prestige Track) */}
+      {(safeInfo.goalMode === "unsure") && secondaryTop3 && secondaryTop3.length > 0 ? (
+        <GoalModeDualView
+          primary={top3}
+          secondary={secondaryTop3}
+          t={t} lang={lang} dir={dir}
+          bacTrack={safeInfo.bacTrack}
+          goal={safeInfo.goal || "prestige"}
+          overallAvg={overallAvg || safeResults.overallAvg}
+        />
+      ) : (
+        <>
+          {top3.map((c,i)=>(
+            <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}
+              goal={safeInfo.goal || "prestige"} overallAvg={overallAvg || safeResults.overallAvg}/>
+          ))}
+        </>
+      )}
+
+      {/* Cultural rerank layer — Step 4: Prestige adjacent suggestions */}
+      {top3.length > 0 && (safeInfo.goalMode === "prestige" || safeInfo.goalMode === "unsure") && (() => {
+        const topId = top3[0]?.id;
+        const topPrestige = CLUSTER_PRESTIGE[topId];
+        const isLowPrestige = topPrestige && (topPrestige.trackType === "hands_on" || topPrestige.prestigeIndex < 0.60);
+        return isLowPrestige ? (
+          <PrestigeAdjacentPanel topClusterId={topId} lang={lang} t={t}/>
+        ) : null;
+      })()}
 
       {/* ── Phase 9: Alternative Path — collapsed ── */}
       <CollapsibleSection
@@ -6151,7 +6540,8 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
-  goal: "prestige",  // Cultural sensitivity patch (Tier + Goal)
+  goal: "prestige",     // Cultural sensitivity patch (Tier + Goal)
+  goalMode: "unsure",   // Cultural rerank layer — prestige/fit/practical/unsure
 };
 
 const DEFAULT_REALITY = {
@@ -6237,7 +6627,18 @@ export default function App() {
     return result;
   }, [info.bacTrack, info.goal, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
-  const top3       = rankedClusters.slice(0, 3);
+  // Cultural rerank layer — apply post-processing for prestige/fit/practical/unsure
+  const overallAvgForRerank = useMemo(() => {
+    const vals = Object.values(effectiveMarks).map(Number).filter(v => !isNaN(v));
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  }, [effectiveMarks]);
+
+  const { primary: displayClusters, secondary: secondaryClusters } = useMemo(() => {
+    return culturallyRerankClusters(rankedClusters, info, overallAvgForRerank);
+  }, [rankedClusters, info, overallAvgForRerank]);
+
+  const top3       = displayClusters.slice(0, 3);
+  const secondaryTop3 = secondaryClusters ? secondaryClusters.slice(0, 3) : null;
   const confidence = useMemo(() => computeConfidence(rankedClusters), [rankedClusters]);
   const mixedSignals = useMemo(
     () => computeMixedSignals(rankedClusters, confidence),
@@ -6318,6 +6719,8 @@ export default function App() {
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
               narrative={narrative} reality={reality} setReality={setReality}
               restart={restart} onBack={()=>setStep(5)}
+              secondaryTop3={secondaryTop3}
+              overallAvg={overallAvgForRerank}
             />
           </ResultsErrorBoundary>
         )}
