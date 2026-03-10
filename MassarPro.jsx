@@ -142,6 +142,17 @@ const TRANSLATIONS = {
       mixed:    { icon:"🔀", label:"منفتح على الاثنين" },
       handsOn:  { icon:"🛠️", label:"تكوين تطبيقي / ميداني" },
     },
+    // FIX: interest signals to prevent random results
+    interestsLabel: "ما المجالات التي تستهويك؟ (اختر حتى 3)",
+    interestOptions: {
+      health:    { icon:"🏥", label:"الصحة / الطب" },
+      engineering: { icon:"⚙️", label:"الهندسة / التكنولوجيا" },
+      business:  { icon:"💼", label:"الأعمال / المالية" },
+      law:       { icon:"⚖️", label:"القانون / الوظيفة العامة" },
+      sports:    { icon:"🏃", label:"الرياضة / التدريب" },
+      design:    { icon:"🎨", label:"التصميم / الإعلام" },
+      notsure:   { icon:"🤷", label:"لست متأكداً بعد" },
+    },
     prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
     prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
     bridgeOptionLabel: "خيار جسر",
@@ -760,6 +771,17 @@ const TRANSLATIONS = {
       mixed:    { icon:"🔀", label:"Ouvert aux deux" },
       handsOn:  { icon:"🛠️", label:"Formation pratique / terrain" },
     },
+    // FIX: interest signals to prevent random results
+    interestsLabel: "Quels domaines t'attirent ? (jusqu'à 3)",
+    interestOptions: {
+      health:    { icon:"🏥", label:"Santé / Médecine" },
+      engineering: { icon:"⚙️", label:"Ingénierie / Tech" },
+      business:  { icon:"💼", label:"Business / Finance" },
+      law:       { icon:"⚖️", label:"Droit / Service public" },
+      sports:    { icon:"🏃", label:"Sport / Coaching" },
+      design:    { icon:"🎨", label:"Design / Médias" },
+      notsure:   { icon:"🤷", label:"Pas encore sûr(e)" },
+    },
     prestigeAdjacentTitle: "Si votre famille veut une voie plus 'prestigieuse'",
     prestigeAdjacentDesc: "D'après votre profil, voici des parcours adjacents à fort prestige académique :",
     bridgeOptionLabel: "Option passerelle",
@@ -1128,6 +1150,17 @@ const TRANSLATIONS = {
       academic: { icon:"📚", label:"Long studies / competitive entrance exams" },
       mixed:    { icon:"🔀", label:"Open to both" },
       handsOn:  { icon:"🛠️", label:"Hands-on / practical training" },
+    },
+    // FIX: interest signals to prevent random results
+    interestsLabel: "What fields attract you? (pick up to 3)",
+    interestOptions: {
+      health:    { icon:"🏥", label:"Health / Medical" },
+      engineering: { icon:"⚙️", label:"Engineering / Tech" },
+      business:  { icon:"💼", label:"Business / Finance" },
+      law:       { icon:"⚖️", label:"Law / Public Service" },
+      sports:    { icon:"🏃", label:"Sports / Coaching" },
+      design:    { icon:"🎨", label:"Design / Media" },
+      notsure:   { icon:"🤷", label:"Not sure yet" },
     },
     prestigeAdjacentTitle: "If your family wants a more 'prestigious' path",
     prestigeAdjacentDesc: "Based on your profile, here are adjacent paths with stronger academic prestige:",
@@ -1930,7 +1963,18 @@ const CULTURAL_CLUSTER_SCORES = {
 // Cultural rerank layer — Step 2
 // prestigeIndex: 0–1, how prestigious this path is perceived in Morocco
 // trackType: classification used for rerank filtering
-// PRESTIGE INDEX — Moroccan parent perception of prestige per cluster (0–1). Part 3.
+// FIX: interest signals to prevent random results
+// Maps user-selected interest domain IDs → cluster IDs they boost.
+// Used in computeThreeViews to apply +0.05 to score_fit, +0.03 to score_balanced.
+const CLUSTER_INTEREST_MAP = {
+  health:      ["health"],
+  engineering: ["industrial","civil","energy","network","it","cyber","data","automotive"],
+  business:    ["finance","marketing","logistics","edu_law"],
+  law:         ["edu_law"],
+  sports:      ["sports"],
+  design:      ["arts_media","creative_digital","tourism"],
+  notsure:     [], // no boost when "not sure"
+};
 // NOT a value judgement; reflects family acceptance and social standing in Moroccan context.
 const CLUSTER_PRESTIGE = {
   health:          { prestigeIndex:1.00, trackType:"academic_prestige" },
@@ -2065,12 +2109,16 @@ function tierIsLow(tier)  { return tier === "D"; }
 // bestFit    = highest trait+interest match (personal)
 // balanced   = highest final score (already top-1, academic/prestige blend)
 // ambitious  = highest prestige that's academically reachable (top-6)
-// PRESTIGE INDEX / ACADEMIC TIER / CULTURAL GUARDRAILS — computeThreeViews (Part 2 + 5)
-// Three scoring perspectives per spec:
-//   score_fit       = 0.45*trait + 0.25*academic + 0.15*market + 0.15*bac
-//   score_balanced  = 0.35*academic + 0.20*trait + 0.20*market + 0.15*bac + 0.10*prestigeIndex
-//   score_ambitious = 0.45*prestigeIndex + 0.30*academic + 0.15*market + 0.10*bac
-// Guardrails applied to balanced + ambitious only (never to fit).
+// FIX: personality-consistency guardrail / interest-based boost / selective-track gating for medicine
+// Three scoring perspectives:
+//   score_fit       = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
+//   score_balanced  = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
+//   score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
+// Guardrails:
+//   - Best Fit: traitScore < 0.55 → cannot be #1; traitScore < 0.45 → blocked from top-3 unless override
+//   - Medicine: in Fit requires traitScore ≥ 0.60 OR explicit health interest
+//   - Medicine: in Balanced, −0.12 penalty if public-ineligible and !privateBudget
+//   - Medicine: in Ambitious, not #1 if !privateBudget AND avg < 15.5
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
@@ -2079,14 +2127,27 @@ function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   const goalMode      = safeInfo.goalMode  || "prestige";
   const workStyle     = safeInfo.workStyle || "mixed";
   const privateBudget = !!safeInfo.privateBudget;
+  const userInterests = Array.isArray(safeInfo.interests) ? safeInfo.interests : [];
   const academicTier  = getAcademicTier(avg);
-
-  // CULTURAL GUARDRAILS (5.1) — applies to balanced + ambitious when Tier A/B + not handsOn
   const isHighTier    = tierIsHigh(academicTier);
   const isHandsOnMode = workStyle === "handsOn" || goalMode === "fast";
-  const LOW_PRESTIGE_THRESHOLD = 0.60; // Part 5.1
+  const LOW_PRESTIGE_THRESHOLD = 0.60;
 
-  // Part 5.1 prestige penalties — applied to balanced + ambitious only
+  // FIX: interest signals — derive boosted cluster ids from user's interest selections
+  const boostedClusterIds = new Set(
+    userInterests
+      .filter(id => id !== "notsure")
+      .flatMap(id => CLUSTER_INTEREST_MAP[id] || [])
+  );
+  const hasHealthInterest = userInterests.includes("health");
+
+  // FIX: interest-based boost — +0.05 fit, +0.03 balanced per matching cluster
+  function interestBoost(clusterId, forFit) {
+    if (userInterests.includes("notsure")) return 0;
+    return boostedClusterIds.has(clusterId) ? (forFit ? 0.05 : 0.03) : 0;
+  }
+
+  // CULTURAL GUARDRAILS — prestige penalties on balanced + ambitious only
   function presidePenalty(cp) {
     if (!isHighTier || isHandsOnMode) return 0;
     if ((goalMode === "prestige" || goalMode === "balanced") && cp.prestigeIndex < 0.50) return 0.20;
@@ -2094,85 +2155,99 @@ function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
     return 0;
   }
 
-  // Part 5.1 "overwhelming match" exemption for fit tab
-  function fitExempt(cluster, scored) {
-    if (!isHighTier) return true;
-    if (isHandsOnMode || goalMode === "fit") return true;
-    const sorted = [...scored].sort((a,b)=>b.s-a.s);
-    const top2 = sorted.slice(0,2);
-    if (top2.length < 2) return true;
-    const gap = (top2[0]?.s || 0) - (top2[1]?.s || 0);
-    return gap >= 0.15;
+  // FIX: personality-consistency guardrail
+  // Returns true if cluster is allowed at a given rank for Best Fit
+  function fitPersonalityOk(cluster, rank, scored) {
+    const ts = cluster.scores.trait || 0;
+    // FIX: selective-track gating for medicine
+    if (cluster.id === "health") {
+      if (ts < 0.60 && !hasHealthInterest) return false;
+    }
+    if (ts < 0.55 && rank === 0) return false; // cannot be #1
+    if (ts < 0.45) {
+      // blocked from top-3 unless avg >= 16.5 AND interest is present
+      if (avg < 16.5 || !boostedClusterIds.has(cluster.id)) return false;
+    }
+    return true;
   }
 
-  // Compute score_fit = 0.45*trait + 0.25*academic + 0.15*market + 0.15*bac
+  // Compute score_fit = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
   const fitScored = rankedClusters.map(c => ({
     c,
     s: Math.min(1, Math.max(0,
-      0.45*(c.scores.trait||0) + 0.25*(c.scores.academic||0)
-      + 0.15*(c.scores.market||0) + 0.15*(c.scores.bac||0)
+      0.55*(c.scores.trait||0) + 0.25*(c.scores.academic||0)
+      + 0.10*(c.scores.bac||0) + 0.10*(c.scores.market||0)
+      + interestBoost(c.id, true)
     )),
   }));
 
-  // Compute score_balanced = 0.35*academic + 0.20*trait + 0.20*market + 0.15*bac + 0.10*prestigeIndex
+  // Compute score_balanced = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
   const balancedScored = rankedClusters.map(c => {
     const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
     const pen = presidePenalty(cp);
+    // FIX: selective-track gating for medicine in Balanced
+    const medPenalty = (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
     return {
       c,
       s: Math.min(1, Math.max(0,
-        0.35*(c.scores.academic||0) + 0.20*(c.scores.trait||0)
-        + 0.20*(c.scores.market||0) + 0.15*(c.scores.bac||0)
-        + 0.10*cp.prestigeIndex - pen
+        0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0)
+        + 0.20*(c.scores.market||0) + 0.10*(c.scores.bac||0)
+        + 0.10*cp.prestigeIndex - pen - medPenalty
+        + interestBoost(c.id, false)
       )),
     };
   });
 
-  // Compute score_ambitious = 0.45*prestigeIndex + 0.30*academic + 0.15*market + 0.10*bac
+  // Compute score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
   const ambitiousScored = rankedClusters.map(c => {
     const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
     const pen = presidePenalty(cp);
-    // CULTURAL GUARDRAILS 5.3: eligibility cap for notEligiblePublic + no privateBudget
-    let s = 0.45*cp.prestigeIndex + 0.30*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.10*(c.scores.bac||0) - pen;
+    let s = 0.45*cp.prestigeIndex + 0.35*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0) - pen;
+    // CULTURAL GUARDRAILS: eligibility cap for health/public ineligible
     if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) s = Math.min(s, 0.65);
-    // Avg gap penalty heuristic
+    // Avg gap heuristic penalty
     const cc = CLUSTER_CONSTRAINTS[c.id];
     if (cc && cc.minAvg && avg < cc.minAvg - 2) s -= 0.08;
     return { c, s: Math.min(1, Math.max(0, s)) };
   });
 
-  // pickBest: iterate sorted, return first that passes guardrail or fallback to best
+  // pickBest for balanced + ambitious with optional prestige guardrail
   function pickBest(scored, applyGuardrail) {
-    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    const sorted = [...scored].sort((a,b) => b.s - a.s);
     if (!applyGuardrail) return sorted[0]?.c || null;
     for (const item of sorted) {
       const cp = CLUSTER_PRESTIGE[item.c.id] || { prestigeIndex:0.5 };
       if (cp.prestigeIndex >= LOW_PRESTIGE_THRESHOLD) return item.c;
     }
-    return sorted[0]?.c || null; // fallback if all low-prestige
+    return sorted[0]?.c || null;
   }
 
-  // score_fit guardrail: only block if not overwhelming match
-  const fitSorted = [...fitScored].sort((a,b)=>b.s-a.s);
-  const topFitCluster = fitSorted[0]?.c || null;
-  let bestFit;
-  if (topFitCluster) {
-    const cp = CLUSTER_PRESTIGE[topFitCluster.id] || { prestigeIndex:0.5 };
-    const lowP = cp.prestigeIndex < LOW_PRESTIGE_THRESHOLD;
-    if (!lowP || fitExempt(topFitCluster, fitScored)) {
-      bestFit = topFitCluster;
-    } else {
-      // Not exempt — try next non-low-prestige
-      bestFit = fitSorted.find(x => (CLUSTER_PRESTIGE[x.c.id]?.prestigeIndex||0.5) >= LOW_PRESTIGE_THRESHOLD)?.c || topFitCluster;
+  // FIX: personality-consistency guardrail — pick best fit cluster respecting trait rules
+  const fitSorted = [...fitScored].sort((a,b) => b.s - a.s);
+  let bestFit = null;
+  const top3Pool = [];
+  for (const item of fitSorted) {
+    const rank = top3Pool.length;
+    if (rank >= 3) break;
+    if (fitPersonalityOk(item.c, rank, fitScored)) {
+      top3Pool.push(item.c);
     }
-  } else {
-    bestFit = null;
   }
+  bestFit = top3Pool[0] || fitSorted[0]?.c || null; // fallback to raw best if all blocked
 
-  const guardBalanced  = isHighTier && !isHandsOnMode && (goalMode === "prestige" || goalMode === "balanced");
-  const guardAmbitious = isHighTier && !isHandsOnMode;
-  const balanced  = pickBest(balancedScored,  guardBalanced);
-  const ambitious = pickBest(ambitiousScored, guardAmbitious);
+  // FIX: selective-track gating for medicine in Ambitious — not #1 if !privateBudget AND avg < 15.5
+  const ambitiousSorted = [...ambitiousScored].sort((a,b) => b.s - a.s);
+  let ambitious = null;
+  for (const item of ambitiousSorted) {
+    const isMedBlocked = item.c.id === "health" && !privateBudget && avg < 15.5;
+    const cp = CLUSTER_PRESTIGE[item.c.id] || { prestigeIndex:0.5 };
+    const prestigeOk = !isHighTier || isHandsOnMode || cp.prestigeIndex >= LOW_PRESTIGE_THRESHOLD;
+    if (!isMedBlocked && prestigeOk) { ambitious = item.c; break; }
+  }
+  ambitious = ambitious || ambitiousSorted[0]?.c || null;
+
+  const guardBalanced = isHighTier && !isHandsOnMode && (goalMode === "prestige" || goalMode === "balanced");
+  const balanced = pickBest(balancedScored, guardBalanced);
 
   return { bestFit, balanced, ambitious };
 }
@@ -3563,6 +3638,45 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       )}
 
 
+      {/* FIX: interest signals to prevent random results — pick up to 3 fields */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.interestsLabel}</label>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:8}}>
+          {["health","engineering","business","law","sports","design","notsure"].map(key=>{
+            const opt = t.interestOptions?.[key] || { icon:"🔹", label:key };
+            const cur = Array.isArray(info.interests) ? info.interests : [];
+            const sel = cur.includes(key);
+            const isNotSure = key === "notsure";
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>{
+                  const prev = Array.isArray(p.interests) ? p.interests : [];
+                  if (isNotSure) {
+                    // "Not sure" clears all others and selects only itself
+                    return {...p, interests: sel ? [] : ["notsure"]};
+                  }
+                  if (sel) return {...p, interests: prev.filter(x=>x!==key)};
+                  // Max 3 non-notsure; also clear "notsure" when picking a real domain
+                  const filtered = prev.filter(x=>x!=="notsure");
+                  if (filtered.length >= 3) return p;
+                  return {...p, interests: [...filtered, key]};
+                })}
+                style={{
+                  display:"inline-flex",alignItems:"center",gap:6,
+                  padding:"7px 12px",borderRadius:20,
+                  border:`1.5px solid ${sel?"var(--accent)":"var(--border)"}`,
+                  background:sel?"rgba(232,161,36,0.12)":"var(--surface2)",
+                  color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",fontSize:12,fontWeight:sel?700:400,
+                  transition:"all 0.15s",fontFamily:"inherit",
+                }}>
+                <span>{opt.icon}</span><span>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
@@ -3570,8 +3684,6 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
     </div>
   );
 }
-
-// ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
   const subjs = SUBJECTS_BY_TRACK[info.bacTrack] || [];
 
@@ -5929,18 +6041,30 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
     return t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
   }
 
-  // FIX: expectation framing — explain if result may surprise high performers
-  function getSurpriseText(cluster) {
+  // FIX: remove contradictory messaging
+  // Only show a note when there's a genuine tension worth flagging.
+  // Never shows "doesn't match your personality" as a generic blanket statement.
+  function getContradictionNote(cluster, tabKey) {
     if (!cluster) return null;
-    const avg = overallAvg || 0;
-    const cs = CULTURAL_CLUSTER_SCORES[cluster.id];
-    if (!cs || cs.prestige >= 0.7 || avg < 13) return null;
-    const msgs = {
-      ar: "قد تبدو هذه النتيجة غير متوقعة بالنظر إلى علاماتك. لكن الملفات الأكاديمية القوية تنجح أيضاً في إدارة الخدمات الدولية وقيادة المؤسسات — خاصة عبر المسارات العليا.",
-      fr: "Ce résultat peut sembler inattendu vu vos notes. Pourtant, les profils académiques solides réussissent aussi en management international et leadership de service — surtout via les grandes écoles.",
-      en: "This result may seem unexpected given your grades. Strong academic profiles can also excel in international management and service leadership — especially via the grandes écoles pathway.",
-    };
-    return msgs[lang] || msgs.en;
+    const ts = cluster.scores.trait    || 0;
+    const as_ = cluster.scores.academic || 0;
+    // No note on Ambitious tab — aspirational framing is handled by the unlock panel
+    if (tabKey === "ambitious") return null;
+    if (ts < 0.50) {
+      return {
+        ar: "فرصة عالية، لكن العمل اليومي في هذا المجال قد يبدو مُجهداً لأسلوبك. فكّر في مسارات مجاورة.",
+        fr: "Opportunité élevée, mais le quotidien de ce domaine peut sembler épuisant pour ton profil. Envisage des voies adjacentes.",
+        en: "High opportunity, but daily work in this field may feel draining for your style. Consider adjacent paths.",
+      }[lang] || null;
+    }
+    if (as_ < 0.45) {
+      return {
+        ar: "توافق شخصي قوي، لكنك تحتاج خطة أكاديمية لفتح هذا الباب.",
+        fr: "Très bonne affinité personnelle, mais une stratégie académique ciblée est nécessaire pour accéder à ce domaine.",
+        en: "Strong personal fit, but you need an academic plan to unlock this path.",
+      }[lang] || null;
+    }
+    return null;
   }
 
   const tabs = [
@@ -5951,10 +6075,10 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
 
   const current = views[active];
   const displayName = getClusterDisplayName(current);
-  const surprise = getSurpriseText(current);
+  const contradictionNote = getContradictionNote(current, active);
   const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
   const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
-  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
+  const traitPct = current ? Math.round(clamp((current.scores.trait + (current.scores.interest||0)) / 2 * 100)) : 0;
 
   return (
     <div style={{
@@ -6027,15 +6151,14 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
             </div>
           )}
 
-          {/* Surprise explanation */}
-          {surprise && (
+          {/* FIX: remove contradictory messaging — dynamic note only when genuine tension exists */}
+          {contradictionNote && (
             <div style={{
               marginTop:10,padding:"10px 14px",
               background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.2)",
               borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
             }}>
-              {/* FIX: expectation framing */}
-              💬 {surprise}
+              💬 {contradictionNote}
             </div>
           )}
 
@@ -6749,6 +6872,8 @@ const DEFAULT_INFO = {
   goal: "prestige",      // Cultural sensitivity patch (Tier + Goal)
   goalMode: "prestige",  // GOAL MODE: prestige|balanced|fit|fast (default=prestige, Moroccan norm)
   workStyle: "mixed",    // WORK STYLE: academic|mixed|handsOn (default=mixed)
+  // FIX: interest signals to prevent random results
+  interests: [],         // Array of interest domain ids e.g. ["health","engineering"]
 };
 
 const DEFAULT_REALITY = {
