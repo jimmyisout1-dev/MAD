@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
+// Dev helper (avoid import.meta in runtime)
+const IS_DEV = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+
+
 
 
 // ═══════════════════════════════════ i18n ═══════════════════════
@@ -2052,159 +2056,144 @@ function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks, rea
 
   const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
-  const goalMode      = safeInfo.goalMode || "unsure";
+  const goalMode      = safeInfo.goalMode || "unsure"; // prestige/balanced/fit/fast/unsure depending on your UI
   const privateBudget = !!safeInfo.privateBudget;
 
   const safeReality   = (reality && typeof reality === "object") ? reality : {};
-  const interests     = new Set(Array.isArray(safeReality.interests) ? safeReality.interests : []);
-  const strengthsNow  = new Set(Array.isArray(safeReality.strengthsNow) ? safeReality.strengthsNow : []);
+  const interestsArr  = Array.isArray(safeReality.interests) ? safeReality.interests : [];
+  const interests     = new Set(interestsArr);
 
-  // Moroccan cultural tiers (grade leverage)
-  const tier =
-    avg >= 15.5 ? "A" :
-    avg >= 14.0 ? "B" :
-    avg >= 12.0 ? "C" : "D";
+  // Map interests to cluster ids (kept conservative to avoid randomness)
+  const INTEREST_MAP = {
+    health:      new Set(["i_helping","i_people","i_bio","i_science","i_research","i_health"]),
+    data:        new Set(["i_tech","i_science","i_alone","i_gaming","i_strategy"]),
+    it:          new Set(["i_tech","i_gaming","i_strategy","i_content"]),
+    cyber:       new Set(["i_tech","i_gaming","i_strategy"]),
+    network:     new Set(["i_tech","i_building","i_strategy"]),
+    industrial:  new Set(["i_building","i_fixing","i_hands","i_tech"]),
+    energy:      new Set(["i_science","i_outdoors","i_building"]),
+    civil:       new Set(["i_building","i_outdoors","i_fixing"]),
+    finance:     new Set(["i_business","i_selling","i_strategy"]),
+    marketing:   new Set(["i_content","i_people","i_selling"]),
+    logistics:   new Set(["i_strategy","i_building","i_business"]),
+    tourism:     new Set(["i_people","i_outdoors","i_content"]),
+    edu_law:     new Set(["i_public","i_people","i_writing","i_debate"]),
+    arts_media:  new Set(["i_content","i_design","i_gaming","i_people"]),
+    sports:      new Set(["i_sports","i_outdoors","i_people","i_leading"]),
+  };
 
-  // Low-prestige clusters that should NOT headline for Tier A/B unless explicit interest or overwhelming fit
-  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
-
-  function hasStrongInterestForCluster(clusterId) {
-    if (clusterId === "sports") {
-      return interests.has("i_sports") || interests.has("i_outdoors") || strengthsNow.has("s_sport_team") || strengthsNow.has("s_sport_indiv") || strengthsNow.has("s_coaching");
-    }
-    if (clusterId === "tourism") {
-      return interests.has("i_outdoors") || interests.has("i_people") || interests.has("i_content");
-    }
-    if (clusterId === "arts_media" || clusterId === "creative_digital") {
-      return interests.has("i_content") || interests.has("i_gaming") || strengthsNow.has("s_design") || strengthsNow.has("s_media");
-    }
-    if (clusterId === "health") {
-      return interests.has("i_helping") || interests.has("i_research");
-    }
-    if (clusterId === "finance" || clusterId === "marketing") {
-      return interests.has("i_selling") || strengthsNow.has("s_persuasion") || strengthsNow.has("s_negotiation");
-    }
-    if (clusterId === "it" || clusterId === "data" || clusterId === "cyber" || clusterId === "network") {
-      return interests.has("i_gaming") || interests.has("i_research") || strengthsNow.has("s_problem_solving");
-    }
+  function hasInterest(clusterId) {
+    const set = INTEREST_MAP[clusterId];
+    if (!set || interests.size === 0) return false;
+    for (const k of set) if (interests.has(k)) return true;
     return false;
   }
 
-  // Strict personality consistency guardrail for Best Fit
-  function isPersonalityMismatch(cluster) {
-    const trait = Number(cluster?.scores?.trait ?? 0);
-    return trait < 0.55;
+  // "Hands-on" preference: if user explicitly chose hands-on/fast-job style (when available)
+  const prefersHandsOn =
+    safeInfo.goal === "practical" ||
+    safeInfo.goalMode === "practical" ||
+    safeInfo.goalMode === "fast" ||
+    safeReality.preferredStyle === "handsOn" ||
+    safeReality.priority === "fast_job";
+
+  const isHighAvg = avg >= 14.5;
+
+  function prestigeIndex(c) {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex: 0.5 };
+    return clamp(cp.prestigeIndex ?? 0.5, 0, 1);
   }
 
-  // Medicine selective gating (avoid SVT=>medicine stereotype in Best Fit)
-  function medicineAllowedAsBestFit(cluster) {
-    if (cluster.id !== "health") return true;
-    const trait = Number(cluster?.scores?.trait ?? 0);
-    // Require either strong trait alignment OR explicit health interest.
-    if (trait >= 0.60) return true;
-    if (hasStrongInterestForCluster("health")) return true;
-    return false;
+  function scoreFit(c) {
+    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
+    return clamp(
+      0.55*(c.scores.trait||0) + 0.25*(c.scores.academic||0) + 0.10*(c.scores.bac||0) + 0.10*(c.scores.market||0) - penalty,
+      0, 1
+    );
   }
 
-  // Guardrail for low-prestige clusters being #1 for high tiers
-  function passesLowPrestigeTop1(cluster, score, scoredList) {
-    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
-    if (tier === "C" || tier === "D") return true;
-    // In passion/fit mode we allow it.
-    if (goalMode === "fit") return true;
-    // Allow if user explicitly signaled interest strongly.
-    if (hasStrongInterestForCluster(cluster.id)) return true;
+  function scoreBalanced(c) {
+    let s = clamp(
+      0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0) + 0.20*(c.scores.market||0) + 0.10*(c.scores.bac||0) + 0.10*prestigeIndex(c),
+      0, 1
+    );
+    return s;
+  }
 
-    const sorted = [...scoredList].sort((a,b)=>b.s-a.s);
-    const r1 = sorted[0], r2 = sorted[1];
-    if (r1?.c?.id === cluster.id && r2) {
-      // must be overwhelmingly better to headline
-      return (score - r2.s) >= 0.15;
+  function scoreAmbitious(c) {
+    let s = clamp(
+      0.45*prestigeIndex(c) + 0.35*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0),
+      0, 1
+    );
+    // realism: if locked public and no private budget, avoid dominating as #1 unless avg is very high
+    if ((c.eligibilityTag === "notEligiblePublic" || c.eligibilityTag === "privateOnly") && !privateBudget && avg < 15.5) {
+      s = Math.min(s, 0.72);
     }
+    return s;
+  }
+
+  // Core guardrails (trust protection)
+  function blocksBestFit(c) {
+    // Contradiction-proof: low trait fit cannot headline Best Fit
+    const trait = c.scores.trait ?? 0.5;
+    if (trait < 0.55 && !hasInterest(c.id)) return true;
+
+    // Medicine special-case: must be identity-aligned OR explicitly chosen
+    if (c.id === "health") {
+      const wantsHealth = hasInterest("health");
+      if (!wantsHealth && trait < 0.60) return true;
+      if ((c.eligibilityTag === "notEligiblePublic") && !privateBudget && avg < 15.5 && !wantsHealth) return true;
+    }
+
+    // High-average cultural lens: low-prestige can't be Best Fit #1 unless strong interest or overwhelming lead
+    const cp = prestigeIndex(c);
+    if (isHighAvg && !prefersHandsOn && cp < 0.55 && !hasInterest(c.id)) return true;
+
     return false;
   }
 
-  function pickBest(scored, { enforcePersonality = false, enforceMedicine = false } = {}) {
+  // Pick best with optional guardrail callback
+  function pick(scored, guardFn) {
     const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    if (!guardFn) return sorted[0]?.c || null;
+
+    // allow "overwhelming lead" exception
+    const top = sorted[0];
+    const second = sorted[1];
+    if (top && second && !guardFn(top.c)) return top.c;
+    if (top && second && guardFn(top.c)) {
+      const gap = top.s - (second?.s ?? 0);
+      if (gap >= 0.15) return top.c; // overwhelming
+    }
+
     for (const item of sorted) {
-      const c = item.c;
-      if (!c) continue;
-
-      if (!passesLowPrestigeTop1(c, item.s, scored)) continue;
-
-      if (enforcePersonality && isPersonalityMismatch(c)) {
-        // allow mismatch only if explicit interest AND goalMode==fit
-        if (!(goalMode === "fit" && hasStrongInterestForCluster(c.id))) continue;
-      }
-
-      if (enforceMedicine && !medicineAllowedAsBestFit(c)) continue;
-
-      return c;
+      if (!guardFn(item.c)) return item.c;
     }
     return sorted[0]?.c || null;
   }
 
-  // Prestige metadata
-  function prestigeIndex(c) {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    return Number(cp.prestigeIndex ?? 0.5);
+  // Cultural penalties for balanced/ambitious (not for fit)
+  function applyCulturalPenalty(c, s) {
+    if (!isHighAvg) return s;
+    if (prefersHandsOn) return s;
+    if (goalMode === "fit") return s; // passion-first: don't police
+    const p = prestigeIndex(c);
+    if (p < 0.50) return clamp(s - 0.20, 0, 1);
+    if (p < 0.60) return clamp(s - 0.12, 0, 1);
+    return s;
   }
 
-  // ── Ambitious (prestige ladder) ──
-  const ambitiousScored = rankedClusters.map(c => {
-    const pIdx = prestigeIndex(c);
-    let s = 0.45*pIdx + 0.30*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.10*(c.scores.bac||0);
+  const scoredFit = rankedClusters.map(c => ({ c, s: scoreFit(c) }));
+  const bestFit = pick(scoredFit, blocksBestFit);
 
-    // If locked public and no private budget, avoid dominating ambitious unless Tier A
-    if ((c.eligibilityTag === "notEligiblePublic" || c.eligibilityTag === "privateOnly") && !privateBudget) {
-      s -= (tier === "A") ? 0.05 : 0.15;
-    }
+  const scoredBalanced = rankedClusters.map(c => ({ c, s: applyCulturalPenalty(c, scoreBalanced(c)) }));
+  const balanced = pick(scoredBalanced, null);
 
-    // Soft cultural boost for Tier A/B to prestige
-    if (tier === "A") s += 0.05*(pIdx - 0.5);
-    if (tier === "B") s += 0.03*(pIdx - 0.5);
-
-    s = Math.min(1, Math.max(0, s));
-    return { c, s };
-  });
-  const ambitious = pickBest(ambitiousScored);
-
-  // ── Balanced ──
-  const balancedScored = rankedClusters.map(c => {
-    const pIdx = prestigeIndex(c);
-    let s = 0.35*(c.scores.academic||0) + 0.20*(c.scores.trait||0) + 0.20*(c.scores.market||0) + 0.15*(c.scores.bac||0) + 0.10*pIdx;
-
-    // If Tier A/B and NOT fast mode, softly suppress very low prestige from top1
-    if ((tier === "A" || tier === "B") && goalMode !== "practical") {
-      if (pIdx < 0.50 && !hasStrongInterestForCluster(c.id)) s -= 0.15;
-      else if (pIdx < 0.60 && !hasStrongInterestForCluster(c.id)) s -= 0.08;
-    }
-
-    s = Math.min(1, Math.max(0, s));
-    return { c, s };
-  });
-  const balanced = pickBest(balancedScored);
-
-  // ── Best Fit ──
-  const fitScored = rankedClusters.map(c => {
-    let s = 0.55*(c.scores.trait||0) + 0.25*(c.scores.academic||0) + 0.10*(c.scores.bac||0) + 0.10*(c.scores.market||0);
-
-    // If public locked + no private budget, reduce for Best Fit (it can still appear in Ambitious)
-    if (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
-      s -= 0.12;
-    }
-
-    // Interest boost (small)
-    if (hasStrongInterestForCluster(c.id)) s += 0.05;
-
-    s = Math.min(1, Math.max(0, s));
-    return { c, s };
-  });
-  const bestFit = pickBest(fitScored, { enforcePersonality: true, enforceMedicine: true });
+  const scoredAmbitious = rankedClusters.map(c => ({ c, s: applyCulturalPenalty(c, scoreAmbitious(c)) }));
+  const ambitious = pick(scoredAmbitious, null);
 
   return { bestFit, balanced, ambitious };
 }
-
 // ── Scoring weights (must sum to 1.0) ─────────────────────────────
 // Extend here — never touch individual score computation below.
 const SCORING_WEIGHTS = {
@@ -4084,19 +4073,16 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   // Compute 3 meter scores
   // FIX: clamp numeric UI values
   const safeTrA = traits && typeof traits === "object" ? traits : {};
-  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
-    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
-  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
-    top3[0]?.scores?.academic ?? 0.5)) * 100));
-  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
-    top3[0]?.scores?.market ?? 0.7)) * 100));
+  const identityFitPct = clamp(Math.round(((top3[0]?.scores?.trait ?? 0.5) * 100)));
+  const academicFitPct  = clamp(Math.round(((top3[0]?.scores?.academic ?? 0.5) * 100)));
+  const marketFitPct    = clamp(Math.round(((top3[0]?.scores?.market ?? 0.7) * 100)));
 
   // Phase 4: Alignment story — weakest dimension
   const dims = [
     { key:"identity", pct:identityFitPct, sentences:{
-      ar:"هذا المجال لا يتوافق تلقائياً مع شخصيتك.",
-      fr:"Forte opportunité, mais le quotidien peut te fatiguer selon ton style.",
-      en:"High opportunity, but day-to-day may feel demanding for your style.",
+      ar:"فرصة قوية، لكن الإيقاع اليومي قد يكون مرهقاً إن لم يكن أسلوبه يناسبك.",
+      fr:"Forte opportunité, mais le quotidien peut être exigeant si ton style ne s’y prête pas.",
+      en:"Strong opportunity, but day-to-day may feel demanding if your style doesn’t match it.",
     }},
     { key:"academic", pct:academicFitPct, sentences:{
       ar:"إمكاناتك تتجاوز مستواك الأكاديمي الحالي.",
@@ -5301,7 +5287,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    if (IS_DEV) {
       console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
@@ -6167,7 +6153,7 @@ function StepResults({
   };
 
   // FIX: development debug logs
-  if (typeof window !== "undefined" && import.meta.env.DEV) {
+  if (typeof window !== "undefined" && IS_DEV) {
     console.groupCollapsed("[Massar] Results built");
     console.log("safeResults:", safeResults);
     console.log("archetype computed:", safeResults.archetype);
@@ -6805,7 +6791,7 @@ export default function App() {
   const traits = useMemo(() => {
     const result = computeTraits(answers);
     // FIX: development debug logs
-    if (import.meta.env.DEV) console.log("[Massar] traits computed:", result);
+    if (IS_DEV) console.log("[Massar] traits computed:", result);
     return result;
   }, [answers]);
 
