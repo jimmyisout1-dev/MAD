@@ -128,30 +128,13 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"عمل يدوي / دخول سريع لسوق الشغل" },
     },
     practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
-    // GOAL MODE + WORK STYLE
+    // Goal mode input (Cultural rerank layer)
     goalModeLabel: "شنو الأهم دابا بالنسبة ليك؟",
     goalModeOptions: {
-      prestige:  { icon:"🏆", label:"الهيبة / أفضل المسارات" },
-      balanced:  { icon:"⚖️", label:"الأفضل بشكل عام" },
+      prestige:  { icon:"🏆", label:"أفضل مدرسة / المسار الأرفع مستوى" },
       fit:       { icon:"🎯", label:"الأنسب لشخصيتي" },
-      fast:      { icon:"🔧", label:"عمل سريع / عملي" },
-    },
-    workStyleLabel: "ما نوع الدراسة التي تفضّلها؟",
-    workStyleOptions: {
-      academic: { icon:"📚", label:"دراسة طويلة / مسابقات" },
-      mixed:    { icon:"🔀", label:"منفتح على الاثنين" },
-      handsOn:  { icon:"🛠️", label:"تكوين تطبيقي / ميداني" },
-    },
-    // FIX: interest signals to prevent random results
-    interestsLabel: "ما المجالات التي تستهويك؟ (اختر حتى 3)",
-    interestOptions: {
-      health:    { icon:"🏥", label:"الصحة / الطب" },
-      engineering: { icon:"⚙️", label:"الهندسة / التكنولوجيا" },
-      business:  { icon:"💼", label:"الأعمال / المالية" },
-      law:       { icon:"⚖️", label:"القانون / الوظيفة العامة" },
-      sports:    { icon:"🏃", label:"الرياضة / التدريب" },
-      design:    { icon:"🎨", label:"التصميم / الإعلام" },
-      notsure:   { icon:"🤷", label:"لست متأكداً بعد" },
+      practical: { icon:"🔧", label:"دخل سريع / مهارة ملموسة" },
+      unsure:    { icon:"🤷", label:"مش عارف — أريني الاثنين" },
     },
     prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
     prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
@@ -757,30 +740,13 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"Formation pratique / emploi rapide" },
     },
     practicalFastTrack: "⚡ Option insertion rapide — idéal si tu préfères travailler avant l'université",
-    // GOAL MODE + WORK STYLE
+    // Goal mode input (Cultural rerank layer)
     goalModeLabel: "Qu'est-ce qui compte le plus pour toi maintenant ?",
     goalModeOptions: {
-      prestige:  { icon:"🏆", label:"Prestige / meilleures filières" },
-      balanced:  { icon:"⚖️", label:"Meilleure option globale" },
-      fit:       { icon:"🎯", label:"Ce qui me correspond le mieux" },
-      fast:      { icon:"🔧", label:"Emploi rapide / formation pratique" },
-    },
-    workStyleLabel: "Quel type de formation te correspond ?",
-    workStyleOptions: {
-      academic: { icon:"📚", label:"Longues études / concours" },
-      mixed:    { icon:"🔀", label:"Ouvert aux deux" },
-      handsOn:  { icon:"🛠️", label:"Formation pratique / terrain" },
-    },
-    // FIX: interest signals to prevent random results
-    interestsLabel: "Quels domaines t'attirent ? (jusqu'à 3)",
-    interestOptions: {
-      health:    { icon:"🏥", label:"Santé / Médecine" },
-      engineering: { icon:"⚙️", label:"Ingénierie / Tech" },
-      business:  { icon:"💼", label:"Business / Finance" },
-      law:       { icon:"⚖️", label:"Droit / Service public" },
-      sports:    { icon:"🏃", label:"Sport / Coaching" },
-      design:    { icon:"🎨", label:"Design / Médias" },
-      notsure:   { icon:"🤷", label:"Pas encore sûr(e)" },
+      prestige:  { icon:"🏆", label:"Meilleure école / voie la plus prestigieuse" },
+      fit:       { icon:"🎯", label:"Ce qui correspond le mieux à ma personnalité" },
+      practical: { icon:"🔧", label:"Revenu rapide / compétences concrètes" },
+      unsure:    { icon:"🤷", label:"Je ne sais pas — montre-moi les deux" },
     },
     prestigeAdjacentTitle: "Si votre famille veut une voie plus 'prestigieuse'",
     prestigeAdjacentDesc: "D'après votre profil, voici des parcours adjacents à fort prestige académique :",
@@ -1137,30 +1103,13 @@ const TRANSLATIONS = {
       handsOn:  { icon:"🔧", label:"Hands-on / fast job entry" },
     },
     practicalFastTrack: "⚡ Fast-track option — ideal if you prefer job entry before university",
-    // GOAL MODE + WORK STYLE
+    // Goal mode input (Cultural rerank layer)
     goalModeLabel: "What matters most right now?",
     goalModeOptions: {
-      prestige:  { icon:"🏆", label:"Prestige / top schools" },
-      balanced:  { icon:"⚖️", label:"Best overall" },
-      fit:       { icon:"🎯", label:"Best personal fit" },
-      fast:      { icon:"🔧", label:"Fast job / hands-on" },
-    },
-    workStyleLabel: "What type of studies do you prefer?",
-    workStyleOptions: {
-      academic: { icon:"📚", label:"Long studies / competitive entrance exams" },
-      mixed:    { icon:"🔀", label:"Open to both" },
-      handsOn:  { icon:"🛠️", label:"Hands-on / practical training" },
-    },
-    // FIX: interest signals to prevent random results
-    interestsLabel: "What fields attract you? (pick up to 3)",
-    interestOptions: {
-      health:    { icon:"🏥", label:"Health / Medical" },
-      engineering: { icon:"⚙️", label:"Engineering / Tech" },
-      business:  { icon:"💼", label:"Business / Finance" },
-      law:       { icon:"⚖️", label:"Law / Public Service" },
-      sports:    { icon:"🏃", label:"Sports / Coaching" },
-      design:    { icon:"🎨", label:"Design / Media" },
-      notsure:   { icon:"🤷", label:"Not sure yet" },
+      prestige:  { icon:"🏆", label:"Best school / most prestigious route" },
+      fit:       { icon:"🎯", label:"Best fit for my personality" },
+      practical: { icon:"🔧", label:"Fast income / hands-on skills" },
+      unsure:    { icon:"🤷", label:"Not sure — show me both" },
     },
     prestigeAdjacentTitle: "If your family wants a more 'prestigious' path",
     prestigeAdjacentDesc: "Based on your profile, here are adjacent paths with stronger academic prestige:",
@@ -1963,39 +1912,29 @@ const CULTURAL_CLUSTER_SCORES = {
 // Cultural rerank layer — Step 2
 // prestigeIndex: 0–1, how prestigious this path is perceived in Morocco
 // trackType: classification used for rerank filtering
-// FIX: interest signals to prevent random results
-// Maps user-selected interest domain IDs → cluster IDs they boost.
-// Used in computeThreeViews to apply +0.05 to score_fit, +0.03 to score_balanced.
-const CLUSTER_INTEREST_MAP = {
-  health:      ["health"],
-  engineering: ["industrial","civil","energy","network","it","cyber","data","automotive"],
-  business:    ["finance","marketing","logistics","edu_law"],
-  law:         ["edu_law"],
-  sports:      ["sports"],
-  design:      ["arts_media","creative_digital","tourism"],
-  notsure:     [], // no boost when "not sure"
-};
-// NOT a value judgement; reflects family acceptance and social standing in Moroccan context.
+// PrestigeIndex — Moroccan cultural perception of prestige per cluster (0–1).
+// NOT a value judgement; reflects "parent/family acceptance & social standing" in Moroccan context.
+// Values are heuristics based on observable social patterns.
 const CLUSTER_PRESTIGE = {
   health:          { prestigeIndex:1.00, trackType:"academic_prestige" },
-  data:            { prestigeIndex:0.92, trackType:"academic_prestige" },
-  it:              { prestigeIndex:0.88, trackType:"academic_prestige" },
-  cyber:           { prestigeIndex:0.86, trackType:"academic_prestige" },
-  industrial:      { prestigeIndex:0.84, trackType:"academic_prestige" },
-  energy:          { prestigeIndex:0.82, trackType:"academic_prestige" },
-  civil:           { prestigeIndex:0.80, trackType:"academic_prestige" },
-  finance:         { prestigeIndex:0.78, trackType:"business_prestige" },
-  edu_law:         { prestigeIndex:0.74, trackType:"business_prestige" },
-  network:         { prestigeIndex:0.72, trackType:"academic_prestige" },
-  logistics:       { prestigeIndex:0.70, trackType:"business_prestige" },
-  marketing:       { prestigeIndex:0.65, trackType:"business_prestige" },
-  creative_digital:{ prestigeIndex:0.55, trackType:"creative" },
-  tourism:         { prestigeIndex:0.52, trackType:"service" },
-  arts_media:      { prestigeIndex:0.50, trackType:"creative" },
-  sports:          { prestigeIndex:0.48, trackType:"hands_on" },
-  trades:          { prestigeIndex:0.45, trackType:"hands_on" },
-  automotive:      { prestigeIndex:0.44, trackType:"hands_on" },
-  culinary_ops:    { prestigeIndex:0.42, trackType:"hands_on" },
+  data:            { prestigeIndex:0.90, trackType:"academic_prestige" },
+  it:              { prestigeIndex:0.85, trackType:"academic_prestige" },
+  cyber:           { prestigeIndex:0.80, trackType:"academic_prestige" },
+  finance:         { prestigeIndex:0.75, trackType:"business_prestige" },
+  industrial:      { prestigeIndex:0.75, trackType:"academic_prestige" },
+  civil:           { prestigeIndex:0.70, trackType:"academic_prestige" },
+  energy:          { prestigeIndex:0.68, trackType:"academic_prestige" },
+  network:         { prestigeIndex:0.65, trackType:"academic_prestige" },
+  marketing:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  logistics:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  edu_law:         { prestigeIndex:0.60, trackType:"business_prestige" },
+  creative_digital:{ prestigeIndex:0.50, trackType:"creative" },
+  arts_media:      { prestigeIndex:0.45, trackType:"creative" },
+  tourism:         { prestigeIndex:0.45, trackType:"service" },
+  trades:          { prestigeIndex:0.42, trackType:"hands_on" },
+  sports:          { prestigeIndex:0.40, trackType:"hands_on" },
+  automotive:      { prestigeIndex:0.40, trackType:"hands_on" },
+  culinary_ops:    { prestigeIndex:0.38, trackType:"hands_on" },
 };
 
 // Cultural rerank layer — Step 4
@@ -2086,168 +2025,132 @@ function clamp(val, min = 0, max = 100) {
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
 
-// ACADEMIC TIER — Moroccan "grade leverage" tiers (Part 4)
-// A: ≥15.5 (top selective schools: ENSIAS/ENSA/UM6P etc.)
-// B: 14.0–15.49 (strong public: faculty + grande école reachable)
-// C: 12.0–13.99 (university solid; practical route also viable)
-// D: <12.0 (practical/technical route most realistic)
+// Cultural sensitivity patch (Tier + Goal) — academic tier from overallAvg
+// HIGH ≥14.5 → public selective/grande école first
+// MID  ≥12   → university first
+// LOW  <12   → practical can be default
 function getAcademicTier(overallAvg) {
   const avg = Number(overallAvg) || 0;
-  if (avg >= 15.5) return "A";
-  if (avg >= 14.0) return "B";
-  if (avg >= 12.0) return "C";
-  return "D";
+  if (avg >= 14.5) return "HIGH";
+  if (avg >= 12)   return "MID";
+  return "LOW";
 }
-
-// Legacy aliases so existing callers that check "HIGH"/"MID"/"LOW" still work
-function tierIsHigh(tier) { return tier === "A" || tier === "B"; }
-function tierIsMid(tier)  { return tier === "C"; }
-function tierIsLow(tier)  { return tier === "D"; }
 
 // FIX: multi-view recommendation
 // Returns { bestFit, balanced, ambitious } from ranked clusters.
 // bestFit    = highest trait+interest match (personal)
 // balanced   = highest final score (already top-1, academic/prestige blend)
 // ambitious  = highest prestige that's academically reachable (top-6)
-// FIX: personality-consistency guardrail / interest-based boost / selective-track gating for medicine
-// Three scoring perspectives:
-//   score_fit       = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
-//   score_balanced  = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
-//   score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
-// Guardrails:
-//   - Best Fit: traitScore < 0.55 → cannot be #1; traitScore < 0.45 → blocked from top-3 unless override
-//   - Medicine: in Fit requires traitScore ≥ 0.60 OR explicit health interest
-//   - Medicine: in Balanced, −0.12 penalty if public-ineligible and !privateBudget
-//   - Medicine: in Ambitious, not #1 if !privateBudget AND avg < 15.5
+// PrestigeIndex / Guardrails — computeThreeViews
+// Implements three distinct scoring perspectives as per spec:
+//   ambitiousScore  = 0.35*prestige + 0.25*market + 0.2*bac + 0.2*academic - penalties
+//   balancedScore   = existingFinalScore + 0.08*(prestige-0.5)
+//   personalScore   = 0.45*trait + 0.2*market + 0.2*academic + 0.15*bac - penalties
+// Guardrails: high-avg students can't have low-prestige cluster as #1 unless explicit passion.
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
   const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
-  const goalMode      = safeInfo.goalMode  || "prestige";
-  const workStyle     = safeInfo.workStyle || "mixed";
+  const goalMode      = safeInfo.goalMode || "unsure";
   const privateBudget = !!safeInfo.privateBudget;
-  const userInterests = Array.isArray(safeInfo.interests) ? safeInfo.interests : [];
-  const academicTier  = getAcademicTier(avg);
-  const isHighTier    = tierIsHigh(academicTier);
-  const isHandsOnMode = workStyle === "handsOn" || goalMode === "fast";
-  const LOW_PRESTIGE_THRESHOLD = 0.60;
 
-  // FIX: interest signals — derive boosted cluster ids from user's interest selections
-  const boostedClusterIds = new Set(
-    userInterests
-      .filter(id => id !== "notsure")
-      .flatMap(id => CLUSTER_INTEREST_MAP[id] || [])
-  );
-  const hasHealthInterest = userInterests.includes("health");
+  // Interests from reality — used for passion-mode exemption check
+  // (GoalMode "fit" = "Passion" in spec language)
+  const TOURISM_INTERESTS  = new Set(["i_people","i_helping","i_outdoors","i_content"]);
+  const SPORTS_INTERESTS   = new Set(["i_sports","i_leading","i_people","i_outdoors"]);
+  const ARTS_INTERESTS     = new Set(["i_content","i_gaming","i_alone","i_people"]);
 
-  // FIX: interest-based boost — +0.05 fit, +0.03 balanced per matching cluster
-  function interestBoost(clusterId, forFit) {
-    if (userInterests.includes("notsure")) return 0;
-    return boostedClusterIds.has(clusterId) ? (forFit ? 0.05 : 0.03) : 0;
+  // Low-prestige clusters that must not be #1 for high-avg non-passion students
+  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
+
+  function hasPassionExemption(clusterId) {
+    if (goalMode !== "fit") return false;
+    // "fit" = Passion in spec language. Also check relevant interests.
+    return true; // fit/passion mode always lifts the block
   }
 
-  // CULTURAL GUARDRAILS — prestige penalties on balanced + ambitious only
-  function presidePenalty(cp) {
-    if (!isHighTier || isHandsOnMode) return 0;
-    if ((goalMode === "prestige" || goalMode === "balanced") && cp.prestigeIndex < 0.50) return 0.20;
-    if ((goalMode === "prestige" || goalMode === "balanced") && cp.prestigeIndex < LOW_PRESTIGE_THRESHOLD) return 0.12;
-    return 0;
-  }
-
-  // FIX: personality-consistency guardrail
-  // Returns true if cluster is allowed at a given rank for Best Fit
-  function fitPersonalityOk(cluster, rank, scored) {
-    const ts = cluster.scores.trait || 0;
-    // FIX: selective-track gating for medicine
-    if (cluster.id === "health") {
-      if (ts < 0.60 && !hasHealthInterest) return false;
+  // Guardrails — Patch D
+  // Returns true if cluster can legitimately be #1 for this student
+  function passesGuardrail(cluster, thisScore, allScored) {
+    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
+    if (avg < 14.5) return true;
+    if (hasPassionExemption(cluster.id)) return true;
+    // Check: is this score dominant (exceeds next best by >=0.12)?
+    const sorted = [...allScored].sort((a,b)=>b.s-a.s);
+    const rank1 = sorted[0];
+    const rank2 = sorted[1];
+    if (rank1?.c?.id === cluster.id && rank2) {
+      return (thisScore - rank2.s) >= 0.12;
     }
-    if (ts < 0.55 && rank === 0) return false; // cannot be #1
-    if (ts < 0.45) {
-      // blocked from top-3 unless avg >= 16.5 AND interest is present
-      if (avg < 16.5 || !boostedClusterIds.has(cluster.id)) return false;
-    }
-    return true;
+    return false;
   }
 
-  // Compute score_fit = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
-  const fitScored = rankedClusters.map(c => ({
-    c,
-    s: Math.min(1, Math.max(0,
-      0.55*(c.scores.trait||0) + 0.25*(c.scores.academic||0)
-      + 0.10*(c.scores.bac||0) + 0.10*(c.scores.market||0)
-      + interestBoost(c.id, true)
-    )),
-  }));
+  // Pull best candidate from scored array, applying guardrail
+  function pickBest(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    for (const item of sorted) {
+      if (passesGuardrail(item.c, item.s, scored)) return item.c;
+    }
+    return sorted[0]?.c || null; // fallback if all blocked
+  }
 
-  // Compute score_balanced = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
-  const balancedScored = rankedClusters.map(c => {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    const pen = presidePenalty(cp);
-    // FIX: selective-track gating for medicine in Balanced
-    const medPenalty = (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
-    return {
-      c,
-      s: Math.min(1, Math.max(0,
-        0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0)
-        + 0.20*(c.scores.market||0) + 0.10*(c.scores.bac||0)
-        + 0.10*cp.prestigeIndex - pen - medPenalty
-        + interestBoost(c.id, false)
-      )),
-    };
-  });
-
-  // Compute score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
+  // ── C: ambitious scoring ──────────────────────────────────────
   const ambitiousScored = rankedClusters.map(c => {
     const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    const pen = presidePenalty(cp);
-    let s = 0.45*cp.prestigeIndex + 0.35*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0) - pen;
-    // CULTURAL GUARDRAILS: eligibility cap for health/public ineligible
-    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) s = Math.min(s, 0.65);
-    // Avg gap heuristic penalty
-    const cc = CLUSTER_CONSTRAINTS[c.id];
-    if (cc && cc.minAvg && avg < cc.minAvg - 2) s -= 0.08;
-    return { c, s: Math.min(1, Math.max(0, s)) };
+    const penalty = (() => {
+      let p = 0;
+      // Eligibility: notEligiblePublic and no private budget → cap enforced separately
+      if (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") {
+        p += 0.08;
+      }
+      // Avg gap heuristic (labelled as such): if avg < cluster minAvg by >2, reduce
+      const cc = CLUSTER_CONSTRAINTS[c.id];
+      if (cc && cc.minAvg && avg < cc.minAvg - 2) {
+        p += 0.08;
+      }
+      return p;
+    })();
+    let s = 0.35*cp.prestigeIndex + 0.25*(c.scores.market||0) + 0.2*(c.scores.bac||0) + 0.2*(c.scores.academic||0) - penalty;
+    // Eligibility realism guard: notEligiblePublic with no private budget → cap at 0.65
+    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
+      s = Math.min(s, 0.65);
+    }
+    s = Math.min(1, Math.max(0, s));
+    return { c, s };
   });
+  const ambitious = pickBest(ambitiousScored);
 
-  // pickBest for balanced + ambitious with optional prestige guardrail
-  function pickBest(scored, applyGuardrail) {
-    const sorted = [...scored].sort((a,b) => b.s - a.s);
-    if (!applyGuardrail) return sorted[0]?.c || null;
+  // ── C: balanced scoring ───────────────────────────────────────
+  const balancedScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const s = Math.min(1, Math.max(0, (c.scores.final||0) + 0.08*(cp.prestigeIndex - 0.5)));
+    return { c, s };
+  });
+  const balanced = pickBest(balancedScored);
+
+  // ── C: personal fit scoring ───────────────────────────────────
+  const personalScored = rankedClusters.map(c => {
+    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
+    const s = Math.min(1, Math.max(0,
+      0.45*(c.scores.trait||0) + 0.2*(c.scores.market||0) + 0.2*(c.scores.academic||0) + 0.15*(c.scores.bac||0) - penalty
+    ));
+    return { c, s };
+  });
+  // bestFit: guardrail still applies for very high avg — but less strict (0.08 gap)
+  function pickBestFit(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    if (avg < 14.5) return sorted[0]?.c || null;
     for (const item of sorted) {
-      const cp = CLUSTER_PRESTIGE[item.c.id] || { prestigeIndex:0.5 };
-      if (cp.prestigeIndex >= LOW_PRESTIGE_THRESHOLD) return item.c;
+      if (!LOW_PRESTIGE_BLOCKED.has(item.c.id)) return item.c;
+      if (hasPassionExemption(item.c.id)) return item.c;
+      // dominance check: 0.08 gap (more lenient for personal fit)
+      const rank2 = sorted.find(x => x.c.id !== item.c.id);
+      if (rank2 && (item.s - rank2.s) >= 0.08) return item.c;
     }
     return sorted[0]?.c || null;
   }
-
-  // FIX: personality-consistency guardrail — pick best fit cluster respecting trait rules
-  const fitSorted = [...fitScored].sort((a,b) => b.s - a.s);
-  let bestFit = null;
-  const top3Pool = [];
-  for (const item of fitSorted) {
-    const rank = top3Pool.length;
-    if (rank >= 3) break;
-    if (fitPersonalityOk(item.c, rank, fitScored)) {
-      top3Pool.push(item.c);
-    }
-  }
-  bestFit = top3Pool[0] || fitSorted[0]?.c || null; // fallback to raw best if all blocked
-
-  // FIX: selective-track gating for medicine in Ambitious — not #1 if !privateBudget AND avg < 15.5
-  const ambitiousSorted = [...ambitiousScored].sort((a,b) => b.s - a.s);
-  let ambitious = null;
-  for (const item of ambitiousSorted) {
-    const isMedBlocked = item.c.id === "health" && !privateBudget && avg < 15.5;
-    const cp = CLUSTER_PRESTIGE[item.c.id] || { prestigeIndex:0.5 };
-    const prestigeOk = !isHighTier || isHandsOnMode || cp.prestigeIndex >= LOW_PRESTIGE_THRESHOLD;
-    if (!isMedBlocked && prestigeOk) { ambitious = item.c; break; }
-  }
-  ambitious = ambitious || ambitiousSorted[0]?.c || null;
-
-  const guardBalanced = isHighTier && !isHandsOnMode && (goalMode === "prestige" || goalMode === "balanced");
-  const balanced = pickBest(balancedScored, guardBalanced);
+  const bestFit = pickBestFit(personalScored);
 
   return { bestFit, balanced, ambitious };
 }
@@ -2266,67 +2169,92 @@ const SCORING_WEIGHTS = {
 };
 // Sum check: 0.18+0.18+0.14+0.08+0.16+0.12+0.09+0.05 = 1.00
 
-// CULTURAL GUARDRAILS — culturallyRerankClusters (Part 5)
-// Pure post-processing. Does NOT mutate engine output.
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 3
+// Pure post-processing on rankedClusters. Does NOT mutate engine output.
+// Returns { primary: Cluster[], secondary: Cluster[] | null }
+//   primary   = ordered clusters to show as "Top Careers"
+//   secondary = alternate prestige ranking (only set when goalMode="unsure")
+// ─────────────────────────────────────────────────────────────────
 function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   if (!rankedClusters || rankedClusters.length === 0) return { primary: [], secondary: null };
 
-  const goalMode    = info.goalMode  || "prestige";
-  const workStyle   = info.workStyle || "mixed";
-  const avg         = clamp(Number(overallAvg) || 0, 0, 20);
-  const academicTier = getAcademicTier(avg);
-  const isHighTier   = tierIsHigh(academicTier);
-  const isHandsOnMode = workStyle === "handsOn" || goalMode === "fast";
+  const goalMode  = info.goalMode  || "unsure";
+  const avg       = clamp(Number(overallAvg) || 0, 0, 20);
+  const isHighAvg = avg >= 14.5;
 
-  function getPI(c) {
-    return (CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 }).prestigeIndex;
+  // Helper: get prestige metadata for a cluster
+  function getMeta(c) {
+    return CLUSTER_PRESTIGE[c.id] || { prestigeIndex: 0.5, trackType: "service" };
   }
 
-  // CULTURAL GUARDRAILS 5.1 — block low-prestige from top-3 for high-tier non-handsOn
+  // 3B: Clusters that should not top the list for high-avg non-practical students
+  const LOW_PRESTIGE_TYPES = new Set(["hands_on"]);
+  const LOW_PRESTIGE_IDS   = new Set(["tourism", "sports", "arts_media", "culinary_ops"]);
+
+  function isLowPrestigeCluster(c) {
+    const m = getMeta(c);
+    return LOW_PRESTIGE_TYPES.has(m.trackType) || LOW_PRESTIGE_IDS.has(c.id) || m.prestigeIndex < 0.58;
+  }
+
+  // 3B: Hard gate — low-prestige clusters can only be in top-3 if score is dominant
   function applyHardGate(sorted) {
-    if (!isHighTier || isHandsOnMode) return sorted;
+    if (!isHighAvg || goalMode === "practical") return sorted;
     const topScore = sorted[0]?.scores?.final || 0;
-    const top3 = []; const rest = [];
+    const top3 = [];
+    const rest = [];
     for (const c of sorted) {
-      if (getPI(c) < 0.60) {
-        const dominant = c.scores.final >= (topScore - 0.03) && getPI(c) >= 0.50;
-        if (dominant && top3.length < 3) top3.push(c); else rest.push(c);
+      if (isLowPrestigeCluster(c)) {
+        const meta = getMeta(c);
+        const isDominant = c.scores.final >= (topScore - 0.03) && meta.prestigeIndex >= 0.60;
+        if (isDominant && top3.length < 3) {
+          top3.push(c);
+        } else {
+          rest.push(c);
+        }
       } else {
-        if (top3.length < 3) top3.push(c); else rest.push(c);
+        if (top3.length < 3) top3.push(c);
+        else rest.push(c);
       }
     }
     return [...top3, ...rest];
   }
 
+  // 3C: Prestige mode scoring
   function prestigeSort(clusters) {
     return [...clusters].sort((a, b) => {
-      const sa = 0.45*getPI(a) + 0.30*(a.scores.academic||0) + 0.15*(a.scores.market||0) + 0.10*(a.scores.bac||0);
-      const sb = 0.45*getPI(b) + 0.30*(b.scores.academic||0) + 0.15*(b.scores.market||0) + 0.10*(b.scores.bac||0);
+      const ma = getMeta(a); const mb = getMeta(b);
+      const sa = 0.55 * (a.scores.final || 0) + 0.30 * ma.prestigeIndex + 0.15 * (a.scores.academic || 0);
+      const sb = 0.55 * (b.scores.final || 0) + 0.30 * mb.prestigeIndex + 0.15 * (b.scores.academic || 0);
       return sb - sa;
     });
   }
 
+  // 3E: Practical mode scoring
   function practicalSort(clusters) {
     return [...clusters].sort((a, b) => {
-      const ha = !!(a.pathways?.practical?.schools?.length);
-      const hb = !!(b.pathways?.practical?.schools?.length);
-      const sa = 0.70*(a.scores.final||0) + 0.30*(ha?1:0);
-      const sb = 0.70*(b.scores.final||0) + 0.30*(hb?1:0);
+      const hasPractA = !!(a.pathways?.practical?.schools?.length);
+      const hasPractB = !!(b.pathways?.practical?.schools?.length);
+      const sa = 0.70 * (a.scores.final || 0) + 0.30 * (hasPractA ? 1 : 0);
+      const sb = 0.70 * (b.scores.final || 0) + 0.30 * (hasPractB ? 1 : 0);
       return sb - sa;
     });
   }
 
-  let primary; let secondary = null;
+  let primary;
+  let secondary = null;
 
   if (goalMode === "prestige") {
+    // 3C: sort by prestige composite, then gate
     primary = applyHardGate(prestigeSort(rankedClusters));
-  } else if (goalMode === "balanced") {
-    primary = applyHardGate([...rankedClusters]);
   } else if (goalMode === "fit") {
-    primary = [...rankedClusters]; // no gate on fit tab
-  } else if (goalMode === "fast") {
-    primary = practicalSort(rankedClusters); // no gate for fast/handsOn
+    // 3D: keep existing ranking, apply gate
+    primary = applyHardGate([...rankedClusters]);
+  } else if (goalMode === "practical") {
+    // 3E: practical boost, no gating
+    primary = practicalSort(rankedClusters);
   } else {
+    // 3F: unsure — best fit (gated) + prestige track for secondary panel
     primary   = applyHardGate([...rankedClusters]);
     secondary = applyHardGate(prestigeSort(rankedClusters));
   }
@@ -2357,19 +2285,19 @@ function runSanityChecks() {
       makeSC("tourism", 0.68, 0.40),  // should NOT be in top-3
       makeSC("sports",  0.65, 0.30),  // should NOT be in top-3
     ];
-    const info1 = { goalMode: "prestige", workStyle: "academic" };
+    const info1 = { goalMode: "prestige" };
     const { primary: p1 } = culturallyRerankClusters(synth, info1, 15);
     const top3ids1 = p1.slice(0,3).map(c=>c.id);
     if (top3ids1.some(id => LOW_IDS.has(id))) {
       console.warn("[Massar] Sanity check FAILED (1): high-avg prestige still shows low-prestige cluster in top-3:", top3ids1);
     }
 
-    // Check 2: goalMode=fast → tourism/sports ARE allowed in top-3
-    const info2 = { goalMode: "fast", workStyle: "handsOn" };
+    // Check 2: goalMode=practical → tourism/sports ARE allowed in top-3
+    const info2 = { goalMode: "practical" };
     const { primary: p2 } = culturallyRerankClusters(synth, info2, 15);
     const top3ids2 = p2.slice(0,3).map(c=>c.id);
     if (!top3ids2.some(id => LOW_IDS.has(id))) {
-      console.warn("[Massar] Sanity check WARN (2): fast mode should allow hands-on clusters in top-3:", top3ids2);
+      console.warn("[Massar] Sanity check WARN (2): practical mode should allow hands-on clusters in top-3:", top3ids2);
     }
 
     console.log("[Massar] Sanity checks passed. Check1 top3:", top3ids1, "Check2 top3:", top3ids2);
@@ -2653,26 +2581,24 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     // Priority "prestige" users get a stronger weight
     const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
 
-    // CULTURAL GUARDRAILS — penalty for practical-only clusters shown to high-avg students
-    // who did NOT choose fast/handsOn workStyle. Keeps OFPPT/ISTA from dominating for A/B tiers.
-    const goal        = reality.goal     || "prestige";
-    const workStyle   = reality.workStyle || info?.workStyle || "mixed";
+    // Cultural sensitivity patch (Tier + Goal) — penalty for practical-only clusters shown to high-avg students
+    // who did NOT choose handsOn goal. Keeps OFPPT/ISTA from dominating top slots for tier=HIGH.
+    const goal = reality.goal || "prestige";
     const academicTier = getAcademicTier(overallAvg);
-    const isHandsOnMode = workStyle === "handsOn" || goal === "handsOn";
     let goalTierPenalty = 0;
-    if (tierIsHigh(academicTier) && !isHandsOnMode) {
+    if (academicTier === "HIGH" && goal !== "handsOn") {
       const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
       const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
       const hasPublicRoute = hasGrandeEcole || hasUniversity;
       if (!hasPublicRoute) {
-        // Cluster has no academic pathway — penalise for A/B tier non-handsOn students
-        goalTierPenalty = academicTier === "A" ? 0.18 : 0.12;
+        // Cluster has no university/grande-école pathway → penalise for high-avg non-handsOn students
+        goalTierPenalty = 0.15;
       } else if (PRACTICAL_CLUSTERS.has(cluster.id) && !hasGrandeEcole) {
         // Vocational-leaning cluster with university only — modest penalty
         goalTierPenalty = 0.08;
       }
-    } else if (tierIsMid(academicTier) && !isHandsOnMode && PRACTICAL_CLUSTERS.has(cluster.id)) {
-      // C-tier prestige/balanced: gentle nudge away from purely vocational top slots
+    } else if (academicTier === "MID" && goal === "prestige" && PRACTICAL_CLUSTERS.has(cluster.id)) {
+      // Mid-tier prestige students: gentle nudge away from purely vocational top slots
       const hasPublicRoute = !!(cluster.pathways?.grandeEcole?.schools?.length || cluster.pathways?.university?.schools?.length);
       if (!hasPublicRoute) goalTierPenalty = 0.06;
     }
@@ -2740,13 +2666,8 @@ const TRAIT_LABELS = {
 };
 
 // Narrative fix — subject-calibrated wording. Never overclaims.
-// NARRATIVE CONSISTENCY — generateNarrative (Parts 6)
-// Rules:
-//  - Never output two conflicting statements.
-//  - trait fit low but academic/market high → "High opportunity, but day-to-day may feel demanding."
-//  - trait fit high but academic low → "Strong fit, needs academic strategy."
-//  - subject ≥15 "strong", 13–14.9 "solid", <13 "developing" — never call 13 "real strength"
-//  - unsure identity: 2 concrete directions, no doubt-language
+// strong: ≥15, solid: 13–14.9, developing: <13.
+// Uses best 1–2 subjects by mark, not generic strings.
 function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effectiveMarks = {}) {
   if (!top3?.length) return "";
   const t          = TRANSLATIONS[lang];
@@ -2758,16 +2679,7 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
   const priority     = reality.priority     || "stability";
   const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
-  // NARRATIVE CONSISTENCY — Compute trait fit vs academic/market alignment
-  const traitFit  = (topCluster?.scores?.trait   || 0);
-  const acadFit   = (topCluster?.scores?.academic || 0);
-  const marketFit = (topCluster?.scores?.market   || 0);
-  // Contradiction: high opportunity but low personal fit
-  const highOpportunity  = (acadFit >= 0.55 || marketFit >= 0.55) && traitFit < 0.45;
-  // Contradiction: strong fit but academic gap
-  const strongFitLowAcad = traitFit >= 0.60 && acadFit < 0.40;
-
-  // NARRATIVE CONSISTENCY — Subject calibration (never overclaim strength)
+  // Narrative fix — pick best 1–2 subjects by mark and calibrate wording
   const trackSubjects = SUBJECTS_BY_TRACK[bacTrack] || [];
   const SUBJ_LABELS   = SUBJECT_LABELS || {};
   const markedSubjs   = trackSubjects
@@ -2776,9 +2688,9 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
     .sort((a,b) => b.v - a.v);
 
   function strengthWord(v) {
-    if (v >= 15) return { ar:"متميز",         fr:"excellent",      en:"strong" };
-    if (v >= 13) return { ar:"جيد",            fr:"solide",         en:"solid" };
-    return         { ar:"في طور التطور", fr:"en progression", en:"developing" };
+    if (v >= 15)   return { ar:"متميز", fr:"excellent", en:"strong" };
+    if (v >= 13)   return { ar:"جيد", fr:"solide", en:"solid" };
+    return           { ar:"في طور التطور", fr:"en progression", en:"developing" };
   }
 
   const top2Subjs = markedSubjs.slice(0,2).map(({s,v}) => {
@@ -2786,43 +2698,29 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
     const word  = strengthWord(v)[lang];
     return `${label} (${word})`;
   });
-  const strengthsFromReality = (reality.strengths || []).slice(0,2).map(k => t.realityStrengths?.[k] || k);
-  const subjectDesc    = top2Subjs.length ? top2Subjs.join(", ") : strengthsFromReality.join(", ");
-  const hasSubjectInfo = subjectDesc.length > 0;
 
-  // NARRATIVE CONSISTENCY — Unsure path: encouraging + guiding, never doubt-language
+  // Fallback to reality.strengths if no marks available
+  const strengthsFromReality = (reality.strengths || [])
+    .slice(0,2).map(k => t.realityStrengths?.[k] || k);
+
+  const subjectDesc = top2Subjs.length ? top2Subjs.join(", ") : strengthsFromReality.join(", ");
+  const hasAnySubject = subjectDesc.length > 0;
+
+  // Narrative fix — unsure path: encouraging + guiding, not "you are not sure yet"
   if (identityType === "unsure") {
     const dir2 = top3.slice(0,2).map(c => t[CLUSTER_KEY_MAP[c.id]] || c.id).join(lang==="ar"?" و":" & ");
     return {
-      ar: `ملفك ${hasSubjectInfo ? `يُظهر مستوى ${subjectDesc}` : "يكشف شخصية متعددة المواهب"}. ما زلت في مرحلة الاستكشاف — ابدأ بهذين الاتجاهين: <strong>${dir2}</strong>.`,
-      fr: `Ton profil ${hasSubjectInfo ? `révèle un niveau ${subjectDesc}` : "révèle une personnalité polyvalente"}. Tu explores encore — commence par ces deux directions : <strong>${dir2}</strong>.`,
-      en: `Your profile ${hasSubjectInfo ? `shows ${subjectDesc}` : "shows a versatile personality"}. You're still exploring — start with these 2 directions: <strong>${dir2}</strong>.`,
+      ar: `ملفك يشير إلى ${hasAnySubject ? `مستوى ${subjectDesc}` : "شخصية متعددة المواهب"}. ما زلت في مرحلة الاستكشاف — وهذا صحيح تماماً. بناءً على ملفك، جرّب هذين الاتجاهين هذا الشهر: <strong>${dir2}</strong>.`,
+      fr: `Ton profil révèle ${hasAnySubject ? `un niveau ${subjectDesc}` : "une personnalité polyvalente"}. Tu explores encore — c'est une bonne chose. D'après ton profil, deux directions à tester ce mois-ci : <strong>${dir2}</strong>.`,
+      en: `Your profile shows ${hasAnySubject ? subjectDesc : "a versatile personality"}. You're still exploring — that's perfectly fine. Based on your profile, here are 2 directions to try this month: <strong>${dir2}</strong>.`,
     }[lang] || "";
   }
 
-  // NARRATIVE CONSISTENCY — Contradiction case 1: High opportunity, low trait fit
-  if (highOpportunity) {
-    return {
-      ar: `<strong>${name}</strong> يفتح أبواباً واعدة لملفك الأكاديمي. لكن الطابع اليومي لهذا المجال قد يبدو مُجهداً. فكّر في مسارات مجاورة تجمع الفرصة والانسجام الشخصي.`,
-      fr: `<strong>${name}</strong> offre de réelles opportunités selon ton profil académique. Cependant, le quotidien de ce domaine pourrait sembler exigeant. Envisage des voies adjacentes qui combinent opportunité et affinité personnelle.`,
-      en: `<strong>${name}</strong> is a high-opportunity match for your academic profile. However, day-to-day work may feel demanding. Consider adjacent paths that combine opportunity with personal fit.`,
-    }[lang] || "";
-  }
-
-  // NARRATIVE CONSISTENCY — Contradiction case 2: Strong fit, needs academic strategy
-  if (strongFitLowAcad) {
-    return {
-      ar: `<strong>${name}</strong> يتوافق بقوة مع شخصيتك. ستحتاج إلى خطة أكاديمية لتحقيق المتطلبات — لكن المسار ممكن وفيه دافعية حقيقية.`,
-      fr: `<strong>${name}</strong> correspond très bien à ta personnalité. Une stratégie académique ciblée sera nécessaire pour atteindre les seuils requis — mais la voie est réalisable et motivante.`,
-      en: `<strong>${name}</strong> is a strong personal fit for you. You'll need an academic strategy to meet entry requirements — but this path is achievable and genuinely motivating.`,
-    }[lang] || "";
-  }
-
-  // Standard path: calibrated, concise, no contradictions
+  // Standard path: subject-calibrated, short, credible
   return {
-    ar: `${hasSubjectInfo ? `مستواك في ${subjectDesc} يضعك` : "ملفك يضعك"} على مسار <strong>${name}</strong> كأقرب توافق. أولويتك في <strong>${t_pri}</strong> تُعزز هذا الاتجاه.`,
-    fr: `${hasSubjectInfo ? `Ton niveau en ${subjectDesc} t'oriente` : "Ton profil t'oriente"} vers <strong>${name}</strong> comme meilleure correspondance. Ta priorité <strong>${t_pri}</strong> renforce ce cap.`,
-    en: `${hasSubjectInfo ? `Your ${subjectDesc} level points toward` : "Your profile points toward"} <strong>${name}</strong> as the best match. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
+    ar: `${hasAnySubject ? `مستواك في ${subjectDesc} يضعك` : "ملفك يضعك"} على مسار <strong>${name}</strong> كأقرب توافق. أولويتك في <strong>${t_pri}</strong> تُعزز هذا الاتجاه.`,
+    fr: `${hasAnySubject ? `Ton niveau en ${subjectDesc} t'oriente` : "Ton profil t'oriente"} vers <strong>${name}</strong> comme meilleure correspondance. Ta priorité <strong>${t_pri}</strong> renforce ce cap.`,
+    en: `${hasAnySubject ? `Your ${subjectDesc} level points toward` : "Your profile points toward"} <strong>${name}</strong> as the best match. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
   }[lang] || "";
 }
 
@@ -3002,7 +2900,7 @@ function PrestigeAdjacentPanel({ topClusterId, lang, t }) {
 // GoalModeDualView: shown when goalMode="unsure"
 // Two tabs: Best Fit (existing ranking) + Prestige Track (prestige-sorted)
 // ─────────────────────────────────────────────────────────────────
-function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, workStyle, overallAvg }) {
+function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, overallAvg }) {
   const [activeTab, setActiveTab] = useState("fit");
   if (!secondary || !secondary.length) return null;
 
@@ -3030,32 +2928,28 @@ function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, wo
       {clusters.slice(0,3).map((c,i) => (
         <ClusterCard key={c.id+activeTab} cluster={c} rank={i+1}
           t={t} lang={lang} bacTrack={bacTrack}
-          goal={goal} workStyle={workStyle} overallAvg={overallAvg}/>
+          goal={goal} overallAvg={overallAvg}/>
       ))}
     </div>
   );
 }
 
-function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, workStyle, overallAvg }) {
-  // DEFAULT PATHWAY TAB (Part 5.2) — driven by workStyle + academicTier
-  const academicTier  = getAcademicTier(overallAvg);
+function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
+  // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
+  const academicTier = getAcademicTier(overallAvg);
   const effectiveGoal = goal || "prestige";
-  const ws            = workStyle || "mixed";
 
   function pickDefaultTab() {
-    // CULTURAL GUARDRAILS 5.2: handsOn workStyle or fast goalMode → practical first
-    if (ws === "handsOn" || effectiveGoal === "fast" || effectiveGoal === "handsOn") return "practical";
+    if (effectiveGoal === "handsOn") return "practical";
     const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
     const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
-    // Tier A/B: grande école first if available, then university (Part 5.2)
-    if (tierIsHigh(academicTier)) {
+    if (academicTier === "HIGH") {
       return hasGrandeEcole ? "grandeEcole" : hasUniversity ? "university" : "practical";
     }
-    // Tier C: university first
-    if (tierIsMid(academicTier)) {
+    if (academicTier === "MID") {
       return hasUniversity ? "university" : hasGrandeEcole ? "grandeEcole" : "practical";
     }
-    // Tier D: practical first if available
+    // LOW tier → practical first if available, else university
     return cluster.pathways?.practical?.schools?.length ? "practical" : hasUniversity ? "university" : "grandeEcole";
   }
 
@@ -3064,7 +2958,7 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, workStyle, overal
   // Reset default tab if tier/goal/cluster changes (e.g., user goes back and changes goal)
   useEffect(() => {
     setPathwayTab(pickDefaultTab());
-  }, [cluster.id, effectiveGoal, ws, academicTier]); // eslint-disable-line
+  }, [cluster.id, effectiveGoal, academicTier]); // eslint-disable-line
 
   const clusterName = t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
 
@@ -3079,11 +2973,9 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, workStyle, overal
   const duration = pathway?.duration || "";
   const hasPW    = schools.length > 0 || !!duration;
 
-  // DEFAULT PATHWAY TAB (Part 5.2) — flag when practical is shown to high-tier non-handsOn student
+  // Cultural sensitivity patch (Tier + Goal) — flag when practical shown to high-tier prestige student
   const showFastTrackNote = pathwayTab === "practical"
-    && tierIsHigh(academicTier)
-    && ws !== "handsOn"
-    && effectiveGoal !== "fast"
+    && academicTier === "HIGH"
     && effectiveGoal !== "handsOn";
 
   const whyText = lang==="ar"
@@ -3559,13 +3451,13 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
         </div>
       </div>
 
-      {/* GOAL MODE + WORK STYLE — goalMode selector (prestige/balanced/fit/fast) */}
+      {/* Goal mode input (Cultural rerank layer) — prestige/fit/practical/unsure */}
       <div className="field">
         <label style={{fontWeight:600}}>{t.goalModeLabel}</label>
         <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
-          {["prestige","balanced","fit","fast"].map(key=>{
+          {["prestige","fit","practical","unsure"].map(key=>{
             const opt = t.goalModeOptions?.[key] || { icon:"🔹", label:key };
-            const sel = (info.goalMode || "prestige") === key;
+            const sel = (info.goalMode || "unsure") === key;
             return (
               <button key={key}
                 onClick={()=>setInfo(p=>({...p,goalMode:key}))}
@@ -3579,25 +3471,6 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
                 }}>
                 <span style={{fontSize:20}}>{opt.icon}</span>
                 <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* GOAL MODE + WORK STYLE — workStyle 3-button selector */}
-      <div className="field">
-        <label style={{fontWeight:600}}>{t.workStyleLabel}</label>
-        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr 1fr",marginTop:8}}>
-          {["academic","mixed","handsOn"].map(key=>{
-            const opt = t.workStyleOptions?.[key] || { icon:"🔹", label:key };
-            const sel = (info.workStyle || "mixed") === key;
-            return (
-              <button key={key}
-                className={`mob-btn ${sel?"selected":""}`}
-                onClick={()=>setInfo(p=>({...p,workStyle:key}))}>
-                <span style={{display:"block",fontSize:18,marginBottom:3}}>{opt.icon}</span>
-                <span style={{fontSize:11,lineHeight:1.3}}>{opt.label}</span>
               </button>
             );
           })}
@@ -3638,45 +3511,6 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       )}
 
 
-      {/* FIX: interest signals to prevent random results — pick up to 3 fields */}
-      <div className="field">
-        <label style={{fontWeight:600}}>{t.interestsLabel}</label>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:8}}>
-          {["health","engineering","business","law","sports","design","notsure"].map(key=>{
-            const opt = t.interestOptions?.[key] || { icon:"🔹", label:key };
-            const cur = Array.isArray(info.interests) ? info.interests : [];
-            const sel = cur.includes(key);
-            const isNotSure = key === "notsure";
-            return (
-              <button key={key}
-                onClick={()=>setInfo(p=>{
-                  const prev = Array.isArray(p.interests) ? p.interests : [];
-                  if (isNotSure) {
-                    // "Not sure" clears all others and selects only itself
-                    return {...p, interests: sel ? [] : ["notsure"]};
-                  }
-                  if (sel) return {...p, interests: prev.filter(x=>x!==key)};
-                  // Max 3 non-notsure; also clear "notsure" when picking a real domain
-                  const filtered = prev.filter(x=>x!=="notsure");
-                  if (filtered.length >= 3) return p;
-                  return {...p, interests: [...filtered, key]};
-                })}
-                style={{
-                  display:"inline-flex",alignItems:"center",gap:6,
-                  padding:"7px 12px",borderRadius:20,
-                  border:`1.5px solid ${sel?"var(--accent)":"var(--border)"}`,
-                  background:sel?"rgba(232,161,36,0.12)":"var(--surface2)",
-                  color:sel?"var(--accent)":"var(--text)",
-                  cursor:"pointer",fontSize:12,fontWeight:sel?700:400,
-                  transition:"all 0.15s",fontFamily:"inherit",
-                }}>
-                <span>{opt.icon}</span><span>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
@@ -3684,6 +3518,8 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
     </div>
   );
 }
+
+// ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
   const subjs = SUBJECTS_BY_TRACK[info.bacTrack] || [];
 
@@ -4621,11 +4457,6 @@ function TruthModeCard({ t, lang, traits, top3 }) {
 
 // FamilyPressureAdaptiveCard — multi-field, adapts to eligibility + traits + bacStatus
 // ─────────────────────────────────────────────────────────────────
-// FAMILY PRESSURE FIELD — Part 7
-// Family pressure never changes ranking.
-// Generates field-specific advice (medicine/engineering/business/law/other)
-// based on eligibility + trait fit + per-field fpByField translation data.
-// Includes "how to talk to your family" bullets (fpTalkToParents) in all 3 languages.
 function FamilyPressureAdaptiveCard({ t, lang, marks, traits, info, rankedClusters, reality }) {
   if (!marks) return null;
 
@@ -6041,30 +5872,18 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
     return t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
   }
 
-  // FIX: remove contradictory messaging
-  // Only show a note when there's a genuine tension worth flagging.
-  // Never shows "doesn't match your personality" as a generic blanket statement.
-  function getContradictionNote(cluster, tabKey) {
+  // FIX: expectation framing — explain if result may surprise high performers
+  function getSurpriseText(cluster) {
     if (!cluster) return null;
-    const ts = cluster.scores.trait    || 0;
-    const as_ = cluster.scores.academic || 0;
-    // No note on Ambitious tab — aspirational framing is handled by the unlock panel
-    if (tabKey === "ambitious") return null;
-    if (ts < 0.50) {
-      return {
-        ar: "فرصة عالية، لكن العمل اليومي في هذا المجال قد يبدو مُجهداً لأسلوبك. فكّر في مسارات مجاورة.",
-        fr: "Opportunité élevée, mais le quotidien de ce domaine peut sembler épuisant pour ton profil. Envisage des voies adjacentes.",
-        en: "High opportunity, but daily work in this field may feel draining for your style. Consider adjacent paths.",
-      }[lang] || null;
-    }
-    if (as_ < 0.45) {
-      return {
-        ar: "توافق شخصي قوي، لكنك تحتاج خطة أكاديمية لفتح هذا الباب.",
-        fr: "Très bonne affinité personnelle, mais une stratégie académique ciblée est nécessaire pour accéder à ce domaine.",
-        en: "Strong personal fit, but you need an academic plan to unlock this path.",
-      }[lang] || null;
-    }
-    return null;
+    const avg = overallAvg || 0;
+    const cs = CULTURAL_CLUSTER_SCORES[cluster.id];
+    if (!cs || cs.prestige >= 0.7 || avg < 13) return null;
+    const msgs = {
+      ar: "قد تبدو هذه النتيجة غير متوقعة بالنظر إلى علاماتك. لكن الملفات الأكاديمية القوية تنجح أيضاً في إدارة الخدمات الدولية وقيادة المؤسسات — خاصة عبر المسارات العليا.",
+      fr: "Ce résultat peut sembler inattendu vu vos notes. Pourtant, les profils académiques solides réussissent aussi en management international et leadership de service — surtout via les grandes écoles.",
+      en: "This result may seem unexpected given your grades. Strong academic profiles can also excel in international management and service leadership — especially via the grandes écoles pathway.",
+    };
+    return msgs[lang] || msgs.en;
   }
 
   const tabs = [
@@ -6075,10 +5894,10 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
 
   const current = views[active];
   const displayName = getClusterDisplayName(current);
-  const contradictionNote = getContradictionNote(current, active);
+  const surprise = getSurpriseText(current);
   const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
   const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
-  const traitPct = current ? Math.round(clamp((current.scores.trait + (current.scores.interest||0)) / 2 * 100)) : 0;
+  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
 
   return (
     <div style={{
@@ -6151,14 +5970,15 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
             </div>
           )}
 
-          {/* FIX: remove contradictory messaging — dynamic note only when genuine tension exists */}
-          {contradictionNote && (
+          {/* Surprise explanation */}
+          {surprise && (
             <div style={{
               marginTop:10,padding:"10px 14px",
               background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.2)",
               borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
             }}>
-              💬 {contradictionNote}
+              {/* FIX: expectation framing */}
+              💬 {surprise}
             </div>
           )}
 
@@ -6461,30 +6281,27 @@ function StepResults({
       {/* ── Phase 5: TOP 3 careers — Cultural rerank layer ── */}
       <div className="section-title">{t.topCareers}</div>
 
-      {/* Cultural rerank layer — dual-view shown when secondaryTop3 exists (goalMode falls back to primary) */}
-      {secondaryTop3 && secondaryTop3.length > 0 ? (
+      {/* Cultural rerank layer — 3F: unsure mode shows dual-view (Best Fit + Prestige Track) */}
+      {(safeInfo.goalMode === "unsure") && secondaryTop3 && secondaryTop3.length > 0 ? (
         <GoalModeDualView
           primary={top3}
           secondary={secondaryTop3}
           t={t} lang={lang} dir={dir}
           bacTrack={safeInfo.bacTrack}
-          goal={safeInfo.goalMode || "prestige"}
-          workStyle={safeInfo.workStyle || "mixed"}
+          goal={safeInfo.goal || "prestige"}
           overallAvg={overallAvg || safeResults.overallAvg}
         />
       ) : (
         <>
           {top3.map((c,i)=>(
             <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}
-              goal={safeInfo.goalMode || "prestige"}
-              workStyle={safeInfo.workStyle || "mixed"}
-              overallAvg={overallAvg || safeResults.overallAvg}/>
+              goal={safeInfo.goal || "prestige"} overallAvg={overallAvg || safeResults.overallAvg}/>
           ))}
         </>
       )}
 
-      {/* Cultural rerank layer — Prestige adjacent suggestions */}
-      {top3.length > 0 && (safeInfo.goalMode === "prestige" || safeInfo.goalMode === "balanced") && (() => {
+      {/* Cultural rerank layer — Step 4: Prestige adjacent suggestions */}
+      {top3.length > 0 && (safeInfo.goalMode === "prestige" || safeInfo.goalMode === "unsure") && (() => {
         const topId = top3[0]?.id;
         const topPrestige = CLUSTER_PRESTIGE[topId];
         const isLowPrestige = topPrestige && (topPrestige.trackType === "hands_on" || topPrestige.prestigeIndex < 0.60);
@@ -6869,11 +6686,8 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
-  goal: "prestige",      // Cultural sensitivity patch (Tier + Goal)
-  goalMode: "prestige",  // GOAL MODE: prestige|balanced|fit|fast (default=prestige, Moroccan norm)
-  workStyle: "mixed",    // WORK STYLE: academic|mixed|handsOn (default=mixed)
-  // FIX: interest signals to prevent random results
-  interests: [],         // Array of interest domain ids e.g. ["health","engineering"]
+  goal: "prestige",     // Cultural sensitivity patch (Tier + Goal)
+  goalMode: "unsure",   // Cultural rerank layer — prestige/fit/practical/unsure
 };
 
 const DEFAULT_REALITY = {
