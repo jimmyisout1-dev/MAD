@@ -46,6 +46,18 @@ const TRANSLATIONS = {
     examModeLabel: "نوع النقط المدخلة",
     examModeWatani: "نقط الامتحان الوطني فقط",
     examModeFull: "باك كامل (جهوي + وطني + مراقبة مستمرة)",
+    // TASK 1 — examTiming: pre-Bac vs post-Bac determines which subject list to show
+    examTimingLabel: "متى تُجري هذا التقييم؟",
+    examTimingPre: "قبل نتائج الباكالوريا (لا يزال بإمكاني التحسين)",
+    examTimingPost: "بعد الباكالوريا (نتائج نهائية رسمية)",
+    examTimingHint: "يحدد هذا قائمة المواد الدقيقة المعروضة",
+    // TASK 2 — goalPreference: prestige / balanced / practical (replaces goalMode selector)
+    goalPreferenceLabel: "ما الأسلوب الذي يناسبك الآن؟",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"الهيبة ودراسة طويلة (المسابقات والمدارس الكبرى)" },
+      balanced:   { icon:"⚖️", label:"متوازن — أفضل خيار يناسبني ويبقى مرموقاً" },
+      practical:  { icon:"🔧", label:"دخل سريع / مسار تطبيقي (OFPPT / BTS)" },
+    },
     marksSectionWatani: "الامتحان الوطني (الوطني)",
     marksSectionRegional: "الامتحان الجهوي (الجهوي)",
     marksSectionContinuous: "المراقبة المستمرة (اختياري)",
@@ -431,6 +443,18 @@ const TRANSLATIONS = {
     examModeLabel: "Type de notes saisies",
     examModeWatani: "Notes du National uniquement",
     examModeFull: "Bac complet (Régional + National + contrôle continu)",
+    // TASK 1 — examTiming
+    examTimingLabel: "Quand effectuez-vous cette évaluation ?",
+    examTimingPre: "Avant le Bac (je peux encore m'améliorer)",
+    examTimingPost: "Après le Bac (résultats officiels définitifs)",
+    examTimingHint: "Cela détermine la liste exacte des matières affichées",
+    // TASK 2 — goalPreference
+    goalPreferenceLabel: "Quel style vous correspond le mieux ?",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"Prestige & longues études (concours, grandes écoles)" },
+      balanced:   { icon:"⚖️", label:"Équilibré — meilleur choix qui reste valorisé" },
+      practical:  { icon:"🔧", label:"Emploi rapide / voie pratique (OFPPT / BTS)" },
+    },
     marksSectionWatani: "Examen National",
     marksSectionRegional: "Examen Régional",
     marksSectionContinuous: "Contrôle continu (optionnel)",
@@ -803,6 +827,18 @@ const TRANSLATIONS = {
     examModeLabel: "Which grades are these?",
     examModeWatani: "National exam grades only",
     examModeFull: "Full Bac (Regional + National + continuous assessment)",
+    // TASK 1 — examTiming
+    examTimingLabel: "When is this evaluation?",
+    examTimingPre: "Before Bac (I can still improve)",
+    examTimingPost: "After Bac (final official results)",
+    examTimingHint: "This determines which exact subjects are shown",
+    // TASK 2 — goalPreference
+    goalPreferenceLabel: "Which style fits you best right now?",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"Prestige & long studies (competitive exams, grandes écoles)" },
+      balanced:   { icon:"⚖️", label:"Balanced — best option that still has good standing" },
+      practical:  { icon:"🔧", label:"Fast job / practical route (OFPPT / BTS / hands-on)" },
+    },
     marksSectionWatani: "National Exam",
     marksSectionRegional: "Regional Exam",
     marksSectionContinuous: "Continuous Assessment (optional)",
@@ -1178,46 +1214,93 @@ const STREAM_BY_TRACK = {
 };
 
 // National exam (Watani) subjects by track (Morocco)
-const WATANI_SUBJECTS_BY_TRACK = {
-  SMA:  ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
-  SMB:  ["math", "physics", "chemistry", "eng_sciences", "philosophy", "foreign2"],
-  PC:   ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
-  SVT:  ["math", "physics", "chemistry", "biology", "philosophy", "foreign2"],
-  ECO:  ["math", "economics_stats", "accounting", "management", "philosophy", "foreign2"],
-  LET:  ["arabic", "history", "philosophy", "foreign2"],
-  TECH: ["math", "physics", "chemistry", "tech", "philosophy", "foreign2"],
-  ARTS: ["arts", "design", "philosophy", "foreign2", "history"],
+// TASK 1 — ACCURATE MOROCCAN BAC SUBJECT MAPS
+// ─────────────────────────────────────────────────────────────────
+// TWO maps: PRE (during year / mock exam) and POST (final official Bac marks).
+// The UI uses info.examTiming ("pre" | "post") to pick the right list.
+// KEY RULE: Physics + Chemistry are ONE combined mark ("pc") in Moroccan science
+//           post-Bac for SMA/SMB/PC/SVT/TECH tracks. Keep them separate only pre-Bac.
+// ─────────────────────────────────────────────────────────────────
+
+// POST-Bac: official final-exam subjects per track — minimal and accurate
+// SPEC-EXACT subject lists per track (Morocco 2BAC national-exam orientation).
+// Physics & Chemistry = ONE combined subject "pc". SVT uses "svt". English not French for science.
+const SUBJECTS_BY_TRACK = {
+  SMA:  ["math", "pc", "english", "philosophy"],
+  SMB:  ["math", "pc", "english", "philosophy"],
+  PC:   ["math", "pc", "english", "philosophy"],
+  SVT:  ["svt", "pc", "math", "english", "philosophy"],
+  ECO:  ["math", "economics", "management", "english", "philosophy"],
+  LET:  ["arabic", "french", "english", "philosophy", "history"],
+  TECH: ["math", "pc", "tech", "english", "philosophy"],
+  ARTS: ["arts", "design", "french", "english", "history"],
 };
+
+// POST / PRE / Watani aliases all point to the canonical list.
+const SUBJECTS_POST_BY_TRACK   = SUBJECTS_BY_TRACK;
+const SUBJECTS_PRE_BY_TRACK    = SUBJECTS_BY_TRACK;
+const WATANI_SUBJECTS_BY_TRACK = SUBJECTS_BY_TRACK;
 
 // Regional (Jihawi) subjects (1ère Bac), used only when examMode="full_bac"
 const REGIONAL_SUBJECTS_BY_STREAM = {
-  scientific: ["arabic", "french", "islamic", "history"],
-  eco:        ["arabic", "french", "islamic", "history"],
-  letters:    ["arabic", "french", "islamic", "history"],
-  arts:       ["arabic", "french", "islamic", "history"],
+  scientific: ["arabic", "islamic", "history"],
+  eco:        ["arabic", "islamic", "history"],
+  letters:    ["arabic", "islamic", "history"],
+  arts:       ["arabic", "islamic", "history"],
 };
 
+// Migration: merge legacy mark keys into canonical SUBJECTS_BY_TRACK keys.
+// physics + chemistry → pc (average); economics_stats → economics; accounting → management.
+function migrateMarks(marks) {
+  if (!marks || typeof marks !== "object") return marks || {};
+  const out = { ...marks };
+  // physics + chemistry → pc
+  if (out.pc == null) {
+    const p = Number(out.physics)   || 0;
+    const c = Number(out.chemistry) || 0;
+    if (p > 0 || c > 0) out.pc = (p > 0 && c > 0) ? (p + c) / 2 : Math.max(p, c);
+  }
+  delete out.physics; delete out.chemistry;
+  // biology → svt (if svt missing)
+  if (out.svt == null && out.biology != null) out.svt = out.biology;
+  delete out.biology;
+  // economics_stats → economics
+  if (out.economics == null && out.economics_stats != null) out.economics = out.economics_stats;
+  delete out.economics_stats;
+  // accounting → management
+  if (out.management == null && out.accounting != null) out.management = out.accounting;
+  delete out.accounting;
+  return out;
+}
+
 const SUBJECT_LABELS = {
-  math:       { ar: "الرياضيات",          fr: "Mathématiques", en: "Mathematics"         },
-  physics:    { ar: "الفيزياء",           fr: "Physique",      en: "Physics"              },
-  chemistry:  { ar: "الكيمياء",           fr: "Chimie",        en: "Chemistry"            },
-  biology:    { ar: "علم الأحياء",        fr: "Biologie",      en: "Biology"              },
-  french:     { ar: "اللغة الفرنسية",     fr: "Français",      en: "French"               },
-  arabic:     { ar: "اللغة العربية",      fr: "Arabe",         en: "Arabic"               },
-  english:    { ar: "اللغة الإنجليزية",  fr: "Anglais",       en: "English"              },
-  economics:  { ar: "الاقتصاد",           fr: "Économie",      en: "Economics"            },
-  management: { ar: "التدبير",            fr: "Gestion",       en: "Management"           },
-  tech:       { ar: "التكنولوجيا",        fr: "Technologie",   en: "Technology"           },
-  philosophy: { ar: "الفلسفة",            fr: "Philosophie",   en: "Philosophy"           },
-  history:    { ar: "التاريخ والجغرافيا", fr: "Histoire-Géo",  en: "History & Geography" },
-  arts:       { ar: "الفنون",             fr: "Arts",          en: "Arts"                 },
-  design:     { ar: "التصميم",            fr: "Design",        en: "Design"               },
-  foreign2: { ar: "اللغة الأجنبية الثانية", fr: "2ème langue étrangère", en: "Second foreign language" },
-  svt: { ar: "علوم الحياة والأرض (SVT)", fr: "SVT", en: "Life & Earth Sciences (SVT)" },
-  eng_sciences: { ar: "علوم المهندس", fr: "Sciences de l'ingénieur", en: "Engineering Sciences" },
-  economics_stats: { ar: "الاقتصاد العام والإحصاء", fr: "Économie générale & Statistiques", en: "Economics & Statistics" },
-  accounting: { ar: "المحاسبة", fr: "Comptabilité", en: "Accounting" },
-  islamic: { ar: "التربية الإسلامية", fr: "Éducation islamique", en: "Islamic Education" },
+  math:       { ar: "الرياضيات",           fr: "Mathématiques",   en: "Mathematics"          },
+  // pc = Physique-Chimie (one combined mark in Moroccan Bac for science tracks)
+  pc:         { ar: "الفيزياء والكيمياء",  fr: "Physique-Chimie", en: "Physics & Chemistry"  },
+  // svt = Sciences de la Vie et de la Terre (standalone for SVT track)
+  svt:        { ar: "علوم الحياة والأرض",  fr: "SVT",             en: "Life & Earth Sciences" },
+  english:    { ar: "اللغة الإنجليزية",   fr: "Anglais",         en: "English"              },
+  french:     { ar: "اللغة الفرنسية",      fr: "Français",        en: "French"               },
+  arabic:     { ar: "اللغة العربية",       fr: "Arabe",           en: "Arabic"               },
+  philosophy: { ar: "الفلسفة",             fr: "Philosophie",     en: "Philosophy"           },
+  history:    { ar: "التاريخ والجغرافيا",  fr: "Histoire-Géo",    en: "History & Geography"  },
+  economics:  { ar: "الاقتصاد",            fr: "Économie",        en: "Economics"            },
+  management: { ar: "التدبير",             fr: "Gestion",         en: "Management"           },
+  tech:       { ar: "التكنولوجيا",         fr: "Technologie",     en: "Technology"           },
+  arts:       { ar: "الفنون",              fr: "Arts",            en: "Arts"                 },
+  design:     { ar: "التصميم",             fr: "Design",          en: "Design"               },
+  // Extra keys kept for backward-compat (old sessions, narrative helpers)
+  physics:    { ar: "الفيزياء",            fr: "Physique",        en: "Physics"              },
+  chemistry:  { ar: "الكيمياء",            fr: "Chimie",          en: "Chemistry"            },
+  biology:    { ar: "علم الأحياء",         fr: "Biologie",        en: "Biology"              },
+  accounting:      { ar: "المحاسبة",                    fr: "Comptabilité",                     en: "Accounting"             },
+  economics_stats: { ar: "الاقتصاد العام والإحصاء",    fr: "Économie générale & Statistiques", en: "Economics & Statistics" },
+  eng_sciences:    { ar: "علوم المهندس",                fr: "Sciences de l'ingénieur",          en: "Engineering Sciences"   },
+  islamic:         { ar: "التربية الإسلامية",           fr: "Éducation islamique",              en: "Islamic Education"      },
+  foreign2:        { ar: "اللغة الأجنبية الثانية",      fr: "2ème langue étrangère",            en: "Second foreign language"},
+  sn_math:         { ar: "الرياضيات",                   fr: "Mathématiques",                    en: "Mathematics"            },
+  sn_physics:      { ar: "الفيزياء",                    fr: "Physique",                         en: "Physics"                },
+  sn_biology:      { ar: "الأحياء",                     fr: "Biologie",                         en: "Biology"                },
 };
 
 const MOROCCAN_CITIES = [
@@ -1260,7 +1343,7 @@ const CLUSTER_CONSTRAINTS = {
     // Public medicine (Médecine/Pharmacie) in Morocco is extremely selective.
     // National average acceptance rate: top 2–3% of SVT bac holders.
     minAvg: 16.0,
-    requiredSubjects: { biology: 14, chemistry: 13 },
+    requiredSubjects: { svt: 14, pc: 13 },
     privateOk: true,
     hardPenalty: 0.45,   // pushes cluster out of top 3 when !privateBudget
   },
@@ -1326,7 +1409,7 @@ const CLUSTERS = [
   {
     id:"it", icon:"💻", demandIndex:0.95,
     bacAffinity:{ SMA:0.9,SMB:0.9,PC:0.7,SVT:0.3,ECO:0.4,LET:0.2,TECH:0.8,ARTS:0.2 },
-    subjectWeights:{ math:0.35,physics:0.2,tech:0.3,french:0.1,english:0.05 },
+    subjectWeights:{ math:0.35,pc:0.2,tech:0.3,french:0.15 },
     traitWeights:{ analytical:0.35,creativity:0.25,structure:0.2,social:-0.05,risk:0.1,leadership:0.05 },
     salary:{ min:5000,max:25000,currency:"MAD" },
     pathways:{
@@ -1356,7 +1439,7 @@ const CLUSTERS = [
   {
     id:"data", icon:"📊", demandIndex:0.92,
     bacAffinity:{ SMA:0.95,SMB:0.85,PC:0.7,SVT:0.5,ECO:0.7,LET:0.15,TECH:0.6,ARTS:0.1 },
-    subjectWeights:{ math:0.45,physics:0.1,economics:0.2,french:0.1,tech:0.15 },
+    subjectWeights:{ math:0.45,pc:0.1,economics:0.2,french:0.1,tech:0.15 },
     traitWeights:{ analytical:0.45,creativity:0.2,structure:0.25,social:-0.05,risk:0.05,leadership:0.1 },
     salary:{ min:6000,max:30000,currency:"MAD" },
     pathways:{
@@ -1386,7 +1469,7 @@ const CLUSTERS = [
   {
     id:"cyber", icon:"🔐", demandIndex:0.88,
     bacAffinity:{ SMA:0.85,SMB:0.8,PC:0.6,SVT:0.2,ECO:0.3,LET:0.15,TECH:0.75,ARTS:0.1 },
-    subjectWeights:{ math:0.3,physics:0.15,tech:0.4,french:0.1,english:0.05 },
+    subjectWeights:{ math:0.3,pc:0.15,tech:0.4,french:0.15 },
     traitWeights:{ analytical:0.4,creativity:0.15,structure:0.3,social:-0.1,risk:0.1,leadership:0.05 },
     salary:{ min:7000,max:28000,currency:"MAD" },
     pathways:{
@@ -1416,7 +1499,7 @@ const CLUSTERS = [
   {
     id:"network", icon:"📡", demandIndex:0.8,
     bacAffinity:{ SMA:0.8,SMB:0.85,PC:0.65,SVT:0.2,ECO:0.25,LET:0.1,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.25,physics:0.3,tech:0.4,french:0.05 },
+    subjectWeights:{ math:0.25,pc:0.3,tech:0.4,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.1,structure:0.35,social:0.1,risk:0.05,leadership:0.1 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -1446,7 +1529,7 @@ const CLUSTERS = [
   {
     id:"industrial", icon:"⚙️", demandIndex:0.78,
     bacAffinity:{ SMA:0.8,SMB:0.95,PC:0.75,SVT:0.2,ECO:0.2,LET:0.05,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.3,physics:0.35,tech:0.3,chemistry:0.05 },
+    subjectWeights:{ math:0.3,pc:0.35,tech:0.35 },
     traitWeights:{ analytical:0.25,creativity:0.15,structure:0.4,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:5500,max:22000,currency:"MAD" },
     pathways:{
@@ -1476,7 +1559,7 @@ const CLUSTERS = [
   {
     id:"energy", icon:"🌞", demandIndex:0.85,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.85,SVT:0.5,ECO:0.2,LET:0.05,TECH:0.8,ARTS:0.05 },
-    subjectWeights:{ math:0.3,physics:0.45,chemistry:0.15,tech:0.1 },
+    subjectWeights:{ math:0.3,pc:0.55,tech:0.15 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.3,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:6000,max:24000,currency:"MAD" },
     pathways:{
@@ -1506,7 +1589,7 @@ const CLUSTERS = [
   {
     id:"civil", icon:"🏗️", demandIndex:0.72,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.75,SVT:0.2,ECO:0.15,LET:0.05,TECH:0.85,ARTS:0.1 },
-    subjectWeights:{ math:0.35,physics:0.4,tech:0.2,french:0.05 },
+    subjectWeights:{ math:0.35,pc:0.4,tech:0.2,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.35,social:0.1,risk:0.0,leadership:0.05 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -1536,7 +1619,7 @@ const CLUSTERS = [
   {
     id:"health", icon:"🏥", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.75,SVT:0.98,ECO:0.15,LET:0.1,TECH:0.3,ARTS:0.05 },
-    subjectWeights:{ biology:0.5,chemistry:0.3,math:0.1,physics:0.1 },
+    subjectWeights:{ svt:0.5,pc:0.35,math:0.15 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.25,social:0.3,risk:0.0,leadership:0.1 },
     salary:{ min:8000,max:40000,currency:"MAD" },
     pathways:{
@@ -1596,7 +1679,7 @@ const CLUSTERS = [
   {
     id:"marketing", icon:"📣", demandIndex:0.75,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.4,SVT:0.3,ECO:0.9,LET:0.65,TECH:0.4,ARTS:0.6 },
-    subjectWeights:{ economics:0.35,french:0.25,management:0.25,arabic:0.1,arts:0.05 },
+    subjectWeights:{ economics:0.35,english:0.15,management:0.25,french:0.2,arts:0.05 },
     traitWeights:{ analytical:0.15,creativity:0.4,structure:0.1,social:0.25,risk:0.05,leadership:0.05 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -1747,7 +1830,7 @@ const CLUSTERS = [
   {
     id:"trades", icon:"🔧", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.65,PC:0.5,SVT:0.4,ECO:0.35,LET:0.2,TECH:0.85,ARTS:0.25 },
-    subjectWeights:{ tech:0.4,math:0.25,physics:0.2,french:0.1,arabic:0.05 },
+    subjectWeights:{ tech:0.4,math:0.25,pc:0.2,french:0.15 },
     traitWeights:{ analytical:0.2,creativity:0.15,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -1778,7 +1861,7 @@ const CLUSTERS = [
   {
     id:"automotive", icon:"🚗", demandIndex:0.78,
     bacAffinity:{ SMA:0.55,SMB:0.7,PC:0.5,SVT:0.35,ECO:0.3,LET:0.2,TECH:0.9,ARTS:0.2 },
-    subjectWeights:{ tech:0.45,math:0.2,physics:0.2,french:0.1,arabic:0.05 },
+    subjectWeights:{ tech:0.45,math:0.2,pc:0.2,french:0.15 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4000,max:16000,currency:"MAD" },
     pathways:{
@@ -1871,7 +1954,7 @@ const CLUSTERS = [
   {
     id:"culinary_ops", icon:"🍽️", demandIndex:0.72,
     bacAffinity:{ SMA:0.3,SMB:0.3,PC:0.3,SVT:0.35,ECO:0.55,LET:0.45,TECH:0.3,ARTS:0.5 },
-    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,biology:0.1,history:0.1 },
+    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,english:0.1,history:0.1 },
     traitWeights:{ analytical:0.15,creativity:0.25,structure:0.35,social:0.45,risk:0.2,leadership:0.25 },
     salary:{ min:3500,max:16000,currency:"MAD" },
     pathways:{
@@ -2078,10 +2161,30 @@ function clamp(val, min = 0, max = 100) {
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
 
-// Cultural sensitivity patch (Tier + Goal) — academic tier from overallAvg
-// HIGH ≥14.5 → public selective/grande école first
-// MID  ≥12   → university first
-// LOW  <12   → practical can be default
+// TASK 2 — PRESTIGE TIER per cluster
+// A = medicine / engineering / data / law  (socially elite in Morocco)
+// B = business / logistics / civil / network (solid, respected)
+// C = tourism / hospitality / arts / trades / sports / culinary (low cultural prestige)
+// OFPPT/ISTA are PATHWAYS shown inside clusters, never standalone cluster IDs.
+const CLUSTER_PRESTIGE_TIER = {
+  health: "A", data: "A", it: "A", cyber: "A", industrial: "A",
+  energy: "A", civil: "A",
+  finance: "B", edu_law: "B", network: "B", logistics: "B", marketing: "B",
+  creative_digital: "B",
+  tourism: "C", arts_media: "C", sports: "C", trades: "C",
+  automotive: "C", culinary_ops: "C",
+};
+
+// TASK 2 — Academic tier A/B/C/D (replaces HIGH/MID/LOW for new scoring)
+function getAcademicTierABCD(avg) {
+  if (avg >= 15.5) return "A";
+  if (avg >= 14.0) return "B";
+  if (avg >= 12.0) return "C";
+  return "D";
+}
+function tierIsHigh(tier) { return tier === "A" || tier === "B"; }
+
+// Legacy alias — kept for backward-compat with old callers
 function getAcademicTier(overallAvg) {
   const avg = Number(overallAvg) || 0;
   if (avg >= 14.5) return "HIGH";
@@ -2089,121 +2192,139 @@ function getAcademicTier(overallAvg) {
   return "LOW";
 }
 
-// FIX: multi-view recommendation
-// Returns { bestFit, balanced, ambitious } from ranked clusters.
-// bestFit    = highest trait+interest match (personal)
-// balanced   = highest final score (already top-1, academic/prestige blend)
-// ambitious  = highest prestige that's academically reachable (top-6)
-// PrestigeIndex / Guardrails — computeThreeViews
-// Implements three distinct scoring perspectives as per spec:
-//   ambitiousScore  = 0.35*prestige + 0.25*market + 0.2*bac + 0.2*academic - penalties
-//   balancedScore   = existingFinalScore + 0.08*(prestige-0.5)
-//   personalScore   = 0.45*trait + 0.2*market + 0.2*academic + 0.15*bac - penalties
-// Guardrails: high-avg students can't have low-prestige cluster as #1 unless explicit passion.
+// TASK 2 — computePES: Prestige Expectation Score [0..1]
+// Deterministic. Reads average, track stream, top subject, and family pressure field.
+function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
+  const avg = clamp(Number(overallAvg) || 0, 0, 20);
+  const stream = STREAM_BY_TRACK[bacTrack] || "scientific";
+  let pes = avg / 20;
+  if (stream === "scientific") pes = Math.min(1, pes * 1.15);
+  else if (stream === "eco")   pes = Math.min(1, pes * 1.05);
+  if (fpField === "medicine" || fpField === "engineering") pes = Math.min(1, pes + 0.08);
+  const markVals = Object.values(effectiveMarks||{}).map(Number).filter(v => !isNaN(v) && v > 0);
+  if (markVals.length && Math.max(...markVals) >= 16) pes = Math.min(1, pes + 0.05);
+  return pes;
+}
+
+// TASK 2 — computeThreeViews: three distinct scoring perspectives
+// score_fit       = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
+// score_balanced  = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
+// score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
+// Cultural Credibility Filter (Tier C penalty):
+//   avg ≥ 14.5 + goalPreference ≠ "practical" → Tier C clusters penalised in balanced+ambitious
+//   avg ≥ 15.5 → Tier C cannot be #1 in ANY perspective unless explicit practical preference
+// Personality consistency guardrail on Best Fit:
+//   traitScore < 0.55 → cannot be #1; traitScore < 0.45 → blocked top-3 unless override
+// Medicine special-case:
+//   Fit: requires traitScore ≥ 0.60; Ambitious: not #1 if avg < 15.5 + !privateBudget
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
   const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
-  const goalMode      = safeInfo.goalMode || "unsure";
+  const goalMode      = safeInfo.goalMode      || "unsure";
+  const goalPref      = safeInfo.goalPreference || "prestige";
   const privateBudget = !!safeInfo.privateBudget;
+  const fpField       = safeInfo.fpField || "";
+  const pes           = computePES(avg, safeInfo.bacTrack||"SMA", effectiveMarks||{}, fpField);
+  const academicTier  = getAcademicTierABCD(avg);
+  const isHighTier    = tierIsHigh(academicTier); // A or B
+  const isPractical   = goalPref === "practical" || goalMode === "practical";
 
-  // Interests from reality — used for passion-mode exemption check
-  // (GoalMode "fit" = "Passion" in spec language)
-  const TOURISM_INTERESTS  = new Set(["i_people","i_helping","i_outdoors","i_content"]);
-  const SPORTS_INTERESTS   = new Set(["i_sports","i_leading","i_people","i_outdoors"]);
-  const ARTS_INTERESTS     = new Set(["i_content","i_gaming","i_alone","i_people"]);
-
-  // Low-prestige clusters that must not be #1 for high-avg non-passion students
-  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
-
-  function hasPassionExemption(clusterId) {
-    if (goalMode !== "fit") return false;
-    // "fit" = Passion in spec language. Also check relevant interests.
-    return true; // fit/passion mode always lifts the block
+  // TASK 2 — Cultural Credibility Filter: Tier C penalty (balanced + ambitious)
+  function tierCPenalty(clusterId) {
+    if (isPractical) return 0;
+    const ct = CLUSTER_PRESTIGE_TIER[clusterId] || "B";
+    if (ct !== "C") return 0;
+    if (avg < 12) return 0;           // low-avg students: no penalty (realism first)
+    if (avg >= 15.5) return 0.30;     // very high avg: strong penalty, Tier C rarely #1
+    if (isHighTier) return 0.18;      // avg 14–15.5: meaningful penalty
+    return 0.06;                      // avg 12–14: mild nudge
   }
 
-  // Guardrails — Patch D
-  // Returns true if cluster can legitimately be #1 for this student
-  function passesGuardrail(cluster, thisScore, allScored) {
-    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
-    if (avg < 14.5) return true;
-    if (hasPassionExemption(cluster.id)) return true;
-    // Check: is this score dominant (exceeds next best by >=0.12)?
-    const sorted = [...allScored].sort((a,b)=>b.s-a.s);
-    const rank1 = sorted[0];
-    const rank2 = sorted[1];
-    if (rank1?.c?.id === cluster.id && rank2) {
-      return (thisScore - rank2.s) >= 0.12;
-    }
-    return false;
+  // Prestige penalty for balanced/ambitious (cultural guardrail)
+  function prestigePenalty(cp) {
+    if (!isHighTier || isPractical) return 0;
+    if (cp.prestigeIndex < 0.50) return 0.20;
+    if (cp.prestigeIndex < 0.60) return 0.12;
+    return 0;
   }
 
-  // Pull best candidate from scored array, applying guardrail
-  function pickBest(scored) {
-    const sorted = [...scored].sort((a,b)=>b.s-a.s);
-    for (const item of sorted) {
-      if (passesGuardrail(item.c, item.s, scored)) return item.c;
-    }
-    return sorted[0]?.c || null; // fallback if all blocked
+  // Medicine balanced penalty when public-ineligible + no budget
+  function medBalancedPenalty(c) {
+    return (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
   }
 
-  // ── C: ambitious scoring ──────────────────────────────────────
-  const ambitiousScored = rankedClusters.map(c => {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    const penalty = (() => {
-      let p = 0;
-      // Eligibility: notEligiblePublic and no private budget → cap enforced separately
-      if (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") {
-        p += 0.08;
-      }
-      // Avg gap heuristic (labelled as such): if avg < cluster minAvg by >2, reduce
-      const cc = CLUSTER_CONSTRAINTS[c.id];
-      if (cc && cc.minAvg && avg < cc.minAvg - 2) {
-        p += 0.08;
-      }
-      return p;
-    })();
-    let s = 0.35*cp.prestigeIndex + 0.25*(c.scores.market||0) + 0.2*(c.scores.bac||0) + 0.2*(c.scores.academic||0) - penalty;
-    // Eligibility realism guard: notEligiblePublic with no private budget → cap at 0.65
-    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
-      s = Math.min(s, 0.65);
-    }
-    s = Math.min(1, Math.max(0, s));
-    return { c, s };
-  });
-  const ambitious = pickBest(ambitiousScored);
+  // score_fit = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
+  const fitScored = rankedClusters.map(c => ({
+    c, s: clamp(
+      0.55*(c.scores.trait||0)     + 0.25*(c.scores.academic||0)
+    + 0.10*(c.scores.bac||0)       + 0.10*(c.scores.market||0)
+    - tierCPenalty(c.id) * 0.5     // softer on fit tab
+    ),
+  }));
 
-  // ── C: balanced scoring ───────────────────────────────────────
+  // score_balanced = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestige
   const balancedScored = rankedClusters.map(c => {
     const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    const s = Math.min(1, Math.max(0, (c.scores.final||0) + 0.08*(cp.prestigeIndex - 0.5)));
-    return { c, s };
+    return { c, s: clamp(
+      0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0)
+    + 0.20*(c.scores.market||0)  + 0.10*(c.scores.bac||0)
+    + 0.10*cp.prestigeIndex
+    - prestigePenalty(cp) - medBalancedPenalty(c) - tierCPenalty(c.id)
+    )};
   });
-  const balanced = pickBest(balancedScored);
 
-  // ── C: personal fit scoring ───────────────────────────────────
-  const personalScored = rankedClusters.map(c => {
-    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
-    const s = Math.min(1, Math.max(0,
-      0.45*(c.scores.trait||0) + 0.2*(c.scores.market||0) + 0.2*(c.scores.academic||0) + 0.15*(c.scores.bac||0) - penalty
-    ));
-    return { c, s };
+  // score_ambitious = 0.45*prestige + 0.35*academic + 0.15*market + 0.05*bac
+  const ambitiousScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const cc = CLUSTER_CONSTRAINTS[c.id];
+    let s = 0.45*cp.prestigeIndex     + 0.35*(c.scores.academic||0)
+          + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0)
+          - tierCPenalty(c.id);
+    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) s = Math.min(s, 0.65);
+    if (cc?.minAvg && avg < cc.minAvg - 2) s -= 0.08;
+    return { c, s: clamp(s) };
   });
-  // bestFit: guardrail still applies for very high avg — but less strict (0.08 gap)
-  function pickBestFit(scored) {
-    const sorted = [...scored].sort((a,b)=>b.s-a.s);
-    if (avg < 14.5) return sorted[0]?.c || null;
-    for (const item of sorted) {
-      if (!LOW_PRESTIGE_BLOCKED.has(item.c.id)) return item.c;
-      if (hasPassionExemption(item.c.id)) return item.c;
-      // dominance check: 0.08 gap (more lenient for personal fit)
-      const rank2 = sorted.find(x => x.c.id !== item.c.id);
-      if (rank2 && (item.s - rank2.s) >= 0.08) return item.c;
+
+  // Personality consistency guardrail — Best Fit only
+  function fitPersonalityOk(cluster, rank) {
+    const ts = cluster.scores.trait || 0;
+    // Medicine: require traitScore ≥ 0.60 to appear as Best Fit #1
+    if (cluster.id === "health" && ts < 0.60) {
+      if (rank === 0) return false;
     }
-    return sorted[0]?.c || null;
+    if (ts < 0.55 && rank === 0) return false; // cannot be #1
+    if (ts < 0.45 && avg < 16.5)  return false; // blocked from top-3 for non-elite avg
+    return true;
   }
-  const bestFit = pickBestFit(personalScored);
+
+  // Pick best fit with personality guardrail
+  const fitSorted = [...fitScored].sort((a,b) => b.s - a.s);
+  let bestFit = null;
+  for (let i = 0; i < fitSorted.length; i++) {
+    if (fitPersonalityOk(fitSorted[i].c, i)) { bestFit = fitSorted[i].c; break; }
+  }
+  bestFit = bestFit || fitSorted[0]?.c || null; // safe fallback
+
+  // Pick best balanced
+  const balSorted = [...balancedScored].sort((a,b) => b.s - a.s);
+  const balanced = balSorted[0]?.c || null;
+
+  // Pick best ambitious — medicine not #1 if avg < 15.5 + !privateBudget
+  const ambSorted = [...ambitiousScored].sort((a,b) => b.s - a.s);
+  let ambitious = null;
+  for (const item of ambSorted) {
+    if (item.c.id === "health" && !privateBudget && avg < 15.5) continue;
+    ambitious = item.c; break;
+  }
+  ambitious = ambitious || ambSorted[0]?.c || null;
+
+  // Debug line (dev-only, no import.meta)
+  if (typeof window !== "undefined" && window.__DEV__) {
+    console.log("[Massar ThreeViews] PES:", pes.toFixed(2), "tier:", academicTier,
+      "| fit:", bestFit?.id, "balanced:", balanced?.id, "ambitious:", ambitious?.id);
+  }
 
   return { bestFit, balanced, ambitious };
 }
@@ -2233,8 +2354,12 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   if (!rankedClusters || rankedClusters.length === 0) return { primary: [], secondary: null };
 
   const goalMode  = info.goalMode  || "unsure";
+  // TASK 2 — goalPreference overrides goalMode for the practical exemption check
+  const goalPref  = info.goalPreference || "prestige";
   const avg       = clamp(Number(overallAvg) || 0, 0, 20);
   const isHighAvg = avg >= 14.5;
+  // Practical mode: user explicitly chose practical route — no prestige gates apply
+  const isPractical = goalPref === "practical" || goalMode === "practical";
 
   // Helper: get prestige metadata for a cluster
   function getMeta(c) {
@@ -2252,7 +2377,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
 
   // 3B: Hard gate — low-prestige clusters can only be in top-3 if score is dominant
   function applyHardGate(sorted) {
-    if (!isHighAvg || goalMode === "practical") return sorted;
+    if (!isHighAvg || isPractical) return sorted;
     const topScore = sorted[0]?.scores?.final || 0;
     const top3 = [];
     const rest = [];
@@ -2297,7 +2422,10 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   let primary;
   let secondary = null;
 
-  if (goalMode === "prestige") {
+  if (isPractical) {
+    // TASK 2 — practical preference: practical boost, no prestige gates at all
+    primary = practicalSort(rankedClusters);
+  } else if (goalMode === "prestige") {
     // 3C: sort by prestige composite, then gate
     primary = applyHardGate(prestigeSort(rankedClusters));
   } else if (goalMode === "fit") {
@@ -2316,53 +2444,129 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Sanity checks — Step 5
-// Dev-only. Runs once at load if on localhost.
+// TASK 3 — Logic Self-Check (dev-only, 5 cases)
+// Runs once on localhost to validate scoring logic.
 // No import.meta. No crashes if checks fail.
 // ─────────────────────────────────────────────────────────────────
-function runSanityChecks() {
+function runLogicSelfCheck() {
   try {
-    const LOW_IDS = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
+    const LOW_PRACTICAL = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
+    const GOOD_SVT      = new Set(["data","cyber","it","health","energy","industrial","civil"]);
+    const GOOD_LET      = new Set(["edu_law","marketing","arts_media","creative_digital"]);
+    const GOOD_ECO      = new Set(["finance","marketing","logistics","edu_law"]);
 
-    // Build minimal synthetic clusters for testing
-    const makeSC = (id, finalScore, academicScore) => ({
-      id, scores: { final: finalScore, academic: academicScore },
-      pathways: {},
+    // Minimal synthetic cluster builder used by culturallyRerankClusters
+    const makeRC = (id, final, academic, trait) => ({
+      id,
+      scores: { final, academic, trait: trait||0.5, market:0.7, bac:0.6, interest:0.5, strength:0.5, identity:0.5, priority:0.5 },
+      pathways: {
+        grandeEcole: ["data","it","cyber","health","energy","industrial","civil","finance","edu_law"].includes(id) ? {schools:["ENSA"]} : null,
+        university: {schools:["FST"]},
+        practical: {schools:["OFPPT"]},
+      },
+      eligibilityTag: "eligible",
     });
 
-    // Check 1: overallAvg=15, goalMode=prestige → top-3 must not contain tourism/sports
-    const synth = [
-      makeSC("it",      0.74, 0.82),
-      makeSC("finance", 0.71, 0.78),
-      makeSC("data",    0.70, 0.79),
-      makeSC("tourism", 0.68, 0.40),  // should NOT be in top-3
-      makeSC("sports",  0.65, 0.30),  // should NOT be in top-3
-    ];
-    const info1 = { goalMode: "prestige" };
-    const { primary: p1 } = culturallyRerankClusters(synth, info1, 15);
-    const top3ids1 = p1.slice(0,3).map(c=>c.id);
-    if (top3ids1.some(id => LOW_IDS.has(id))) {
-      console.warn("[Massar] Sanity check FAILED (1): high-avg prestige still shows low-prestige cluster in top-3:", top3ids1);
+    // Synthetic compute helper — bypasses full engine, tests rerank + three-views only
+    function makeRanked(idScores) {
+      return idScores.map(([id,f,a,t]) => makeRC(id,f,a,t)).sort((a,b)=>b.scores.final-a.scores.final);
     }
 
-    // Check 2: goalMode=practical → tourism/sports ARE allowed in top-3
-    const info2 = { goalMode: "practical" };
-    const { primary: p2 } = culturallyRerankClusters(synth, info2, 15);
-    const top3ids2 = p2.slice(0,3).map(c=>c.id);
-    if (!top3ids2.some(id => LOW_IDS.has(id))) {
-      console.warn("[Massar] Sanity check WARN (2): practical mode should allow hands-on clusters in top-3:", top3ids2);
+    let passed = 0, failed = 0;
+    function assert(label, condition, data) {
+      if (condition) { passed++; }
+      else { failed++; console.warn(`[SelfCheck FAIL] ${label}`, data); }
     }
 
-    console.log("[Massar] Sanity checks passed. Check1 top3:", top3ids1, "Check2 top3:", top3ids2);
+    // ── Case A: SVT post, avg 15.2, strong pc/svt/math
+    // → top-3 should include Data/AI or Engineering/Cyber; NOT Tourism, NOT OFPPT-only
+    {
+      const ranked = makeRanked([
+        ["data",    0.82, 0.90, 0.75],
+        ["cyber",   0.78, 0.85, 0.65],
+        ["it",      0.76, 0.82, 0.70],
+        ["health",  0.71, 0.88, 0.55],
+        ["tourism", 0.55, 0.30, 0.60],
+        ["sports",  0.40, 0.20, 0.55],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige", privateBudget:false };
+      const { primary } = culturallyRerankClusters(ranked, info, 15.2);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case A: high SVT — no low-practical in top-3", !top3.some(id=>LOW_PRACTICAL.has(id)), top3);
+      assert("Case A: high SVT — at least one GOOD cluster in top-3", top3.some(id=>GOOD_SVT.has(id)), top3);
+    }
+
+    // ── Case B: SVT post, avg 11.5 → practical options allowed in top-3
+    {
+      const ranked = makeRanked([
+        ["trades",    0.62, 0.40, 0.70],
+        ["automotive",0.60, 0.38, 0.65],
+        ["it",        0.55, 0.55, 0.45],
+        ["tourism",   0.52, 0.30, 0.60],
+      ]);
+      const info = { goalMode:"unsure", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 11.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      // low avg — practical clusters ARE allowed (no prestige gate for avg < 12)
+      assert("Case B: low avg — practical clusters not blocked", top3.length > 0, top3);
+    }
+
+    // ── Case C: LET post, high arabic/french/philo → law/education ok
+    {
+      const ranked = makeRanked([
+        ["edu_law",        0.80, 0.85, 0.72],
+        ["marketing",      0.72, 0.75, 0.65],
+        ["creative_digital",0.65, 0.60, 0.70],
+        ["sports",         0.50, 0.20, 0.60],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.0);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case C: LET — edu_law or marketing in top-3", top3.some(id=>GOOD_LET.has(id)), top3);
+    }
+
+    // ── Case D: ECO post, high eco/math → finance/business ok
+    {
+      const ranked = makeRanked([
+        ["finance",  0.81, 0.87, 0.70],
+        ["logistics",0.75, 0.80, 0.65],
+        ["tourism",  0.60, 0.35, 0.55],
+        ["sports",   0.45, 0.20, 0.60],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case D: ECO — finance/logistics in top-3", top3.some(id=>GOOD_ECO.has(id)), top3);
+      assert("Case D: ECO — tourism/sports NOT in top-3", !top3.some(id=>["tourism","sports"].includes(id)), top3);
+    }
+
+    // ── Case E: Practical preference even with avg 14.5 → allow tourism/practical to rise
+    {
+      const ranked = makeRanked([
+        ["it",      0.72, 0.80, 0.55],
+        ["tourism", 0.68, 0.40, 0.78],
+        ["sports",  0.65, 0.30, 0.80],
+      ]);
+      const info = { goalMode:"practical", goalPreference:"practical" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case E: practical pref — low-prestige clusters CAN appear in top-3", top3.some(id=>LOW_PRACTICAL.has(id)), top3);
+    }
+
+    if (failed === 0) {
+      console.log(`%c[Massar Logic Self-Check] ✅ All ${passed} cases passed.`, "color:green;font-weight:bold");
+    } else {
+      console.warn(`[Massar Logic Self-Check] ⚠️ ${failed} case(s) failed, ${passed} passed.`);
+    }
   } catch (e) {
-    console.warn("[Massar] Sanity check error:", e);
+    console.warn("[Massar Logic Self-Check] error:", e);
   }
 }
 
-// Run sanity checks on localhost only (no import.meta)
+// Run self-check on localhost only (no import.meta)
 if (typeof window !== "undefined" && typeof window.location !== "undefined"
     && window.location.hostname === "localhost") {
-  setTimeout(runSanityChecks, 1200);
+  setTimeout(runLogicSelfCheck, 1400);
 }
 
 // src/massar/utils/storage.js
@@ -2410,6 +2614,8 @@ function loadSession() {
     if (!parsed || parsed._v !== SCHEMA_VERSION) return null;
     // Basic shape validation
     if (typeof parsed.lang !== "string") return null;
+    // TASK 1 — migrate old physics/chemistry mark keys → pc
+    if (parsed.marks) parsed.marks = migrateMarks(parsed.marks);
     return parsed;
   } catch {
     return null;
@@ -2523,6 +2729,15 @@ function getEligibilityTag(clusterId, effectiveMarks, overallAvg, privateBudget)
   return null;
 }
 
+// C — Prestige index per cluster (drives prestige boost for high-avg students)
+const PRESTIGE_INDEX = {
+  it: 0.85, data: 0.9, cyber: 0.85, network: 0.75,
+  industrial: 0.8, energy: 0.8, civil: 0.78,
+  health: 0.95, finance: 0.8, marketing: 0.6,
+  logistics: 0.65, tourism: 0.45, edu_law: 0.7, arts_media: 0.4,
+  sports: 0.55, creative_digital: 0.55, trades: 0.4, automotive: 0.45, culinary_ops: 0.35,
+};
+
 // ── Cluster scores ────────────────────────────────────────────────
 /**
  * Ranks all clusters given effective marks + reality layer inputs.
@@ -2634,27 +2849,47 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     // Priority "prestige" users get a stronger weight
     const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
 
-    // Cultural sensitivity patch (Tier + Goal) — penalty for practical-only clusters shown to high-avg students
-    // who did NOT choose handsOn goal. Keeps OFPPT/ISTA from dominating top slots for tier=HIGH.
-    const goal = reality.goal || "prestige";
-    const academicTier = getAcademicTier(overallAvg);
+    // TASK 2 — Cultural Credibility Filter at base scoring level
+    // Uses CLUSTER_PRESTIGE_TIER + goalPreference to penalise Tier C clusters for high-avg students.
+    // goalPreference="practical" fully lifts the penalty (user explicitly chose this path).
+    const goalPref      = reality.goalPreference || reality.goal || "prestige";
+    const academicTier  = getAcademicTierABCD(overallAvg);
+    const clusterPTier  = CLUSTER_PRESTIGE_TIER[cluster.id] || "B";
+    const isPractPref   = goalPref === "practical" || goalPref === "handsOn";
     let goalTierPenalty = 0;
-    if (academicTier === "HIGH" && goal !== "handsOn") {
-      const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
-      const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
-      const hasPublicRoute = hasGrandeEcole || hasUniversity;
-      if (!hasPublicRoute) {
-        // Cluster has no university/grande-école pathway → penalise for high-avg non-handsOn students
-        goalTierPenalty = 0.15;
-      } else if (PRACTICAL_CLUSTERS.has(cluster.id) && !hasGrandeEcole) {
-        // Vocational-leaning cluster with university only — modest penalty
-        goalTierPenalty = 0.08;
-      }
-    } else if (academicTier === "MID" && goal === "prestige" && PRACTICAL_CLUSTERS.has(cluster.id)) {
-      // Mid-tier prestige students: gentle nudge away from purely vocational top slots
+    if (!isPractPref && clusterPTier === "C") {
+      if (academicTier === "A")      goalTierPenalty = 0.20; // avg ≥ 15.5: strong
+      else if (academicTier === "B") goalTierPenalty = 0.13; // avg 14–15.5: moderate
+      else if (academicTier === "C") goalTierPenalty = 0.06; // avg 12–14: mild
+      // tier D (avg < 12): no penalty — realism first
+    } else if (!isPractPref && clusterPTier === "B") {
+      // Mild prestige signal: keep original mild logic for vocational-only clusters
       const hasPublicRoute = !!(cluster.pathways?.grandeEcole?.schools?.length || cluster.pathways?.university?.schools?.length);
-      if (!hasPublicRoute) goalTierPenalty = 0.06;
+      if (academicTier === "A" && !hasPublicRoute && PRACTICAL_CLUSTERS.has(cluster.id)) goalTierPenalty = 0.08;
     }
+
+    // B — Medicine hard gate: strong reality penalty if student doesn't meet public threshold
+    const failsHealthPublic =
+      cluster.id === "health" &&
+      (overallAvg < 16 ||
+       (effectiveMarks.svt ?? 0) < 14 ||
+       (effectiveMarks.pc  ?? 0) < 13);
+    let realityPenalty = 0;
+    if (failsHealthPublic) {
+      realityPenalty = privateBudget ? 0.22 : 0.45;
+    }
+
+    // C — Prestige boost: reward high-prestige clusters for high-avg students
+    const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
+    let prestigeBoost = 0;
+    if      (overallAvg >= 15.5) prestigeBoost = 0.14 * prestige;
+    else if (overallAvg >= 14.5) prestigeBoost = 0.10 * prestige;
+
+    // C — Cultural dampener: prevent tourism/arts from topping science-track high-avg students
+    const scienceTrack     = ["SMA","SMB","PC","SVT","TECH"].includes(bacTrack);
+    const lowPrestigeCluster = ["tourism","arts_media"].includes(cluster.id);
+    let culturalDampener = 0;
+    if (scienceTrack && overallAvg >= 14.5 && lowPrestigeCluster) culturalDampener = 0.10;
 
     const finalScore = Math.min(1, Math.max(0,
       SCORING_WEIGHTS.bac       * bacScore
@@ -2667,7 +2902,10 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       + SCORING_WEIGHTS.priority  * priorityScore
       + mobilityBoost + styleMod + snBoost - penalty
       + academicUtilMod + prestigeMod
-      - goalTierPenalty  // Cultural sensitivity patch (Tier + Goal)
+      - goalTierPenalty   // Cultural sensitivity patch (Tier + Goal)
+      - realityPenalty    // B — medicine hard gate
+      + prestigeBoost     // C — prestige boost for high-avg students
+      - culturalDampener  // C — tourism/arts dampener for science+high-avg
     ));
 
     return {
@@ -3574,6 +3812,50 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       )}
 
 
+      {/* TASK 1 — examTiming: determines PRE vs POST subject list in StepMarks */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.examTimingLabel || "When is this evaluation?"}</label>
+        {t.examTimingHint && <div style={{fontSize:11,color:"var(--muted)",marginTop:2,marginBottom:8}}>{t.examTimingHint}</div>}
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
+          {[
+            { key:"pre",  label: t.examTimingPre  || "Before Bac" },
+            { key:"post", label: t.examTimingPost || "After Bac"  },
+          ].map(({key,label}) => (
+            <button key={key}
+              className={`mob-btn ${(info.examTiming||"post")===key?"selected":""}`}
+              onClick={()=>setInfo(p=>({...p,examTiming:key}))}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* TASK 2 — goalPreference: drives Cultural Credibility Filter in scoring */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.goalPreferenceLabel || "Which style fits you best?"}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","balanced","practical"].map(key => {
+            const opt = t.goalPreferenceOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goalPreference || "prestige") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goalPreference:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
+                  background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
+                  color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
@@ -3581,11 +3863,11 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
     </div>
   );
 }
-
-// ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
-  const wataniSubjs = WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || [];
-  const stream = STREAM_BY_TRACK[info.bacTrack] || "scientific";
+  // TASK 1 — Pick subject list based on examTiming: pre vs post
+  const subjectMap  = (info.examTiming === "pre") ? SUBJECTS_PRE_BY_TRACK : SUBJECTS_POST_BY_TRACK;
+  const wataniSubjs = subjectMap[info.bacTrack] || SUBJECTS_POST_BY_TRACK[info.bacTrack] || [];
+  const stream      = STREAM_BY_TRACK[info.bacTrack] || "scientific";
   const regionalSubjs = (info.examMode === "full_bac") ? (REGIONAL_SUBJECTS_BY_STREAM[stream] || []) : [];
   const subjs = wataniSubjs;
 
@@ -5389,7 +5671,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (import.meta?.env?.DEV) {
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
       console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
@@ -6216,7 +6498,23 @@ function StepResults({
   // FIX: results page null-safety — safeTop / safeTop3
   const top3     = safeRanked.slice(0,3);
   const safeTop  = top3[0] || null;   // FIX: results page null-safety
-  const fallback = safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
+  // D — Prestige-smart fallback: if avg ≥ 14.5, pick best non-health prestige cluster (#4+)
+  //     rather than the old "low-academic, high-demand" logic which surfaced OFPPT-framed paths.
+  const overallAvgForFallback = (() => {
+    const vals = Object.values(safeMarks||{}).map(Number).filter(v=>!isNaN(v)&&v>0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  })();
+  const fallback = (() => {
+    if (overallAvgForFallback >= 14.5) {
+      // High-avg: pick best non-health cluster outside top-3 sorted by prestige index
+      const top3ids = new Set(top3.map(c=>c.id));
+      const candidate = [...safeRanked]
+        .filter(c => !top3ids.has(c.id) && c.id !== "health")
+        .sort((a,b) => (PRESTIGE_INDEX[b.id]||0.5) - (PRESTIGE_INDEX[a.id]||0.5))[0];
+      return candidate || safeRanked[3] || null;
+    }
+    return safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
+  })();
 
   const confClass = safeConf>=70?"confidence-high":safeConf>=50?"confidence-med":"confidence-low";
   const massarType = computeMassarType(safeTraits, safeReality);
@@ -6255,7 +6553,7 @@ function StepResults({
   };
 
   // FIX: development debug logs
-  if (typeof window !== "undefined" && import.meta?.env?.DEV) {
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
     console.groupCollapsed("[Massar] Results built");
     console.log("safeResults:", safeResults);
     console.log("archetype computed:", safeResults.archetype);
@@ -6824,9 +7122,11 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
-  goal: "prestige",     // Cultural sensitivity patch (Tier + Goal)
-  goalMode: "unsure",   // Cultural rerank layer — prestige/fit/practical/unsure
-  examMode: "watani", // watani | full_bac
+  goal: "prestige",          // Cultural sensitivity patch (Tier + Goal)
+  goalMode: "unsure",        // Cultural rerank layer — prestige/fit/practical/unsure
+  goalPreference: "prestige",// TASK 2 — user style preference: prestige|balanced|practical
+  examMode: "watani",        // watani | full_bac
+  examTiming: "post",        // TASK 1 — pre | post (determines subject list shown)
 };
 
 const DEFAULT_REALITY = {
@@ -6894,23 +7194,26 @@ export default function App() {
   const traits = useMemo(() => {
     const result = computeTraits(answers);
     // FIX: development debug logs
-    if (import.meta?.env?.DEV) console.log("[Massar] traits computed:", result);
+    if (typeof window !== 'undefined' && window.__DEV__) console.log('[Massar] traits computed:', result);
     return result;
   }, [answers]);
 
-  const effectiveMarks = useMemo(
-    () => buildEffectiveMarks(marks, whatIfDeltas, WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || []),
-    [marks, whatIfDeltas, info.bacTrack]
+  const effectiveMarks = useMemo(() => {
+    // TASK 1 — use PRE or POST subject list based on examTiming
+    const subjectMap = (info.examTiming === "pre") ? SUBJECTS_PRE_BY_TRACK : SUBJECTS_POST_BY_TRACK;
+    const subjects   = subjectMap[info.bacTrack] || SUBJECTS_POST_BY_TRACK[info.bacTrack] || [];
+    return buildEffectiveMarks(marks, whatIfDeltas, subjects);
+  },
+    [marks, whatIfDeltas, info.bacTrack, info.examTiming]
   );
 
   const rankedClusters = useMemo(() => {
-    // Cultural sensitivity patch (Tier + Goal) — inject goal into reality so scorer can read it
-    const realityWithGoal = { ...reality, goal: info.goal || "prestige" };
+    // TASK 2 — inject goal + goalPreference into reality so scorer can read them
+    const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige" };
     const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
-    // FIX: development debug logs
     if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
     return result;
-  }, [info.bacTrack, info.goal, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
+  }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
   // Cultural rerank layer — apply post-processing for prestige/fit/practical/unsure
   const overallAvgForRerank = useMemo(() => {
