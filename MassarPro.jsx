@@ -2,10 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
-// Dev helper (avoid import.meta in runtime)
-const IS_DEV = typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-
-
 
 
 // ═══════════════════════════════════ i18n ═══════════════════════
@@ -47,6 +43,15 @@ const TRANSLATIONS = {
     no: "لا",
     // Marks
     marks: "درجاتك /20",
+    examModeLabel: "نوع النقط المدخلة",
+    examModeWatani: "نقط الامتحان الوطني فقط",
+    examModeFull: "باك كامل (جهوي + وطني + مراقبة مستمرة)",
+    marksSectionWatani: "الامتحان الوطني (الوطني)",
+    marksSectionRegional: "الامتحان الجهوي (الجهوي)",
+    marksSectionContinuous: "المراقبة المستمرة (اختياري)",
+    wataniAverage: "معدل الوطني (تقريبي)",
+    regionalAverage: "معدل الجهوي (تقريبي)",
+    continuousAverage: "معدل المراقبة المستمرة",
     overallAverage: "المعدل العام",
     // What-if sliders (Goal 2)
     whatIf: "ماذا لو؟ – تعديل الدرجات",
@@ -423,6 +428,15 @@ const TRANSLATIONS = {
     yes: "Oui",
     no: "Non",
     marks: "Vos notes /20",
+    examModeLabel: "Type de notes saisies",
+    examModeWatani: "Notes du National uniquement",
+    examModeFull: "Bac complet (Régional + National + contrôle continu)",
+    marksSectionWatani: "Examen National",
+    marksSectionRegional: "Examen Régional",
+    marksSectionContinuous: "Contrôle continu (optionnel)",
+    wataniAverage: "Moyenne National (approx.)",
+    regionalAverage: "Moyenne Régional (approx.)",
+    continuousAverage: "Moyenne contrôle continu",
     overallAverage: "Moyenne générale",
     whatIf: "Et si ? – Modifier les notes",
     adjustedAverage: "Moyenne ajustée",
@@ -786,6 +800,15 @@ const TRANSLATIONS = {
     yes: "Yes",
     no: "No",
     marks: "Your Grades /20",
+    examModeLabel: "Which grades are these?",
+    examModeWatani: "National exam grades only",
+    examModeFull: "Full Bac (Regional + National + continuous assessment)",
+    marksSectionWatani: "National Exam",
+    marksSectionRegional: "Regional Exam",
+    marksSectionContinuous: "Continuous Assessment (optional)",
+    wataniAverage: "National average (approx.)",
+    regionalAverage: "Regional average (approx.)",
+    continuousAverage: "Continuous average",
     overallAverage: "Overall Average",
     whatIf: "What-If? – Adjust Grades",
     adjustedAverage: "Adjusted Average",
@@ -1143,15 +1166,35 @@ const BAC_TRACKS = [
   { id: "ARTS", label: { ar: "فنون تطبيقية",        fr: "Arts Appliqués",              en: "Applied Arts"            } },
 ];
 
-const SUBJECTS_BY_TRACK = {
-  SMA:  ["math", "physics", "french", "arabic", "philosophy"],
-  SMB:  ["math", "physics", "tech", "french", "arabic"],
-  PC:   ["physics", "chemistry", "math", "french", "arabic"],
-  SVT:  ["biology", "chemistry", "math", "french", "arabic"],
-  ECO:  ["economics", "math", "management", "french", "arabic"],
-  LET:  ["arabic", "french", "philosophy", "history", "english"],
-  TECH: ["tech", "math", "physics", "french", "arabic"],
-  ARTS: ["arts", "design", "french", "arabic", "history"],
+const STREAM_BY_TRACK = {
+  SMA: "scientific",
+  SMB: "scientific",
+  PC: "scientific",
+  SVT: "scientific",
+  ECO: "eco",
+  LET: "letters",
+  TECH: "scientific",
+  ARTS: "arts",
+};
+
+// National exam (Watani) subjects by track (Morocco)
+const WATANI_SUBJECTS_BY_TRACK = {
+  SMA:  ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
+  SMB:  ["math", "physics", "chemistry", "eng_sciences", "philosophy", "foreign2"],
+  PC:   ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
+  SVT:  ["math", "physics", "chemistry", "biology", "philosophy", "foreign2"],
+  ECO:  ["math", "economics_stats", "accounting", "management", "philosophy", "foreign2"],
+  LET:  ["arabic", "history", "philosophy", "foreign2"],
+  TECH: ["math", "physics", "chemistry", "tech", "philosophy", "foreign2"],
+  ARTS: ["arts", "design", "philosophy", "foreign2", "history"],
+};
+
+// Regional (Jihawi) subjects (1ère Bac), used only when examMode="full_bac"
+const REGIONAL_SUBJECTS_BY_STREAM = {
+  scientific: ["arabic", "french", "islamic", "history"],
+  eco:        ["arabic", "french", "islamic", "history"],
+  letters:    ["arabic", "french", "islamic", "history"],
+  arts:       ["arabic", "french", "islamic", "history"],
 };
 
 const SUBJECT_LABELS = {
@@ -1169,6 +1212,12 @@ const SUBJECT_LABELS = {
   history:    { ar: "التاريخ والجغرافيا", fr: "Histoire-Géo",  en: "History & Geography" },
   arts:       { ar: "الفنون",             fr: "Arts",          en: "Arts"                 },
   design:     { ar: "التصميم",            fr: "Design",        en: "Design"               },
+  foreign2: { ar: "اللغة الأجنبية الثانية", fr: "2ème langue étrangère", en: "Second foreign language" },
+  svt: { ar: "علوم الحياة والأرض (SVT)", fr: "SVT", en: "Life & Earth Sciences (SVT)" },
+  eng_sciences: { ar: "علوم المهندس", fr: "Sciences de l'ingénieur", en: "Engineering Sciences" },
+  economics_stats: { ar: "الاقتصاد العام والإحصاء", fr: "Économie générale & Statistiques", en: "Economics & Statistics" },
+  accounting: { ar: "المحاسبة", fr: "Comptabilité", en: "Accounting" },
+  islamic: { ar: "التربية الإسلامية", fr: "Éducation islamique", en: "Islamic Education" },
 };
 
 const MOROCCAN_CITIES = [
@@ -2051,149 +2100,114 @@ function getAcademicTier(overallAvg) {
 //   balancedScore   = existingFinalScore + 0.08*(prestige-0.5)
 //   personalScore   = 0.45*trait + 0.2*market + 0.2*academic + 0.15*bac - penalties
 // Guardrails: high-avg students can't have low-prestige cluster as #1 unless explicit passion.
-function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks, reality) {
+function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
   const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
-  const goalMode      = safeInfo.goalMode || "unsure"; // prestige/balanced/fit/fast/unsure depending on your UI
+  const goalMode      = safeInfo.goalMode || "unsure";
   const privateBudget = !!safeInfo.privateBudget;
 
-  const safeReality   = (reality && typeof reality === "object") ? reality : {};
-  const interestsArr  = Array.isArray(safeReality.interests) ? safeReality.interests : [];
-  const interests     = new Set(interestsArr);
+  // Interests from reality — used for passion-mode exemption check
+  // (GoalMode "fit" = "Passion" in spec language)
+  const TOURISM_INTERESTS  = new Set(["i_people","i_helping","i_outdoors","i_content"]);
+  const SPORTS_INTERESTS   = new Set(["i_sports","i_leading","i_people","i_outdoors"]);
+  const ARTS_INTERESTS     = new Set(["i_content","i_gaming","i_alone","i_people"]);
 
-  // Map interests to cluster ids (kept conservative to avoid randomness)
-  const INTEREST_MAP = {
-    health:      new Set(["i_helping","i_people","i_bio","i_science","i_research","i_health"]),
-    data:        new Set(["i_tech","i_science","i_alone","i_gaming","i_strategy"]),
-    it:          new Set(["i_tech","i_gaming","i_strategy","i_content"]),
-    cyber:       new Set(["i_tech","i_gaming","i_strategy"]),
-    network:     new Set(["i_tech","i_building","i_strategy"]),
-    industrial:  new Set(["i_building","i_fixing","i_hands","i_tech"]),
-    energy:      new Set(["i_science","i_outdoors","i_building"]),
-    civil:       new Set(["i_building","i_outdoors","i_fixing"]),
-    finance:     new Set(["i_business","i_selling","i_strategy"]),
-    marketing:   new Set(["i_content","i_people","i_selling"]),
-    logistics:   new Set(["i_strategy","i_building","i_business"]),
-    tourism:     new Set(["i_people","i_outdoors","i_content"]),
-    edu_law:     new Set(["i_public","i_people","i_writing","i_debate"]),
-    arts_media:  new Set(["i_content","i_design","i_gaming","i_people"]),
-    sports:      new Set(["i_sports","i_outdoors","i_people","i_leading"]),
-  };
+  // Low-prestige clusters that must not be #1 for high-avg non-passion students
+  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
 
-  function hasInterest(clusterId) {
-    const set = INTEREST_MAP[clusterId];
-    if (!set || interests.size === 0) return false;
-    for (const k of set) if (interests.has(k)) return true;
+  function hasPassionExemption(clusterId) {
+    if (goalMode !== "fit") return false;
+    // "fit" = Passion in spec language. Also check relevant interests.
+    return true; // fit/passion mode always lifts the block
+  }
+
+  // Guardrails — Patch D
+  // Returns true if cluster can legitimately be #1 for this student
+  function passesGuardrail(cluster, thisScore, allScored) {
+    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
+    if (avg < 14.5) return true;
+    if (hasPassionExemption(cluster.id)) return true;
+    // Check: is this score dominant (exceeds next best by >=0.12)?
+    const sorted = [...allScored].sort((a,b)=>b.s-a.s);
+    const rank1 = sorted[0];
+    const rank2 = sorted[1];
+    if (rank1?.c?.id === cluster.id && rank2) {
+      return (thisScore - rank2.s) >= 0.12;
+    }
     return false;
   }
 
-  // "Hands-on" preference: if user explicitly chose hands-on/fast-job style (when available)
-  const prefersHandsOn =
-    safeInfo.goal === "practical" ||
-    safeInfo.goalMode === "practical" ||
-    safeInfo.goalMode === "fast" ||
-    safeReality.preferredStyle === "handsOn" ||
-    safeReality.priority === "fast_job";
-
-  const isHighAvg = avg >= 14.5;
-
-  function prestigeIndex(c) {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex: 0.5 };
-    return clamp(cp.prestigeIndex ?? 0.5, 0, 1);
-  }
-
-  function scoreFit(c) {
-    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
-    return clamp(
-      0.55*(c.scores.trait||0) + 0.25*(c.scores.academic||0) + 0.10*(c.scores.bac||0) + 0.10*(c.scores.market||0) - penalty,
-      0, 1
-    );
-  }
-
-  function scoreBalanced(c) {
-    let s = clamp(
-      0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0) + 0.20*(c.scores.market||0) + 0.10*(c.scores.bac||0) + 0.10*prestigeIndex(c),
-      0, 1
-    );
-    return s;
-  }
-
-  function scoreAmbitious(c) {
-    let s = clamp(
-      0.45*prestigeIndex(c) + 0.35*(c.scores.academic||0) + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0),
-      0, 1
-    );
-    // realism: if locked public and no private budget, avoid dominating as #1 unless avg is very high
-    if ((c.eligibilityTag === "notEligiblePublic" || c.eligibilityTag === "privateOnly") && !privateBudget && avg < 15.5) {
-      s = Math.min(s, 0.72);
-    }
-    return s;
-  }
-
-  // Core guardrails (trust protection)
-  function blocksBestFit(c) {
-    // Contradiction-proof: low trait fit cannot headline Best Fit
-    const trait = c.scores.trait ?? 0.5;
-    if (trait < 0.55 && !hasInterest(c.id)) return true;
-
-    // Medicine special-case: must be identity-aligned OR explicitly chosen
-    if (c.id === "health") {
-      const wantsHealth = hasInterest("health");
-      if (!wantsHealth && trait < 0.60) return true;
-      if ((c.eligibilityTag === "notEligiblePublic") && !privateBudget && avg < 15.5 && !wantsHealth) return true;
-    }
-
-    // High-average cultural lens: low-prestige can't be Best Fit #1 unless strong interest or overwhelming lead
-    const cp = prestigeIndex(c);
-    if (isHighAvg && !prefersHandsOn && cp < 0.55 && !hasInterest(c.id)) return true;
-
-    return false;
-  }
-
-  // Pick best with optional guardrail callback
-  function pick(scored, guardFn) {
+  // Pull best candidate from scored array, applying guardrail
+  function pickBest(scored) {
     const sorted = [...scored].sort((a,b)=>b.s-a.s);
-    if (!guardFn) return sorted[0]?.c || null;
-
-    // allow "overwhelming lead" exception
-    const top = sorted[0];
-    const second = sorted[1];
-    if (top && second && !guardFn(top.c)) return top.c;
-    if (top && second && guardFn(top.c)) {
-      const gap = top.s - (second?.s ?? 0);
-      if (gap >= 0.15) return top.c; // overwhelming
-    }
-
     for (const item of sorted) {
-      if (!guardFn(item.c)) return item.c;
+      if (passesGuardrail(item.c, item.s, scored)) return item.c;
+    }
+    return sorted[0]?.c || null; // fallback if all blocked
+  }
+
+  // ── C: ambitious scoring ──────────────────────────────────────
+  const ambitiousScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const penalty = (() => {
+      let p = 0;
+      // Eligibility: notEligiblePublic and no private budget → cap enforced separately
+      if (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") {
+        p += 0.08;
+      }
+      // Avg gap heuristic (labelled as such): if avg < cluster minAvg by >2, reduce
+      const cc = CLUSTER_CONSTRAINTS[c.id];
+      if (cc && cc.minAvg && avg < cc.minAvg - 2) {
+        p += 0.08;
+      }
+      return p;
+    })();
+    let s = 0.35*cp.prestigeIndex + 0.25*(c.scores.market||0) + 0.2*(c.scores.bac||0) + 0.2*(c.scores.academic||0) - penalty;
+    // Eligibility realism guard: notEligiblePublic with no private budget → cap at 0.65
+    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
+      s = Math.min(s, 0.65);
+    }
+    s = Math.min(1, Math.max(0, s));
+    return { c, s };
+  });
+  const ambitious = pickBest(ambitiousScored);
+
+  // ── C: balanced scoring ───────────────────────────────────────
+  const balancedScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const s = Math.min(1, Math.max(0, (c.scores.final||0) + 0.08*(cp.prestigeIndex - 0.5)));
+    return { c, s };
+  });
+  const balanced = pickBest(balancedScored);
+
+  // ── C: personal fit scoring ───────────────────────────────────
+  const personalScored = rankedClusters.map(c => {
+    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
+    const s = Math.min(1, Math.max(0,
+      0.45*(c.scores.trait||0) + 0.2*(c.scores.market||0) + 0.2*(c.scores.academic||0) + 0.15*(c.scores.bac||0) - penalty
+    ));
+    return { c, s };
+  });
+  // bestFit: guardrail still applies for very high avg — but less strict (0.08 gap)
+  function pickBestFit(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    if (avg < 14.5) return sorted[0]?.c || null;
+    for (const item of sorted) {
+      if (!LOW_PRESTIGE_BLOCKED.has(item.c.id)) return item.c;
+      if (hasPassionExemption(item.c.id)) return item.c;
+      // dominance check: 0.08 gap (more lenient for personal fit)
+      const rank2 = sorted.find(x => x.c.id !== item.c.id);
+      if (rank2 && (item.s - rank2.s) >= 0.08) return item.c;
     }
     return sorted[0]?.c || null;
   }
-
-  // Cultural penalties for balanced/ambitious (not for fit)
-  function applyCulturalPenalty(c, s) {
-    if (!isHighAvg) return s;
-    if (prefersHandsOn) return s;
-    if (goalMode === "fit") return s; // passion-first: don't police
-    const p = prestigeIndex(c);
-    if (p < 0.50) return clamp(s - 0.20, 0, 1);
-    if (p < 0.60) return clamp(s - 0.12, 0, 1);
-    return s;
-  }
-
-  const scoredFit = rankedClusters.map(c => ({ c, s: scoreFit(c) }));
-  const bestFit = pick(scoredFit, blocksBestFit);
-
-  const scoredBalanced = rankedClusters.map(c => ({ c, s: applyCulturalPenalty(c, scoreBalanced(c)) }));
-  const balanced = pick(scoredBalanced, null);
-
-  const scoredAmbitious = rankedClusters.map(c => ({ c, s: applyCulturalPenalty(c, scoreAmbitious(c)) }));
-  const ambitious = pick(scoredAmbitious, null);
+  const bestFit = pickBestFit(personalScored);
 
   return { bestFit, balanced, ambitious };
 }
+
 // ── Scoring weights (must sum to 1.0) ─────────────────────────────
 // Extend here — never touch individual score computation below.
 const SCORING_WEIGHTS = {
@@ -2719,7 +2733,7 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
   const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
   // Narrative fix — pick best 1–2 subjects by mark and calibrate wording
-  const trackSubjects = SUBJECTS_BY_TRACK[bacTrack] || [];
+  const trackSubjects = WATANI_SUBJECTS_BY_TRACK[bacTrack] || [];
   const SUBJ_LABELS   = SUBJECT_LABELS || {};
   const markedSubjs   = trackSubjects
     .map(s => ({ s, v: Number(effectiveMarks[s]) || 0 }))
@@ -3462,6 +3476,16 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
             </button>
           ))}
         </div>
+
+      <div className="field">
+        <label>{t.examModeLabel}</label>
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
+          <button className={`mob-btn ${info.examMode==="watani"?"selected":""}`}
+            onClick={()=>setInfo(p=>({...p,examMode:"watani"}))}>{t.examModeWatani}</button>
+          <button className={`mob-btn ${info.examMode==="full_bac"?"selected":""}`}
+            onClick={()=>setInfo(p=>({...p,examMode:"full_bac"}))}>{t.examModeFull}</button>
+        </div>
+      </div>
       </div>
 
       {/* Cultural sensitivity patch (Tier + Goal) — study goal selector */}
@@ -3560,7 +3584,10 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
 
 // ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
-  const subjs = SUBJECTS_BY_TRACK[info.bacTrack] || [];
+  const wataniSubjs = WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || [];
+  const stream = STREAM_BY_TRACK[info.bacTrack] || "scientific";
+  const regionalSubjs = (info.examMode === "full_bac") ? (REGIONAL_SUBJECTS_BY_STREAM[stream] || []) : [];
+  const subjs = wataniSubjs;
 
   return (
     <div className="card" dir={dir}>
@@ -3568,28 +3595,100 @@ function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.marksStep}</h2>
       <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.marks}</p>
 
-      <div className="marks-grid">
-        {subjs.map(s=>{
-          const val = Number(marks[s])||0;
-          const pct = (val/20)*100;
-          const color = val>=15?"#10b981":val>=10?"#3b82f6":"#ef4444";
-          return (
-            <div key={s} className="mark-input">
-              <div className="mark-label">{SUBJECT_LABELS[s]?.[lang]||s}</div>
-              <div className="mark-row">
-                <input type="number" min="0" max="20" step="0.5"
-                  value={val||""} placeholder="0"
-                  onChange={e=>setMarks(prev=>({...prev,[s]:Math.min(20,Math.max(0,Number(e.target.value)||0))}))}/>
-                <div className="mark-bar">
-                  <div className="mark-bar-fill" style={{width:`${pct}%`,background:color}}/>
-                </div>
+{regionalSubjs.length > 0 && (
+  <>
+    <div className="section-title" style={{ marginTop: 0 }}>
+      {t.marksSectionRegional}
+    </div>
+    <div className="marks-grid">
+      {regionalSubjs.map((s) => {
+        const val = Number(marks[s]) || 0;
+        const pct = (val / 20) * 100;
+        const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
+        return (
+          <div key={s} className="mark-input">
+            <div className="mark-label">{SUBJECT_LABELS[s]?.[lang] || s}</div>
+            <div className="mark-row">
+              <input
+                type="number"
+                min="0"
+                max="20"
+                step="0.5"
+                value={val || ""}
+                placeholder="0"
+                onChange={(e) =>
+                  setMarks((prev) => ({
+                    ...prev,
+                    [s]: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+                  }))
+                }
+              />
+              <div className="mark-bar">
+                <div className="mark-bar-fill" style={{ width: `${pct}%`, background: color }} />
               </div>
             </div>
-          );
-        })}
-      </div>
+          </div>
+        );
+      })}
+    </div>
+  </>
+)}
 
-      <div className="btn-row">
+<div className="section-title" style={{ marginTop: regionalSubjs.length > 0 ? 16 : 0 }}>
+  {t.marksSectionWatani}
+</div>
+<div className="marks-grid">
+  {wataniSubjs.map((s) => {
+    const val = Number(marks[s]) || 0;
+    const pct = (val / 20) * 100;
+    const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
+    return (
+      <div key={s} className="mark-input">
+        <div className="mark-label">{SUBJECT_LABELS[s]?.[lang] || s}</div>
+        <div className="mark-row">
+          <input
+            type="number"
+            min="0"
+            max="20"
+            step="0.5"
+            value={val || ""}
+            placeholder="0"
+            onChange={(e) =>
+              setMarks((prev) => ({
+                ...prev,
+                [s]: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+              }))
+            }
+          />
+          <div className="mark-bar">
+            <div className="mark-bar-fill" style={{ width: `${pct}%`, background: color }} />
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
+
+{info.examMode === "full_bac" && (
+  <div className="field" style={{ marginTop: 16 }}>
+    <label>{t.marksSectionContinuous}</label>
+    <input
+      type="number"
+      min="0"
+      max="20"
+      step="0.5"
+      value={marks.continuous || ""}
+      placeholder="0"
+      onChange={(e) =>
+        setMarks((prev) => ({
+          ...prev,
+          continuous: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+        }))
+      }
+    />
+  </div>
+)}
+<div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
       </div>
@@ -4073,16 +4172,19 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   // Compute 3 meter scores
   // FIX: clamp numeric UI values
   const safeTrA = traits && typeof traits === "object" ? traits : {};
-  const identityFitPct = clamp(Math.round(((top3[0]?.scores?.trait ?? 0.5) * 100)));
-  const academicFitPct  = clamp(Math.round(((top3[0]?.scores?.academic ?? 0.5) * 100)));
-  const marketFitPct    = clamp(Math.round(((top3[0]?.scores?.market ?? 0.7) * 100)));
+  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
+    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
+  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
+    top3[0]?.scores?.academic ?? 0.5)) * 100));
+  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
+    top3[0]?.scores?.market ?? 0.7)) * 100));
 
   // Phase 4: Alignment story — weakest dimension
   const dims = [
     { key:"identity", pct:identityFitPct, sentences:{
-      ar:"فرصة قوية، لكن الإيقاع اليومي قد يكون مرهقاً إن لم يكن أسلوبه يناسبك.",
-      fr:"Forte opportunité, mais le quotidien peut être exigeant si ton style ne s’y prête pas.",
-      en:"Strong opportunity, but day-to-day may feel demanding if your style doesn’t match it.",
+      ar:"هذا المجال لا يتوافق تلقائياً مع شخصيتك.",
+      fr:"Ce domaine ne correspond pas naturellement à ta personnalité.",
+      en:"This domain doesn't naturally match your personality.",
     }},
     { key:"academic", pct:academicFitPct, sentences:{
       ar:"إمكاناتك تتجاوز مستواك الأكاديمي الحالي.",
@@ -5287,7 +5389,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (IS_DEV) {
+    if (import.meta?.env?.DEV) {
       console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
@@ -6105,7 +6207,7 @@ function StepResults({
   }
   // ── End null-safety gate ────────────────────────────────────────
 
-  const subjs   = SUBJECTS_BY_TRACK[safeInfo.bacTrack] || [];
+  const subjs   = WATANI_SUBJECTS_BY_TRACK[safeInfo.bacTrack] || [];
   const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(safeMarks[k])||0),0)/subjs.length : 0;
   const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks?.[k]||0),0)/subjs.length : 0;
   const hasDeltas = Object.values(whatIfDeltas || {}).some(d=>Number(d)!==0);
@@ -6146,14 +6248,14 @@ function StepResults({
     confidence:    clamp(safeConf),
     rarity:        getRarity(safeConf),
     overallAvg:    clamp(overallAvgVal, 0, 20),
-    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks, safeReality),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure: !!safeReality.familyPressure,
     xpProgress:    0, // managed by XPProgressionTracker internally
   };
 
   // FIX: development debug logs
-  if (typeof window !== "undefined" && IS_DEV) {
+  if (typeof window !== "undefined" && import.meta?.env?.DEV) {
     console.groupCollapsed("[Massar] Results built");
     console.log("safeResults:", safeResults);
     console.log("archetype computed:", safeResults.archetype);
@@ -6233,7 +6335,7 @@ function StepResults({
             );
           })}
           <div className="avg-row">
-            <span className="avg-label">{t.overallAverage}</span>
+            <span className="avg-label">{info.examMode==="full_bac" ? t.wataniAverage : t.overallAverage}</span>
             <span className="avg-val" style={{color:origAvg>=10?"#10b981":"#ef4444"}}>
               {origAvg.toFixed(1)}/20
             </span>
@@ -6724,6 +6826,7 @@ const DEFAULT_INFO = {
   studyAbroad: false, abroadRegion: "france",
   goal: "prestige",     // Cultural sensitivity patch (Tier + Goal)
   goalMode: "unsure",   // Cultural rerank layer — prestige/fit/practical/unsure
+  examMode: "watani", // watani | full_bac
 };
 
 const DEFAULT_REALITY = {
@@ -6734,7 +6837,7 @@ const DEFAULT_REALITY = {
   strengthsNow: [],
   preferredStyle: "",
   familyPressure: false,
-  fpField: "medicine",
+  fpField: "",
   fpFieldOther: "",
 };
 
@@ -6791,12 +6894,12 @@ export default function App() {
   const traits = useMemo(() => {
     const result = computeTraits(answers);
     // FIX: development debug logs
-    if (IS_DEV) console.log("[Massar] traits computed:", result);
+    if (import.meta?.env?.DEV) console.log("[Massar] traits computed:", result);
     return result;
   }, [answers]);
 
   const effectiveMarks = useMemo(
-    () => buildEffectiveMarks(marks, whatIfDeltas, SUBJECTS_BY_TRACK[info.bacTrack] || []),
+    () => buildEffectiveMarks(marks, whatIfDeltas, WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || []),
     [marks, whatIfDeltas, info.bacTrack]
   );
 
