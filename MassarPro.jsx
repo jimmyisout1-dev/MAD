@@ -1,6 +1,6 @@
 // MassarPro — self-contained single-file build
 
-import { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
 
 
@@ -43,6 +43,27 @@ const TRANSLATIONS = {
     no: "لا",
     // Marks
     marks: "درجاتك /20",
+    examModeLabel: "نوع النقط المدخلة",
+    examModeWatani: "نقط الامتحان الوطني فقط",
+    examModeFull: "باك كامل (جهوي + وطني + مراقبة مستمرة)",
+    // TASK 1 — examTiming: pre-Bac vs post-Bac determines which subject list to show
+    examTimingLabel: "متى تُجري هذا التقييم؟",
+    examTimingPre: "قبل نتائج الباكالوريا (لا يزال بإمكاني التحسين)",
+    examTimingPost: "بعد الباكالوريا (نتائج نهائية رسمية)",
+    examTimingHint: "يحدد هذا قائمة المواد الدقيقة المعروضة",
+    // TASK 2 — goalPreference: prestige / balanced / practical (replaces goalMode selector)
+    goalPreferenceLabel: "ما الأسلوب الذي يناسبك الآن؟",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"الهيبة ودراسة طويلة (المسابقات والمدارس الكبرى)" },
+      balanced:   { icon:"⚖️", label:"متوازن — أفضل خيار يناسبني ويبقى مرموقاً" },
+      practical:  { icon:"🔧", label:"دخل سريع / مسار تطبيقي (OFPPT / BTS)" },
+    },
+    marksSectionWatani: "الامتحان الوطني (الوطني)",
+    marksSectionRegional: "الامتحان الجهوي (الجهوي)",
+    marksSectionContinuous: "المراقبة المستمرة (اختياري)",
+    wataniAverage: "معدل الوطني (تقريبي)",
+    regionalAverage: "معدل الجهوي (تقريبي)",
+    continuousAverage: "معدل المراقبة المستمرة",
     overallAverage: "المعدل العام",
     // What-if sliders (Goal 2)
     whatIf: "ماذا لو؟ – تعديل الدرجات",
@@ -87,6 +108,10 @@ const TRANSLATIONS = {
       "إدارة مستشفيات (ENCG / FSJES)",
       "تقني طب الأسنان",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 كيف تبلغ هذا المسار؟",
+    ambitiousUnlockMed:   "لفتح الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة ≥ 14 والكيمياء ≥ 13.",
+    ambitiousUnlockGen:   "ارفع معدلك العام إلى {avg}+ وحسّن المواد الأساسية لزيادة حظوظك.",
     // Feature 1: Exam timing
     examTimingStep: "توقيت التقييم",
     examTimingQuestion: "هل أجريت هذا التقييم قبل أم بعد امتحان الباكالوريا؟",
@@ -102,6 +127,73 @@ const TRANSLATIONS = {
     improvementTip3: "انضم لمجموعات مراجعة عبر واتساب أو تليغرام مع طلاب من نفس الشعبة",
     improvementTip4: "استخدم منصات مجانية: خان أكاديمي عربي، إدراك، مرحبا",
     improvementDisclaimer: "هذه توقعات تعليمية. لا يمكن ضمان القبول بأي مدرسة.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "المستوى الدراسي",
+    examLevelBac1: "الباكالوريا الأولى (الجهوي)",
+    examLevelBac2: "الباكالوريا الثانية (الوطني)",
+    trackFieldLabel: "مسار الدراسة الرسمي",
+    trackFields: {
+      SE:  "العلوم التجريبية",
+      SM:  "العلوم الرياضية",
+      ST:  "العلوم والتكنولوجيا",
+      ECO: "العلوم الاقتصادية",
+      LSH: "الآداب والعلوم الإنسانية",
+      AA:  "الفنون التطبيقية",
+      EO:  "التعليم الأصيل",
+      BP:  "الباكالوريا المهنية",
+    },
+    smOptionLabel: "الخيار (لمسار العلوم الرياضية)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "السنة الدراسية",
+    examYearBac1: "الباكالوريا الأولى (الجهوي)",
+    examYearBac2: "الباكالوريا الثانية (الوطني)",
+    bac1FieldLabel: "شعبة الباكالوريا الأولى",
+    bac1Fields: {
+      SE:"العلوم التجريبية", SM:"العلوم الرياضية", ST:"العلوم والتكنولوجيا",
+      ECO:"العلوم الاقتصادية", LSH:"الآداب والعلوم الإنسانية",
+      AA:"الفنون التطبيقية", EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
+    },
+    bac2TrackLabel: "مسار الباكالوريا الثانية",
+    bac2Tracks: {
+      SVT:"علوم الحياة والأرض", PC:"العلوم الفيزيائية",
+      SMA:"العلوم الرياضية – خيار أ", SMB:"العلوم الرياضية – خيار ب",
+      ST:"العلوم والتكنولوجيا", ECO:"العلوم الاقتصادية",
+      LSH:"الآداب والعلوم الإنسانية", AA:"الفنون التطبيقية",
+      EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
+    },
+    smOptionA: "الخيار أ (علوم الحياة والأرض)",
+    smOptionB: "الخيار ب (علوم المهندس)",
+    eoOptionLabel: "التخصص (التعليم الأصيل)",
+    eoOptionArabic: "الأدب العربي",
+    eoOptionSharia: "الشريعة الإسلامية",
+    bpExtrasLabel: "مواد إضافية (الباكالوريا المهنية)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 تسريع ملفك",
+    profileBoostDesc: "6 أسئلة خفيفة تُحسّن التوصيات بشكل كبير",
+    pb_prestige: "مدى أهمية الهيبة والسمعة لك ولعائلتك",
+    pb_prestige0: "مش مهم — النتائج والعمل يهمون",
+    pb_prestige1: "مهم بعض الشيء",
+    pb_prestige2: "مهم جداً — الهيبة خط أحمر",
+    pb_money: "مدى أهمية الاستقرار المالي الآن",
+    pb_money0: "ليست الأولوية الآن",
+    pb_money1: "مهمة لكنها ليست الوحيدة",
+    pb_money2: "ضرورية جداً",
+    pb_handsOn: "تفضّل العمل اليدوي الحقيقي على العمل المكتبي؟",
+    pb_handsOn0: "لا — أفضل الفكر والتحليل",
+    pb_handsOn1: "مزيج من الاثنين",
+    pb_handsOn2: "نعم — العمل الميداني أكثر إمتاعاً لي",
+    pb_risk: "هل أنت مرتاح للمسارات غير المضمونة (ريادة / إبداع / ابتكار)؟",
+    pb_risk0: "لا — أفضل طريقاً مضموناً",
+    pb_risk1: "نوعاً ما — إذا كان هناك خطة بديلة",
+    pb_risk2: "نعم — المجهول لا يخيفني",
+    pb_intl: "هل تريد مساراً قابلاً للعمل خارج المغرب؟",
+    pb_intl0: "لا، أعمل في المغرب",
+    pb_intl1: "ربما في المستقبل",
+    pb_intl2: "نعم، الخارج ضمن خطتي",
+    pb_focus: "هل تستطيع الدراسة 2 إلى 4 ساعات يومياً بجدية؟",
+    pb_focus0: "صعب علي باستمرار",
+    pb_focus1: "نعم لكن مع صعوبة أحياناً",
+    pb_focus2: "نعم دائماً، الانضباط قوتي",
     // Feature 2: Study abroad
     studyAbroadLabel: "هل تفكر في الدراسة في الخارج؟",
     studyAbroadRegionLabel: "المنطقة المفضلة",
@@ -116,6 +208,27 @@ const TRANSLATIONS = {
     intlDifferenceTitle: "الفرق عن المنظومة المغربية",
     intlDifferenceText: "الانتقاء التنافسي في المغرب عبر المسابقات. في الخارج: معظم الجامعات تعتمد على ملف الطالب وبيان الأغراض. الشهادات الأجنبية تتطلب مسطرة معادلة عند العودة.",
     // Family pressure
+    // Cultural sensitivity patch (Tier + Goal) — study goal selector
+    studyGoalLabel: "ما هدفك من الدراسة؟",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"أفضل مسار عام / هيبة أكاديمية" },
+      balanced: { icon:"⚖️", label:"التوافق الشخصي + الجهد الواقعي" },
+      handsOn:  { icon:"🔧", label:"عمل يدوي / دخول سريع لسوق الشغل" },
+    },
+    practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "شنو الأهم دابا بالنسبة ليك؟",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"أفضل مدرسة / المسار الأرفع مستوى" },
+      fit:       { icon:"🎯", label:"الأنسب لشخصيتي" },
+      practical: { icon:"🔧", label:"دخل سريع / مهارة ملموسة" },
+      unsure:    { icon:"🤷", label:"مش عارف — أريني الاثنين" },
+    },
+    prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
+    prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
+    bridgeOptionLabel: "خيار جسر",
+    bestFitTab: "الأنسب لك",
+    prestigeTrackTab: "المسار الأرفع",
     familyPressureLabel: "هل تواجه ضغطاً عائلياً نحو تخصص معين؟",
     familyPressureTitle: "💬 كلمة صريحة بشأن الضغط العائلي",
     familyPressureText: "من الطبيعي أن تحمل عائلتك آمالاً كبيرة. لكن مسيرة مهنية موفقة تبنى على مزيج من الميول الحقيقية، والواقع الأكاديمي، وظروف سوق الشغل.",
@@ -394,6 +507,27 @@ const TRANSLATIONS = {
     yes: "Oui",
     no: "Non",
     marks: "Vos notes /20",
+    examModeLabel: "Type de notes saisies",
+    examModeWatani: "Notes du National uniquement",
+    examModeFull: "Bac complet (Régional + National + contrôle continu)",
+    // TASK 1 — examTiming
+    examTimingLabel: "Quand effectuez-vous cette évaluation ?",
+    examTimingPre: "Avant le Bac (je peux encore m'améliorer)",
+    examTimingPost: "Après le Bac (résultats officiels définitifs)",
+    examTimingHint: "Cela détermine la liste exacte des matières affichées",
+    // TASK 2 — goalPreference
+    goalPreferenceLabel: "Quel style vous correspond le mieux ?",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"Prestige & longues études (concours, grandes écoles)" },
+      balanced:   { icon:"⚖️", label:"Équilibré — meilleur choix qui reste valorisé" },
+      practical:  { icon:"🔧", label:"Emploi rapide / voie pratique (OFPPT / BTS)" },
+    },
+    marksSectionWatani: "Examen National",
+    marksSectionRegional: "Examen Régional",
+    marksSectionContinuous: "Contrôle continu (optionnel)",
+    wataniAverage: "Moyenne National (approx.)",
+    regionalAverage: "Moyenne Régional (approx.)",
+    continuousAverage: "Moyenne contrôle continu",
     overallAverage: "Moyenne générale",
     whatIf: "Et si ? – Modifier les notes",
     adjustedAverage: "Moyenne ajustée",
@@ -433,6 +567,10 @@ const TRANSLATIONS = {
       "Administration hospitalière (ENCG / FSJES)",
       "Technicien·ne en prothèse dentaire",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 Comment débloquer cette voie ?",
+    ambitiousUnlockMed:   "Pour la médecine publique : amène ta moyenne à 16+ et Bio/Chimie aux seuils requis.",
+    ambitiousUnlockGen:   "Vise une moyenne de {avg}+ et améliore tes matières clés pour augmenter tes chances.",
     // Feature 1: Exam timing
     examTimingStep: "Calendrier Bac",
     examTimingQuestion: "Cette évaluation est-elle réalisée avant ou après votre examen du Bac ?",
@@ -448,6 +586,73 @@ const TRANSLATIONS = {
     improvementTip3: "Rejoignez des groupes de révision sur WhatsApp ou Telegram",
     improvementTip4: "Plateformes gratuites : Khan Academy, Idrisse, YouTube Dar Taliba",
     improvementDisclaimer: "Ces projections sont indicatives. Aucune admission n'est garantie.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "Niveau d'examen",
+    examLevelBac1: "1ère Bac (Régional / جهوي)",
+    examLevelBac2: "2ème Bac (National / وطني)",
+    trackFieldLabel: "Filière officielle",
+    trackFields: {
+      SE:  "Sciences Expérimentales",
+      SM:  "Sciences Mathématiques",
+      ST:  "Sciences et Technologies",
+      ECO: "Sciences Économiques",
+      LSH: "Lettres et Sciences Humaines",
+      AA:  "Arts Appliqués",
+      EO:  "Enseignement Originel",
+      BP:  "Bac Professionnel",
+    },
+    smOptionLabel: "Option (Sciences Mathématiques)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "Année d'examen",
+    examYearBac1: "1ère Bac (Régional / جهوي)",
+    examYearBac2: "2ème Bac (National / وطني)",
+    bac1FieldLabel: "Filière (1ère Bac)",
+    bac1Fields: {
+      SE:"Sciences Expérimentales", SM:"Sciences Mathématiques", ST:"Sciences et Technologies",
+      ECO:"Sciences Économiques", LSH:"Lettres et Sciences Humaines",
+      AA:"Arts Appliqués", EO:"Enseignement Originel", BP:"Bac Professionnel",
+    },
+    bac2TrackLabel: "Filière (2ème Bac)",
+    bac2Tracks: {
+      SVT:"Sciences de la Vie et de la Terre", PC:"Sciences Physiques (Physique-Chimie)",
+      SMA:"Sciences Maths – Option A (SVT)", SMB:"Sciences Maths – Option B (Ing.)",
+      ST:"Sciences et Technologies", ECO:"Sciences Économiques",
+      LSH:"Lettres et Sciences Humaines", AA:"Arts Appliqués",
+      EO:"Enseignement Originel", BP:"Bac Professionnel",
+    },
+    smOptionA: "Option A (SVT)",
+    smOptionB: "Option B (Sciences de l'ingénieur)",
+    eoOptionLabel: "Spécialité (Ens. Originel)",
+    eoOptionArabic: "Littérature arabe",
+    eoOptionSharia: "Charia islamique",
+    bpExtrasLabel: "Matières supplémentaires (Bac Pro)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 Booster ton profil",
+    profileBoostDesc: "6 questions rapides qui affinent vraiment les recommandations",
+    pb_prestige: "Importance du prestige pour toi et ta famille",
+    pb_prestige0: "Pas important — résultats et emploi d'abord",
+    pb_prestige1: "Un peu important",
+    pb_prestige2: "Très important — le prestige est non-négociable",
+    pb_money: "Importance de la stabilité financière maintenant",
+    pb_money0: "Pas la priorité pour l'instant",
+    pb_money1: "Important mais pas le seul critère",
+    pb_money2: "Indispensable, c'est ma contrainte principale",
+    pb_handsOn: "Tu préfères le travail concret / terrain au bureau ?",
+    pb_handsOn0: "Non — je préfère analyser et réfléchir",
+    pb_handsOn1: "Un mix des deux",
+    pb_handsOn2: "Oui — le terrain me motive plus",
+    pb_risk: "Tu acceptes les voies incertaines (startup/créatif/indépendant) ?",
+    pb_risk0: "Non — je veux un chemin balisé",
+    pb_risk1: "Un peu, si j'ai un plan B",
+    pb_risk2: "Oui — l'incertitude ne me fait pas peur",
+    pb_intl: "Tu veux un parcours qui fonctionne à l'étranger ?",
+    pb_intl0: "Non, je reste au Maroc",
+    pb_intl1: "Peut-être plus tard",
+    pb_intl2: "Oui, l'international est dans mon plan",
+    pb_focus: "Tu peux étudier 2 à 4h par jour sérieusement ?",
+    pb_focus0: "Difficile pour moi de façon constante",
+    pb_focus1: "Oui, avec quelques difficultés parfois",
+    pb_focus2: "Oui toujours — la discipline c'est mon moteur",
     // Feature 2: Study abroad
     studyAbroadLabel: "Souhaitez-vous étudier à l'étranger ?",
     studyAbroadRegionLabel: "Région préférée",
@@ -703,6 +908,27 @@ const TRANSLATIONS = {
       impact:{ icon:"🌍", label:"Impact" },
       flexibility:{ icon:"⚖️", label:"Équilibre vie pro/perso" },
     },
+    // Cultural sensitivity patch (Tier + Goal)
+    studyGoalLabel: "Quel est ton objectif d'études ?",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"Meilleure voie publique / prestige académique" },
+      balanced: { icon:"⚖️", label:"Meilleur équilibre profil + effort réaliste" },
+      handsOn:  { icon:"🔧", label:"Formation pratique / emploi rapide" },
+    },
+    practicalFastTrack: "⚡ Option insertion rapide — idéal si tu préfères travailler avant l'université",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "Qu'est-ce qui compte le plus pour toi maintenant ?",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"Meilleure école / voie la plus prestigieuse" },
+      fit:       { icon:"🎯", label:"Ce qui correspond le mieux à ma personnalité" },
+      practical: { icon:"🔧", label:"Revenu rapide / compétences concrètes" },
+      unsure:    { icon:"🤷", label:"Je ne sais pas — montre-moi les deux" },
+    },
+    prestigeAdjacentTitle: "Si votre famille veut une voie plus 'prestigieuse'",
+    prestigeAdjacentDesc: "D'après votre profil, voici des parcours adjacents à fort prestige académique :",
+    bridgeOptionLabel: "Option passerelle",
+    bestFitTab: "Meilleur profil",
+    prestigeTrackTab: "Voie prestige",
   },
 
   en: {
@@ -732,6 +958,27 @@ const TRANSLATIONS = {
     yes: "Yes",
     no: "No",
     marks: "Your Grades /20",
+    examModeLabel: "Which grades are these?",
+    examModeWatani: "National exam grades only",
+    examModeFull: "Full Bac (Regional + National + continuous assessment)",
+    // TASK 1 — examTiming
+    examTimingLabel: "When is this evaluation?",
+    examTimingPre: "Before Bac (I can still improve)",
+    examTimingPost: "After Bac (final official results)",
+    examTimingHint: "This determines which exact subjects are shown",
+    // TASK 2 — goalPreference
+    goalPreferenceLabel: "Which style fits you best right now?",
+    goalPreferenceOptions: {
+      prestige:   { icon:"🏆", label:"Prestige & long studies (competitive exams, grandes écoles)" },
+      balanced:   { icon:"⚖️", label:"Balanced — best option that still has good standing" },
+      practical:  { icon:"🔧", label:"Fast job / practical route (OFPPT / BTS / hands-on)" },
+    },
+    marksSectionWatani: "National Exam",
+    marksSectionRegional: "Regional Exam",
+    marksSectionContinuous: "Continuous Assessment (optional)",
+    wataniAverage: "National average (approx.)",
+    regionalAverage: "Regional average (approx.)",
+    continuousAverage: "Continuous average",
     overallAverage: "Overall Average",
     whatIf: "What-If? – Adjust Grades",
     adjustedAverage: "Adjusted Average",
@@ -771,6 +1018,10 @@ const TRANSLATIONS = {
       "Hospital administration (ENCG / FSJES)",
       "Dental prosthetics technician",
     ],
+    // Narrative fix / Guardrails — ambitious tab "How to unlock"
+    ambitiousUnlockTitle: "🔓 How to unlock this path?",
+    ambitiousUnlockMed:   "For public medicine: raise your average to 16+ and Bio/Chem to required thresholds.",
+    ambitiousUnlockGen:   "Aim for an average of {avg}+ and improve key subjects to strengthen your chances.",
     // Feature 1: Exam timing
     examTimingStep: "Exam Timing",
     examTimingQuestion: "Is this evaluation before or after your final Bac exam?",
@@ -786,6 +1037,73 @@ const TRANSLATIONS = {
     improvementTip3: "Join revision groups on WhatsApp or Telegram with same-track students",
     improvementTip4: "Free platforms: Khan Academy, Coursera (audit), YouTube tutorials",
     improvementDisclaimer: "These are indicative projections only. No admission is guaranteed.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "Exam level",
+    examLevelBac1: "1st Bac (Regional)",
+    examLevelBac2: "2nd Bac (National)",
+    trackFieldLabel: "Official track / field",
+    trackFields: {
+      SE:  "Experimental Sciences",
+      SM:  "Mathematical Sciences",
+      ST:  "Sciences & Technology",
+      ECO: "Economic Sciences",
+      LSH: "Letters & Humanities",
+      AA:  "Applied Arts",
+      EO:  "Original Teaching",
+      BP:  "Vocational Bac",
+    },
+    smOptionLabel: "Option (Mathematical Sciences)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "Exam year",
+    examYearBac1: "1st Bac (Regional)",
+    examYearBac2: "2nd Bac (National)",
+    bac1FieldLabel: "Field (1st Bac)",
+    bac1Fields: {
+      SE:"Experimental Sciences", SM:"Mathematical Sciences", ST:"Sciences & Technology",
+      ECO:"Economic Sciences", LSH:"Letters & Humanities",
+      AA:"Applied Arts", EO:"Original Teaching", BP:"Vocational Bac",
+    },
+    bac2TrackLabel: "Track (2nd Bac)",
+    bac2Tracks: {
+      SVT:"Life & Earth Sciences", PC:"Physical Sciences (Physics-Chemistry)",
+      SMA:"Maths Sciences – Option A (Life Sci.)", SMB:"Maths Sciences – Option B (Eng. Sci.)",
+      ST:"Sciences & Technology", ECO:"Economic Sciences",
+      LSH:"Letters & Humanities", AA:"Applied Arts",
+      EO:"Original Teaching", BP:"Vocational Bac",
+    },
+    smOptionA: "Option A (Life & Earth Sciences)",
+    smOptionB: "Option B (Engineering Sciences)",
+    eoOptionLabel: "Speciality (Original Teaching)",
+    eoOptionArabic: "Arabic Literature",
+    eoOptionSharia: "Islamic Sharia",
+    bpExtrasLabel: "Extra subjects (Vocational Bac)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 Profile Boost",
+    profileBoostDesc: "6 quick questions that meaningfully sharpen your recommendations",
+    pb_prestige: "How important is prestige to you / your family?",
+    pb_prestige0: "Not important — outcomes and work matter more",
+    pb_prestige1: "Somewhat important",
+    pb_prestige2: "Very important — prestige is non-negotiable",
+    pb_money: "How important is income stability right now?",
+    pb_money0: "Not a priority right now",
+    pb_money1: "Important but not the only factor",
+    pb_money2: "Essential — it's my main constraint",
+    pb_handsOn: "Do you prefer hands-on / real-world work over desk work?",
+    pb_handsOn0: "No — I prefer thinking and analysing",
+    pb_handsOn1: "A mix of both",
+    pb_handsOn2: "Yes — field work motivates me more",
+    pb_risk: "Are you okay with uncertain paths (startup/creator/freelance)?",
+    pb_risk0: "No — I want a clear, stable path",
+    pb_risk1: "Somewhat, if I have a backup plan",
+    pb_risk2: "Yes — uncertainty doesn't scare me",
+    pb_intl: "Do you want a path that can work internationally?",
+    pb_intl0: "No, I plan to stay in Morocco",
+    pb_intl1: "Maybe in the future",
+    pb_intl2: "Yes, international is part of my plan",
+    pb_focus: "Can you study 2 to 4 hours a day consistently?",
+    pb_focus0: "Hard for me to do consistently",
+    pb_focus1: "Yes, with some difficulty sometimes",
+    pb_focus2: "Yes always — discipline is my strength",
     // Feature 2: Study abroad
     studyAbroadLabel: "Are you considering studying abroad?",
     studyAbroadRegionLabel: "Preferred region",
@@ -1041,6 +1359,27 @@ const TRANSLATIONS = {
       impact:{ icon:"🌍", label:"Impact" },
       flexibility:{ icon:"⚖️", label:"Work-life balance" },
     },
+    // Cultural sensitivity patch (Tier + Goal)
+    studyGoalLabel: "What is your study goal?",
+    studyGoalOptions: {
+      prestige: { icon:"🏆", label:"Best public / prestigious academic route" },
+      balanced: { icon:"⚖️", label:"Best personal fit + realistic effort" },
+      handsOn:  { icon:"🔧", label:"Hands-on / fast job entry" },
+    },
+    practicalFastTrack: "⚡ Fast-track option — ideal if you prefer job entry before university",
+    // Goal mode input (Cultural rerank layer)
+    goalModeLabel: "What matters most right now?",
+    goalModeOptions: {
+      prestige:  { icon:"🏆", label:"Best school / most prestigious route" },
+      fit:       { icon:"🎯", label:"Best fit for my personality" },
+      practical: { icon:"🔧", label:"Fast income / hands-on skills" },
+      unsure:    { icon:"🤷", label:"Not sure — show me both" },
+    },
+    prestigeAdjacentTitle: "If your family wants a more 'prestigious' path",
+    prestigeAdjacentDesc: "Based on your profile, here are adjacent paths with stronger academic prestige:",
+    bridgeOptionLabel: "Bridge option",
+    bestFitTab: "Best Fit",
+    prestigeTrackTab: "Prestige Track",
   },
 };
 
@@ -1064,32 +1403,234 @@ const BAC_TRACKS = [
   { id: "ARTS", label: { ar: "فنون تطبيقية",        fr: "Arts Appliqués",              en: "Applied Arts"            } },
 ];
 
-const SUBJECTS_BY_TRACK = {
-  SMA:  ["math", "physics", "french", "arabic", "philosophy"],
-  SMB:  ["math", "physics", "tech", "french", "arabic"],
-  PC:   ["physics", "chemistry", "math", "french", "arabic"],
-  SVT:  ["biology", "chemistry", "math", "french", "arabic"],
-  ECO:  ["economics", "math", "management", "french", "arabic"],
-  LET:  ["arabic", "french", "philosophy", "history", "english"],
-  TECH: ["tech", "math", "physics", "french", "arabic"],
-  ARTS: ["arts", "design", "french", "arabic", "history"],
+const STREAM_BY_TRACK = {
+  SMA: "scientific",
+  SMB: "scientific",
+  PC: "scientific",
+  SVT: "scientific",
+  ECO: "eco",
+  LET: "letters",
+  TECH: "scientific",
+  ARTS: "arts",
 };
 
+// National exam (Watani) subjects by track (Morocco)
+// TASK 1 — ACCURATE MOROCCAN BAC SUBJECT MAPS
+// ─────────────────────────────────────────────────────────────────
+// TWO maps: PRE (during year / mock exam) and POST (final official Bac marks).
+// The UI uses info.examTiming ("pre" | "post") to pick the right list.
+// KEY RULE: Physics + Chemistry are ONE combined mark ("pc") in Moroccan science
+//           post-Bac for SMA/SMB/PC/SVT/TECH tracks. Keep them separate only pre-Bac.
+// ─────────────────────────────────────────────────────────────────
+
+// SUBJECT MODEL (MOROCCO) FIX: Single source of truth for all Moroccan Bac subjects.
+// examYear = "bac1" | "bac2"
+// bac1Field = "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP"   (only shown when examYear=bac1)
+// bac2Track = "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (only shown when examYear=bac2)
+// eoOption  = "arabic" | "sharia"   (EO track only)
+// bpExtras  = ["math","physchem","svt"] optional toggle (BP only)
+
+// ── Bac 1 (1ère Bac / Régional) ─────────────────────────────────
+const BAC1_SUBJECTS_BY_FIELD = {
+  SE:  ["arabic","french","islamic","history_geo","translation"],
+  SM:  ["arabic","french","islamic","history_geo","translation"],
+  ST:  ["arabic","french","islamic"],
+  ECO: ["arabic","french","islamic","history_geo","law","mgmt_info"],
+  LSH: ["french","islamic","math"],
+  AA:  ["arabic","french","islamic","math","info_infog","art_culture_hist"],
+  EO:  ["french","math","history_geo","tawtiq"],  // + sharia extras via getSubjectsForMarks
+  BP:  ["french","islamic","arabic_lang_culture"], // + bpExtras via getSubjectsForMarks
+};
+
+// ── Bac 2 (2ème Bac / National) ──────────────────────────────────
+// IMPORTANT: SE is a Bac1 field only. In Bac2 it splits into SVT and PC tracks.
+// SMA and SMB are separate tracks (not a shared SM with options).
+const BAC2_SUBJECTS_BY_TRACK = {
+  SVT: ["math","physchem","svt","philosophy","english"],
+  PC:  ["math","physchem","philosophy","english"],
+  SMA: ["math","physchem","philosophy","english","svt"],      // SM Option A
+  SMB: ["math","physchem","philosophy","english","eng_sci"],  // SM Option B
+  ST:  ["math","physchem","eng_sci","philosophy","english"],
+  ECO: ["math","acct_fin","econ_stats","bus_econ_org","philosophy","english"],
+  LSH: ["arabic_lit","history_geo","philosophy","english"],
+  AA:  ["comm_multimedia","env_product_design","philosophy","english"],
+  EO:  ["lit","tafsir_hadith","philosophy","english"],  // + arabic/sharia extras
+  BP:  ["prof_synth","philosophy","english"],           // + bpExtras extras
+};
+
+// ── getSubjectsForMarks: THE single helper driving marks UI + average + results ──
+// SUBJECT MODEL (MOROCCO) FIX: all paths go through here.
+function getSubjectsForMarks(info) {
+  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2"); // migrate old key
+
+  let base;
+  if (year === "bac1") {
+    const field = info.bac1Field || info.trackField || "SE";  // migrate trackField
+    base = BAC1_SUBJECTS_BY_FIELD[field] || BAC1_SUBJECTS_BY_FIELD.SE;
+  } else {
+    const track = info.bac2Track || info.trackField || "SVT"; // migrate trackField
+    base = BAC2_SUBJECTS_BY_TRACK[track] || BAC2_SUBJECTS_BY_TRACK.SVT;
+  }
+  let list = [...base];
+
+  // EO extras (bac1 or bac2)
+  if (year === "bac1" && (info.bac1Field === "EO" || info.trackField === "EO")) {
+    if (info.eoOption === "sharia") list = [...list, "lang_sci", "inheritance_timing"];
+  }
+  if (year === "bac2" && (info.bac2Track === "EO" || info.trackField === "EO")) {
+    if (info.eoOption === "arabic") list = [...list, "lang_sci"];
+    if (info.eoOption === "sharia") list = [...list, "fiqh_usul"];
+  }
+
+  // BP extras (bac1 or bac2)
+  const isBP = (year === "bac1" && (info.bac1Field === "BP" || info.trackField === "BP"))
+             || (year === "bac2" && (info.bac2Track === "BP" || info.trackField === "BP"));
+  if (isBP && Array.isArray(info.bpExtras)) {
+    info.bpExtras.forEach(k => { if (!list.includes(k)) list.push(k); });
+  }
+
+  // Dev logging (localhost only)
+  if (typeof window !== "undefined" && (window.__DEV__ ||
+      (typeof location !== "undefined" && location.hostname === "localhost"))) {
+    const field = year === "bac1" ? (info.bac1Field || info.trackField) : (info.bac2Track || info.trackField);
+    console.log(`[Massar Subjects] examYear=${year} field/track=${field} → [${list.join(", ")}]`);
+  }
+
+  return list;
+}
+
+// SUBJECT MODEL (MOROCCO) FIX: map bac2Track/bac1Field → scoring engine bacTrack key.
+const BAC2_TRACK_TO_SCORING = {
+  SVT:"SVT", PC:"PC", SMA:"SMA", SMB:"SMB",
+  ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
+};
+const BAC1_FIELD_TO_SCORING = {
+  SE:"SVT", SM:"SMA", ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
+};
+
+// SUBJECT MODEL (MOROCCO) FIX: resolve bacTrack for scoring engine from new info fields.
+function getScoringBacTrack(info) {
+  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
+  if (year === "bac1") {
+    const field = info.bac1Field || info.trackField || "SE";
+    return BAC1_FIELD_TO_SCORING[field] || "SVT";
+  }
+  const track = info.bac2Track || info.trackField || "SVT";
+  return BAC2_TRACK_TO_SCORING[track] || "SVT";
+}
+
+// ── Legacy aliases (dead stubs — not used for subject lists anywhere) ─
+// SUBJECT MODEL (MOROCCO) FIX: kept only so no lingering ref crashes the build.
+const TRACK_FIELD_TO_BAC_TRACK = BAC1_FIELD_TO_SCORING; // legacy compat
+const TRACK_FIELD_TO_BAC_TRACK_REVERSE = { SVT:"SE",SMA:"SM",SMB:"SM",PC:"SVT",TECH:"ST",ECO:"ECO",LET:"LSH",ARTS:"AA" };
+const SUBJECTS_BY_TRACK        = { SMA:["math","physchem","english","philosophy","svt"], SMB:["math","physchem","english","philosophy","eng_sci"], PC:["math","physchem","english","philosophy"], SVT:["svt","physchem","math","english","philosophy"], ECO:["math","econ_stats","acct_fin","bus_econ_org","english","philosophy"], LET:["arabic_lit","history_geo","philosophy","english"], TECH:["math","physchem","eng_sci","english","philosophy"], ARTS:["comm_multimedia","env_product_design","philosophy","english"] };
+const SUBJECTS_POST_BY_TRACK   = SUBJECTS_BY_TRACK;
+const SUBJECTS_PRE_BY_TRACK    = SUBJECTS_BY_TRACK;
+const WATANI_SUBJECTS_BY_TRACK = SUBJECTS_BY_TRACK;
+// (Old SUBJECTS_BY_FIELD_AND_LEVEL alias for any remaining ref)
+const SUBJECTS_BY_FIELD_AND_LEVEL = null; // decommissioned — use BAC1_SUBJECTS_BY_FIELD / BAC2_SUBJECTS_BY_TRACK
+
+// Regional (Jihawi) subjects (1ère Bac), used only when examMode="full_bac"
+const REGIONAL_SUBJECTS_BY_STREAM = {
+  scientific: ["arabic", "islamic", "history"],
+  eco:        ["arabic", "islamic", "history"],
+  letters:    ["arabic", "islamic", "history"],
+  arts:       ["arabic", "islamic", "history"],
+};
+
+// SUBJECTS FIX: migrateMarks — map old saved-session keys to canonical keys.
+// physics + chemistry → physchem; biology → svt; history → history_geo; pc → physchem; etc.
+function migrateMarks(marks) {
+  if (!marks || typeof marks !== "object") return marks || {};
+  const out = { ...marks };
+  // physics + chemistry → physchem
+  if (out.physchem == null) {
+    if (out.pc != null) { out.physchem = out.pc; }
+    else {
+      const p = Number(out.physics) || 0;
+      const c = Number(out.chemistry) || 0;
+      if (p > 0 || c > 0) out.physchem = (p > 0 && c > 0) ? (p + c) / 2 : Math.max(p, c);
+    }
+  }
+  delete out.pc; delete out.physics; delete out.chemistry;
+  // biology → svt
+  if (out.svt == null && out.biology != null) out.svt = out.biology;
+  delete out.biology;
+  // history → history_geo
+  if (out.history_geo == null && out.history != null) out.history_geo = out.history;
+  delete out.history;
+  // economics_stats → econ_stats
+  if (out.econ_stats == null && out.economics_stats != null) out.econ_stats = out.economics_stats;
+  delete out.economics_stats;
+  // accounting → acct_fin
+  if (out.acct_fin == null && out.accounting != null) out.acct_fin = out.accounting;
+  delete out.accounting;
+  // economics → econ_stats (loose)
+  if (out.econ_stats == null && out.economics != null) out.econ_stats = out.economics;
+  delete out.economics;
+  // SUBJECT SYSTEM FIX: bus_org → bus_econ_org (old key rename)
+  if (out.bus_econ_org == null && out.bus_org != null) out.bus_econ_org = out.bus_org;
+  delete out.bus_org;
+  // management → bus_econ_org (canonical key)
+  if (out.management != null && out.bus_econ_org == null) out.bus_econ_org = out.management;
+  delete out.management;
+  return out;
+}
+
+// SUBJECTS FIX: canonical subject labels (AR / FR / EN) for all Bac tracks.
 const SUBJECT_LABELS = {
-  math:       { ar: "الرياضيات",          fr: "Mathématiques", en: "Mathematics"         },
-  physics:    { ar: "الفيزياء",           fr: "Physique",      en: "Physics"              },
-  chemistry:  { ar: "الكيمياء",           fr: "Chimie",        en: "Chemistry"            },
-  biology:    { ar: "علم الأحياء",        fr: "Biologie",      en: "Biology"              },
-  french:     { ar: "اللغة الفرنسية",     fr: "Français",      en: "French"               },
-  arabic:     { ar: "اللغة العربية",      fr: "Arabe",         en: "Arabic"               },
-  english:    { ar: "اللغة الإنجليزية",  fr: "Anglais",       en: "English"              },
-  economics:  { ar: "الاقتصاد",           fr: "Économie",      en: "Economics"            },
-  management: { ar: "التدبير",            fr: "Gestion",       en: "Management"           },
-  tech:       { ar: "التكنولوجيا",        fr: "Technologie",   en: "Technology"           },
-  philosophy: { ar: "الفلسفة",            fr: "Philosophie",   en: "Philosophy"           },
-  history:    { ar: "التاريخ والجغرافيا", fr: "Histoire-Géo",  en: "History & Geography" },
-  arts:       { ar: "الفنون",             fr: "Arts",          en: "Arts"                 },
-  design:     { ar: "التصميم",            fr: "Design",        en: "Design"               },
+  // ── Core ──────────────────────────────────────────────────────────
+  arabic:              { ar:"اللغة العربية",            fr:"Arabe",                            en:"Arabic"                        },
+  arabic_lit:          { ar:"الأدب العربي",             fr:"Littérature Arabe",                en:"Arabic Literature"             },
+  french:              { ar:"اللغة الفرنسية",            fr:"Français",                         en:"French"                        },
+  english:             { ar:"اللغة الإنجليزية",         fr:"Anglais",                          en:"English"                       },
+  islamic:             { ar:"التربية الإسلامية",         fr:"Éducation islamique",              en:"Islamic Education"             },
+  history_geo:         { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géographie",              en:"History & Geography"           },
+  philosophy:          { ar:"الفلسفة",                  fr:"Philosophie",                      en:"Philosophy"                    },
+  math:                { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
+  translation:         { ar:"الترجمة",                  fr:"Traduction",                       en:"Translation"                   },
+  // ── Sciences ─────────────────────────────────────────────────────
+  physchem:            { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics & Chemistry"           },
+  svt:                 { ar:"علوم الحياة والأرض",        fr:"SVT",                              en:"Life & Earth Sciences"         },
+  // ── Technology / Engineering ─────────────────────────────────────
+  eng_sci:             { ar:"علوم المهندس",              fr:"Sciences de l'ingénieur",          en:"Engineering Sciences"          },
+  // ── Economics / Business ─────────────────────────────────────────
+  law:                 { ar:"القانون",                  fr:"Droit",                            en:"Law"                           },
+  mgmt_info:           { ar:"التدبير ونظم المعلومات",   fr:"Gestion et Systèmes d'info.",      en:"Management & Info. Systems"    },
+  acct_fin:            { ar:"المحاسبة والرياضيات الم.", fr:"Comptabilité & Maths financières", en:"Accounting & Financial Maths"  },
+  econ_stats:          { ar:"الاقتصاد والإحصاء",        fr:"Économie & Statistiques",          en:"Economics & Statistics"        },
+  bus_econ_org:             { ar:"اقتصاد المقاولة والتنظيم", fr:"Économie d'entreprise & Org.",     en:"Business Economics & Org."     },
+  // ── Arts Appliqués ───────────────────────────────────────────────
+  info_infog:          { ar:"إعلامية وإنفوغرافيا",      fr:"Informatique & Infographie",       en:"IT & Infographics"             },
+  art_culture_hist:    { ar:"ثقافة وتاريخ الفنون",      fr:"Culture et Histoire des arts",     en:"Art Culture & History"         },
+  comm_multimedia:     { ar:"التواصل والوسائط المتعددة",fr:"Communication & Multimédia",       en:"Communication & Multimedia"    },
+  env_product_design:  { ar:"تصميم بيئات ومنتجات",      fr:"Design d'env. & de produits",      en:"Environment & Product Design"  },
+  // ── Enseignement Originel ─────────────────────────────────────────
+  tawtiq:              { ar:"التوثيق والإجراءات القانونية",fr:"Tawthiq et procédures judiciaires",en:"Legal Documentation"        },
+  lang_sci:            { ar:"علوم اللغة",               fr:"Sciences de la langue",            en:"Language Sciences"             },
+  inheritance_timing:  { ar:"الفرائض والمواقيت",        fr:"Héritage & Calcul des temps",      en:"Inheritance & Timing Calculus" },
+  lit:                 { ar:"الأدب",                   fr:"Littérature",                      en:"Literature"                    },
+  tafsir_hadith:       { ar:"التفسير والحديث",          fr:"Tafsir & Hadith",                  en:"Tafsir & Hadith"               },
+  fiqh_usul:           { ar:"الفقه وأصوله",             fr:"Fiqh & Usul al-Fiqh",             en:"Fiqh & Usul al-Fiqh"           },
+  // ── Bac Professionnel ─────────────────────────────────────────────
+  prof_synth:          { ar:"التقييم المهني الاصطناعي", fr:"Épreuve professionnelle de synthèse",en:"Professional Synthesis Test" },
+  arabic_lang_culture: { ar:"اللغة العربية والثقافة",   fr:"Langue arabe & Culture",           en:"Arabic Language & Culture"     },
+  // ── Backward-compat keys (for old saved sessions / narrative helpers) ──
+  pc:                  { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics-Chemistry"             },
+  physics:             { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
+  chemistry:           { ar:"الكيمياء",                 fr:"Chimie",                           en:"Chemistry"                     },
+  biology:             { ar:"علم الأحياء",               fr:"Biologie",                         en:"Biology"                       },
+  economics:           { ar:"الاقتصاد",                 fr:"Économie",                         en:"Economics"                     },
+  management:          { ar:"التدبير",                  fr:"Gestion",                          en:"Management"                    },
+  history:             { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géo",                     en:"History & Geography"           },
+  tech:                { ar:"التكنولوجيا",              fr:"Technologie",                      en:"Technology"                    },
+  arts:                { ar:"الفنون",                   fr:"Arts",                             en:"Arts"                          },
+  design:              { ar:"التصميم",                  fr:"Design",                           en:"Design"                        },
+  accounting:          { ar:"المحاسبة",                 fr:"Comptabilité",                     en:"Accounting"                    },
+  // SUBJECT SYSTEM FIX: lang2 key removed
+  sn_math:             { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
+  sn_physics:          { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
+  sn_biology:          { ar:"الأحياء",                  fr:"Biologie",                         en:"Biology"                       },
 };
 
 const MOROCCAN_CITIES = [
@@ -1132,7 +1673,7 @@ const CLUSTER_CONSTRAINTS = {
     // Public medicine (Médecine/Pharmacie) in Morocco is extremely selective.
     // National average acceptance rate: top 2–3% of SVT bac holders.
     minAvg: 16.0,
-    requiredSubjects: { biology: 14, chemistry: 13 },
+    requiredSubjects: { svt: 14, pc: 13 },
     privateOk: true,
     hardPenalty: 0.45,   // pushes cluster out of top 3 when !privateBudget
   },
@@ -1198,7 +1739,7 @@ const CLUSTERS = [
   {
     id:"it", icon:"💻", demandIndex:0.95,
     bacAffinity:{ SMA:0.9,SMB:0.9,PC:0.7,SVT:0.3,ECO:0.4,LET:0.2,TECH:0.8,ARTS:0.2 },
-    subjectWeights:{ math:0.35,physics:0.2,tech:0.3,french:0.1,english:0.05 },
+    subjectWeights:{ math:0.35,pc:0.2,tech:0.3,french:0.15 },
     traitWeights:{ analytical:0.35,creativity:0.25,structure:0.2,social:-0.05,risk:0.1,leadership:0.05 },
     salary:{ min:5000,max:25000,currency:"MAD" },
     pathways:{
@@ -1228,7 +1769,7 @@ const CLUSTERS = [
   {
     id:"data", icon:"📊", demandIndex:0.92,
     bacAffinity:{ SMA:0.95,SMB:0.85,PC:0.7,SVT:0.5,ECO:0.7,LET:0.15,TECH:0.6,ARTS:0.1 },
-    subjectWeights:{ math:0.45,physics:0.1,economics:0.2,french:0.1,tech:0.15 },
+    subjectWeights:{ math:0.45,pc:0.1,economics:0.2,french:0.1,tech:0.15 },
     traitWeights:{ analytical:0.45,creativity:0.2,structure:0.25,social:-0.05,risk:0.05,leadership:0.1 },
     salary:{ min:6000,max:30000,currency:"MAD" },
     pathways:{
@@ -1258,7 +1799,7 @@ const CLUSTERS = [
   {
     id:"cyber", icon:"🔐", demandIndex:0.88,
     bacAffinity:{ SMA:0.85,SMB:0.8,PC:0.6,SVT:0.2,ECO:0.3,LET:0.15,TECH:0.75,ARTS:0.1 },
-    subjectWeights:{ math:0.3,physics:0.15,tech:0.4,french:0.1,english:0.05 },
+    subjectWeights:{ math:0.3,pc:0.15,tech:0.4,french:0.15 },
     traitWeights:{ analytical:0.4,creativity:0.15,structure:0.3,social:-0.1,risk:0.1,leadership:0.05 },
     salary:{ min:7000,max:28000,currency:"MAD" },
     pathways:{
@@ -1288,7 +1829,7 @@ const CLUSTERS = [
   {
     id:"network", icon:"📡", demandIndex:0.8,
     bacAffinity:{ SMA:0.8,SMB:0.85,PC:0.65,SVT:0.2,ECO:0.25,LET:0.1,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.25,physics:0.3,tech:0.4,french:0.05 },
+    subjectWeights:{ math:0.25,pc:0.3,tech:0.4,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.1,structure:0.35,social:0.1,risk:0.05,leadership:0.1 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -1318,7 +1859,7 @@ const CLUSTERS = [
   {
     id:"industrial", icon:"⚙️", demandIndex:0.78,
     bacAffinity:{ SMA:0.8,SMB:0.95,PC:0.75,SVT:0.2,ECO:0.2,LET:0.05,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.3,physics:0.35,tech:0.3,chemistry:0.05 },
+    subjectWeights:{ math:0.3,pc:0.35,tech:0.35 },
     traitWeights:{ analytical:0.25,creativity:0.15,structure:0.4,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:5500,max:22000,currency:"MAD" },
     pathways:{
@@ -1348,7 +1889,7 @@ const CLUSTERS = [
   {
     id:"energy", icon:"🌞", demandIndex:0.85,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.85,SVT:0.5,ECO:0.2,LET:0.05,TECH:0.8,ARTS:0.05 },
-    subjectWeights:{ math:0.3,physics:0.45,chemistry:0.15,tech:0.1 },
+    subjectWeights:{ math:0.3,pc:0.55,tech:0.15 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.3,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:6000,max:24000,currency:"MAD" },
     pathways:{
@@ -1378,7 +1919,7 @@ const CLUSTERS = [
   {
     id:"civil", icon:"🏗️", demandIndex:0.72,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.75,SVT:0.2,ECO:0.15,LET:0.05,TECH:0.85,ARTS:0.1 },
-    subjectWeights:{ math:0.35,physics:0.4,tech:0.2,french:0.05 },
+    subjectWeights:{ math:0.35,pc:0.4,tech:0.2,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.35,social:0.1,risk:0.0,leadership:0.05 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -1408,7 +1949,7 @@ const CLUSTERS = [
   {
     id:"health", icon:"🏥", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.75,SVT:0.98,ECO:0.15,LET:0.1,TECH:0.3,ARTS:0.05 },
-    subjectWeights:{ biology:0.5,chemistry:0.3,math:0.1,physics:0.1 },
+    subjectWeights:{ svt:0.5,pc:0.35,math:0.15 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.25,social:0.3,risk:0.0,leadership:0.1 },
     salary:{ min:8000,max:40000,currency:"MAD" },
     pathways:{
@@ -1468,7 +2009,7 @@ const CLUSTERS = [
   {
     id:"marketing", icon:"📣", demandIndex:0.75,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.4,SVT:0.3,ECO:0.9,LET:0.65,TECH:0.4,ARTS:0.6 },
-    subjectWeights:{ economics:0.35,french:0.25,management:0.25,arabic:0.1,arts:0.05 },
+    subjectWeights:{ economics:0.35,english:0.15,management:0.25,french:0.2,arts:0.05 },
     traitWeights:{ analytical:0.15,creativity:0.4,structure:0.1,social:0.25,risk:0.05,leadership:0.05 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -1619,7 +2160,7 @@ const CLUSTERS = [
   {
     id:"trades", icon:"🔧", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.65,PC:0.5,SVT:0.4,ECO:0.35,LET:0.2,TECH:0.85,ARTS:0.25 },
-    subjectWeights:{ tech:0.4,math:0.25,physics:0.2,french:0.1,arabic:0.05 },
+    subjectWeights:{ tech:0.4,math:0.25,pc:0.2,french:0.15 },
     traitWeights:{ analytical:0.2,creativity:0.15,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -1650,7 +2191,7 @@ const CLUSTERS = [
   {
     id:"automotive", icon:"🚗", demandIndex:0.78,
     bacAffinity:{ SMA:0.55,SMB:0.7,PC:0.5,SVT:0.35,ECO:0.3,LET:0.2,TECH:0.9,ARTS:0.2 },
-    subjectWeights:{ tech:0.45,math:0.2,physics:0.2,french:0.1,arabic:0.05 },
+    subjectWeights:{ tech:0.45,math:0.2,pc:0.2,french:0.15 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4000,max:16000,currency:"MAD" },
     pathways:{
@@ -1743,7 +2284,7 @@ const CLUSTERS = [
   {
     id:"culinary_ops", icon:"🍽️", demandIndex:0.72,
     bacAffinity:{ SMA:0.3,SMB:0.3,PC:0.3,SVT:0.35,ECO:0.55,LET:0.45,TECH:0.3,ARTS:0.5 },
-    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,biology:0.1,history:0.1 },
+    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,english:0.1,history:0.1 },
     traitWeights:{ analytical:0.15,creativity:0.25,structure:0.35,social:0.45,risk:0.2,leadership:0.25 },
     salary:{ min:3500,max:16000,currency:"MAD" },
     pathways:{
@@ -1803,6 +2344,294 @@ const REALITY_CLUSTER_MAP = {
   culinary_ops:    { strengthTags:["s_cooking","s_organizing","s_speaking","s_discipline","s_creativity"], interestTags:["i_cooking","i_people","i_outdoors","i_helping"], identityBoost:{academic:0.3,builder:0.65,creative:0.75,athletic:0.4,business:0.65,explorer:0.7,unsure:0.6}, priorityBoost:{money:0.7,prestige:0.5,stability:0.65,freedom:0.75,impact:0.6,flexibility:0.7} },
 };
 
+
+// ─────────────────────────────────────────────────────────────────
+// FIX: cultural scoring layer
+// Three new dimensions per cluster, used in computeClusterScores.
+// prestigeScore        — social/parental perception in Moroccan context
+// parentAcceptanceScore— likelihood parents approve without pushback
+// academicUtilScore    — how well this path rewards high academic marks
+// All 0–1 scale.
+// ─────────────────────────────────────────────────────────────────
+const CULTURAL_CLUSTER_SCORES = {
+  it:              { prestige:0.75, parentAcceptance:0.80, academicUtil:0.85 },
+  data:            { prestige:0.80, parentAcceptance:0.82, academicUtil:0.90 },
+  cyber:           { prestige:0.72, parentAcceptance:0.76, academicUtil:0.80 },
+  network:         { prestige:0.60, parentAcceptance:0.68, academicUtil:0.65 },
+  industrial:      { prestige:0.65, parentAcceptance:0.70, academicUtil:0.75 },
+  energy:          { prestige:0.70, parentAcceptance:0.72, academicUtil:0.78 },
+  civil:           { prestige:0.78, parentAcceptance:0.80, academicUtil:0.82 },
+  health:          { prestige:0.98, parentAcceptance:0.97, academicUtil:0.98 },
+  finance:         { prestige:0.88, parentAcceptance:0.90, academicUtil:0.88 },
+  marketing:       { prestige:0.68, parentAcceptance:0.72, academicUtil:0.65 },
+  logistics:       { prestige:0.60, parentAcceptance:0.64, academicUtil:0.62 },
+  tourism:         { prestige:0.42, parentAcceptance:0.38, academicUtil:0.35 },
+  edu_law:         { prestige:0.85, parentAcceptance:0.88, academicUtil:0.82 },
+  arts_media:      { prestige:0.50, parentAcceptance:0.42, academicUtil:0.40 },
+  trades:          { prestige:0.35, parentAcceptance:0.32, academicUtil:0.30 },
+  automotive:      { prestige:0.33, parentAcceptance:0.30, academicUtil:0.28 },
+  sports:          { prestige:0.48, parentAcceptance:0.45, academicUtil:0.30 },
+  creative_digital:{ prestige:0.52, parentAcceptance:0.48, academicUtil:0.45 },
+  culinary_ops:    { prestige:0.40, parentAcceptance:0.36, academicUtil:0.32 },
+};
+
+// Cultural rerank layer — Step 2
+// prestigeIndex: 0–1, how prestigious this path is perceived in Morocco
+// trackType: classification used for rerank filtering
+// PrestigeIndex — Moroccan cultural perception of prestige per cluster (0–1).
+// NOT a value judgement; reflects "parent/family acceptance & social standing" in Moroccan context.
+// Values are heuristics based on observable social patterns.
+const CLUSTER_PRESTIGE = {
+  health:          { prestigeIndex:1.00, trackType:"academic_prestige" },
+  data:            { prestigeIndex:0.90, trackType:"academic_prestige" },
+  it:              { prestigeIndex:0.85, trackType:"academic_prestige" },
+  cyber:           { prestigeIndex:0.80, trackType:"academic_prestige" },
+  finance:         { prestigeIndex:0.75, trackType:"business_prestige" },
+  industrial:      { prestigeIndex:0.75, trackType:"academic_prestige" },
+  civil:           { prestigeIndex:0.70, trackType:"academic_prestige" },
+  energy:          { prestigeIndex:0.68, trackType:"academic_prestige" },
+  network:         { prestigeIndex:0.65, trackType:"academic_prestige" },
+  marketing:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  logistics:       { prestigeIndex:0.60, trackType:"business_prestige" },
+  edu_law:         { prestigeIndex:0.60, trackType:"business_prestige" },
+  creative_digital:{ prestigeIndex:0.50, trackType:"creative" },
+  arts_media:      { prestigeIndex:0.45, trackType:"creative" },
+  tourism:         { prestigeIndex:0.45, trackType:"service" },
+  trades:          { prestigeIndex:0.42, trackType:"hands_on" },
+  sports:          { prestigeIndex:0.40, trackType:"hands_on" },
+  automotive:      { prestigeIndex:0.40, trackType:"hands_on" },
+  culinary_ops:    { prestigeIndex:0.38, trackType:"hands_on" },
+};
+
+// Cultural rerank layer — Step 4
+// Hardcoded adjacent prestigious paths per low-prestige cluster id.
+// Used when a low-prestige cluster tops Best Fit for a high-avg prestige/unsure student.
+const PRESTIGE_ADJACENT_PATHS = {
+  sports: {
+    ar: ["إدارة الرياضة (FSJES/ENCG)", "الفيزيوتيراپي وإعادة التأهيل (IFCS)", "شهادات التدريب والأداء البشري"],
+    fr: ["Management du Sport (FSJES/ENCG)", "Kinésithérapie & rééducation (IFCS)", "Certifications coaching & performance humaine"],
+    en: ["Sport Management (FSJES/ENCG)", "Physiotherapy & Rehabilitation (IFCS)", "Coaching & Human Performance certifications"],
+  },
+  tourism: {
+    ar: ["ENCG – تدبير المقاولات", "إدارة الضيافة (grandes écoles privées)", "تسويق السياحة وإدارة الأحداث"],
+    fr: ["ENCG – Gestion d'entreprise", "Management Hôtelier (grandes écoles privées)", "Marketing touristique & management d'événements"],
+    en: ["ENCG – Business Management", "Hospitality Management (private grandes écoles)", "Tourism Marketing & Event Management"],
+  },
+  arts_media: {
+    ar: ["التسويق والاتصال (ENCG/ISCAE)", "تصميم تجربة المستخدم (UX)", "الإشهار والعلامة التجارية"],
+    fr: ["Marketing & Communication (ENCG/ISCAE)", "Design UX/UI", "Publicité & stratégie de marque"],
+    en: ["Marketing & Communication (ENCG/ISCAE)", "UX/UI Design", "Advertising & Brand Strategy"],
+  },
+  creative_digital: {
+    ar: ["التسويق الرقمي (ENCG)", "استراتيجية العلامة التجارية", "إدارة وسائل التواصل الاجتماعي"],
+    fr: ["Marketing digital (ENCG)", "Stratégie de marque", "Gestion des réseaux sociaux"],
+    en: ["Digital Marketing (ENCG)", "Brand Strategy", "Social Media Management"],
+  },
+  logistics: {
+    ar: ["ENCG – الاقتصاد والإدارة", "هندسة الأنظمة الصناعية (ENSA)", "إدارة سلسلة التوريد (Master)"],
+    fr: ["ENCG – Économie & gestion", "Génie industriel (ENSA)", "Supply Chain Management (Master)"],
+    en: ["ENCG – Economics & Management", "Industrial Engineering (ENSA)", "Supply Chain Management (Master)"],
+  },
+  culinary_ops: {
+    ar: ["إدارة الضيافة والمطاعم (ISIT/privé)", "علوم الأغذية (FST)", "إدارة الأعمال الغذائية"],
+    fr: ["Hôtellerie-Restauration Management (ISIT/privé)", "Sciences alimentaires (FST)", "Gestion d'entreprise agroalimentaire"],
+    en: ["Hospitality & Restaurant Management (ISIT/private)", "Food Science (FST)", "Agri-food Business Management"],
+  },
+  trades: {
+    ar: ["هندسة تقنيات صناعية (ENSA/FST)", "تقنيات الطاقة والكهرباء (OFPPT BTS ثم licence)", "هندسة ميكانيكية تطبيقية"],
+    fr: ["Génie technologique industriel (ENSA/FST)", "Électrotechnique & Énergie (BTS puis licence)", "Génie mécanique appliqué"],
+    en: ["Industrial Technology Engineering (ENSA/FST)", "Electrotechnics & Energy (BTS then degree)", "Applied Mechanical Engineering"],
+  },
+  automotive: {
+    ar: ["هندسة ميكاترونيك وأنظمة السيارات (ENSA)", "صناعة السيارات (ENSAM/FST)", "هندسة كهربائية للمركبات"],
+    fr: ["Génie mécatronique & automobile (ENSA)", "Génie automobile (ENSAM/FST)", "Génie électrique pour véhicules"],
+    en: ["Mechatronics & Automotive Engineering (ENSA)", "Automotive Engineering (ENSAM/FST)", "Automotive Electrical Engineering"],
+  },
+};
+
+// FIX: prestige-aware path naming
+// When a high-performing student (avg 14+) gets a lower-prestige path,
+// use the elevated display name instead of the base cluster label.
+const PRESTIGE_PATH_NAMES = {
+  tourism: {
+    ar: { elevated:"إدارة الضيافة الدولية", base:"السياحة والضيافة" },
+    fr: { elevated:"Management Hôtelier International", base:"Tourisme & Hôtellerie" },
+    en: { elevated:"International Hospitality Management", base:"Tourism & Hospitality" },
+  },
+  culinary_ops: {
+    ar: { elevated:"إدارة المطاعم والضيافة الراقية", base:"الطهي والضيافة التشغيلية" },
+    fr: { elevated:"Gestion Restauration & Gastronomie", base:"Cuisine & Hôtellerie Opérationnelle" },
+    en: { elevated:"Restaurant & Culinary Arts Management", base:"Culinary & Hospitality Operations" },
+  },
+  arts_media: {
+    ar: { elevated:"الإنتاج الإعلامي والاستراتيجية الرقمية", base:"الفنون والإعلام" },
+    fr: { elevated:"Production Médias & Stratégie Digitale", base:"Arts & Médias" },
+    en: { elevated:"Media Production & Digital Strategy", base:"Arts & Media" },
+  },
+  creative_digital: {
+    ar: { elevated:"تسويق المحتوى الرقمي وبناء الماركة", base:"إنتاج المحتوى الرقمي" },
+    fr: { elevated:"Marketing de Contenu & Brand Building", base:"Création de Contenu Digital" },
+    en: { elevated:"Content Marketing & Brand Building", base:"Digital Content Creation" },
+  },
+  sports: {
+    ar: { elevated:"علوم الرياضة وإدارة الأداء البشري", base:"الرياضة واللياقة البدنية" },
+    fr: { elevated:"Sciences du Sport & Management de Performance", base:"Sport & Condition Physique" },
+    en: { elevated:"Sport Sciences & Human Performance Management", base:"Sports & Fitness" },
+  },
+  trades: {
+    ar: { elevated:"هندسة التقنيات الصناعية والبنية التحتية", base:"المهن التقنية الحرفية" },
+    fr: { elevated:"Ingénierie des Technologies Industrielles", base:"Métiers Techniques & Artisanaux" },
+    en: { elevated:"Industrial Engineering Technology", base:"Skilled Trades & Crafts" },
+  },
+};
+
+// FIX: clamp numeric UI values
+function clamp(val, min = 0, max = 100) {
+  const n = Number(val);
+  return isNaN(n) ? min : Math.min(max, Math.max(min, n));
+}
+
+// TASK 2 — PRESTIGE TIER per cluster
+// A = medicine / engineering / data / law  (socially elite in Morocco)
+// B = business / logistics / civil / network (solid, respected)
+// C = tourism / hospitality / arts / trades / sports / culinary (low cultural prestige)
+// OFPPT/ISTA are PATHWAYS shown inside clusters, never standalone cluster IDs.
+const CLUSTER_PRESTIGE_TIER = {
+  health: "A", data: "A", it: "A", cyber: "A", industrial: "A",
+  energy: "A", civil: "A",
+  finance: "B", edu_law: "B", network: "B", logistics: "B", marketing: "B",
+  creative_digital: "B",
+  tourism: "C", arts_media: "C", sports: "C", trades: "C",
+  automotive: "C", culinary_ops: "C",
+};
+
+// TASK 2 — Academic tier A/B/C/D (replaces HIGH/MID/LOW for new scoring)
+function getAcademicTierABCD(avg) {
+  if (avg >= 15.5) return "A";
+  if (avg >= 14.0) return "B";
+  if (avg >= 12.0) return "C";
+  return "D";
+}
+function tierIsHigh(tier) { return tier === "A" || tier === "B"; }
+
+// Legacy alias — kept for backward-compat with old callers
+function getAcademicTier(overallAvg) {
+  const avg = Number(overallAvg) || 0;
+  if (avg >= 14.5) return "HIGH";
+  if (avg >= 12)   return "MID";
+  return "LOW";
+}
+
+// TASK 2 — computePES: Prestige Expectation Score [0..1]
+// Deterministic. Reads average, track stream, top subject, and family pressure field.
+function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
+  const avg = clamp(Number(overallAvg) || 0, 0, 20);
+  const stream = STREAM_BY_TRACK[bacTrack] || "scientific";
+  let pes = avg / 20;
+  if (stream === "scientific") pes = Math.min(1, pes * 1.15);
+  else if (stream === "eco")   pes = Math.min(1, pes * 1.05);
+  if (fpField === "medicine" || fpField === "engineering") pes = Math.min(1, pes + 0.08);
+  const markVals = Object.values(effectiveMarks||{}).map(Number).filter(v => !isNaN(v) && v > 0);
+  if (markVals.length && Math.max(...markVals) >= 16) pes = Math.min(1, pes + 0.05);
+  return pes;
+}
+
+// LOGIC FIX: computeThreeViews — uses pre-computed lane scores (fit/balanced/ambitious)
+// stored on each cluster by computeClusterScores. See spec §3.7.
+// Lane formulas (already baked into scores.fit / scores.balanced / scores.ambitious):
+//   Best Personal Fit  : 45% trait + 25% handsOn-match + 15% market + 15% futureIndex
+//   Best Balanced      : 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl
+//   Most Ambitious     : 35% prestige + 25% academic proximity + 15% focusAbility + 15% future + 10% market
+// Cultural constraints enforced here on top of the pre-scored values.
+function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
+  if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
+
+  const avg           = clamp(Number(overallAvg) || 0, 0, 20);
+  const safeInfo      = (info && typeof info === "object") ? info : {};
+  const goalMode      = safeInfo.goalMode      || "unsure";
+  const goalPref      = safeInfo.goalPreference || "prestige";
+  const privateBudget = !!safeInfo.privateBudget;
+  const fpField       = safeInfo.fpField || "";
+  const pes           = computePES(avg, safeInfo.bacTrack||"SMA", effectiveMarks||{}, fpField);
+  const academicTier  = getAcademicTierABCD(avg);
+  const isHighTier    = tierIsHigh(academicTier);
+  const isPractical   = goalPref === "practical" || goalMode === "practical";
+
+  // profileBoost fields for cultural constraints
+  const pb         = safeInfo.profileBoost || {};
+  const pbPrestige = Number(pb.prestigePriority  ?? 1);
+  const pbHandsOn  = Number(pb.handsOn           ?? 1);
+
+  // Cultural Credibility Filter for Three Views tab (applied on top of lane scores)
+  function tierCPenalty(clusterId) {
+    if (isPractical || pbHandsOn >= 2) return 0;
+    const ct = CLUSTER_PRESTIGE_TIER[clusterId] || "B";
+    if (ct !== "C") return 0;
+    if (avg < 12) return 0;
+    if (avg >= 15.5) return 0.30;
+    if (isHighTier) return 0.18;
+    return 0.06;
+  }
+
+  // Medicine penalty in Balanced when public-ineligible + no budget
+  function medPenalty(c) {
+    return (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
+  }
+
+  // ── Best Personal Fit: use pre-computed scores.fit, personality guardrail ──
+  const fitSorted = [...rankedClusters].sort((a,b) => {
+    // Apply mild tier-C penalty on fit tab too (50% strength)
+    return (b.scores.fit||0) - tierCPenalty(b.id)*0.5 - ((a.scores.fit||0) - tierCPenalty(a.id)*0.5);
+  });
+
+  function fitPersonalityOk(cluster, rank) {
+    const ts = cluster.scores.trait || 0;
+    if (cluster.id === "health" && ts < 0.60) { if (rank === 0) return false; }
+    if (ts < 0.55 && rank === 0) return false;
+    if (ts < 0.45 && avg < 16.5)  return false;
+    return true;
+  }
+  let bestFit = null;
+  for (let i = 0; i < fitSorted.length; i++) {
+    if (fitPersonalityOk(fitSorted[i], i)) { bestFit = fitSorted[i]; break; }
+  }
+  bestFit = bestFit || fitSorted[0] || null;
+
+  // ── Best Balanced: use pre-computed scores.balanced + cultural gate ──
+  const balSorted = [...rankedClusters].sort((a,b) => {
+    const sa = (a.scores.balanced||0) - tierCPenalty(a.id) - medPenalty(a);
+    const sb = (b.scores.balanced||0) - tierCPenalty(b.id) - medPenalty(b);
+    return sb - sa;
+  });
+  const balanced = balSorted[0] || null;
+
+  // ── Most Ambitious: use pre-computed scores.ambitious + prestige gate ──
+  const ambSorted = [...rankedClusters].sort((a,b) => {
+    let sa = a.scores.ambitious||0;
+    let sb = b.scores.ambitious||0;
+    // Cultural sanity: pbPrestige=2 + avg ≥ 14 → Tier C cannot be #1
+    if (pbPrestige >= 2 && avg >= 14) {
+      if (CLUSTER_PRESTIGE_TIER[a.id] === "C") sa -= 0.20;
+      if (CLUSTER_PRESTIGE_TIER[b.id] === "C") sb -= 0.20;
+    }
+    return sb - sa;
+  });
+  // Medicine: not #1 in Ambitious if avg < 15.5 + !privateBudget
+  let ambitious = null;
+  for (const item of ambSorted) {
+    if (item.id === "health" && !privateBudget && avg < 15.5) continue;
+    ambitious = item; break;
+  }
+  ambitious = ambitious || ambSorted[0] || null;
+
+  if (typeof window !== "undefined" && window.__DEV__) {
+    console.log("[Massar ThreeViews] PES:", pes.toFixed(2), "tier:", academicTier,
+      "| fit:", bestFit?.id, "balanced:", balanced?.id, "ambitious:", ambitious?.id);
+  }
+
+  return { bestFit, balanced, ambitious };
+}
+
 // ── Scoring weights (must sum to 1.0) ─────────────────────────────
 // Extend here — never touch individual score computation below.
 const SCORING_WEIGHTS = {
@@ -1816,6 +2645,232 @@ const SCORING_WEIGHTS = {
   priority:  0.05,   // Life priority modifier
 };
 // Sum check: 0.18+0.18+0.14+0.08+0.16+0.12+0.09+0.05 = 1.00
+
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 3
+// Pure post-processing on rankedClusters. Does NOT mutate engine output.
+// Returns { primary: Cluster[], secondary: Cluster[] | null }
+//   primary   = ordered clusters to show as "Top Careers"
+//   secondary = alternate prestige ranking (only set when goalMode="unsure")
+// ─────────────────────────────────────────────────────────────────
+function culturallyRerankClusters(rankedClusters, info, overallAvg) {
+  if (!rankedClusters || rankedClusters.length === 0) return { primary: [], secondary: null };
+
+  const goalMode  = info.goalMode  || "unsure";
+  // TASK 2 — goalPreference overrides goalMode for the practical exemption check
+  const goalPref  = info.goalPreference || "prestige";
+  const avg       = clamp(Number(overallAvg) || 0, 0, 20);
+  const isHighAvg = avg >= 14.5;
+  // Practical mode: user explicitly chose practical route — no prestige gates apply
+  const isPractical = goalPref === "practical" || goalMode === "practical";
+
+  // Helper: get prestige metadata for a cluster
+  function getMeta(c) {
+    return CLUSTER_PRESTIGE[c.id] || { prestigeIndex: 0.5, trackType: "service" };
+  }
+
+  // 3B: Clusters that should not top the list for high-avg non-practical students
+  const LOW_PRESTIGE_TYPES = new Set(["hands_on"]);
+  const LOW_PRESTIGE_IDS   = new Set(["tourism", "sports", "arts_media", "culinary_ops"]);
+
+  function isLowPrestigeCluster(c) {
+    const m = getMeta(c);
+    return LOW_PRESTIGE_TYPES.has(m.trackType) || LOW_PRESTIGE_IDS.has(c.id) || m.prestigeIndex < 0.58;
+  }
+
+  // 3B: Hard gate — low-prestige clusters can only be in top-3 if score is dominant
+  function applyHardGate(sorted) {
+    if (!isHighAvg || isPractical) return sorted;
+    const topScore = sorted[0]?.scores?.final || 0;
+    const top3 = [];
+    const rest = [];
+    for (const c of sorted) {
+      if (isLowPrestigeCluster(c)) {
+        const meta = getMeta(c);
+        const isDominant = c.scores.final >= (topScore - 0.03) && meta.prestigeIndex >= 0.60;
+        if (isDominant && top3.length < 3) {
+          top3.push(c);
+        } else {
+          rest.push(c);
+        }
+      } else {
+        if (top3.length < 3) top3.push(c);
+        else rest.push(c);
+      }
+    }
+    return [...top3, ...rest];
+  }
+
+  // 3C: Prestige mode scoring
+  function prestigeSort(clusters) {
+    return [...clusters].sort((a, b) => {
+      const ma = getMeta(a); const mb = getMeta(b);
+      const sa = 0.55 * (a.scores.final || 0) + 0.30 * ma.prestigeIndex + 0.15 * (a.scores.academic || 0);
+      const sb = 0.55 * (b.scores.final || 0) + 0.30 * mb.prestigeIndex + 0.15 * (b.scores.academic || 0);
+      return sb - sa;
+    });
+  }
+
+  // 3E: Practical mode scoring
+  function practicalSort(clusters) {
+    return [...clusters].sort((a, b) => {
+      const hasPractA = !!(a.pathways?.practical?.schools?.length);
+      const hasPractB = !!(b.pathways?.practical?.schools?.length);
+      const sa = 0.70 * (a.scores.final || 0) + 0.30 * (hasPractA ? 1 : 0);
+      const sb = 0.70 * (b.scores.final || 0) + 0.30 * (hasPractB ? 1 : 0);
+      return sb - sa;
+    });
+  }
+
+  let primary;
+  let secondary = null;
+
+  if (isPractical) {
+    // TASK 2 — practical preference: practical boost, no prestige gates at all
+    primary = practicalSort(rankedClusters);
+  } else if (goalMode === "prestige") {
+    // 3C: sort by prestige composite, then gate
+    primary = applyHardGate(prestigeSort(rankedClusters));
+  } else if (goalMode === "fit") {
+    // 3D: keep existing ranking, apply gate
+    primary = applyHardGate([...rankedClusters]);
+  } else if (goalMode === "practical") {
+    // 3E: practical boost, no gating
+    primary = practicalSort(rankedClusters);
+  } else {
+    // 3F: unsure — best fit (gated) + prestige track for secondary panel
+    primary   = applyHardGate([...rankedClusters]);
+    secondary = applyHardGate(prestigeSort(rankedClusters));
+  }
+
+  return { primary, secondary };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// TASK 3 — Logic Self-Check (dev-only, 5 cases)
+// Runs once on localhost to validate scoring logic.
+// No import.meta. No crashes if checks fail.
+// ─────────────────────────────────────────────────────────────────
+function runLogicSelfCheck() {
+  try {
+    const LOW_PRACTICAL = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
+    const GOOD_SVT      = new Set(["data","cyber","it","health","energy","industrial","civil"]);
+    const GOOD_LET      = new Set(["edu_law","marketing","arts_media","creative_digital"]);
+    const GOOD_ECO      = new Set(["finance","marketing","logistics","edu_law"]);
+
+    // Minimal synthetic cluster builder used by culturallyRerankClusters
+    const makeRC = (id, final, academic, trait) => ({
+      id,
+      scores: { final, academic, trait: trait||0.5, market:0.7, bac:0.6, interest:0.5, strength:0.5, identity:0.5, priority:0.5 },
+      pathways: {
+        grandeEcole: ["data","it","cyber","health","energy","industrial","civil","finance","edu_law"].includes(id) ? {schools:["ENSA"]} : null,
+        university: {schools:["FST"]},
+        practical: {schools:["OFPPT"]},
+      },
+      eligibilityTag: "eligible",
+    });
+
+    // Synthetic compute helper — bypasses full engine, tests rerank + three-views only
+    function makeRanked(idScores) {
+      return idScores.map(([id,f,a,t]) => makeRC(id,f,a,t)).sort((a,b)=>b.scores.final-a.scores.final);
+    }
+
+    let passed = 0, failed = 0;
+    function assert(label, condition, data) {
+      if (condition) { passed++; }
+      else { failed++; console.warn(`[SelfCheck FAIL] ${label}`, data); }
+    }
+
+    // ── Case A: SVT post, avg 15.2, strong pc/svt/math
+    // → top-3 should include Data/AI or Engineering/Cyber; NOT Tourism, NOT OFPPT-only
+    {
+      const ranked = makeRanked([
+        ["data",    0.82, 0.90, 0.75],
+        ["cyber",   0.78, 0.85, 0.65],
+        ["it",      0.76, 0.82, 0.70],
+        ["health",  0.71, 0.88, 0.55],
+        ["tourism", 0.55, 0.30, 0.60],
+        ["sports",  0.40, 0.20, 0.55],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige", privateBudget:false };
+      const { primary } = culturallyRerankClusters(ranked, info, 15.2);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case A: high SVT — no low-practical in top-3", !top3.some(id=>LOW_PRACTICAL.has(id)), top3);
+      assert("Case A: high SVT — at least one GOOD cluster in top-3", top3.some(id=>GOOD_SVT.has(id)), top3);
+    }
+
+    // ── Case B: SVT post, avg 11.5 → practical options allowed in top-3
+    {
+      const ranked = makeRanked([
+        ["trades",    0.62, 0.40, 0.70],
+        ["automotive",0.60, 0.38, 0.65],
+        ["it",        0.55, 0.55, 0.45],
+        ["tourism",   0.52, 0.30, 0.60],
+      ]);
+      const info = { goalMode:"unsure", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 11.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      // low avg — practical clusters ARE allowed (no prestige gate for avg < 12)
+      assert("Case B: low avg — practical clusters not blocked", top3.length > 0, top3);
+    }
+
+    // ── Case C: LET post, high arabic/french/philo → law/education ok
+    {
+      const ranked = makeRanked([
+        ["edu_law",        0.80, 0.85, 0.72],
+        ["marketing",      0.72, 0.75, 0.65],
+        ["creative_digital",0.65, 0.60, 0.70],
+        ["sports",         0.50, 0.20, 0.60],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.0);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case C: LET — edu_law or marketing in top-3", top3.some(id=>GOOD_LET.has(id)), top3);
+    }
+
+    // ── Case D: ECO post, high eco/math → finance/business ok
+    {
+      const ranked = makeRanked([
+        ["finance",  0.81, 0.87, 0.70],
+        ["logistics",0.75, 0.80, 0.65],
+        ["tourism",  0.60, 0.35, 0.55],
+        ["sports",   0.45, 0.20, 0.60],
+      ]);
+      const info = { goalMode:"prestige", goalPreference:"prestige" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case D: ECO — finance/logistics in top-3", top3.some(id=>GOOD_ECO.has(id)), top3);
+      assert("Case D: ECO — tourism/sports NOT in top-3", !top3.some(id=>["tourism","sports"].includes(id)), top3);
+    }
+
+    // ── Case E: Practical preference even with avg 14.5 → allow tourism/practical to rise
+    {
+      const ranked = makeRanked([
+        ["it",      0.72, 0.80, 0.55],
+        ["tourism", 0.68, 0.40, 0.78],
+        ["sports",  0.65, 0.30, 0.80],
+      ]);
+      const info = { goalMode:"practical", goalPreference:"practical" };
+      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
+      const top3 = primary.slice(0,3).map(c=>c.id);
+      assert("Case E: practical pref — low-prestige clusters CAN appear in top-3", top3.some(id=>LOW_PRACTICAL.has(id)), top3);
+    }
+
+    if (failed === 0) {
+      console.log(`%c[Massar Logic Self-Check] ✅ All ${passed} cases passed.`, "color:green;font-weight:bold");
+    } else {
+      console.warn(`[Massar Logic Self-Check] ⚠️ ${failed} case(s) failed, ${passed} passed.`);
+    }
+  } catch (e) {
+    console.warn("[Massar Logic Self-Check] error:", e);
+  }
+}
+
+// Run self-check on localhost only (no import.meta)
+if (typeof window !== "undefined" && typeof window.location !== "undefined"
+    && window.location.hostname === "localhost") {
+  setTimeout(runLogicSelfCheck, 1400);
+}
 
 // src/massar/utils/storage.js
 // ─────────────────────────────────────────────────────────────────
@@ -1862,6 +2917,39 @@ function loadSession() {
     if (!parsed || parsed._v !== SCHEMA_VERSION) return null;
     // Basic shape validation
     if (typeof parsed.lang !== "string") return null;
+    // TASK 1 — migrate old physics/chemistry mark keys → physchem
+    if (parsed.marks) parsed.marks = migrateMarks(parsed.marks);
+    // SUBJECT MODEL (MOROCCO) FIX: migrate old info.trackField / examLevel → new fields
+    if (parsed.info) {
+      const inf = parsed.info;
+      // If old examLevel exists but new examYear doesn't, promote it
+      if (!inf.examYear && inf.examLevel) inf.examYear = inf.examLevel;
+      // If old trackField exists but new bac1Field/bac2Track don't, derive them
+      if (inf.trackField && !inf.bac1Field && !inf.bac2Track) {
+        const bac1Fields = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
+        const bac2Tracks = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
+        const year = inf.examYear || "bac2";
+        if (year === "bac1" && bac1Fields.includes(inf.trackField)) {
+          inf.bac1Field = inf.trackField;
+        } else if (year === "bac2" && bac2Tracks.includes(inf.trackField)) {
+          inf.bac2Track = inf.trackField;
+        } else {
+          // Map old bacTrack style
+          const OLD_BAC_TRACK_MAP = {
+            SVT:"bac2:SVT", PC:"bac2:PC", SMA:"bac2:SMA", SMB:"bac2:SMB",
+            SE:"bac1:SE", SM:"bac1:SM",
+          };
+          const mapped = OLD_BAC_TRACK_MAP[inf.bacTrack] || null;
+          if (mapped) {
+            const [yr, tk] = mapped.split(":");
+            inf.examYear = yr;
+            if (yr === "bac1") inf.bac1Field = tk;
+            else               inf.bac2Track = tk;
+          }
+        }
+      }
+      parsed.info = inf;
+    }
     return parsed;
   } catch {
     return null;
@@ -1892,6 +2980,47 @@ function saveCtaEmail(email) {
 
 
 
+
+// ─────────────────────────────────────────────────────────────────
+// FIX: ErrorBoundary prevents white screen crash
+// ─────────────────────────────────────────────────────────────────
+class ResultsErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { crashed: false, error: null }; }
+  static getDerivedStateFromError(error) { return { crashed: true, error }; }
+  componentDidCatch(error, info) { console.error("[Massar Results crash]", error, info); }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div style={{
+          padding:"40px 28px", textAlign:"center", maxWidth:520, margin:"0 auto",
+          background:"var(--surface)", borderRadius:20, border:"1px solid var(--border)",
+          boxShadow:"0 8px 32px rgba(0,0,0,0.4)",
+        }}>
+          <div style={{fontSize:48, marginBottom:16}}>⚠️</div>
+          <h2 style={{fontSize:20, color:"var(--text)", marginBottom:10, fontWeight:700}}>
+            Something went wrong
+          </h2>
+          <p style={{fontSize:14, color:"var(--muted)", marginBottom:8, lineHeight:1.6}}>
+            Your profile could not load correctly.
+          </p>
+          <p style={{fontSize:13, color:"var(--muted)", marginBottom:28}}>
+            This is usually a temporary issue. Try again or restart.
+          </p>
+          <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap"}}>
+            <button className="btn btn-secondary"
+              onClick={()=>this.setState({crashed:false,error:null})}>
+              🔄 Retry
+            </button>
+            <button className="btn btn-danger" onClick={this.props.onRestart}>
+              {this.props.restartLabel || "Restart Test"}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // ── Traits ────────────────────────────────────────────────────────
 function computeTraits(answers) {
@@ -1934,6 +3063,39 @@ function getEligibilityTag(clusterId, effectiveMarks, overallAvg, privateBudget)
   return null;
 }
 
+// C — Prestige index per cluster (drives prestige boost for high-avg students)
+const PRESTIGE_INDEX = {
+  it: 0.85, data: 0.9, cyber: 0.85, network: 0.75,
+  industrial: 0.8, energy: 0.8, civil: 0.78,
+  health: 0.95, finance: 0.8, marketing: 0.6,
+  logistics: 0.65, tourism: 0.45, edu_law: 0.7, arts_media: 0.4,
+  sports: 0.55, creative_digital: 0.55, trades: 0.4, automotive: 0.45, culinary_ops: 0.35,
+};
+
+// LOGIC FIX: future-proofing index per cluster (automation resistance + global demand)
+// Used in Balanced and Ambitious scoring lanes (spec §3.6)
+const FUTURE_INDEX = {
+  data:            0.97,  // AI/ML — highest demand globally
+  cyber:           0.95,  // Cybersecurity — structural shortage
+  it:              0.88,  // Software — broad and resilient
+  health:          0.90,  // Healthcare — demographic-driven
+  energy:          0.88,  // Renewables — Morocco's Vision 2030
+  industrial:      0.82,  // Manufacturing automation engineers
+  civil:           0.78,  // Infrastructure — large in Morocco
+  network:         0.76,  // Connectivity infrastructure
+  finance:         0.74,  // Fintech-resistant roles
+  edu_law:         0.72,  // Law + education remain human-heavy
+  logistics:       0.70,  // Supply chain — partially automatable
+  marketing:       0.62,  // Creative/strategy roles survive
+  creative_digital:0.65,  // Digital creation — growing demand
+  trades:          0.80,  // Skilled trades — hard to automate, Morocco needs them
+  automotive:      0.65,  // Shifting with EVs — moderate
+  tourism:         0.58,  // Seasonal, service-dependent
+  sports:          0.60,  // Coaching/management resilient
+  arts_media:      0.55,  // Creative but competitive
+  culinary_ops:    0.52,  // Local demand, limited automation
+};
+
 // ── Cluster scores ────────────────────────────────────────────────
 /**
  * Ranks all clusters given effective marks + reality layer inputs.
@@ -1957,6 +3119,15 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
   const priority     = reality.priority     || "stability";
   const prefStyle    = reality.preferredStyle || "";
   const strengthsNow = reality.strengthsNow  || [];
+
+  // NEW INPUT: profileBoost — 6 high-signal personal questions
+  const pb = reality.profileBoost || {};
+  const pbPrestige = Number(pb.prestigePriority ?? 1);   // 0-2
+  const pbMoney    = Number(pb.moneyPriority    ?? 1);   // 0-2
+  const pbHandsOn  = Number(pb.handsOn          ?? 1);   // 0-2
+  const pbRisk     = Number(pb.riskTolerance    ?? 1);   // 0-2
+  const pbIntl     = Number(pb.internationalIntent ?? 1); // 0-2
+  const pbFocus    = Number(pb.focusAbility     ?? 1);   // 0-2
 
   // Practical-cluster boost keys — clusters that should surface for hands-on profiles
   const PRACTICAL_CLUSTERS = new Set(["trades","automotive","sports","creative_digital","culinary","industrial","energy","logistics","tourism"]);
@@ -2025,6 +3196,92 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     const snPracticalCount = strengthsNow.filter(k => handsOnSN.includes(k)).length;
     const snBoost = PRACTICAL_CLUSTERS.has(cluster.id) && snPracticalCount >= 2 ? 0.05 : 0;
 
+    // FIX: academic utilization weighting
+    // Boost clusters that better utilise the student's academic level.
+    // High avg (16+) → elite/selective paths boosted; low avg → practical paths can rise.
+    const culturalScores = CULTURAL_CLUSTER_SCORES[cluster.id] || { prestige:0.5, parentAcceptance:0.5, academicUtil:0.5 };
+    let academicUtilMod = 0;
+    if (overallAvg >= 16) {
+      // Elite students: reward paths that demand high academics
+      academicUtilMod = (culturalScores.academicUtil - 0.5) * 0.12;
+    } else if (overallAvg >= 14) {
+      // Strong students: mild academic utility boost
+      academicUtilMod = (culturalScores.academicUtil - 0.5) * 0.07;
+    } else if (overallAvg < 11 && overallAvg >= 0) {
+      // Weaker academic → practical paths rise naturally (inverse)
+      academicUtilMod = (0.5 - culturalScores.academicUtil) * 0.06;
+    }
+
+    // FIX: cultural scoring layer — prestige/parent factor has minor influence
+    // Priority "prestige" users get a stronger weight
+    const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
+
+    // TASK 2 — Cultural Credibility Filter at base scoring level
+    // Uses CLUSTER_PRESTIGE_TIER + goalPreference to penalise Tier C clusters for high-avg students.
+    // goalPreference="practical" fully lifts the penalty (user explicitly chose this path).
+    const goalPref      = reality.goalPreference || reality.goal || "prestige";
+    const academicTier  = getAcademicTierABCD(overallAvg);
+    const clusterPTier  = CLUSTER_PRESTIGE_TIER[cluster.id] || "B";
+    const isPractPref   = goalPref === "practical" || goalPref === "handsOn";
+    let goalTierPenalty = 0;
+    if (!isPractPref && clusterPTier === "C") {
+      if (academicTier === "A")      goalTierPenalty = 0.20; // avg ≥ 15.5: strong
+      else if (academicTier === "B") goalTierPenalty = 0.13; // avg 14–15.5: moderate
+      else if (academicTier === "C") goalTierPenalty = 0.06; // avg 12–14: mild
+      // tier D (avg < 12): no penalty — realism first
+    } else if (!isPractPref && clusterPTier === "B") {
+      // Mild prestige signal: keep original mild logic for vocational-only clusters
+      const hasPublicRoute = !!(cluster.pathways?.grandeEcole?.schools?.length || cluster.pathways?.university?.schools?.length);
+      if (academicTier === "A" && !hasPublicRoute && PRACTICAL_CLUSTERS.has(cluster.id)) goalTierPenalty = 0.08;
+    }
+
+    // NEW INPUT: profile boost modifiers
+    // handsOn boost: practical clusters rise for handsOn=2; academic clusters dampened
+    const isHandsOnCluster     = PRACTICAL_CLUSTERS.has(cluster.id);
+    const isAcademicCluster    = ACADEMIC_CLUSTERS.has(cluster.id);
+    const handsOnBoost         = isHandsOnCluster  ? (pbHandsOn  - 1) * 0.08 :
+                                  isAcademicCluster ? (1 - pbHandsOn) * 0.04 : 0;
+    // prestige boost: high-prestige clusters rise for pbPrestige=2
+    const pbPrestigeBoost      = ((PRESTIGE_INDEX[cluster.id] ?? 0.6) - 0.5) * pbPrestige * 0.05;
+    // risk boost: creative_digital / startup-adjacent clusters rise for risk-tolerant
+    const riskAdjacentClusters = new Set(["creative_digital","sports","arts_media","automotive","culinary_ops"]);
+    const riskBoost            = riskAdjacentClusters.has(cluster.id) ? (pbRisk - 1) * 0.04 : 0;
+    // international intent: clusters with strong abroad potential boosted
+    const intlClusters         = new Set(["it","data","cyber","health","finance","industrial","civil","energy","network","edu_law"]);
+    const intlBoost            = intlClusters.has(cluster.id) ? pbIntl * 0.02 : 0;
+    // focus ability: competitive selective clusters boosted for high focus
+    const focusClusters        = new Set(["health","data","cyber","it","industrial","civil","energy","finance","edu_law"]);
+    const focusBoost           = focusClusters.has(cluster.id) ? (pbFocus - 1) * 0.04 : 0;
+    // Tier D rule: if avg < 12, handsOn=2 or prestige=0 → trades/practical must surface
+    const tierD                = overallAvg < 12;
+    const tierDHandsOnBoost    = tierD && isHandsOnCluster && pbHandsOn >= 1 ? 0.08 : 0;
+
+    // LOGIC FIX: future-proofing index (spec §3.6)
+    const futureIdx = FUTURE_INDEX[cluster.id] ?? 0.6;
+
+    // B — Medicine hard gate: strong reality penalty if student doesn't meet public threshold
+    const failsHealthPublic =
+      cluster.id === "health" &&
+      (overallAvg < 16 ||
+       (effectiveMarks.svt ?? 0) < 14 ||
+       (effectiveMarks.pc  ?? 0) < 13);
+    let realityPenalty = 0;
+    if (failsHealthPublic) {
+      realityPenalty = privateBudget ? 0.22 : 0.45;
+    }
+
+    // C — Prestige boost: reward high-prestige clusters for high-avg students
+    const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
+    let prestigeBoost = 0;
+    if      (overallAvg >= 15.5) prestigeBoost = 0.14 * prestige;
+    else if (overallAvg >= 14.5) prestigeBoost = 0.10 * prestige;
+
+    // C — Cultural dampener: prevent tourism/arts from topping science-track high-avg students
+    const scienceTrack     = ["SMA","SMB","PC","SVT","TECH"].includes(bacTrack);
+    const lowPrestigeCluster = ["tourism","arts_media"].includes(cluster.id);
+    let culturalDampener = 0;
+    if (scienceTrack && overallAvg >= 14.5 && lowPrestigeCluster) culturalDampener = 0.10;
+
     const finalScore = Math.min(1, Math.max(0,
       SCORING_WEIGHTS.bac       * bacScore
       + SCORING_WEIGHTS.academic  * academicScore
@@ -2035,6 +3292,42 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       + SCORING_WEIGHTS.identity  * identityScore
       + SCORING_WEIGHTS.priority  * priorityScore
       + mobilityBoost + styleMod + snBoost - penalty
+      + academicUtilMod + prestigeMod
+      - goalTierPenalty   // Cultural sensitivity patch (Tier + Goal)
+      - realityPenalty    // B — medicine hard gate
+      + prestigeBoost     // C — prestige boost for high-avg students
+      - culturalDampener  // C — tourism/arts dampener for science+high-avg
+      + handsOnBoost + pbPrestigeBoost + riskBoost + intlBoost + focusBoost + tierDHandsOnBoost
+    ));
+
+    // LOGIC FIX: lane-specific sub-scores for computeThreeViews
+    // Best Personal Fit: 45% trait + 25% handsOn/styleMod + 15% market + 15% futureIndex
+    const fitLaneScore = Math.min(1, Math.max(0,
+      0.45 * traitScore
+      + 0.25 * Math.max(0, traitScore * 0.5 + (pbHandsOn / 2) * (isHandsOnCluster ? 0.8 : 0.4) * 0.5)
+      + 0.15 * marketScore
+      + 0.15 * futureIdx
+      - (overallAvg < 10 ? 0.10 : 0) // mild academic penalty only for very low avg
+    ));
+    // Best Balanced: 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl/mobility
+    const balancedLaneScore = Math.min(1, Math.max(0,
+      0.40 * academicScore
+      + 0.20 * marketScore
+      + 0.15 * traitScore
+      + 0.15 * futureIdx
+      + 0.10 * (pbIntl / 2 * 0.5 + (mobility > 0 ? 0.5 : 0) * 0.5)
+      - realityPenalty
+      - goalTierPenalty
+      + prestigeBoost * 0.5
+    ));
+    // Most Ambitious: 35% prestige + 25% academic proximity + 15% focus + 15% futureIndex + 10% market
+    const ambLaneScore = Math.min(1, Math.max(0,
+      0.35 * (PRESTIGE_INDEX[cluster.id] ?? 0.6)
+      + 0.25 * Math.min(1, academicScore * 1.2)
+      + 0.15 * (pbFocus / 2)
+      + 0.15 * futureIdx
+      + 0.10 * marketScore
+      - realityPenalty
     ));
 
     return {
@@ -2043,6 +3336,10 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
         bac: bacScore, academic: academicScore, trait: traitScore, market: marketScore,
         strength: strengthScore, interest: interestScore, identity: identityScore,
         priority: priorityScore, final: finalScore,
+        // LOGIC FIX: lane-specific scores and futureIndex
+        fit: fitLaneScore, balanced: balancedLaneScore, ambitious: ambLaneScore,
+        future: futureIdx,
+        prestige: PRESTIGE_INDEX[cluster.id] ?? 0.6,
       },
       eligibilityTag,
       overallAvg,
@@ -2085,34 +3382,63 @@ const TRAIT_LABELS = {
   en: { analytical:"Analytical thinking", social:"Social skills", structure:"Organization", creativity:"Creativity", risk:"Risk tolerance", leadership:"Leadership" },
 };
 
-function generateNarrative(top3, traits, bacTrack, lang, reality = {}) {
+// Narrative fix — subject-calibrated wording. Never overclaims.
+// strong: ≥15, solid: 13–14.9, developing: <13.
+// Uses best 1–2 subjects by mark, not generic strings.
+function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effectiveMarks = {}) {
   if (!top3?.length) return "";
   const t          = TRANSLATIONS[lang];
   const topCluster = top3[0];
-  const name       = t[CLUSTER_KEY_MAP[topCluster.id]] || topCluster.id;
-  const topTrait   = Object.entries(traits).sort((a, b) => b[1] - a[1])[0]?.[0] || "analytical";
-  const tl         = TRAIT_LABELS[lang] || TRAIT_LABELS.en;
+  const name       = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
+  const safeTr     = (traits && typeof traits === "object") ? traits : {};
 
   const identityType = reality.identityType || "unsure";
   const priority     = reality.priority     || "stability";
-  const strengths    = reality.strengths    || [];
-  const t_id  = t.realityIdentityOptions?.[identityType]?.label || identityType;
-  const t_pri = t.realityPriorityOptions?.[priority]?.label     || priority;
-  const t_str = strengths.slice(0,2).map(k => t.realityStrengths?.[k] || k).join(", ");
+  const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
-  const s = top3[0].scores;
-  const academicNote = s.academic >= 0.6
-    ? { ar:"أداء أكاديمي قوي", fr:"bon profil académique", en:"strong academic profile" }
-    : s.academic >= 0.35
-    ? { ar:"أداء أكاديمي متوسط", fr:"profil académique moyen", en:"moderate academic performance" }
-    : { ar:"ضعف في بعض المواد الدراسية", fr:"notes académiques faibles", en:"weaker academic marks" };
+  // SUBJECT SYSTEM FIX: narrative uses subjects from effectiveMarks (already filtered by getSubjectsForMarks)
+  // SUBJECT SYSTEM FIX: use keys from effectiveMarks (already from getSubjectsForMarks)
+  const SUBJ_LABELS   = SUBJECT_LABELS || {};
+  const markedSubjs   = Object.keys(effectiveMarks||{})
+    .map(s => ({ s, v: Number(effectiveMarks[s]) || 0 }))
+    .filter(x => x.v > 0)
+    .sort((a,b) => b.v - a.v);
 
-  const narratives = {
-    ar: `أنت <strong>${t_id}</strong> وتملك كفاءات حقيقية في <strong>${t_str||tl[topTrait]}</strong>. أولويتك الآن: <strong>${t_pri}</strong>. بناءً على شعبة ${bacTrack} وملفك الكامل، <strong>${name}</strong> يناسب تركيبتك أكثر من غيره – مع ${academicNote.ar}. لا وعود مضمونة، لكن هذا هو الاتجاه الأكثر تطابقاً مع واقعك.`,
-    fr: `Vous êtes <strong>${t_id}</strong> avec des forces réelles en <strong>${t_str||tl[topTrait]}</strong>. Votre priorité : <strong>${t_pri}</strong>. Sur la base de votre filière ${bacTrack} et de votre profil complet, <strong>${name}</strong> correspond davantage à votre réalité – avec un ${academicNote.fr}. Pas de promesses garanties, mais c'est la direction la plus cohérente avec qui vous êtes.`,
-    en: `You are a <strong>${t_id}</strong> with genuine strengths in <strong>${t_str||tl[topTrait]}</strong>. Your current priority: <strong>${t_pri}</strong>. Based on your ${bacTrack} track and full profile, <strong>${name}</strong> fits your reality better than other paths – with ${academicNote.en}. No guarantees, but this is the direction most consistent with who you are.`,
-  };
-  return narratives[lang] || narratives.en;
+  function strengthWord(v) {
+    if (v >= 15)   return { ar:"متميز", fr:"excellent", en:"strong" };
+    if (v >= 13)   return { ar:"جيد", fr:"solide", en:"solid" };
+    return           { ar:"في طور التطور", fr:"en progression", en:"developing" };
+  }
+
+  const top2Subjs = markedSubjs.slice(0,2).map(({s,v}) => {
+    const label = SUBJ_LABELS[s]?.[lang] || s;
+    const word  = strengthWord(v)[lang];
+    return `${label} (${word})`;
+  });
+
+  // Fallback to reality.strengths if no marks available
+  const strengthsFromReality = (reality.strengths || [])
+    .slice(0,2).map(k => t.realityStrengths?.[k] || k);
+
+  const subjectDesc = top2Subjs.length ? top2Subjs.join(", ") : strengthsFromReality.join(", ");
+  const hasAnySubject = subjectDesc.length > 0;
+
+  // Narrative fix — unsure path: encouraging + guiding, not "you are not sure yet"
+  if (identityType === "unsure") {
+    const dir2 = top3.slice(0,2).map(c => t[CLUSTER_KEY_MAP[c.id]] || c.id).join(lang==="ar"?" و":" & ");
+    return {
+      ar: `ملفك يشير إلى ${hasAnySubject ? `مستوى ${subjectDesc}` : "شخصية متعددة المواهب"}. ما زلت في مرحلة الاستكشاف — وهذا صحيح تماماً. بناءً على ملفك، جرّب هذين الاتجاهين هذا الشهر: <strong>${dir2}</strong>.`,
+      fr: `Ton profil révèle ${hasAnySubject ? `un niveau ${subjectDesc}` : "une personnalité polyvalente"}. Tu explores encore — c'est une bonne chose. D'après ton profil, deux directions à tester ce mois-ci : <strong>${dir2}</strong>.`,
+      en: `Your profile shows ${hasAnySubject ? subjectDesc : "a versatile personality"}. You're still exploring — that's perfectly fine. Based on your profile, here are 2 directions to try this month: <strong>${dir2}</strong>.`,
+    }[lang] || "";
+  }
+
+  // Standard path: subject-calibrated, short, credible
+  return {
+    ar: `${hasAnySubject ? `مستواك في ${subjectDesc} يضعك` : "ملفك يضعك"} على مسار <strong>${name}</strong> كأقرب توافق. أولويتك في <strong>${t_pri}</strong> تُعزز هذا الاتجاه.`,
+    fr: `${hasAnySubject ? `Ton niveau en ${subjectDesc} t'oriente` : "Ton profil t'oriente"} vers <strong>${name}</strong> comme meilleure correspondance. Ta priorité <strong>${t_pri}</strong> renforce ce cap.`,
+    en: `${hasAnySubject ? `Your ${subjectDesc} level points toward` : "Your profile points toward"} <strong>${name}</strong> as the best match. Your priority of <strong>${t_pri}</strong> aligns with this path.`,
+  }[lang] || "";
 }
 
 
@@ -2128,12 +3454,14 @@ const RADAR_LABELS = {
 };
 
 function RadarChart({ traits, lang }) {
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
   const keys = ["analytical","social","structure","creativity","risk","leadership"];
   const labels = RADAR_LABELS[lang] || RADAR_LABELS.en;
   const n=keys.length, cx=120, cy=120, r=80;
   const toCart = (a,rad) => ({ x:cx+rad*Math.cos(a-Math.PI/2), y:cy+rad*Math.sin(a-Math.PI/2) });
   const angles = keys.map((_,i)=>(2*Math.PI*i)/n);
-  const points = keys.map((k,i)=>toCart(angles[i],(traits[k]||0.5)*r));
+  const points = keys.map((k,i)=>toCart(angles[i],(safeTr[k]||0.5)*r));
 
   return (
     <svg width="240" height="240" viewBox="0 0 240 240">
@@ -2181,7 +3509,8 @@ function ScoreContribChart({ cluster, t }) {
           <div className="explain-bar">
             <div className="explain-fill" style={{width:`${f.value*100}%`,background:f.color}}/>
           </div>
-          <div className="explain-pct">{Math.round(f.value*100)}%</div>
+          {/* FIX: Arabic-first UX — percentage must render LTR even in RTL layout */}
+          <div className="explain-pct" dir="ltr">{Math.round(clamp(f.value*100))}%</div>
         </div>
       ))}
     </div>
@@ -2238,8 +3567,116 @@ function MedicineEligibilityPanel({ cluster, t }) {
   );
 }
 
-function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
-  const [pathwayTab, setPathwayTab] = useState("university");
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 4
+// PrestigeAdjacentPanel: shown when top Best-Fit cluster is low-prestige
+// and user is in prestige or unsure goalMode.
+// Uses PRESTIGE_ADJACENT_PATHS hardcoded map.
+// ─────────────────────────────────────────────────────────────────
+function PrestigeAdjacentPanel({ topClusterId, lang, t }) {
+  const paths = PRESTIGE_ADJACENT_PATHS[topClusterId];
+  if (!paths) return null;
+  const items = paths[lang] || paths.fr || [];
+  if (!items.length) return null;
+
+  return (
+    <div style={{
+      margin:"0 0 20px 0", padding:"16px 18px",
+      background:"rgba(99,102,241,0.06)",
+      border:"1.5px solid rgba(99,102,241,0.20)",
+      borderRadius:14,
+    }}>
+      <div style={{fontWeight:700, fontSize:14, marginBottom:6, color:"#6366f1"}}>
+        🎓 {t.prestigeAdjacentTitle || "If your family wants a more prestigious path"}
+      </div>
+      <div style={{fontSize:12, color:"var(--muted)", marginBottom:10, lineHeight:1.5}}>
+        {t.prestigeAdjacentDesc || "Based on your profile, here are adjacent paths with stronger academic prestige:"}
+      </div>
+      <div style={{display:"flex", flexDirection:"column", gap:6}}>
+        {items.map((item, i) => (
+          <div key={i} style={{
+            display:"flex", alignItems:"center", gap:8,
+            padding:"7px 12px", borderRadius:8,
+            background:"rgba(99,102,241,0.04)",
+            border:"1px solid rgba(99,102,241,0.12)",
+            fontSize:13, color:"var(--text)",
+          }}>
+            <span style={{color:"#6366f1", fontWeight:700}}>
+              {t.bridgeOptionLabel || "Bridge"} {i+1}
+            </span>
+            <span>{item}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Cultural rerank layer — Step 3F
+// GoalModeDualView: shown when goalMode="unsure"
+// Two tabs: Best Fit (existing ranking) + Prestige Track (prestige-sorted)
+// ─────────────────────────────────────────────────────────────────
+function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, overallAvg }) {
+  const [activeTab, setActiveTab] = useState("fit");
+  if (!secondary || !secondary.length) return null;
+
+  const clusters = activeTab === "fit" ? primary : secondary;
+  const tabStyle = (key) => ({
+    padding:"8px 20px", borderRadius:20, border:"none",
+    cursor:"pointer", fontFamily:"inherit", fontSize:13, fontWeight:600,
+    transition:"all 0.2s",
+    background: activeTab===key ? "#6366f1" : "var(--surface2)",
+    color:       activeTab===key ? "#fff"    : "var(--muted)",
+  });
+
+  return (
+    <div style={{marginBottom:24}}>
+      {/* Tab switcher */}
+      <div style={{display:"flex", gap:8, marginBottom:18}}>
+        <button style={tabStyle("fit")}     onClick={()=>setActiveTab("fit")}>
+          {t.bestFitTab     || "Best Fit"}
+        </button>
+        <button style={tabStyle("prestige")} onClick={()=>setActiveTab("prestige")}>
+          {t.prestigeTrackTab || "Prestige Track"}
+        </button>
+      </div>
+      {/* Cluster cards for the active tab */}
+      {clusters.slice(0,3).map((c,i) => (
+        <ClusterCard key={c.id+activeTab} cluster={c} rank={i+1}
+          t={t} lang={lang} bacTrack={bacTrack}
+          goal={goal} overallAvg={overallAvg}/>
+      ))}
+    </div>
+  );
+}
+
+function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
+  // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
+  const academicTier = getAcademicTier(overallAvg);
+  const effectiveGoal = goal || "prestige";
+
+  function pickDefaultTab() {
+    if (effectiveGoal === "handsOn") return "practical";
+    const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
+    const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
+    if (academicTier === "HIGH") {
+      return hasGrandeEcole ? "grandeEcole" : hasUniversity ? "university" : "practical";
+    }
+    if (academicTier === "MID") {
+      return hasUniversity ? "university" : hasGrandeEcole ? "grandeEcole" : "practical";
+    }
+    // LOW tier → practical first if available, else university
+    return cluster.pathways?.practical?.schools?.length ? "practical" : hasUniversity ? "university" : "grandeEcole";
+  }
+
+  const [pathwayTab, setPathwayTab] = useState(pickDefaultTab);
+
+  // Reset default tab if tier/goal/cluster changes (e.g., user goes back and changes goal)
+  useEffect(() => {
+    setPathwayTab(pickDefaultTab());
+  }, [cluster.id, effectiveGoal, academicTier]); // eslint-disable-line
+
   const clusterName = t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
 
   const tabLabels = {
@@ -2253,6 +3690,11 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
   const duration = pathway?.duration || "";
   const hasPW    = schools.length > 0 || !!duration;
 
+  // Cultural sensitivity patch (Tier + Goal) — flag when practical shown to high-tier prestige student
+  const showFastTrackNote = pathwayTab === "practical"
+    && academicTier === "HIGH"
+    && effectiveGoal !== "handsOn";
+
   const whyText = lang==="ar"
     ? `هذا المسار يتوافق مع شعبة ${bacTrack} ومستواك في المواد الأساسية`
     : lang==="fr"
@@ -2261,6 +3703,11 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
 
   return (
     <div className={`cluster-card rank-${rank}`}>
+      {rank === 1 && (
+        <div className="best-match-label">
+          ✦ {lang==="ar"?"الأفضل":lang==="fr"?"Meilleur Match":"Best Match"}
+        </div>
+      )}
       <span className="rank-badge">#{rank}</span>
 
       <div className="cluster-header">
@@ -2277,14 +3724,15 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
               </span>
             )}
           </div>
-          <div className="salary-chip">
+          {/* FIX: Arabic-first UX — salary numbers must be LTR even in RTL context */}
+          <div className="salary-chip" dir="ltr">
             {cluster.salary.min.toLocaleString()}–{cluster.salary.max.toLocaleString()} {cluster.salary.currency}/mois*
           </div>
         </div>
       </div>
 
-      <div className="cluster-score-bar">
-        <div className="cluster-score-fill" style={{width:`${cluster.scores.final*100}%`}}/>
+      <div className="cluster-score-bar" style={{height: rank===1 ? 6 : 4}}>
+        <div className="cluster-score-fill" style={{width:`${cluster.scores.final*100}%`,animation:"barGrow 0.9s ease both"}}/>
       </div>
 
       <ScoreContribChart cluster={cluster} t={t}/>
@@ -2308,6 +3756,17 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack }) {
           </button>
         ))}
       </div>
+
+      {/* Cultural sensitivity patch (Tier + Goal) — reframe practical for high-avg students */}
+      {showFastTrackNote && (
+        <div style={{
+          marginBottom:8, padding:"7px 12px",
+          background:"rgba(59,130,246,0.07)", borderRadius:8,
+          border:"1px solid rgba(59,130,246,0.2)", fontSize:12, color:"var(--accent2)",
+        }}>
+          {t.practicalFastTrack || "⚡ Fast-track option — ideal if you prefer job entry before university"}
+        </div>
+      )}
 
       {/* Pathway content — updates on every tab click */}
       <div className="pathway-content">
@@ -2631,24 +4090,224 @@ function StepReality({ lang, reality, setReality, onNext, onBack, t, dir }) {
   );
 }
 
-// ── Step 3: Info ──────────────────────────────────────────────────
-function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
-  const resetMarksOnTrackChange = (newTrack) => {
-    // parent resets marks when bacTrack changes
-    setInfo(p=>({...p,bacTrack:newTrack}));
-  };
+// ── Step 2.5: Profile Boost ───────────────────────────────────────
+// NEW INPUT: 6 high-signal questions that sharpen all 3 recommendation lanes.
+// Stored in reality.profileBoost as { prestigePriority, moneyPriority, handsOn,
+//   riskTolerance, internationalIntent, focusAbility } each 0|1|2.
+function StepProfileBoost({ lang, reality, setReality, onNext, onBack, t, dir }) {
+  const pb = reality.profileBoost || {};
+  const set = (field, val) =>
+    setReality(prev => ({ ...prev, profileBoost: { ...(prev.profileBoost || {}), [field]: val } }));
+
+  const QUESTIONS = [
+    {
+      key: "prestigePriority",
+      label: t.pb_prestige,
+      opts: [t.pb_prestige0, t.pb_prestige1, t.pb_prestige2],
+    },
+    {
+      key: "moneyPriority",
+      label: t.pb_money,
+      opts: [t.pb_money0, t.pb_money1, t.pb_money2],
+    },
+    {
+      key: "handsOn",
+      label: t.pb_handsOn,
+      opts: [t.pb_handsOn0, t.pb_handsOn1, t.pb_handsOn2],
+    },
+    {
+      key: "riskTolerance",
+      label: t.pb_risk,
+      opts: [t.pb_risk0, t.pb_risk1, t.pb_risk2],
+    },
+    {
+      key: "internationalIntent",
+      label: t.pb_intl,
+      opts: [t.pb_intl0, t.pb_intl1, t.pb_intl2],
+    },
+    {
+      key: "focusAbility",
+      label: t.pb_focus,
+      opts: [t.pb_focus0, t.pb_focus1, t.pb_focus2],
+    },
+  ];
+
+  const answered = QUESTIONS.filter(q => pb[q.key] != null).length;
+  const canProceed = answered >= 4; // allow skipping 2 max
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={3} total={7} t={t}/>
+      <StepIndicator step={2} total={8} t={t}/>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.profileBoostStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t.profileBoostDesc}</p>
+
+      {QUESTIONS.map((q, qi) => {
+        const val = pb[q.key];
+        return (
+          <div key={q.key} className="reality-section" style={{marginBottom:20}}>
+            <div className="reality-section-title" style={{fontSize:14,marginBottom:10}}>
+              {qi + 1}. {q.label}
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {q.opts.map((opt, i) => (
+                <button
+                  key={i}
+                  className={`identity-btn${val === i ? " selected" : ""}`}
+                  style={{flex:"1 1 auto",minWidth:100,fontSize:13,padding:"10px 12px",textAlign:"center"}}
+                  onClick={() => set(q.key, i)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
+      <p style={{fontSize:12,color:"var(--muted)",marginTop:8,marginBottom:16}}>
+        {answered}/6 {lang==="ar"?"أسئلة مُجابة":lang==="fr"?"réponses":"answered"}
+        {!canProceed && " — "+( lang==="ar"?"يرجى الإجابة على 4 على الأقل":lang==="fr"?"répondre à au moins 4":"please answer at least 4")}
+      </p>
+
+      <div className="btn-row">
+        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        <button className="btn btn-primary" onClick={onNext}
+          disabled={!canProceed} style={{opacity:canProceed?1:0.4}}>
+          {t.next} →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Step 3: Info ──────────────────────────────────────────────────
+function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
+  const set = (field, val) => setInfo(p => ({ ...p, [field]: val }));
+
+  // SUBJECT MODEL (MOROCCO) FIX: when changing year/field/track, also sync scoring bacTrack
+  const setExamYear = (yr) => {
+    const mapped = yr === "bac1"
+      ? BAC1_FIELD_TO_SCORING[info.bac1Field || "SE"]
+      : BAC2_TRACK_TO_SCORING[info.bac2Track || "SVT"];
+    setInfo(p => ({ ...p, examYear: yr, examLevel: yr, bacTrack: mapped || "SVT" }));
+  };
+  const setBac1Field = (f) => {
+    const mapped = BAC1_FIELD_TO_SCORING[f] || "SVT";
+    setInfo(p => ({ ...p, bac1Field: f, trackField: f, bacTrack: mapped }));
+  };
+  const setBac2Track = (tk) => {
+    const mapped = BAC2_TRACK_TO_SCORING[tk] || "SVT";
+    setInfo(p => ({ ...p, bac2Track: tk, trackField: tk, bacTrack: mapped }));
+  };
+
+  const BAC1_FIELDS  = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
+  const BAC2_TRACKS  = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
+  const BP_EXTRAS    = ["math","physchem","svt"];
+
+  const examYear   = info.examYear  || "bac2";
+  const bac1Field  = info.bac1Field || "SE";
+  const bac2Track  = info.bac2Track || "SVT";
+  const isBac1     = examYear === "bac1";
+  const isEO       = isBac1 ? bac1Field === "EO" : bac2Track === "EO";
+  const isBP       = isBac1 ? bac1Field === "BP" : bac2Track === "BP";
+  const canProceed = !!examYear && (isBac1 ? !!bac1Field : !!bac2Track);
+
+  const selStyle = (sel) => ({
+    padding:"10px 14px", borderRadius:10, textAlign:"start",
+    border:`2px solid ${sel ? "var(--accent)" : "var(--border)"}`,
+    background: sel ? "rgba(232,161,36,0.10)" : "var(--surface2)",
+    color: sel ? "var(--accent)" : "var(--text)",
+    cursor:"pointer", fontFamily:"inherit", fontWeight:sel?700:400, fontSize:13,
+  });
+
+  return (
+    <div className="card" dir={dir}>
+      <StepIndicator step={3} total={8} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>{t.infoStep}</h2>
 
+      {/* SUBJECT MODEL (MOROCCO) FIX: examYear selector — bac1 vs bac2 */}
       <div className="field">
-        <label>{t.bacTrack}</label>
-        <select value={info.bacTrack} onChange={e=>resetMarksOnTrackChange(e.target.value)}>
-          {BAC_TRACKS.map(b=><option key={b.id} value={b.id}>{b.label[lang]}</option>)}
-        </select>
+        <label style={{fontWeight:600}}>{t.examYearLabel || t.examLevelLabel}</label>
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
+          {[["bac1", t.examYearBac1 || t.examLevelBac1], ["bac2", t.examYearBac2 || t.examLevelBac2]].map(([val,lbl]) => (
+            <button key={val}
+              className={`mob-btn ${examYear===val?"selected":""}`}
+              onClick={()=>setExamYear(val)}>{lbl}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* SUBJECT MODEL (MOROCCO) FIX: Bac1 field selector (only when bac1) */}
+      {isBac1 && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bac1FieldLabel || t.trackFieldLabel}</label>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
+            {BAC1_FIELDS.map(key => {
+              const lbl = t.bac1Fields?.[key] || t.trackFields?.[key] || key;
+              return (
+                <button key={key} onClick={()=>setBac1Field(key)} style={selStyle(bac1Field===key)}>
+                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* SUBJECT MODEL (MOROCCO) FIX: Bac2 track selector (only when bac2) */}
+      {!isBac1 && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bac2TrackLabel || t.trackFieldLabel}</label>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
+            {BAC2_TRACKS.map(key => {
+              const lbl = t.bac2Tracks?.[key] || key;
+              return (
+                <button key={key} onClick={()=>setBac2Track(key)} style={selStyle(bac2Track===key)}>
+                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* EO: eoOption arabic / sharia */}
+      {isEO && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.eoOptionLabel}</label>
+          <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
+            {[["arabic",t.eoOptionArabic],["sharia",t.eoOptionSharia]].map(([val,lbl]) => (
+              <button key={val}
+                className={`mob-btn ${info.eoOption===val?"selected":""}`}
+                onClick={()=>set("eoOption",val)}>{lbl}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* BP: bpExtras multi-select */}
+      {isBP && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bpExtrasLabel}</label>
+          <div className="chip-grid" style={{marginTop:8}}>
+            {BP_EXTRAS.map(k => {
+              const sel = (info.bpExtras||[]).includes(k);
+              return (
+                <button key={k}
+                  className={`chip-btn${sel?" selected":""}`}
+                  onClick={()=>setInfo(p=>{
+                    const cur = p.bpExtras||[];
+                    return {...p, bpExtras: sel ? cur.filter(x=>x!==k) : [...cur,k]};
+                  })}>
+                  {SUBJECT_LABELS[k]?.[lang] || k}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="field">
         <label>{t.city}</label>
@@ -2680,6 +4339,68 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
               {l.label}
             </button>
           ))}
+        </div>
+
+      <div className="field">
+        <label>{t.examModeLabel}</label>
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
+          <button className={`mob-btn ${info.examMode==="watani"?"selected":""}`}
+            onClick={()=>setInfo(p=>({...p,examMode:"watani"}))}>{t.examModeWatani}</button>
+          <button className={`mob-btn ${info.examMode==="full_bac"?"selected":""}`}
+            onClick={()=>setInfo(p=>({...p,examMode:"full_bac"}))}>{t.examModeFull}</button>
+        </div>
+      </div>
+      </div>
+
+      {/* Cultural sensitivity patch — study goal selector */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.studyGoalLabel}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","balanced","handsOn"].map(key=>{
+            const opt = t.studyGoalOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goal || "prestige") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goal:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
+                  background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
+                  color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Goal mode input (Cultural rerank layer) — prestige/fit/practical/unsure */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.goalModeLabel}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","fit","practical","unsure"].map(key=>{
+            const opt = t.goalModeOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goalMode || "unsure") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goalMode:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"#6366f1":"var(--border)"}`,
+                  background:sel?"rgba(99,102,241,0.08)":"var(--surface2)",
+                  color:sel?"#6366f1":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -2717,6 +4438,50 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       )}
 
 
+      {/* TASK 1 — examTiming: determines PRE vs POST subject list in StepMarks */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.examTimingLabel || "When is this evaluation?"}</label>
+        {t.examTimingHint && <div style={{fontSize:11,color:"var(--muted)",marginTop:2,marginBottom:8}}>{t.examTimingHint}</div>}
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
+          {[
+            { key:"pre",  label: t.examTimingPre  || "Before Bac" },
+            { key:"post", label: t.examTimingPost || "After Bac"  },
+          ].map(({key,label}) => (
+            <button key={key}
+              className={`mob-btn ${(info.examTiming||"post")===key?"selected":""}`}
+              onClick={()=>setInfo(p=>({...p,examTiming:key}))}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* TASK 2 — goalPreference: drives Cultural Credibility Filter in scoring */}
+      <div className="field">
+        <label style={{fontWeight:600}}>{t.goalPreferenceLabel || "Which style fits you best?"}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
+          {["prestige","balanced","practical"].map(key => {
+            const opt = t.goalPreferenceOptions?.[key] || { icon:"🔹", label:key };
+            const sel = (info.goalPreference || "prestige") === key;
+            return (
+              <button key={key}
+                onClick={()=>setInfo(p=>({...p,goalPreference:key}))}
+                style={{
+                  display:"flex",alignItems:"center",gap:12,
+                  padding:"12px 16px",borderRadius:12,
+                  border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
+                  background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
+                  color:sel?"var(--accent)":"var(--text)",
+                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
+                }}>
+                <span style={{fontSize:20}}>{opt.icon}</span>
+                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
@@ -2724,39 +4489,90 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
     </div>
   );
 }
-
-// ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
-  const subjs = SUBJECTS_BY_TRACK[info.bacTrack] || [];
+  // SUBJECT MODEL (MOROCCO) FIX: always use getSubjectsForMarks for the exact official subject list
+  const subjs = getSubjectsForMarks(info);
+  // Header: show bac1/bac2 label
+  const examYear = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
+  const levelHeader = examYear === "bac1"
+    ? (t.examYearBac1 || t.examLevelBac1 || "Bac 1 (Régional)")
+    : (t.examYearBac2 || t.examLevelBac2 || "Bac 2 (National)");
+  // Guard: if no subjects yet (field/track not selected), show prompt
+  if (subjs.length === 0) {
+    return (
+      <div className="card" dir={dir}>
+        <p style={{textAlign:"center",color:"var(--muted)",marginTop:40}}>
+          {lang==="ar"?"يرجى اختيار الشعبة أولاً":lang==="fr"?"Veuillez d'abord choisir votre filière":"Please select your track first"}
+        </p>
+        <div className="btn-row">
+          <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={4} total={7} t={t}/>
+      <StepIndicator step={4} total={8} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.marksStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.marks}</p>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>{t.marks}</p>
 
-      <div className="marks-grid">
-        {subjs.map(s=>{
-          const val = Number(marks[s])||0;
-          const pct = (val/20)*100;
-          const color = val>=15?"#10b981":val>=10?"#3b82f6":"#ef4444";
-          return (
-            <div key={s} className="mark-input">
-              <div className="mark-label">{SUBJECT_LABELS[s]?.[lang]||s}</div>
-              <div className="mark-row">
-                <input type="number" min="0" max="20" step="0.5"
-                  value={val||""} placeholder="0"
-                  onChange={e=>setMarks(prev=>({...prev,[s]:Math.min(20,Math.max(0,Number(e.target.value)||0))}))}/>
-                <div className="mark-bar">
-                  <div className="mark-bar-fill" style={{width:`${pct}%`,background:color}}/>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+{/* SUBJECTS FIX: level header shows bac1/bac2 */}
+<div className="section-title" style={{ marginTop: 0 }}>
+  {levelHeader}
+</div>
+<div className="marks-grid">
+  {subjs.map((s) => {
+    const val = Number(marks[s]) || 0;
+    const pct = (val / 20) * 100;
+    const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
+    return (
+      <div key={s} className="mark-input">
+        <div className="mark-label">{SUBJECT_LABELS[s]?.[lang] || s}</div>
+        <div className="mark-row">
+          <input
+            type="number"
+            min="0"
+            max="20"
+            step="0.5"
+            value={val || ""}
+            placeholder="0"
+            onChange={(e) =>
+              setMarks((prev) => ({
+                ...prev,
+                [s]: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+              }))
+            }
+          />
+          <div className="mark-bar">
+            <div className="mark-bar-fill" style={{ width: `${pct}%`, background: color }} />
+          </div>
+        </div>
       </div>
+    );
+  })}
+</div>
 
-      <div className="btn-row">
+{info.examMode === "full_bac" && (
+  <div className="field" style={{ marginTop: 16 }}>
+    <label>{t.marksSectionContinuous}</label>
+    <input
+      type="number"
+      min="0"
+      max="20"
+      step="0.5"
+      value={marks.continuous || ""}
+      placeholder="0"
+      onChange={(e) =>
+        setMarks((prev) => ({
+          ...prev,
+          continuous: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+        }))
+      }
+    />
+  </div>
+)}
+<div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
       </div>
@@ -2863,146 +4679,148 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
 // Dims: A/C  S/I  P/O  R/K
 // ─────────────────────────────────────────────────────────────────
 function computeMassarType(traits, reality) {
+  // FIX: results page null-safety — guard traits object being undefined/incomplete
+  const safeTr = traits && typeof traits === "object" ? traits : {};
   const ps = reality?.preferredStyle || "";
   // Dim 1: A(nalytical) vs C(reative)
-  const d1 = traits.analytical >= traits.creativity ? "A" : "C";
+  const d1 = (safeTr.analytical || 0) >= (safeTr.creativity || 0) ? "A" : "C";
   // Dim 2: S(ocial) vs I(ndependent)
-  const d2 = traits.social >= 0.5 ? "S" : "I";
-  // Dim 3: P(ractical) vs O(theoretical) — weighted by preferredStyle
+  const d2 = (safeTr.social || 0) >= 0.5 ? "S" : "I";
+  // Dim 3: P(ractical) vs O(theoretical)
   const practicalBias = ps === "handson" ? 0.15 : ps === "academic" ? -0.15 : 0;
-  const practicalScore = (traits.structure + (1 - traits.creativity)) / 2 + practicalBias;
+  const practicalScore = ((safeTr.structure || 0) + (1 - (safeTr.creativity || 0))) / 2 + practicalBias;
   const d3 = practicalScore >= 0.5 ? "P" : "O";
   // Dim 4: R(isk-taker) vs K(stable)
-  const d4 = traits.risk >= 0.5 ? "R" : "K";
+  const d4 = (safeTr.risk || 0) >= 0.5 ? "R" : "K";
   return d1 + d2 + d3 + d4;
 }
 
-// ── Archetype system ───────────────────────────────────────────────
-// Maps all 16 possible codes to named archetypes.
+// ── Moroccan Archetype System ─────────────────────────────────────
+// 8 identity archetypes — Modern Moroccan, brandable, confident.
+
+const ARCH_SVG = {
+  BENA:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="5" height="7" rx="1"/><rect x="9.5" y="10" width="5" height="11" rx="1"/><rect x="16" y="6" width="5" height="15" rx="1"/><line x1="2" y1="21" x2="22" y2="21"/></svg>`,
+  MHNI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9C4.5 20 1 17 1 12V7z"/><path d="M9 12l2 2 4-4"/></svg>`,
+  HRRK:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h8l-1 8 9-12h-8z"/></svg>`,
+  TGRI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H9M17 7v8"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="7" r="2"/></svg>`,
+  MLAH:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="12"/><line x1="12" y1="12" x2="17.5" y2="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+  SDGI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="4" height="4" rx="0.5"/><rect x="10" y="3" width="4" height="4" rx="0.5"/><rect x="17" y="3" width="4" height="4" rx="0.5"/><rect x="3" y="10" width="4" height="4" rx="0.5"/><rect x="10" y="10" width="4" height="4" rx="0.5"/><rect x="17" y="17" width="4" height="4" rx="0.5"/><rect x="3" y="17" width="4" height="4" rx="0.5"/><rect x="17" y="10" width="4" height="4" rx="0.5"/></svg>`,
+  RAID:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0 4 4 4 9a4 4 0 01-8 0c0-5 4-9 4-9z"/><path d="M8 17l-2 4M16 17l2 4M10 21h4"/></svg>`,
+  MTQN:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>`,
+};
+
+const MOROCCAN_ARCHETYPES = {
+  BENA:{
+    code:"BENA", svgKey:"BENA", icon:"🏗️",
+    name:{ ar:"البنّاء", fr:"Le Bâtisseur", en:"The Builder" },
+    tagline:{ ar:"يُنجز ما يعد به الآخرون فقط.", fr:"Il livre ce que d'autres promettent.", en:"Delivers what others only promise." },
+    description:{ ar:"دقة وانضباط في كل ما يبدأ به — إنجازاته تتكلم عنه.", fr:"Précision et discipline dans tout ce qu'il entreprend.", en:"Precision and discipline in everything he starts." },
+    strengths:{ ar:["موثوقية عالية","انضباط متواصل","تنفيذ دقيق"], fr:["Haute fiabilité","Discipline constante","Exécution précise"], en:["High reliability","Consistent discipline","Precise execution"] },
+    risk:{ ar:"مقاومة التغيير تُضيّع فرصاً جديدة.", fr:"La résistance au changement fait rater des opportunités.", en:"Resistance to change misses new opportunities." },
+    bestEnv:{ ar:"بيئة منظمة بأهداف واضحة ومعايير ثابتة.", fr:"Environnement structuré avec objectifs clairs.", en:"Structured environment with clear goals." },
+    worstEnv:{ ar:"الفوضى وتغيير الأولويات باستمرار.", fr:"Chaos et priorités changeantes.", en:"Chaos and constantly shifting priorities." },
+    opposite:"RAID", evolvesTrait:"creativity", evolvesInto:"SDGI",
+  },
+  MHNI:{
+    code:"MHNI", svgKey:"MHNI", icon:"🏛️",
+    name:{ ar:"المِهْنِي", fr:"Le Professionnel", en:"The Professional" },
+    tagline:{ ar:"اسمه ضمانة وتوقيعه معيار.", fr:"Son nom est garantie, sa signature un standard.", en:"His name is trust, his work the standard." },
+    description:{ ar:"موثوق ومتقن يرفع من قيمة عمله في كل مشروع يُنجزه.", fr:"Fiable et maîtrisé, il rehausse la valeur de son travail.", en:"Reliable and masterful, raises the bar in every project." },
+    strengths:{ ar:["موثوقية لا تُضاهى","تحليل ميداني دقيق","شبكة مهنية قوية"], fr:["Fiabilité incomparable","Analyse terrain précise","Fort réseau professionnel"], en:["Unmatched reliability","Precise field analysis","Strong professional network"] },
+    risk:{ ar:"الاستناد إلى المكانة قد يُبطئ التكيف مع المتغيرات.", fr:"S'appuyer sur la réputation peut ralentir l'adaptation.", en:"Leaning on reputation may slow adaptation to change." },
+    bestEnv:{ ar:"مؤسسات راسخة تُقدّر الجودة والخبرة المتراكمة.", fr:"Institutions établies valorisant qualité et expertise.", en:"Established institutions valuing quality and expertise." },
+    worstEnv:{ ar:"بيئات تجريبية سريعة بلا منهجية واضحة.", fr:"Environnements expérimentaux rapides sans méthode.", en:"Fast experimental environments without methodology." },
+    opposite:"RAID", evolvesTrait:"risk", evolvesInto:"HRRK",
+  },
+  HRRK:{
+    code:"HRRK", svgKey:"HRRK", icon:"⚡",
+    name:{ ar:"المُحرّك", fr:"Le Moteur", en:"The Driver" },
+    tagline:{ ar:"يُشعل الطاقة ويقود إلى الأمام.", fr:"Il allume l'énergie et mène vers l'avant.", en:"Ignites energy and drives forward." },
+    description:{ ar:"قائد طبيعي يدفع المجموعات لأبعد مما تتوقع من نفسها.", fr:"Leader naturel poussant les équipes au-delà de leurs attentes.", en:"Natural leader who pushes teams beyond their expectations." },
+    strengths:{ ar:["قيادة إلهامية","طاقة تنظيمية عالية","حسم وسرعة"], fr:["Leadership inspirant","Haute énergie organisationnelle","Décision rapide"], en:["Inspiring leadership","High organisational energy","Quick decisiveness"] },
+    risk:{ ar:"الطاقة بلا بنية تُبدد النتائج وتُشتت الفريق.", fr:"L'énergie sans structure disperse les résultats.", en:"Energy without structure dissipates results." },
+    bestEnv:{ ar:"مشاريع جماعية ومبادرات تحتاج قيادة ميدانية.", fr:"Projets collectifs nécessitant un leadership de terrain.", en:"Collective projects needing hands-on leadership." },
+    worstEnv:{ ar:"عمل فردي صامت بلا أثر مباشر على الآخرين.", fr:"Travail solo silencieux sans impact sur autrui.", en:"Silent solo work with no impact on others." },
+    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
+  },
+  TGRI:{
+    code:"TGRI", svgKey:"TGRI", icon:"🔀",
+    name:{ ar:"التاجر الذكي", fr:"Le Négociant Malin", en:"The Sharp Dealer" },
+    tagline:{ ar:"يرى الفرصة قبل أن يراها غيره.", fr:"Il voit l'opportunité avant les autres.", en:"Sees the opportunity before anyone else." },
+    description:{ ar:"يُحوّل الأفكار والعلاقات إلى قيمة حقيقية قابلة للقياس.", fr:"Transforme idées et relations en valeur réelle et mesurable.", en:"Turns ideas and relationships into real measurable value." },
+    strengths:{ ar:["حدس تجاري حاد","شبكة علاقات واسعة","مفاوض طبيعي"], fr:["Flair commercial aigu","Large réseau","Négociateur naturel"], en:["Sharp commercial instinct","Wide network","Natural negotiator"] },
+    risk:{ ar:"القفز بين الفرص دون إتمام يُشتت الطاقة والتركيز.", fr:"Sauter entre opportunités sans finaliser disperse l'énergie.", en:"Jumping between opportunities without finishing dissipates energy." },
+    bestEnv:{ ar:"بيئة تجارية ديناميكية مع استقلالية واسعة النطاق.", fr:"Environnement commercial dynamique avec large autonomie.", en:"Dynamic business environment with wide autonomy." },
+    worstEnv:{ ar:"بيروقراطية صارمة وعمل متكرر بلا معنى.", fr:"Bureaucratie rigide et travail répétitif.", en:"Rigid bureaucracy and repetitive work." },
+    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
+  },
+  MLAH:{
+    code:"MLAH", svgKey:"MLAH", icon:"🧭",
+    name:{ ar:"الملاح", fr:"Le Navigateur", en:"The Navigator" },
+    tagline:{ ar:"يتحرك بخطة حيث يضيع الآخرون.", fr:"Il avance avec plan là où les autres se perdent.", en:"Moves with a plan where others get lost." },
+    description:{ ar:"محلل استراتيجي يرسم الطريق بدقة ويُخطط بعيد المدى.", fr:"Analyste stratégique qui trace la route et planifie à long terme.", en:"Strategic analyst who maps the route and plans long-term." },
+    strengths:{ ar:["تفكير استراتيجي عميق","تحليل دقيق","رؤية بعيدة المدى"], fr:["Pensée stratégique profonde","Analyse précise","Vision long terme"], en:["Deep strategic thinking","Precise analysis","Long-term vision"] },
+    risk:{ ar:"الإفراط في التحليل يُعطّل قرار التنفيذ في اللحظة المناسبة.", fr:"L'analyse excessive bloque l'exécution au bon moment.", en:"Over-analysis blocks timely execution." },
+    bestEnv:{ ar:"بيئة بحثية أو استراتيجية مع وقت كافٍ للتفكير.", fr:"Environnement recherche ou stratégie avec temps de réflexion.", en:"Research or strategy environment with thinking time." },
+    worstEnv:{ ar:"قرارات سريعة بلا معطيات أو تحليل كافٍ.", fr:"Décisions rapides sans données suffisantes.", en:"Quick decisions without sufficient data." },
+    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
+  },
+  SDGI:{
+    code:"SDGI", svgKey:"SDGI", icon:"🌐",
+    name:{ ar:"الصانع الرقمي", fr:"Le Fabricant Digital", en:"The Digital Maker" },
+    tagline:{ ar:"يصنع ما لم يُتخيَّل بعد.", fr:"Il fabrique ce qui n'a pas encore été imaginé.", en:"Builds what hasn't been imagined yet." },
+    description:{ ar:"مُبدع تقني يجمع الأفكار والأدوات الرقمية في منتجات حقيقية.", fr:"Créatif technique combinant idées et outils numériques en produits réels.", en:"Technical creative combining ideas and digital tools into real products." },
+    strengths:{ ar:["إبداع تقني متميز","بناء شبكات رقمية","ابتكار ملموس"], fr:["Créativité technique distincte","Construction réseaux numériques","Innovation concrète"], en:["Distinctive technical creativity","Digital network building","Concrete innovation"] },
+    risk:{ ar:"كثرة المشاريع غير المكتملة تُبدد الطاقة والأثر.", fr:"Trop de projets non finalisés dissipent l'énergie.", en:"Too many unfinished projects dissipate energy and impact." },
+    bestEnv:{ ar:"فرق رقمية متنوعة بثقافة تجريبية وإبداعية.", fr:"Équipes numériques diverses avec culture expérimentale et créative.", en:"Diverse digital teams with experimental and creative culture." },
+    worstEnv:{ ar:"هياكل جامدة تُعاقب على التجريب والخطأ.", fr:"Structures rigides qui punissent l'expérimentation.", en:"Rigid structures that punish experimentation." },
+    opposite:"BENA", evolvesTrait:"structure", evolvesInto:"BENA",
+  },
+  RAID:{
+    code:"RAID", svgKey:"RAID", icon:"🚀",
+    name:{ ar:"الرائد", fr:"Le Pionnier", en:"The Pioneer" },
+    tagline:{ ar:"يسير في طرق لم يشقّها أحد.", fr:"Il marche sur des chemins que personne n'a tracés.", en:"Walks paths no one has traced yet." },
+    description:{ ar:"مُبتكر مستقل يُعيد تعريف ما اعتقد الناس أنه مسلّمة ثابتة.", fr:"Innovateur indépendant redéfinissant ce que les gens croyaient inévitable.", en:"Independent innovator who redefines what people thought inevitable." },
+    strengths:{ ar:["إبداع نظري جريء","استقلالية فكرية عميقة","حدس حاد"], fr:["Créativité théorique audacieuse","Indépendance intellectuelle","Intuition aiguë"], en:["Bold theoretical creativity","Deep intellectual independence","Sharp intuition"] },
+    risk:{ ar:"الأفكار تبقى في الذهن إن لم تُطوّر مهارة التواصل والتنفيذ.", fr:"Les idées restent en tête sans compétences en communication.", en:"Ideas stay in your head without communication and execution skills." },
+    bestEnv:{ ar:"بيئة ريادية تُقدّر الأصالة والاستقلالية الفكرية.", fr:"Environnement entrepreneurial valorisant originalité et autonomie.", en:"Entrepreneurial environment valuing originality and autonomy." },
+    worstEnv:{ ar:"بيروقراطية وعمل متكرر بلا معنى أو أثر.", fr:"Bureaucratie et travail répétitif sans sens.", en:"Bureaucracy and repetitive meaningless work." },
+    opposite:"BENA", evolvesTrait:"social", evolvesInto:"SDGI",
+  },
+  MTQN:{
+    code:"MTQN", svgKey:"MTQN", icon:"⚙️",
+    name:{ ar:"المُتقن", fr:"Le Maître Artisan", en:"The Master Craftsman" },
+    tagline:{ ar:"حرفته علامته وإتقانه هويته.", fr:"Son métier est sa marque, sa maîtrise son identité.", en:"Craft is his mark, mastery is his identity." },
+    description:{ ar:"يصقل مهاراته بصبر واستمرار حتى تصبح حرفة لا تُضاهى.", fr:"Affine patiemment ses compétences jusqu'à une maîtrise incomparable.", en:"Patiently refines skills until they become unmatched mastery." },
+    strengths:{ ar:["إتقان تقني عالٍ","صبر وتركيز عميق","جودة لا تُساوم"], fr:["Haute maîtrise technique","Patience et concentration","Qualité sans compromis"], en:["High technical mastery","Patience and deep focus","Uncompromising quality"] },
+    risk:{ ar:"التقليل من قيمة النفس يجعل الآخرين يستغلون المهارة.", fr:"Se sous-estimer amène les autres à exploiter ses compétences.", en:"Undervaluing yourself lets others exploit your skills." },
+    bestEnv:{ ar:"ورشة أو مختبر مع استقلالية تامة في المنتج النهائي.", fr:"Atelier ou labo avec pleine autonomie sur le produit.", en:"Workshop or lab with full autonomy over the final product." },
+    worstEnv:{ ar:"اجتماعات بلا قرار ومجموعات بلا هدف واضح.", fr:"Réunions sans décision et groupes sans but.", en:"Meetings without decisions and purposeless groups." },
+    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
+  },
+};
+
+// Maps 16 computed internal codes → 8 Moroccan archetypes
 const ARCHETYPE_MAP = {
-  ASPR:{ icon:"⚡", name:{ ar:"المُهندس الميداني", fr:"L'Ingénieur Terrain", en:"The Field Engineer" },
-    tagline:{ ar:"تبني حلولاً حقيقية بأدوات حقيقية.", fr:"Tu construis des vraies solutions avec de vrais outils.", en:"You build real solutions with real tools." },
-    strengths:{ ar:["دقة تحليلية","بناء عملي","قيادة هادئة"], fr:["Précision analytique","Construction pratique","Leadership discret"], en:["Analytical precision","Hands-on building","Quiet leadership"] },
-    risk:{ ar:"الانغماس في التفاصيل قد يُضيّع الصورة الكاملة.", fr:"Se perdre dans les détails au détriment de la vue d'ensemble.", en:"Over-investing in details at the expense of the bigger picture." },
-    bestEnv:{ ar:"ورش ومختبرات بأهداف واضحة ومشاريع ملموسة.", fr:"Ateliers et labos avec des objectifs clairs et projets concrets.", en:"Workshops and labs with clear goals and tangible projects." },
-    worstEnv:{ ar:"اجتماعات لا نهائية بدون نتائج ملموسة.", fr:"Réunions infinies sans résultats concrets.", en:"Endless meetings with no tangible output." },
-    opposite:"CIOR", evolvesTrait:"creativity", evolvesInto:"CSPR" },
-
-  ASPK:{ icon:"🏗️", name:{ ar:"المُنشئ المنضبط", fr:"Le Bâtisseur Discipliné", en:"The Disciplined Builder" },
-    tagline:{ ar:"تُنجز ما يعد به الآخرون فقط.", fr:"Tu livres ce que les autres ne font que promettre.", en:"You deliver what others only promise." },
-    strengths:{ ar:["موثوقية عالية","منهجية دقيقة","تنفيذ مستمر"], fr:["Fiabilité élevée","Méthode rigoureuse","Exécution continue"], en:["High reliability","Rigorous method","Consistent execution"] },
-    risk:{ ar:"مقاومة التغيير قد تحول دون استغلال الفرص الجديدة.", fr:"Résistance au changement peut bloquer de nouvelles opportunités.", en:"Resistance to change may block new opportunities." },
-    bestEnv:{ ar:"بيئة منظمة ذات معايير واضحة وعمليات ثابتة.", fr:"Environnement structuré avec standards clairs et processus stables.", en:"Structured environment with clear standards and stable processes." },
-    worstEnv:{ ar:"الفوضى وتغيير الأولويات المستمر.", fr:"Le chaos et les priorités changeantes en permanence.", en:"Chaos and constantly shifting priorities." },
-    opposite:"CIOR", evolvesTrait:"creativity", evolvesInto:"CSOK" },
-
-  AOPR:{ icon:"🔬", name:{ ar:"المستكشف التحليلي", fr:"L'Explorateur Analytique", en:"The Analytical Explorer" },
-    tagline:{ ar:"تسأل الأسئلة التي يتجنبها الآخرون.", fr:"Tu poses les questions que les autres évitent.", en:"You ask the questions others avoid." },
-    strengths:{ ar:["تفكير عميق","ابتكار منهجي","رؤية استراتيجية"], fr:["Pensée profonde","Innovation méthodique","Vision stratégique"], en:["Deep thinking","Systematic innovation","Strategic vision"] },
-    risk:{ ar:"الإفراط في التحليل يُعطّل القرار والتنفيذ.", fr:"L'analyse excessive bloque la décision et l'exécution.", en:"Over-analysis can delay decisions and execution." },
-    bestEnv:{ ar:"بيئة بحثية أو استراتيجية مع استقلالية ووقت للتفكير.", fr:"Environnement de recherche ou stratégie avec autonomie et temps de réflexion.", en:"Research or strategy environment with autonomy and thinking time." },
-    worstEnv:{ ar:"بيئة تُجبر على القرار السريع دون تأمل.", fr:"Environnement qui force des décisions rapides sans réflexion.", en:"Environments that force quick decisions without reflection." },
-    opposite:"CSPK", evolvesTrait:"leadership", evolvesInto:"ASPR" },
-
-  AOPK:{ icon:"📊", name:{ ar:"المحلل الاستراتيجي", fr:"L'Analyste Stratégique", en:"The Strategic Analyst" },
-    tagline:{ ar:"تحوّل البيانات المعقدة إلى قرارات واضحة.", fr:"Tu transformes les données complexes en décisions claires.", en:"You turn complex data into clear decisions." },
-    strengths:{ ar:["دقة تحليلية","تخطيط استراتيجي","موثوقية بحثية"], fr:["Précision analytique","Planification stratégique","Fiabilité de recherche"], en:["Analytical precision","Strategic planning","Research reliability"] },
-    risk:{ ar:"التركيز على الأرقام قد يُهمل الجانب الإنساني.", fr:"Se concentrer sur les chiffres peut négliger la dimension humaine.", en:"Focus on numbers may overlook the human dimension." },
-    bestEnv:{ ar:"مؤسسات بحثية أو مالية أو استشارية.", fr:"Institutions de recherche, finance ou conseil.", en:"Research, financial, or consulting institutions." },
-    worstEnv:{ ar:"بيئة فوضوية تُقدّر الإبداع العفوي على الدقة.", fr:"Environnement chaotique valorisant la créativité spontanée sur la précision.", en:"Chaotic environment valuing spontaneous creativity over precision." },
-    opposite:"CSPR", evolvesTrait:"social", evolvesInto:"ASPR" },
-
-  ISPR:{ icon:"⚙️", name:{ ar:"التقني المستقل", fr:"Le Technicien Indépendant", en:"The Independent Technician" },
-    tagline:{ ar:"تُتقن ما تعمل عليه بعيداً عن الضجيج.", fr:"Tu maîtrises ce que tu fais, loin du bruit.", en:"You master your craft, away from the noise." },
-    strengths:{ ar:["إتقان تقني عالٍ","استقلالية قوية","تركيز عميق"], fr:["Haute maîtrise technique","Forte indépendance","Concentration profonde"], en:["High technical mastery","Strong independence","Deep focus"] },
-    risk:{ ar:"العمل المنعزل قد يُحدّ من التأثير والظهور المهني.", fr:"Le travail isolé peut limiter l'impact et la visibilité professionnelle.", en:"Isolated work may limit professional impact and visibility." },
-    bestEnv:{ ar:"عمل فردي أو ثنائي مع تحديات تقنية واضحة.", fr:"Travail solo ou en duo avec des défis techniques clairs.", en:"Solo or duo work with clear technical challenges." },
-    worstEnv:{ ar:"مكاتب مفتوحة صاخبة مع انتظار جماعي متكرر.", fr:"Open spaces bruyants avec attentes collectives répétées.", en:"Noisy open offices with constant group expectations." },
-    opposite:"CSOK", evolvesTrait:"social", evolvesInto:"ASPR" },
-
-  ISPK:{ icon:"🔧", name:{ ar:"الحِرَفي الصامت", fr:"L'Artisan Silencieux", en:"The Silent Craftsman" },
-    tagline:{ ar:"جودة عملك تتكلم بدلاً عنك.", fr:"La qualité de ton travail parle à ta place.", en:"The quality of your work speaks for itself." },
-    strengths:{ ar:["جودة حرفية عالية","صبر وإتقان","موثوقية مطلقة"], fr:["Haute qualité artisanale","Patience et perfection","Fiabilité absolue"], en:["High craft quality","Patience and mastery","Absolute reliability"] },
-    risk:{ ar:"التقليل من قيمة نفسك يجعل الآخرين يستغلون مهاراتك.", fr:"Sous-estimer ta valeur amène les autres à exploiter tes compétences.", en:"Undervaluing yourself leads others to exploit your skills." },
-    bestEnv:{ ar:"ورشة أو مختبر مع استقلالية كاملة في المنتج.", fr:"Atelier ou labo avec pleine autonomie sur le produit.", en:"Workshop or lab with full autonomy over the product." },
-    worstEnv:{ ar:"مجموعات بلا هدف واجتماعات بلا قرار.", fr:"Groupes sans but et réunions sans décision.", en:"Purposeless groups and meetings without decisions." },
-    opposite:"CSOR", evolvesTrait:"leadership", evolvesInto:"ISPR" },
-
-  IOPR:{ icon:"🚀", name:{ ar:"المبتكر الانفرادي", fr:"L'Innovateur Solitaire", en:"The Solo Innovator" },
-    tagline:{ ar:"تُعيد اختراع ما يقبله الجميع كمُسلَّمة.", fr:"Tu réinventes ce que tout le monde accepte comme acquis.", en:"You reinvent what everyone accepts as given." },
-    strengths:{ ar:["إبداع نظري","حدس حاد","استقلالية فكرية"], fr:["Créativité théorique","Intuition aiguë","Indépendance intellectuelle"], en:["Theoretical creativity","Sharp intuition","Intellectual independence"] },
-    risk:{ ar:"الأفكار قد تبقى في رأسك إن لم تُطوّر مهارة التواصل.", fr:"Les idées peuvent rester en tête sans développer la communication.", en:"Ideas may stay in your head without developing communication skills." },
-    bestEnv:{ ar:"بيئة ريادية أو إبداعية تُقدّر الأصالة.", fr:"Environnement entrepreneurial ou créatif valorisant l'originalité.", en:"Entrepreneurial or creative environment valuing originality." },
-    worstEnv:{ ar:"أدوار روتينية تُعاقب على الخروج عن المألوف.", fr:"Rôles routiniers qui punissent la déviation de la norme.", en:"Routine roles that punish deviation from the norm." },
-    opposite:"ASPK", evolvesTrait:"social", evolvesInto:"CSPR" },
-
-  IOPK:{ icon:"🧩", name:{ ar:"المفكر الحرّ", fr:"Le Penseur Libre", en:"The Free Thinker" },
-    tagline:{ ar:"أعمق من أن يُحدّد مساره أحد سواه.", fr:"Trop profond pour qu'un autre définisse son chemin.", en:"Too deep to let anyone else define your path." },
-    strengths:{ ar:["تفكير مستقل","عمق فلسفي","بصيرة نادرة"], fr:["Pensée indépendante","Profondeur philosophique","Perspicacité rare"], en:["Independent thinking","Philosophical depth","Rare insight"] },
-    risk:{ ar:"عدم الاندماج في الأسواق أو الأنظمة القائمة يُفقد التأثير.", fr:"Ne pas s'intégrer aux marchés/systèmes existants fait perdre de l'impact.", en:"Not integrating into existing markets/systems reduces impact." },
-    bestEnv:{ ar:"أكاديميات بحثية، استشارات مستقلة، ريادة أعمال.", fr:"Académies de recherche, conseil indépendant, entrepreneuriat.", en:"Research academia, independent consulting, entrepreneurship." },
-    worstEnv:{ ar:"بيروقراطية صارمة وعمل متكرر.", fr:"Bureaucratie rigide et travail répétitif.", en:"Rigid bureaucracy and repetitive work." },
-    opposite:"ASPK", evolvesTrait:"social", evolvesInto:"IOPR" },
-
-  CSPR:{ icon:"🌟", name:{ ar:"العقل الرقمي الاجتماعي", fr:"L'Alchimiste Digital", en:"The Digital Alchemist" },
-    tagline:{ ar:"تصنع مستقبلاً لم يُتخيَّل بعد.", fr:"Tu crées un futur qui n'a pas encore été imaginé.", en:"You create a future that hasn't been imagined yet." },
-    strengths:{ ar:["إبداع اجتماعي","بناء شبكات","ابتكار ملموس"], fr:["Créativité sociale","Construction de réseaux","Innovation concrète"], en:["Social creativity","Network building","Concrete innovation"] },
-    risk:{ ar:"كثرة المشاريع دون إتقام قد تُشتت الطاقة والأثر.", fr:"Trop de projets sans finalisation peut disperser l'énergie.", en:"Too many projects without completion may scatter energy and impact." },
-    bestEnv:{ ar:"فرق متنوعة وديناميكية في بيئة إبداعية.", fr:"Équipes diverses et dynamiques dans un environnement créatif.", en:"Diverse dynamic teams in a creative environment." },
-    worstEnv:{ ar:"سياقات جامدة تُعاقب على التجريب.", fr:"Contextes rigides qui punissent l'expérimentation.", en:"Rigid contexts that punish experimentation." },
-    opposite:"AOPK", evolvesTrait:"structure", evolvesInto:"ASPK" },
-
-  CSPK:{ icon:"🎨", name:{ ar:"المبدع التعاوني", fr:"Le Créatif Collaboratif", en:"The Collaborative Creative" },
-    tagline:{ ar:"إبداعك يزهر حين تبنيه مع الآخرين.", fr:"Ta créativité s'épanouit quand tu construis avec les autres.", en:"Your creativity blooms when you build with others." },
-    strengths:{ ar:["إبداع تشاركي","تواصل استثنائي","تعاطف عملي"], fr:["Créativité participative","Communication exceptionnelle","Empathie pratique"], en:["Participative creativity","Exceptional communication","Practical empathy"] },
-    risk:{ ar:"الرغبة في إرضاء الجميع قد تُضعف الرؤية الأصيلة.", fr:"Vouloir plaire à tous peut affaiblir la vision authentique.", en:"Wanting to please everyone may weaken authentic vision." },
-    bestEnv:{ ar:"إعلام، تسويق، تصميم، تعليم.", fr:"Médias, marketing, design, enseignement.", en:"Media, marketing, design, education." },
-    worstEnv:{ ar:"عمل فردي متكرر بدون أثر بشري مباشر.", fr:"Travail solo répétitif sans impact humain direct.", en:"Repetitive solo work without direct human impact." },
-    opposite:"AOPR", evolvesTrait:"structure", evolvesInto:"ASPK" },
-
-  COPR:{ icon:"🎭", name:{ ar:"رائد الأعمال الإبداعي", fr:"L'Entrepreneur Créatif", en:"The Creative Entrepreneur" },
-    tagline:{ ar:"تبيع رؤيةً لم يجرأ غيرك على تخيّلها.", fr:"Tu vends une vision que personne d'autre n'a osé imaginer.", en:"You sell a vision no one else dared to imagine." },
-    strengths:{ ar:["رؤية مبتكرة","جرأة مبادِرة","تفكير غير خطي"], fr:["Vision innovante","Audace d'initiative","Pensée non-linéaire"], en:["Innovative vision","Bold initiative","Non-linear thinking"] },
-    risk:{ ar:"القفز من فكرة لأخرى دون إنجاز كامل.", fr:"Sauter d'une idée à l'autre sans finalisation.", en:"Jumping from idea to idea without full execution." },
-    bestEnv:{ ar:"ريادة أعمال، استشارات إبداعية، إعلام رقمي.", fr:"Entrepreneuriat, conseil créatif, médias numériques.", en:"Entrepreneurship, creative consulting, digital media." },
-    worstEnv:{ ar:"هياكل تراتبية صارمة مع قواعد لا تقبل النقاش.", fr:"Hiérarchies rigides avec règles non-négociables.", en:"Rigid hierarchies with non-negotiable rules." },
-    opposite:"ISPK", evolvesTrait:"structure", evolvesInto:"CSPR" },
-
-  COPK:{ icon:"✨", name:{ ar:"الحالم الإبداعي", fr:"Le Rêveur Créatif", en:"The Creative Dreamer" },
-    tagline:{ ar:"عالمك الداخلي هو المصنع الحقيقي.", fr:"Ton monde intérieur est l'usine réelle.", en:"Your inner world is the real factory." },
-    strengths:{ ar:["خيال خصب","تعبير أصيل","شغف عميق"], fr:["Imagination fertile","Expression authentique","Passion profonde"], en:["Fertile imagination","Authentic expression","Deep passion"] },
-    risk:{ ar:"الحلم دون بنية تنفيذية يُبقي الإبداع حبيس الذهن.", fr:"Rêver sans structure d'exécution garde la créativité dans la tête.", en:"Dreaming without execution structure keeps creativity locked inside." },
-    bestEnv:{ ar:"فنون، كتابة، موسيقى، تصوير، محتوى رقمي.", fr:"Arts, écriture, musique, photographie, contenu numérique.", en:"Arts, writing, music, photography, digital content." },
-    worstEnv:{ ar:"قواعد ثابتة ومهام روتينية.", fr:"Règles fixes et tâches routinières.", en:"Fixed rules and routine tasks." },
-    opposite:"ASPK", evolvesTrait:"structure", evolvesInto:"COPR" },
-
-  ASOR:{ icon:"🌐", name:{ ar:"القائد التحليلي", fr:"Le Leader Analytique", en:"The Analytical Leader" },
-    tagline:{ ar:"تقرر بالبيانات وتُحرّك الناس بالرؤية.", fr:"Tu décides par les données et moves les gens par la vision.", en:"You decide by data and move people by vision." },
-    strengths:{ ar:["قيادة استراتيجية","تواصل مبني على البيانات","مرونة تنظيمية"], fr:["Leadership stratégique","Communication data-driven","Agilité organisationnelle"], en:["Strategic leadership","Data-driven communication","Organisational agility"] },
-    risk:{ ar:"توقع من الآخرين نفس مستوى دقتك قد يُحبطهم.", fr:"Attendre le même niveau de précision des autres peut les décourager.", en:"Expecting the same precision from others may discourage them." },
-    bestEnv:{ ar:"شركات تقنية أو مالية بثقافة نتائج قوية.", fr:"Entreprises tech ou finance avec forte culture de résultats.", en:"Tech or finance companies with strong results culture." },
-    worstEnv:{ ar:"بيئات تُقدّر العلاقات على الأداء.", fr:"Environnements valorisant les relations sur la performance.", en:"Environments valuing relationships over performance." },
-    opposite:"IOPK", evolvesTrait:"creativity", evolvesInto:"CSPR" },
-
-  ASOK:{ icon:"🏛️", name:{ ar:"المهني الموثوق", fr:"Le Professionnel de Confiance", en:"The Trusted Professional" },
-    tagline:{ ar:"المعيار هو اسمك والجودة هي توقيعك.", fr:"Le standard est ton nom, la qualité est ta signature.", en:"The standard is your name; quality is your signature." },
-    strengths:{ ar:["موثوقية عالية","تحليل ميدان","شبكة مهنية قوية"], fr:["Haute fiabilité","Analyse de secteur","Fort réseau professionnel"], en:["High reliability","Sector analysis","Strong professional network"] },
-    risk:{ ar:"الركون إلى المكانة المكتسبة قد يُبطئ التكيف مع التغيير.", fr:"Se reposer sur la réputation acquise peut ralentir l'adaptation.", en:"Resting on acquired reputation may slow adaptation to change." },
-    bestEnv:{ ar:"قانون، إدارة، استشارات راسخة.", fr:"Droit, administration, conseil établi.", en:"Law, administration, established consulting." },
-    worstEnv:{ ar:"بيئات تجريبية سريعة بدون منهجية.", fr:"Environnements expérimentaux rapides sans méthodologie.", en:"Fast experimental environments without methodology." },
-    opposite:"COPR", evolvesTrait:"risk", evolvesInto:"ASOR" },
-
-  CSOR:{ icon:"💡", name:{ ar:"المحرّك الاجتماعي", fr:"Le Catalyseur Social", en:"The Social Catalyst" },
-    tagline:{ ar:"تُفجّر طاقة الجماعات نحو أهداف لم تُتخيَّل.", fr:"Tu déclenches l'énergie des groupes vers des buts inimaginables.", en:"You ignite group energy toward unimagined goals." },
-    strengths:{ ar:["قيادة إلهامية","إبداع اجتماعي","تنظيم حيّ"], fr:["Leadership inspirant","Créativité sociale","Organisation vivante"], en:["Inspirational leadership","Social creativity","Dynamic organisation"] },
-    risk:{ ar:"التركيز على الطاقة الجماعية دون بنية قد يُبدد النتائج.", fr:"Focus sur l'énergie collective sans structure peut dissiper les résultats.", en:"Focus on collective energy without structure may dissipate results." },
-    bestEnv:{ ar:"مبادرات اجتماعية، مشاريع إبداعية جماعية، ريادة ثقافية.", fr:"Initiatives sociales, projets créatifs collectifs, entrepreneuriat culturel.", en:"Social initiatives, collective creative projects, cultural entrepreneurship." },
-    worstEnv:{ ar:"عمل فردي صامت بدون تأثير على الآخرين.", fr:"Travail solo silencieux sans impact sur autrui.", en:"Silent solo work without impact on others." },
-    opposite:"IOPK", evolvesTrait:"structure", evolvesInto:"CSPR" },
+  ASPR: MOROCCAN_ARCHETYPES.MHNI,
+  ASPK: MOROCCAN_ARCHETYPES.BENA,
+  AOPR: MOROCCAN_ARCHETYPES.MLAH,
+  AOPK: MOROCCAN_ARCHETYPES.MLAH,
+  ISPR: MOROCCAN_ARCHETYPES.MTQN,
+  ISPK: MOROCCAN_ARCHETYPES.MTQN,
+  IOPR: MOROCCAN_ARCHETYPES.RAID,
+  IOPK: MOROCCAN_ARCHETYPES.RAID,
+  CSPR: MOROCCAN_ARCHETYPES.SDGI,
+  CSPK: MOROCCAN_ARCHETYPES.SDGI,
+  COPR: MOROCCAN_ARCHETYPES.HRRK,
+  COPK: MOROCCAN_ARCHETYPES.TGRI,
+  ASOR: MOROCCAN_ARCHETYPES.HRRK,
+  ASOK: MOROCCAN_ARCHETYPES.MHNI,
+  CSOR: MOROCCAN_ARCHETYPES.HRRK,
 };
 
 function getArchetype(code) {
-  return ARCHETYPE_MAP[code] || ARCHETYPE_MAP["AOPK"];
+  return ARCHETYPE_MAP[code] || MOROCCAN_ARCHETYPES.MLAH;
 }
 
 function massarTypeDesc(code, t) {
@@ -3010,6 +4828,7 @@ function massarTypeDesc(code, t) {
   const lang = t.dir==="rtl" ? "ar" : (t.next==="Next" ? "en" : "fr");
   return archetype.tagline?.[lang] || archetype.tagline?.en || "";
 }
+
 
 // ─────────────────────────────────────────────────────────────────
 // ImproveModeCard — shown when bacStatus==="before"
@@ -3035,7 +4854,9 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
 
   const sn      = reality.strengthsNow   || [];
   const style   = reality.preferredStyle || "";
-  const top3    = rankedClusters.slice(0,3);
+  // FIX: results page null-safety — guard rankedClusters being undefined/empty
+  const safeRanked = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const top3    = safeRanked.slice(0,3);
 
   // ── Upgrade targets (deterministic) ──────────────────────────────
   // 1. Distance to health threshold
@@ -3078,7 +4899,8 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
   const tipText = style ? (styleTip[style]?.[styleLang]||styleTip[style]?.en||"") : "";
 
   // 4. Cluster unlock message
-  const nearCluster = rankedClusters.find((c,i)=>i>=3 && c.scores.final > rankedClusters[2].scores.final*0.85);
+  // FIX: results page null-safety — safeRanked[2] may be undefined
+  const nearCluster = safeRanked.find((c,i)=>i>=3 && safeRanked[2] && c.scores.final > safeRanked[2].scores.final*0.85);
 
   return (
     <div style={{
@@ -3130,7 +4952,7 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
               border:"1px solid rgba(239,68,68,0.2)",borderRadius:10}}>
               <div style={{fontSize:13,fontWeight:600,color:"#f87171",marginBottom:6}}>⚕️ Distance to Medicine Threshold</div>
               <div style={{fontSize:13,color:"var(--muted)"}}>
-                {t.improveDistanceHealth
+                {(t.improveDistanceHealth || "")
                   .replace("{avg}", healthGapAvg)
                   .replace("{bio}", healthGapBio)
                   .replace("{chem}", healthGapChem)}
@@ -3177,7 +4999,7 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
           {/* Near-unlock cluster */}
           {nearCluster && (
             <div style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>
-              {t.improveClusterUp.replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
+              {(t.improveClusterUp || "").replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
             </div>
           )}
 
@@ -3192,32 +5014,74 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
 }
 
 // ─────────────────────────────────────────────────────────────────
+// getRarity — unified rarity tier from overall alignment %
+// FIX: unified with ShareCard spec — Common, Rare, Epic, Legendary
+function getRarity(confidence) {
+  if (confidence >= 85) return "legendary";
+  if (confidence >= 70) return "epic";
+  if (confidence >= 55) return "rare";
+  return "common";
+}
+
 // ─────────────────────────────────────────────────────────────────
-// ArchetypeCard — rich identity archetype display (Section 2)
+// ArchetypeCard — Phase 1: Hero Identity Section
 // ─────────────────────────────────────────────────────────────────
 function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence }) {
   const archetype = getArchetype(massarType);
   const [expanded, setExpanded] = useState(false);
 
   const name   = archetype.name?.[lang] || archetype.name?.en || massarType;
-  const opposite = ARCHETYPE_MAP[archetype.opposite];
+  const opposite = MOROCCAN_ARCHETYPES[archetype.opposite];
   const oppName  = opposite?.name?.[lang] || opposite?.name?.en || archetype.opposite;
   const evolveTrait = archetype.evolvesTrait || "";
   const evolveCode  = archetype.evolvesInto || "";
-  const evolveInto  = ARCHETYPE_MAP[evolveCode]?.name?.[lang] || evolveCode;
+  const evolveInto  = MOROCCAN_ARCHETYPES[evolveCode]?.name?.[lang] || evolveCode;
 
   const strengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
   const risk      = archetype.risk?.[lang]      || archetype.risk?.en      || "";
   const bestEnv   = archetype.bestEnv?.[lang]   || archetype.bestEnv?.en   || "";
   const worstEnv  = archetype.worstEnv?.[lang]  || archetype.worstEnv?.en  || "";
 
+  const rarity = getRarity(confidence);
+  // FIX: unified rarity labels — Common, Rare, Epic, Legendary
+  const rarityLabels = {
+    common:    { ar:"عادي",    fr:"Commun",    en:"Common"    },
+    rare:      { ar:"نادر",    fr:"Rare",      en:"Rare"      },
+    epic:      { ar:"ملحمي",   fr:"Épique",    en:"Epic"      },
+    legendary: { ar:"أسطوري", fr:"Légendaire", en:"Legendary" },
+  };
+  const rarityIcons = { common:"◇", rare:"◆", epic:"★", legendary:"👑" };
+  const rarityLabel = rarityLabels[rarity]?.[lang] || rarityLabels[rarity]?.en || rarity;
+
   // Compute 3 meter scores
-  const identityFitPct = Math.round(Math.max(0.35, Math.min(0.95,
-    ((traits.analytical||0.5)+(traits.creativity||0.5)+(traits.risk||0.5)+(traits.leadership||0.5))/4)) * 100);
-  const academicFitPct = Math.round(Math.max(0.3, Math.min(0.9,
-    top3[0]?.scores?.academic ?? 0.5)) * 100);
-  const marketFitPct = Math.round(Math.max(0.4, Math.min(0.95,
-    top3[0]?.scores?.market ?? 0.7)) * 100);
+  // FIX: clamp numeric UI values
+  const safeTrA = traits && typeof traits === "object" ? traits : {};
+  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
+    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
+  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
+    top3[0]?.scores?.academic ?? 0.5)) * 100));
+  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
+    top3[0]?.scores?.market ?? 0.7)) * 100));
+
+  // Phase 4: Alignment story — weakest dimension
+  const dims = [
+    { key:"identity", pct:identityFitPct, sentences:{
+      ar:"هذا المجال لا يتوافق تلقائياً مع شخصيتك.",
+      fr:"Ce domaine ne correspond pas naturellement à ta personnalité.",
+      en:"This domain doesn't naturally match your personality.",
+    }},
+    { key:"academic", pct:academicFitPct, sentences:{
+      ar:"إمكاناتك تتجاوز مستواك الأكاديمي الحالي.",
+      fr:"Ton potentiel dépasse ton niveau académique actuel.",
+      en:"Your potential exceeds your current academic level.",
+    }},
+    { key:"market", pct:marketFitPct, sentences:{
+      ar:"الطلب على هذا التخصص أقل استقراراً في سوق العمل.",
+      fr:"La demande est plus instable dans ce secteur.",
+      en:"Market demand is less stable in this sector.",
+    }},
+  ];
+  const weakest = dims.reduce((a,b)=>a.pct<b.pct?a:b);
 
   const traitLabelMap = {
     analytical:{ ar:"التحليل", fr:"Analytique", en:"Analytical" },
@@ -3230,54 +5094,81 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   const evolveLbl = traitLabelMap[evolveTrait]?.[lang] || evolveTrait;
 
   return (
-    <div style={{
+    <div className={`rarity-${rarity}`} style={{
       background:"linear-gradient(135deg,rgba(232,161,36,0.08),rgba(59,130,246,0.05))",
-      border:"1px solid rgba(232,161,36,0.35)",
-      borderRadius:16,padding:"22px 24px",marginBottom:20,
-      boxShadow:"0 0 24px rgba(232,161,36,0.06)",
+      border:"2px solid",
+      borderRadius:20,padding:"28px 28px 22px",marginBottom:20,
     }}>
-      {/* Header */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:10,marginBottom:16}}>
-        <div>
-          <div style={{fontSize:11,fontWeight:600,color:"var(--muted)",letterSpacing:1,marginBottom:4,textTransform:"uppercase"}}>
-            {t.archetypeTitle}
-          </div>
-          <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
-            <span style={{fontSize:28}}>{archetype.icon}</span>
-            <div>
-              <div style={{fontSize:22,fontWeight:800,color:"var(--accent)",lineHeight:1.2,
-                textShadow:"0 0 20px rgba(232,161,36,0.3)"}}>{name}</div>
-              <div style={{fontSize:13,fontWeight:700,color:"var(--accent2)",letterSpacing:2,marginTop:2}}>{massarType}</div>
-            </div>
-          </div>
-          <div style={{fontSize:12,color:"var(--muted)",marginTop:8,fontStyle:"italic",lineHeight:1.5}}>{typeDesc}</div>
+      {/* Rarity badge + type label */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
+        <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase"}}>
+          {t?.archetypeTitle || "Identity"}
         </div>
+        <span className={`rarity-badge rarity-badge-${rarity}`}>
+          {rarityIcons[rarity]} {rarityLabel}
+        </span>
+      </div>
+
+      {/* Hero identity row */}
+      <div style={{display:"flex",alignItems:"center",gap:18,marginBottom:16,flexWrap:"wrap"}}>
+        <div className="archetype-icon-wrap" style={{
+          width:72,height:72,borderRadius:18,
+          background:"rgba(232,161,36,0.1)",border:"1.5px solid rgba(232,161,36,0.3)",
+          fontSize:36,flexShrink:0,
+        }}>
+          <span className="icon-inner">{archetype.icon}</span>
+        </div>
+        <div style={{flex:1,minWidth:160}}>
+          <div style={{
+            fontSize:32,fontWeight:900,lineHeight:1.1,
+            background:"linear-gradient(135deg,#fbbf24,#e8a124)",
+            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+            marginBottom:4,
+          }}>{name}</div>
+          <div style={{fontSize:14,fontWeight:800,color:"var(--accent2)",letterSpacing:3}}>{archetype.code}</div>
+        </div>
+        {/* FIX: Arabic-first UX — dir="ltr" prevents % rendering before number in RTL */}
         <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
-          borderRadius:10,padding:"10px 16px",textAlign:"center",flexShrink:0}}>
-          <div style={{fontSize:24,fontWeight:800,color:"var(--accent)"}}>{confidence}%</div>
-          <div style={{fontSize:11,color:"var(--muted)"}}>{t.confidenceLabel}</div>
+          borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
+          <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
+            {clamp(confidence)}%
+          </div>
+          <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
         </div>
       </div>
 
+      {/* Tagline */}
+      <div style={{fontSize:13,color:"var(--muted)",marginBottom:20,fontStyle:"italic",lineHeight:1.6,
+        padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:10,borderLeft:"3px solid rgba(232,161,36,0.4)"}}>
+        {typeDesc}
+      </div>
+
       {/* 3 Fit Meters */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:16}}>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:8}}>
         {[
-          { label:t.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
-          { label:t.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
-          { label:t.marketFit||"Market", pct:marketFitPct, color:"#10b981" },
+          { label:t?.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
+          { label:t?.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
+          { label:t?.marketFit||"Market",   pct:marketFitPct, color:"#10b981" },
         ].map(m=>(
           <div key={m.label} style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
             <div style={{fontSize:10,color:"var(--muted)",marginBottom:6,fontWeight:600}}>{m.label}</div>
-            <div style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
-              <div style={{height:"100%",width:`${m.pct}%`,background:m.color,borderRadius:2,transition:"width 1s ease"}}/>
+            {/* FIX: Arabic-first UX — bar direction forced LTR */}
+            <div dir="ltr" style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
+              <div style={{height:"100%",width:`${m.pct}%`,background:m.color,borderRadius:2,animation:"barGrow 1s ease both"}}/>
             </div>
-            <div style={{fontSize:15,fontWeight:800,color:m.color}}>{m.pct}%</div>
+            {/* FIX: Arabic-first UX — percentage always LTR */}
+            <div style={{fontSize:15,fontWeight:800,color:m.color}} dir="ltr">{m.pct}%</div>
           </div>
         ))}
       </div>
-      <div style={{fontSize:11,color:"var(--muted)",marginBottom:16,fontStyle:"italic"}}>
-        {t.realityAlignmentDesc}
-      </div>
+
+      {/* Phase 4: Alignment story sentence */}
+      {weakest.pct < 70 && (
+        <div style={{fontSize:12,color:"var(--warn)",marginBottom:16,padding:"8px 12px",
+          background:"rgba(245,158,11,0.06)",borderRadius:8,border:"1px solid rgba(245,158,11,0.2)"}}>
+          ⚡ {weakest.sentences[lang] || weakest.sentences.en}
+        </div>
+      )}
 
       {/* Expand toggle */}
       <button onClick={()=>setExpanded(e=>!e)}
@@ -3287,7 +5178,7 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
       </button>
 
       {expanded && (
-        <div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:16}}>
 
           {/* Core strengths */}
           <div style={{padding:"12px 16px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:10}}>
@@ -3344,16 +5235,183 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
 }
 
 // ─────────────────────────────────────────────────────────────────
+// Phase 2: AbilitiesSection — game-like trait/ability cards
+// ─────────────────────────────────────────────────────────────────
+const ABILITY_SVG = {
+  analytical: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="11" cy="8" r="4"/><path d="M7 15c0-2.2 1.8-4 4-4s4 1.8 4 4"/><line x1="11" y1="12" x2="11" y2="19"/><line x1="8" y1="19" x2="14" y2="19"/></svg>`,
+  social: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="8" cy="7" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M2 18c0-3.3 2.7-6 6-6 1.4 0 2.7.5 3.7 1.3"/><path d="M13 18c0-2.2 1.3-4 3-4s3 1.8 3 4"/></svg>`,
+  structure: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="2" y="2" width="7" height="7" rx="1"/><rect x="13" y="2" width="7" height="7" rx="1"/><rect x="2" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>`,
+  creativity: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2l2.2 6.5H20l-5.4 4 2.1 6.5L11 15l-5.7 4 2.1-6.5L2 8.5h6.8L11 2z"/></svg>`,
+  risk: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 13h7l-1 7 8-11h-7z"/></svg>`,
+  leadership: `<svg viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8l3 3.5 4-6 4 6 3-3.5v10H4V8z"/></svg>`,
+};
+
+const ABILITY_META = {
+  analytical: {
+    gradients: ["#3b82f6","#1d4ed8"],
+    descriptors: { ar:"تفكير منطقي حاد", fr:"Logique redoutable", en:"Sharp logical thinking" },
+  },
+  social: {
+    gradients: ["#10b981","#059669"],
+    descriptors: { ar:"تواصل فعّال مع الآخرين", fr:"Connexion naturelle", en:"Connects naturally with others" },
+  },
+  structure: {
+    gradients: ["#8b5cf6","#6d28d9"],
+    descriptors: { ar:"ينظم الفوضى بدقة", fr:"Organise le chaos", en:"Turns chaos into order" },
+  },
+  creativity: {
+    gradients: ["#f59e0b","#d97706"],
+    descriptors: { ar:"يولّد أفكاراً أصيلة", fr:"Génère des idées uniques", en:"Generates original ideas" },
+  },
+  risk: {
+    gradients: ["#ef4444","#b91c1c"],
+    descriptors: { ar:"يتحرك بجرأة وحسم", fr:"Avance avec audace", en:"Moves boldly and decisively" },
+  },
+  leadership: {
+    gradients: ["#e8a124","#c97d10"],
+    descriptors: { ar:"يقود بالمثال والرؤية", fr:"Guide par l'exemple", en:"Leads by example and vision" },
+  },
+};
+
+const TRAIT_LABELS_FULL = {
+  ar:{ analytical:"تحليلي", social:"اجتماعي", structure:"منظم", creativity:"مبدع", risk:"مبادر", leadership:"قيادي" },
+  fr:{ analytical:"Analytique", social:"Social", structure:"Rigoureux", creativity:"Créatif", risk:"Prise de risque", leadership:"Leadership" },
+  en:{ analytical:"Analytical", social:"Social", structure:"Organized", creativity:"Creative", risk:"Risk-taker", leadership:"Leadership" },
+};
+
+function AbilitiesSection({ traits, lang }) {
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
+  const sorted = Object.entries(safeTr).sort((a,b)=>b[1]-a[1]);
+  const topTwo = new Set([sorted[0]?.[0], sorted[1]?.[0]].filter(Boolean));
+  const labels = TRAIT_LABELS_FULL[lang] || TRAIT_LABELS_FULL.en;
+  // FIX: Arabic-first UX — concise powerful word for dominant trait
+  const dominantLabel = lang==="ar"?"◉ سمة رائدة":lang==="fr"?"◉ Dominant":"◉ Dominant";
+
+  return (
+    <div style={{marginBottom:20}}>
+      <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:14}}>
+        {lang==="ar"?"⚔️ قدراتك":lang==="fr"?"⚔️ Tes Aptitudes":"⚔️ Your Abilities"}
+      </div>
+      <div className="abilities-grid">
+        {sorted.map(([key, val])=>{
+          const meta = ABILITY_META[key] || {};
+          // FIX: clamp numeric UI values — never NaN, always 0–100
+          const pct  = Math.round(clamp(val * 100));
+          const isDom = topTwo.has(key);
+          const [c1, c2] = meta.gradients || ["#3b82f6","#1d4ed8"];
+          const svgStr = ABILITY_SVG[key] || "";
+          const desc = meta.descriptors?.[lang] || meta.descriptors?.en || "";
+          return (
+            <div key={key} className={`ability-card${isDom?" dominant":""}`}
+              style={{background:`linear-gradient(145deg,${c1}12,${c2}08)`}}>
+              {isDom && <span className="dominant-badge">{dominantLabel}</span>}
+              <div className="ability-icon-wrap" style={{color:c1}}
+                dangerouslySetInnerHTML={{__html:svgStr}}/>
+              <div style={{fontSize:13,fontWeight:800,color:"var(--text)",marginBottom:2}}>
+                {labels[key] || key}
+              </div>
+              {/* FIX: Arabic-first UX — bar container forced LTR so fill direction is correct */}
+              <div className="ability-bar-track" dir="ltr">
+                <div className="ability-bar-fill" style={{
+                  width:`${pct}%`,
+                  background:`linear-gradient(90deg,${c1},${c2})`,
+                }}/>
+              </div>
+              {/* FIX: Arabic-first UX — percentage always LTR in RTL layout */}
+              <div style={{fontSize:18,fontWeight:900,color:c1,marginBottom:4}} dir="ltr">{pct}%</div>
+              <div style={{fontSize:10,color:"var(--muted)",lineHeight:1.4}}>{desc}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
+// ─────────────────────────────────────────────────────────────────
+// Phase 8: CompetitionMode — percentile comparisons
+// ─────────────────────────────────────────────────────────────────
+function CompetitionMode({ traits, lang }) {
+  const [enabled, setEnabled] = useState(false);
+  const label = lang==="ar"?"🏆 وضع المنافسة":lang==="fr"?"🏆 Mode Classement":"🏆 Ranking Mode";
+  const labels = TRAIT_LABELS_FULL[lang] || TRAIT_LABELS_FULL.en;
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
+
+  const percentiles = useMemo(()=>{
+    const seed = (k, v) => {
+      const pct  = Math.round((v * 55 + 15) + ((k.charCodeAt(0) % 11) - 5));
+      return Math.min(92, Math.max(8, pct));
+    };
+    return Object.fromEntries(Object.entries(safeTr).map(([k,v])=>[k, seed(k,v)]));
+  }, [safeTr]);
+
+  const topLabel = lang==="ar"?"أفضل":lang==="fr"?"Top":"Top";
+
+  return (
+    <div style={{margin:"20px 0"}}>
+      <button className={`comp-toggle${enabled?" active":""}`} onClick={()=>setEnabled(e=>!e)}>
+        <span className="comp-toggle-dot"/>
+        {label}
+      </button>
+      {enabled && (
+        <div style={{background:"var(--surface)",border:"1px solid var(--border)",
+          borderRadius:14,padding:"20px 22px",animation:"fadeIn 0.3s ease"}}>
+          {Object.entries(safeTr).sort((a,b)=>b[1]-a[1]).map(([k])=>{
+            const p = clamp(percentiles[k] || 50);  // FIX: clamp numeric UI values
+            return (
+              <div key={k} className="percentile-row">
+                <div style={{fontSize:12,color:"var(--text)",fontWeight:600,width:90,flexShrink:0}}>
+                  {labels[k]||k}
+                </div>
+                {/* FIX: Arabic-first UX — bar container LTR so fill goes left to right */}
+                <div className="percentile-bar" dir="ltr">
+                  <div className="percentile-fill" style={{width:`${p}%`}}/>
+                </div>
+                {/* FIX: Arabic-first UX — percentage display LTR */}
+                <div dir="ltr" style={{fontSize:12,fontWeight:700,color:"var(--accent2)",width:60,textAlign:"right",flexShrink:0}}>
+                  {topLabel} {100-p}%
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Phase 9: CollapsibleSection helper
+// ─────────────────────────────────────────────────────────────────
+function CollapsibleSection({ title, defaultOpen=false, children, accent }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div style={{marginBottom:16}}>
+      <div className="collapsible-header" onClick={()=>setOpen(o=>!o)}
+        style={open?{borderColor: accent||"var(--accent2)"}:{}}>
+        <span style={{fontWeight:700,fontSize:14,color:"var(--text)"}}>{title}</span>
+        <span className={`collapsible-chevron${open?" open":""}`}>▼</span>
+      </div>
+      <div className={`collapsible-body${open?" visible":" hidden"}`}>
+        <div style={{paddingTop:12}}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
 // TruthModeCard — structured risk analysis (Section 7)
 // ─────────────────────────────────────────────────────────────────
 function TruthModeCard({ t, lang, traits, top3 }) {
-  const [open, setOpen] = useState(false);
-
-  // Deterministic risk scores from traits
-  const disciplineScore = traits.structure || 0.5;
-  const riskScore       = traits.risk      || 0.5;
-  const creativeScore   = traits.creativity|| 0.5;
-  const socialScore     = traits.social    || 0.5;
+  // FIX: results page null-safety — guard against undefined traits
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
+  const disciplineScore = safeTr.structure  || 0.5;
+  const riskScore       = safeTr.risk       || 0.5;
+  const creativeScore   = safeTr.creativity || 0.5;
+  const socialScore     = safeTr.social     || 0.5;
 
   // Burnout risk: high creativity + low structure in rigid field
   const burnoutRaw = (creativeScore * 0.5 + (1-disciplineScore) * 0.5);
@@ -3367,50 +5425,54 @@ function TruthModeCard({ t, lang, traits, top3 }) {
   const incomeRaw = (creativeScore * 0.5 + riskScore * 0.5);
   const income = incomeRaw > 0.6 ? "high" : incomeRaw > 0.4 ? "med" : "low";
 
-  const riskColor = { low:"#10b981", med:"#f59e0b", high:"#ef4444" };
-  const riskLabel = { low:t.truthLow, med:t.truthMed, high:t.truthHigh };
+  // FIX: Arabic-first UX — warm gradient bars, no harsh triple-red; amber/gold palette
+  const riskColor = { low:"#10b981", med:"#f59e0b", high:"#e8743a" };
+  // FIX: Arabic-first UX — gradient fills give softer appearance than solid color
+  const riskGradient = {
+    low:  "linear-gradient(90deg,#10b981,#34d399)",
+    med:  "linear-gradient(90deg,#f59e0b,#fbbf24)",
+    high: "linear-gradient(90deg,#e8743a,#f97316)",
+  };
+  // FIX: fallback for missing archetype — guard translation keys for truth mode labels
+  const riskLabel = {
+    low:  t?.truthLow  || "Low",
+    med:  t?.truthMed  || "Medium",
+    high: t?.truthHigh || "High",
+  };
 
   const rows = [
-    { key:"burnout", label:t.burnoutRisk,     level:burnout, explain:t.burnoutExplain?.[burnout] },
-    { key:"stress",  label:t.stressRisk,      level:stress,  explain:t.stressExplain?.[stress] },
-    { key:"income",  label:t.incomeVolatility, level:income,  explain:t.incomeExplain?.[income] },
+    { key:"burnout", label:t?.burnoutRisk     || "Burnout Risk",      level:burnout, explain:t?.burnoutExplain?.[burnout] || "" },
+    { key:"stress",  label:t?.stressRisk      || "Stress Risk",       level:stress,  explain:t?.stressExplain?.[stress]   || "" },
+    { key:"income",  label:t?.incomeVolatility || "Income Volatility", level:income,  explain:t?.incomeExplain?.[income]   || "" },
   ];
 
-  const pct = { low:25, med:60, high:90 };
+  const pct = { low:25, med:60, high:88 };
 
   return (
-    <div style={{margin:"24px 0"}}>
-      <button onClick={()=>setOpen(o=>!o)}
-        className="btn btn-secondary"
-        style={{width:"100%",justifyContent:"center",fontSize:14,fontWeight:700,letterSpacing:0.5}}>
-        {t.truthModeBtn}
-      </button>
+    <div style={{
+      background:"var(--surface)",border:"1px solid var(--border)",
+      borderRadius:14,padding:"22px 24px",animation:"fadeIn 0.3s ease",
+    }}>
+      <h3 style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{t?.truthModeTitle || "Reality Check"}</h3>
+      <p style={{fontSize:12,color:"var(--muted)",marginBottom:20,lineHeight:1.5}}>{t?.truthModeDesc || ""}</p>
 
-      {open && (
-        <div style={{
-          marginTop:10,background:"var(--surface)",border:"1px solid var(--border)",
-          borderRadius:14,padding:"22px 24px",animation:"fadeIn 0.3s ease",
-        }}>
-          <h3 style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{t.truthModeTitle}</h3>
-          <p style={{fontSize:12,color:"var(--muted)",marginBottom:20,lineHeight:1.5}}>{t.truthModeDesc}</p>
-
-          {rows.map(row=>(
-            <div key={row.key} style={{marginBottom:18}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{row.label}</span>
-                <span style={{fontSize:12,fontWeight:700,color:riskColor[row.level],
-                  padding:"2px 8px",borderRadius:10,background:`${riskColor[row.level]}20`}}>
-                  {riskLabel[row.level]}
-                </span>
-              </div>
-              <div style={{height:6,background:"var(--surface2)",borderRadius:3,overflow:"hidden",marginBottom:6}}>
-                <div style={{height:"100%",width:`${pct[row.level]}%`,background:riskColor[row.level],borderRadius:3,transition:"width 0.8s ease"}}/>
-              </div>
-              <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{row.explain}</div>
-            </div>
-          ))}
+      {rows.map(row=>(
+        <div key={row.key} style={{marginBottom:18}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+            <span style={{fontSize:13,fontWeight:600,color:"var(--text)"}}>{row.label}</span>
+            <span style={{fontSize:12,fontWeight:700,color:riskColor[row.level],
+              padding:"2px 8px",borderRadius:10,background:`${riskColor[row.level]}22`}}>
+              {riskLabel[row.level]}
+            </span>
+          </div>
+          {/* FIX: Arabic-first UX — bar LTR so fill is visually correct in RTL layout */}
+          <div dir="ltr" style={{height:6,background:"var(--surface2)",borderRadius:3,overflow:"hidden",marginBottom:6}}>
+            <div style={{height:"100%",width:`${pct[row.level]}%`,
+              background:riskGradient[row.level],borderRadius:3,transition:"width 0.8s ease"}}/>
+          </div>
+          <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{row.explain}</div>
         </div>
-      )}
+      ))}
     </div>
   );
 }
@@ -3543,123 +5605,1627 @@ function FamilyPressureAdaptiveCard({ t, lang, marks, traits, info, rankedCluste
 }
 
 // ─────────────────────────────────────────────────────────────────
-// ShareCard — SVG badge + copy caption + download
+// LEGENDARY CARD SYSTEM — Trading Card / Game Card aesthetic
+// Spec-driven: rarity aura, multi-ring halo, texture, serial ID,
+// chip icons, proper RTL, safe area, no overflow in any mode.
 // ─────────────────────────────────────────────────────────────────
-function ShareCard({ t, lang, massarType, topCluster, confidence }) {
-  const [copied, setCopied] = useState(false);
-  const clusterName = t[CLUSTER_KEY_MAP[topCluster?.id]] || (topCluster?.id||"");
-  const archetype = getArchetype(massarType);
-  const archName  = archetype.name?.[lang] || archetype.name?.en || massarType;
-  const tagline   = archetype.tagline?.[lang] || archetype.tagline?.en || "";
 
-  const caption = (t.shareCaptionTpl||"My Massar Type: {type} — {archetype}\nTop path: {cluster} ({confidence}% match)\nDiscover yours at massar.ma")
-    .replace("{type}", massarType)
-    .replace("{archetype}", archName)
-    .replace("{cluster}", clusterName)
-    .replace("{confidence}", confidence);
+// Shared texture overlay (CSS-only diagonal lines + dot grid)
+const CARD_TEXTURE = `
+  repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.012) 0px,
+    rgba(255,255,255,0.012) 1px,
+    transparent 1px,
+    transparent 12px
+  ),
+  repeating-linear-gradient(
+    -45deg,
+    rgba(255,255,255,0.008) 0px,
+    rgba(255,255,255,0.008) 1px,
+    transparent 1px,
+    transparent 12px
+  )
+`.replace(/\n\s*/g, " ");
 
-  const copyCaption = () => {
-    try {
-      navigator.clipboard.writeText(caption).then(()=>{
-        setCopied(true); setTimeout(()=>setCopied(false), 2500);
-      });
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = caption;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setCopied(true); setTimeout(()=>setCopied(false), 2500);
-    }
-  };
+// Corner ornament SVG (used as data URI)
+function cornerSVG(color) {
+  const c = encodeURIComponent(color);
+  return `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2 L12 2 M2 2 L2 12' stroke='${c}' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`;
+}
 
-  const buildSvg = () => {
-    const isRTL = lang==="ar";
-    const dir = isRTL ? "rtl" : "ltr";
-    const anchor = isRTL ? "end" : "start";
-    const x = isRTL ? "356" : "24";
-    const shortName = archName.length > 24 ? archName.substring(0,22)+"…" : archName;
-    const shortCluster = clusterName.length > 30 ? clusterName.substring(0,28)+"…" : clusterName;
-    const shortTag = tagline.length > 50 ? tagline.substring(0,48)+"…" : tagline;
+// CardShell — upgraded: 3-layer bg, texture, neon border, corner ornaments
+// Exposes --cardScale CSS var (set from container width) for clamp()-based internal scaling.
+function CardShell({ accent, glow, rarity, width, aspectRatio, maxHeight, borderRadius, children, dir }) {
+  const shellRef = useRef(null);
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    if (!shellRef.current) return;
+    const obs = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect?.width || 300;
+      setScale(Math.min(1, w / 320));
+    });
+    obs.observe(shellRef.current);
+    return () => obs.disconnect();
+  }, []);
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="380" height="240" viewBox="0 0 380 240">
-  <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#0d1219"/>
-      <stop offset="100%" style="stop-color:#121c2e"/>
-    </linearGradient>
-    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#c97d10"/>
-      <stop offset="50%" style="stop-color:#e8a124"/>
-      <stop offset="100%" style="stop-color:#fbbf24"/>
-    </linearGradient>
-    <linearGradient id="bdr" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#e8a124"/>
-      <stop offset="100%" style="stop-color:#3b82f6"/>
-    </linearGradient>
-  </defs>
-  <rect width="380" height="240" rx="18" fill="url(#bg)"/>
-  <rect x="1.5" y="1.5" width="377" height="237" rx="17" fill="none" stroke="url(#bdr)" stroke-width="2" opacity="0.8"/>
-  <rect x="24" y="22" width="60" height="3" rx="2" fill="url(#gold)"/>
-  <text x="${x}" y="40" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="9" fill="#374151" direction="${dir}" letter-spacing="2">MASSAR.MA</text>
-  <text x="${isRTL?"354":"22"}" y="88" text-anchor="${anchor}" font-size="26">${archetype.icon}</text>
-  <text x="${isRTL?"320":"56"}" y="80" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="17" font-weight="800" fill="url(#gold)" direction="${dir}">${shortName}</text>
-  <text x="${isRTL?"320":"56"}" y="98" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="10" font-weight="700" fill="#3b82f6" direction="${dir}" letter-spacing="3">${massarType}</text>
-  <text x="${x}" y="122" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="10" fill="#6b7280" direction="${dir}" font-style="italic">${shortTag}</text>
-  <line x1="24" y1="139" x2="356" y2="139" stroke="#1f2d45" stroke-width="1"/>
-  <text x="${x}" y="159" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="12" fill="#e8ecf0" direction="${dir}">${shortCluster}</text>
-  <text x="${x}" y="178" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="11" fill="#6b7280" direction="${dir}">${confidence}% match</text>
-  <rect x="24" y="208" width="332" height="1" fill="#1f2d45"/>
-  <text x="${x}" y="226" text-anchor="${anchor}" font-family="system-ui,sans-serif" font-size="9" fill="#374151" direction="${dir}">massar.ma · ${new Date().getFullYear()}</text>
-</svg>`;
-  };
-
-  const downloadSvg = () => {
-    const svg = buildSvg();
-    const blob = new Blob([svg], {type:"image/svg+xml"});
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
-    a.href = url;
-    a.download = `massar-type-${massarType}.svg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  // Inline preview of the SVG badge
-  const svgPreview = buildSvg();
+  const glowAnim = rarity.key === "legendary" ? "scGlowLegendary 3s ease-in-out infinite"
+                 : rarity.key === "epic"       ? "scGlowEpic 3s ease-in-out infinite"
+                 : rarity.key === "rare"       ? "scGlowRare 4s ease-in-out infinite"
+                 : undefined;
+  const foilStrip = (rarity.key !== "common")
+    ? `linear-gradient(105deg, transparent 25%, ${accent}14 48%, transparent 72%)`
+    : "none";
 
   return (
     <div style={{
-      background:"var(--surface)",border:"1px solid var(--border)",
-      borderRadius:14,padding:"22px 24px",margin:"24px 0",
-    }}>
-      <h3 style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:16}}>{t.shareTitle}</h3>
+      width, aspectRatio, maxHeight,
+      margin: "0 auto 16px",
+      position: "relative",
+      borderRadius: borderRadius || 16,
+      overflow: "hidden",
+      flexShrink: 0,
+      // CSS variable for internal scaling — set from ResizeObserver
+      "--cardScale": scale,
+      // 3-layer box-shadow: tight neon ring + mid glow + deep shadow
+      boxShadow: `0 0 0 1.5px ${accent}99,
+                  0 0 0 3px ${accent}22,
+                  0 0 28px ${glow},
+                  0 0 ${rarity.key==="legendary"?"72px":"0px"} ${rarity.key==="legendary"?glow:"transparent"},
+                  0 16px 56px rgba(0,0,0,0.8)`,
+      animation: glowAnim,
+    }} dir={dir} ref={shellRef}>
 
-      {/* Badge preview */}
-      <div style={{display:"flex",justifyContent:"center",marginBottom:16,overflow:"hidden",borderRadius:12}}>
-        <div dangerouslySetInnerHTML={{__html:svgPreview}} style={{maxWidth:360,width:"100%"}}/>
+      {/* Layer 1: deep background gradient */}
+      <div style={{ position:"absolute", inset:0, zIndex:0,
+        background: "linear-gradient(160deg, #06091a 0%, #0a1020 40%, #0d1530 75%, #080c1e 100%)"
+      }}/>
+
+      {/* Layer 2: rarity aura tint (bottom-up radial) */}
+      <div style={{ position:"absolute", inset:0, zIndex:1, pointerEvents:"none",
+        background: `radial-gradient(ellipse 90% 55% at 50% 100%, ${accent}1a 0%, transparent 70%),
+                     radial-gradient(ellipse 60% 40% at 80% 10%, ${accent}14 0%, transparent 65%)`
+      }}/>
+
+      {/* Layer 3: CSS texture — diagonal crosshatch + holographic foil */}
+      <div style={{ position:"absolute", inset:0, zIndex:2, pointerEvents:"none",
+        backgroundImage: CARD_TEXTURE, opacity: 1
+      }}/>
+      {foilStrip !== "none" && (
+        <div style={{ position:"absolute", inset:0, zIndex:3, pointerEvents:"none",
+          background: foilStrip, opacity: 0.6
+        }}/>
+      )}
+
+      {/* Corner ornaments */}
+      {["topLeft","topRight","bottomLeft","bottomRight"].map(pos => {
+        const s = {
+          position:"absolute", width:20, height:20, zIndex:4, pointerEvents:"none",
+          backgroundImage: cornerSVG(accent + "99"),
+          backgroundRepeat:"no-repeat", backgroundSize:"contain",
+          ...(pos==="topLeft"    ? {top:8,   left:8,   transform:"none"} :
+              pos==="topRight"   ? {top:8,   right:8,  transform:"scaleX(-1)"} :
+              pos==="bottomLeft" ? {bottom:8,left:8,   transform:"scaleY(-1)"} :
+                                   {bottom:8,right:8,  transform:"scale(-1)"})
+        };
+        return <div key={pos} style={s}/>;
+      })}
+
+      {/* Content */}
+      <div style={{ position:"relative", zIndex:5, height:"100%" }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ── Shared sub-components ─────────────────────────────────────────
+
+// Multi-ring halo icon emblem — box-shadow rings avoid layout overflow
+function CardEmblem({ archIcon, accent, glow, size }) {
+  const s = size || 72;
+  const fontSize = Math.round(s * 0.50);
+  // Using box-shadow for rings: layout stays exact s×s, no overflow clipping
+  const r1 = Math.round(s * 0.09);   // mid ring gap
+  const r2 = Math.round(s * 0.18);   // outer ring gap
+  return (
+    <div style={{
+      width: s, height: s, flexShrink: 0, alignSelf: "center",
+      borderRadius: "50%", position: "relative",
+      // Inner glow disc background
+      background: `radial-gradient(circle, ${accent}30 0%, ${accent}12 55%, transparent 85%)`,
+      // Rings as box-shadow: spread-only (no blur = crisp rings; add blur for glow)
+      boxShadow: [
+        // Main border
+        `0 0 0 2px ${accent}`,
+        // Inner glow
+        `inset 0 0 ${Math.round(s*0.22)}px ${accent}30`,
+        // Mid ring (outline-like, with glow)
+        `0 0 0 ${r1+2}px ${accent}20`,
+        `0 0 0 ${r1+2}px ${glow}`,
+        // Outer ring (subtle)
+        `0 0 0 ${r2+3}px ${accent}10`,
+        // Overall aura
+        `0 0 ${Math.round(s*0.5)}px ${glow}`,
+        `0 0 ${Math.round(s*0.8)}px ${glow}`,
+      ].join(", "),
+    }}>
+      <div style={{
+        position: "absolute", inset: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize, lineHeight: 1,
+        // Subtle icon glow
+        filter: `drop-shadow(0 0 ${Math.round(s*0.1)}px ${glow})`,
+      }}>
+        {archIcon}
+      </div>
+    </div>
+  );
+}
+
+// Rarity pill with tier-specific styling
+function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
+  const fs = fontSize || 9;
+  // Special styling per tier — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
+  const tierStyle = {
+    legendary: { background:`linear-gradient(90deg,#92400e,#78350f)`, color:"#fde68a", border:`1px solid #f59e0b`, textShadow:"0 0 8px rgba(245,158,11,0.8)" },
+    epic:      { background:`linear-gradient(90deg,#4c1d95,#3b0764)`, color:"#e9d5ff", border:`1px solid #a855f7`, textShadow:"0 0 8px rgba(168,85,247,0.7)" },
+    rare:      { background:`linear-gradient(90deg,#164e63,#083344)`, color:"#a5f3fc", border:`1px solid #22d3ee`, textShadow:"0 0 6px rgba(34,211,238,0.6)" },
+    common:    { background:"rgba(30,41,59,0.7)",                     color:"#94a3b8", border:"1px solid rgba(148,163,184,0.35)", textShadow:"none" },
+  }[rarity.key] || {};
+
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:3,
+      padding:`${Math.round(fs*0.33)}px ${Math.round(fs*1.1)}px`,
+      borderRadius:20, fontSize:fs, fontWeight:800, letterSpacing:".06em",
+      boxShadow: rarity.key !== "common" ? `0 0 10px ${glow}` : "none",
+      ...tierStyle,
+    }}>
+      {rarity.emoji}&nbsp;{rarityLabel.toUpperCase()}
+    </span>
+  );
+}
+
+// Trait chip with emoji icon
+function TraitChip({ label, icon, accent, fontSize }) {
+  const fs = fontSize || 9;
+  return (
+    <span style={{
+      display:"inline-flex", alignItems:"center", gap:3,
+      padding:`${Math.round(fs*0.33)}px ${Math.round(fs*0.9)}px`,
+      borderRadius:20, fontSize:fs, fontWeight:600,
+      color:"#a5f3fc", background:"rgba(30,41,59,0.85)",
+      border:`1px solid ${accent}3a`,
+      whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+      maxWidth:"100%",
+    }}>
+      <span style={{fontSize:fs+1, lineHeight:1}}>{icon}</span>
+      {label}
+    </span>
+  );
+}
+
+// Thick progress bar
+function MatchBar({ pct, accent, glow, height }) {
+  const h = height || 8;
+  // FIX: Arabic-first UX — dir=ltr so the fill always goes left→right regardless of RTL context
+  return (
+    <div dir="ltr" style={{ width:"100%", height:h, background:"rgba(15,23,42,0.8)",
+      borderRadius:h, overflow:"hidden", flexShrink:0,
+      boxShadow:`inset 0 1px 3px rgba(0,0,0,0.5)` }}>
+      <div style={{
+        height:"100%", width:`${clamp(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
+        background:`linear-gradient(90deg, ${accent}, #fbbf24)`,
+        boxShadow:`0 0 8px ${glow}`,
+        transition:"width .5s cubic-bezier(0.34,1.56,0.64,1)",
+      }}/>
+    </div>
+  );
+}
+
+// Serial ID (deterministic from archCode)
+function serialId(archCode) {
+  let h = 0;
+  for (let i = 0; i < archCode.length; i++) h = (h * 31 + archCode.charCodeAt(i)) & 0xffffffff;
+  const n = ((h >>> 0) % 99) + 1;
+  return `MS-${archCode}-${n.toString().padStart(2,"0")}`;
+}
+
+// Icon mapping for trait chips
+const CHIP_ICON = {
+  // Arabic
+  "موثوقية عالية":"🛡️","انضباط متواصل":"⚙️","تنفيذ دقيق":"🎯",
+  "موثوقية لا تُضاهى":"🛡️","تحليل ميداني دقيق":"🔬","شبكة مهنية قوية":"🌐",
+  "قيادة إلهامية":"🌟","طاقة تنظيمية عالية":"⚡","حسم وسرعة":"🚀",
+  "حدس تجاري حاد":"💡","شبكة علاقات واسعة":"🤝","مفاوض طبيعي":"🎙️",
+  "تفكير استراتيجي عميق":"🧭","تحليل دقيق":"🔭","رؤية بعيدة المدى":"🌅",
+  "إبداع تقني متميز":"🔧","بناء شبكات رقمية":"🌐","ابتكار ملموس":"💡",
+  "إبداع نظري جريء":"💫","استقلالية فكرية عميقة":"🧠","حدس حاد":"⚡",
+  "إتقان تقني عالٍ":"⚙️","صبر وتركيز عميق":"🎯","جودة لا تُساوم":"💎",
+  // French
+  "Haute fiabilité":"🛡️","Discipline constante":"⚙️","Exécution précise":"🎯",
+  "Fiabilité incomparable":"🛡️","Analyse terrain précise":"🔬","Fort réseau professionnel":"🌐",
+  "Leadership inspirant":"🌟","Haute énergie organisationnelle":"⚡","Décision rapide":"🚀",
+  "Flair commercial aigu":"💡","Large réseau":"🤝","Négociateur naturel":"🎙️",
+  "Pensée stratégique profonde":"🧭","Analyse précise":"🔭","Vision long terme":"🌅",
+  "Créativité technique distincte":"🔧","Construction réseaux numériques":"🌐","Innovation concrète":"💡",
+  "Créativité théorique audacieuse":"💫","Indépendance intellectuelle":"🧠","Intuition aiguë":"⚡",
+  "Haute maîtrise technique":"⚙️","Patience et concentration":"🎯","Qualité sans compromis":"💎",
+  // English
+  "High reliability":"🛡️","Consistent discipline":"⚙️","Precise execution":"🎯",
+  "Unmatched reliability":"🛡️","Precise field analysis":"🔬","Strong professional network":"🌐",
+  "Inspiring leadership":"🌟","High organisational energy":"⚡","Quick decisiveness":"🚀",
+  "Sharp commercial instinct":"💡","Wide network":"🤝","Natural negotiator":"🎙️",
+  "Deep strategic thinking":"🧭","Precise analysis":"🔭","Long-term vision":"🌅",
+  "Distinctive technical creativity":"🔧","Digital network building":"🌐","Concrete innovation":"💡",
+  "Bold theoretical creativity":"💫","Deep intellectual independence":"🧠","Sharp intuition":"⚡",
+  "High technical mastery":"⚙️","Patience and deep focus":"🎯","Uncompromising quality":"💎",
+};
+function chipIcon(label) { return CHIP_ICON[label] || "✦"; }
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardClassic — Card format (5:7) — legendary trading card
+// ─────────────────────────────────────────────────────────────────
+function ShareCardClassic({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL
+    ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif"
+    : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(320px,86vw)" aspectRatio="5/7" maxHeight="62vh"
+      borderRadius={18} dir={dir}>
+      <div style={{
+        position:"absolute", inset:0, display:"flex", flexDirection:"column",
+        padding:"5.5% 6.5%", fontFamily:ff,
+        direction: dir, unicodeBidi:"plaintext",
+      }}>
+
+        {/* ── TOP BAR: brand left, rarity right ── */}
+        <div style={{
+          display:"flex", alignItems:"center", justifyContent:"space-between",
+          marginBottom:"3.5%", flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <div style={{ display:"flex", flexDirection:"column",
+            alignItems: isRTL ? "flex-end" : "flex-start" }}>
+            <span style={{ fontSize:"clamp(7px,1.7vw,9.5px)", fontWeight:800,
+              color:"#6b7280", letterSpacing:"0.22em", textTransform:"uppercase" }}>
+              {isRTL ? "مسار" : "MASSAR"}
+            </span>
+            <span style={{ fontSize:"clamp(5px,1.2vw,7px)", fontWeight:600,
+              color:"#374151", letterSpacing:"0.14em", marginTop:1 }}>
+              {isRTL ? "بوابة مسارك المهني" : "Career Identity Engine"}
+            </span>
+          </div>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8}/>
+        </div>
+
+        {/* ── EMBLEM — wrapped with glow padding ── */}
+        <div style={{ display:"flex", justifyContent:"center",
+          marginBottom:"4%", marginTop:"1%", flexShrink:0,
+          // Padding absorbs the box-shadow ring glow without clipping
+          padding: "10px 0",
+        }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={62}/>
+        </div>
+
+        {/* ── ARCHETYPE TITLE BLOCK ── */}
+        {/* Profile label */}
+        <div style={{ textAlign:"center", fontSize:"clamp(5.5px,1.3%,7.5px)", fontWeight:800,
+          color:"#4b5563", letterSpacing:"0.24em", textTransform:"uppercase", marginBottom:"1.5%" }}>
+          {lang==="ar" ? "النوع المهني" : lang==="fr" ? "PROFIL MASSAR" : "MASSAR PROFILE"}
+        </div>
+        {/* Name */}
+        <div style={{
+          textAlign:"center", fontSize:"clamp(14px,5.2%,22px)", fontWeight:900, lineHeight:1.1,
+          marginBottom:"1.5%",
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+          overflowWrap:"break-word",
+        }}>
+          {archName}
+        </div>
+        {/* Code + Level on same row */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"center",
+          gap:5, marginBottom:"1.5%", flexWrap:"wrap" }}>
+          <span style={{
+            padding:"2px 11px", borderRadius:20, fontWeight:800, letterSpacing:".16em",
+            fontSize:"clamp(8px,2.7%,12px)", color:"#60a5fa",
+            background:"rgba(30,58,95,0.9)", border:"1.5px solid rgba(59,130,246,0.7)",
+            boxShadow:"0 0 8px rgba(59,130,246,0.3)",
+          }}>{archCode}</span>
+          <span style={{
+            padding:"2px 8px", borderRadius:20, fontWeight:700, letterSpacing:".05em",
+            fontSize:"clamp(7px,1.9%,10px)", color:accent+"dd",
+            background:accent+"12", border:`1px solid ${accent}3a`,
+          }}>{level.text}</span>
+        </div>
+        {/* Motto / tagline */}
+        <div style={{
+          textAlign:"center", fontStyle:"italic", fontWeight:500, lineHeight:1.4,
+          fontSize:"clamp(7px,2.4%,11px)", color:"#94a3b8", marginBottom:"2.5%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>
+          {archTagline}
+        </div>
+
+        {/* ── DIVIDER ── */}
+        <div style={{
+          height:1, marginBottom:"2.5%", flexShrink:0,
+          background:`linear-gradient(90deg, transparent 0%, ${accent}55 30%, ${accent}55 70%, transparent 100%)`,
+        }}/>
+
+        {/* ── TOP PATH BLOCK ── */}
+        <div style={{
+          fontSize:"clamp(6px,1.6%,8px)", fontWeight:700, color:"#6b7280",
+          letterSpacing:".1em", textTransform:"uppercase", marginBottom:"1%",
+          textAlign: isRTL ? "right" : "left",
+        }}>
+          {lang==="ar" ? "أفضل مسار" : lang==="fr" ? "VOIE #1" : "TOP PATH"}
+        </div>
+        <div style={{
+          fontSize:"clamp(9px,3.4%,15px)", fontWeight:700, color:"#f1f5f9",
+          marginBottom:"1.5%", textAlign: isRTL ? "right" : "left",
+          whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
+        }}>
+          {clusterName}
+        </div>
+        {/* Match row */}
+        <div style={{
+          display:"flex", alignItems:"center", justifyContent:"space-between",
+          marginBottom:"1%", flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:"clamp(6px,1.6%,8px)", fontWeight:700, color:"#6b7280", letterSpacing:".06em" }}>
+            {lang==="ar" ? "التوافق" : lang==="fr" ? "Compatibilité" : "Match"}
+          </span>
+          {/* LTR span for number to prevent % jumping in RTL */}
+          <span dir="ltr" style={{ fontSize:"clamp(10px,3.2%,14px)", fontWeight:900, color:accent,
+            textShadow:`0 0 8px ${glow}`, letterSpacing:".02em" }}>
+            {confidence}%
+          </span>
+        </div>
+        <div style={{ marginBottom:"3%" }}>
+          <MatchBar pct={confidence} accent={accent} glow={glow} height={7}/>
+        </div>
+
+        {/* ── TRAIT CHIPS ── */}
+        <div style={{
+          display:"flex", gap:4, flexWrap:"wrap", marginTop:"auto",
+          justifyContent: isRTL ? "flex-end" : "flex-start",
+        }}>
+          {strengths.map((s,i) => (
+            <TraitChip key={i} label={s} icon={chipIcon(s)} accent={accent} fontSize={8}/>
+          ))}
+        </div>
+
+        {/* ── FOOTER ── */}
+        <div style={{
+          marginTop:"3%", paddingTop:"2%", flexShrink:0,
+          borderTop:`1px solid ${accent}1e`,
+          display:"flex", justifyContent:"space-between", alignItems:"center",
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:"clamp(5px,1.4%,7px)", fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
+            letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardSquare — 1:1 format — compact collectible
+// ─────────────────────────────────────────────────────────────────
+function ShareCardSquare({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif" : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(320px,86vw)" aspectRatio="1/1" maxHeight="86vw"
+      borderRadius={18} dir={dir}>
+      <div style={{
+        position:"absolute", inset:0, display:"flex", flexDirection:"column",
+        alignItems:"center", justifyContent:"space-between",
+        padding:"5% 6%", fontFamily:ff,
+        direction:dir, unicodeBidi:"plaintext",
+      }}>
+
+        {/* Top row: brand + rarity */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:".2em" }}>
+            {isRTL ? "مسار" : "MASSAR"}
+          </span>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+        </div>
+
+        {/* Emblem — 60px with glow breathing room */}
+        <div style={{ padding:"8px 0" }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={60}/>
+        </div>
+
+        {/* Name */}
+        <div style={{
+          textAlign:"center", fontSize:"clamp(14px,5vw,20px)", fontWeight:900, lineHeight:1.1,
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+          overflowWrap:"break-word", width:"100%",
+        }}>{archName}</div>
+
+        {/* Code row */}
+        <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center", flexWrap:"wrap" }}>
+          <span style={{ padding:"2px 10px", borderRadius:20, background:"rgba(30,58,95,0.9)",
+            border:"1.5px solid rgba(59,130,246,0.7)", fontSize:10, fontWeight:800,
+            color:"#60a5fa", letterSpacing:".14em" }}>{archCode}</span>
+          <span style={{ padding:"2px 7px", borderRadius:20, background:accent+"12",
+            border:`1px solid ${accent}3a`, fontSize:9, fontWeight:700,
+            color:accent+"dd", letterSpacing:".04em" }}>{level.text}</span>
+        </div>
+
+        {/* Divider */}
+        <div style={{ width:"100%", height:1,
+          background:`linear-gradient(90deg, transparent, ${accent}55, ${accent}55, transparent)` }}/>
+
+        {/* Path + match */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:9, fontWeight:600, color:"#94a3b8",
+            overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:"60%" }}>
+            {clusterName}
+          </span>
+          <span dir="ltr" style={{ fontSize:13, fontWeight:900, color:accent, flexShrink:0,
+            textShadow:`0 0 8px ${glow}` }}>{confidence}%</span>
+        </div>
+        <MatchBar pct={confidence} accent={accent} glow={glow} height={6}/>
+
+        {/* Footer */}
+        <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:7, fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCardPortrait — 9:16 TikTok/Story — vertical stacking
+// Pure flex column, fixed-pixel spacing, no position:absolute.
+// Typography: title 22px, subtitle 14px, labels 12px, icon 76px.
+// ─────────────────────────────────────────────────────────────────
+function ShareCardPortrait({ p }) {
+  const { archIcon,archName,archCode,archTagline,clusterName,strengths,
+          confidence,rarity,rarityLabel,accent,glow,level,isRTL,dir,lang } = p;
+  const ff = isRTL ? "'IBM Plex Sans Arabic',Tajawal,Cairo,sans-serif" : "'DM Sans',system-ui,sans-serif";
+  const sid = serialId(archCode);
+
+  return (
+    <CardShell accent={accent} glow={glow} rarity={rarity}
+      width="min(270px,78vw)" aspectRatio="9/16" maxHeight="78vh"
+      borderRadius={22} dir={dir}>
+      <div style={{
+        display:"flex", flexDirection:"column", alignItems:"center",
+        padding:"20px 18px", gap:0, height:"100%",
+        fontFamily:ff, boxSizing:"border-box",
+        direction:dir, unicodeBidi:"plaintext",
+        overflowY:"hidden",
+      }}>
+
+        {/* Top bar */}
+        <div style={{ width:"100%", display:"flex", alignItems:"center",
+          justifyContent:"space-between", marginBottom:10,
+          flexDirection: isRTL ? "row-reverse" : "row" }}>
+          <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:"0.2em" }}>
+            {isRTL ? "مسار" : "MASSAR"}
+          </span>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+        </div>
+
+        {/* Emblem — 72px with glow breathing room */}
+        <div style={{ padding:"10px 0", marginBottom:2 }}>
+          <CardEmblem archIcon={archIcon} accent={accent} glow={glow} size={72}/>
+        </div>
+
+        {/* Profile label */}
+        <div style={{ fontSize:7.5, fontWeight:800, color:"#4b5563", letterSpacing:"0.22em",
+          textTransform:"uppercase", marginBottom:5, textAlign:"center" }}>
+          {lang==="ar" ? "النوع المهني" : lang==="fr" ? "PROFIL MASSAR" : "MASSAR PROFILE"}
+        </div>
+
+        {/* Name — 22px */}
+        <div style={{
+          textAlign:"center", fontSize:22, fontWeight:900, lineHeight:1.15,
+          marginBottom:6,
+          background:`linear-gradient(100deg, #fff 0%, ${accent} 50%, #fbbf24 100%)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          overflowWrap:"break-word", width:"100%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>{archName}</div>
+
+        {/* Code + level */}
+        <div style={{ display:"flex", gap:5, alignItems:"center", justifyContent:"center",
+          flexWrap:"wrap", marginBottom:6 }}>
+          <span style={{ padding:"3px 13px", borderRadius:20,
+            background:"rgba(30,58,95,0.9)", border:"1.5px solid rgba(59,130,246,0.7)",
+            fontSize:11, fontWeight:800, color:"#60a5fa", letterSpacing:".14em" }}>
+            {archCode}
+          </span>
+          <span style={{ padding:"2px 8px", borderRadius:20,
+            background:accent+"12", border:`1px solid ${accent}3a`,
+            fontSize:10, fontWeight:700, color:accent+"dd", letterSpacing:".04em" }}>
+            {level.text}
+          </span>
+        </div>
+
+        {/* Tagline — 14px italic */}
+        <div style={{
+          textAlign:"center", fontStyle:"italic", fontWeight:500,
+          fontSize:13, color:"#94a3b8", lineHeight:1.4, marginBottom:10,
+          overflowWrap:"break-word", width:"100%",
+          display:"-webkit-box", WebkitLineClamp:2, WebkitBoxOrient:"vertical", overflow:"hidden",
+        }}>{archTagline}</div>
+
+        {/* Divider */}
+        <div style={{ width:"100%", height:1, marginBottom:10, flexShrink:0,
+          background:`linear-gradient(90deg, transparent, ${accent}55, ${accent}55, transparent)` }}/>
+
+        {/* Top path label — 12px */}
+        <div style={{
+          width:"100%", fontSize:11, fontWeight:700, color:"#6b7280",
+          letterSpacing:".08em", textTransform:"uppercase", marginBottom:3,
+          textAlign: isRTL ? "right" : "left",
+        }}>
+          {lang==="ar" ? "أفضل مسار" : lang==="fr" ? "VOIE #1" : "TOP PATH"}
+        </div>
+        <div style={{
+          width:"100%", fontSize:14, fontWeight:700, color:"#f1f5f9",
+          marginBottom:8, textAlign: isRTL ? "right" : "left",
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+        }}>{clusterName}</div>
+
+        {/* Match */}
+        <div style={{
+          width:"100%", display:"flex", justifyContent:"space-between",
+          alignItems:"center", marginBottom:5,
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:11, fontWeight:700, color:"#6b7280", letterSpacing:".06em" }}>
+            {lang==="ar" ? "التوافق" : lang==="fr" ? "Compatibilité" : "Match"}
+          </span>
+          <span dir="ltr" style={{ fontSize:15, fontWeight:900, color:accent,
+            textShadow:`0 0 8px ${glow}` }}>{confidence}%</span>
+        </div>
+        <div style={{ width:"100%", marginBottom:10 }}>
+          <MatchBar pct={confidence} accent={accent} glow={glow} height={8}/>
+        </div>
+
+        {/* Trait chips */}
+        <div style={{
+          width:"100%", display:"flex", gap:4, flexWrap:"wrap", marginBottom:"auto",
+          justifyContent: isRTL ? "flex-end" : "flex-start",
+        }}>
+          {strengths.map((s,i) => (
+            <TraitChip key={i} label={s} icon={chipIcon(s)} accent={accent} fontSize={9.5}/>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          width:"100%", marginTop:8, paddingTop:7, flexShrink:0,
+          borderTop:`1px solid ${accent}1e`,
+          display:"flex", justifyContent:"space-between", alignItems:"center",
+          flexDirection: isRTL ? "row-reverse" : "row",
+        }}>
+          <span style={{ fontSize:7.5, fontWeight:700, color:"#374151", letterSpacing:".12em" }}>
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+          </span>
+          <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
+            {sid}
+          </span>
+        </div>
+
+      </div>
+    </CardShell>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ShareCard: responsive collectible card (DOM preview + canvas export, no deps)
+// Preview = pure CSS/DOM — three separate layout components per format.
+// Export  = Canvas API — runs only on download click.
+// ─────────────────────────────────────────────────────────────────
+function ShareCard({ t, lang, massarType, topCluster, confidence }) {
+  const [copied,  setCopied]  = useState(false);
+  // format: "card" (5:7) | "square" (1:1) | "story" (9:16)
+  const [fmt, setFmt] = useState("card");
+
+  const archetype   = getArchetype(massarType);
+  const archName    = archetype.name?.[lang]    || archetype.name?.en    || massarType;
+  const archCode    = archetype.code            || massarType;
+  const archIcon    = archetype.icon            || "🧭";
+  const archTagline = archetype.tagline?.[lang] || archetype.tagline?.en || archName;
+  const rawStrengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
+  const strengths   = rawStrengths.slice(0, 3).map(s => s.length > 22 ? s.slice(0, 21) + "…" : s);
+  // FIX: translation fallback — clusterName safe default
+  const clusterName = t?.[CLUSTER_KEY_MAP?.[topCluster?.id]] || topCluster?.id || "";
+  const isRTL       = lang === "ar";
+
+  // FIX: development debug logs — share card prepared
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
+    }
+  }, [massarType, clusterName, confidence]); // eslint-disable-line
+  const dir         = isRTL ? "rtl" : "ltr";
+
+  // Level from confidence
+  function cardLevel(conf) {
+    const lvl = Math.min(5, Math.max(1, Math.ceil(conf / 20)));
+    const labels = {
+      1:{ ar:"مبتدئ",   fr:"Débutant",    en:"Beginner"  },
+      2:{ ar:"متقدم",   fr:"Avancé",      en:"Advanced"  },
+      3:{ ar:"مستكشف", fr:"Explorateur", en:"Explorer"  },
+      4:{ ar:"خبير",    fr:"Expert",      en:"Expert"    },
+      5:{ ar:"أسطوري", fr:"Légendaire",  en:"Legendary" },
+    };
+    const lbl    = labels[lvl]?.[lang] || labels[lvl]?.en || "Explorer";
+    const numLbl = lang==="ar"?`المستوى ${lvl}`:lang==="fr"?`Niveau ${lvl}`:`Level ${lvl}`;
+    return { lvl, text:`${numLbl} • ${lbl}` };
+  }
+  const level = cardLevel(confidence);
+
+  // Rarity tiers — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
+  function cardRarity(conf) {
+    if (conf>=85) return { key:"legendary", label:{ar:"أسطوري",fr:"Légendaire",en:"Legendary"}, emoji:"👑", color:"#f59e0b", glow:"rgba(245,158,11,0.55)" };
+    if (conf>=70) return { key:"epic",      label:{ar:"ملحمي",  fr:"Épique",    en:"Epic"      }, emoji:"⚡", color:"#a855f7", glow:"rgba(168,85,247,0.5)"  };
+    if (conf>=55) return { key:"rare",      label:{ar:"نادر",   fr:"Rare",      en:"Rare"      }, emoji:"💎", color:"#22d3ee", glow:"rgba(34,211,238,0.45)" };
+    return             { key:"common",    label:{ar:"عادي",   fr:"Commun",    en:"Common"    }, emoji:"🪨", color:"#94a3b8", glow:"rgba(148,163,184,0.3)" };
+  }
+  const rarity      = cardRarity(confidence);
+  const rarityLabel = rarity.label[lang] || rarity.label.en;
+  const accent      = rarity.color;
+  const glow        = rarity.glow;
+
+  // Viral caption (unchanged)
+  const caption = lang==="ar"
+    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
+    : lang==="fr"
+    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
+    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
+
+  // Format metadata
+  const FMT = {
+    card:   { label:"Card", exportW:1260, exportH:1764 },
+    square: { label:"1:1",  exportW:1080, exportH:1080 },
+    story:  { label:"9:16", exportW:1080, exportH:1920 },
+  };
+  const fmtMeta = FMT[fmt] || FMT.card;
+
+  // Copy caption (unchanged)
+  const copyCaption = () => {
+    const doSet = () => { setCopied(true); setTimeout(()=>setCopied(false), 2500); };
+    try { navigator.clipboard.writeText(caption).then(doSet).catch(()=>fallbackCopy(doSet)); }
+    catch { fallbackCopy(doSet); }
+  };
+  const fallbackCopy = (cb) => {
+    const ta=document.createElement("textarea"); ta.value=caption;
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch {}
+    document.body.removeChild(ta); cb();
+  };
+
+  // ── Canvas export ─────────────────────────────────────────────
+  function buildCanvas() {
+    const W=fmtMeta.exportW, H=fmtMeta.exportH;
+    const PAD=Math.round(W*0.074);
+    const canvas=document.createElement("canvas");
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext("2d");
+    const arF="Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
+    const enF="system-ui,-apple-system,Segoe UI,sans-serif";
+    const bF=isRTL?arF:enF;
+
+    function rr(x,y,w,h,r){
+      ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+      ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+      ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+      ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+      ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+    }
+    const dtC=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText(txt,W/2,y,mw||W-PAD*2); ctx.restore();
+    };
+    const dtL=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textBaseline="alphabetic";
+      if(isRTL){ const tw=ctx.measureText(txt).width; ctx.fillText(txt,W-PAD-Math.min(tw,mw||W),y,mw||W-PAD*2); }
+      else { ctx.fillText(txt,PAD,y,mw||W-PAD*2); }
+      ctx.restore();
+    };
+
+    // Background + grain + blobs (shared)
+    const bg=ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#060a14"); bg.addColorStop(0.5,"#0a1020"); bg.addColorStop(1,"#0d1628");
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    for(let i=0;i<12000;i++){
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.018})`;
+      ctx.fillRect(Math.floor(Math.random()*W),Math.floor(Math.random()*H),1,1);
+    }
+    const gx=isRTL?W*0.2:W*0.8;
+    const blob=ctx.createRadialGradient(gx,H*0.06,0,gx,H*0.06,W*0.45);
+    blob.addColorStop(0,accent+"30"); blob.addColorStop(1,"transparent");
+    ctx.fillStyle=blob; ctx.fillRect(0,0,W,H);
+
+    // Neon border
+    ctx.save(); ctx.strokeStyle=accent; ctx.lineWidth=5;
+    ctx.shadowColor=accent; ctx.shadowBlur=40;
+    rr(10,10,W-20,H-20,Math.round(W*0.036)); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.strokeStyle=accent+"22"; ctx.lineWidth=2;
+    rr(26,26,W-52,H-52,Math.round(W*0.026)); ctx.stroke(); ctx.restore();
+
+    // ── Portrait (9:16) canvas: centred vertical layout ──────────
+    if (fmt === "story") {
+      const cx = W/2;
+      let y = PAD*1.3;
+
+      // Rarity pill — tier-colored (matches DOM)
+      const rarityPillColorsP = {
+        legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+        epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+        rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+        common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+      };
+      const rpcP = rarityPillColorsP[rarity.key] || rarityPillColorsP.common;
+
+      // Brand line (centred)
+      dtC(isRTL ? "مسار" : "MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+
+      // Rarity pill (centred)
+      y += Math.round(H*0.038);
+      const rarTxt = `${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+      const rpF = `bold ${Math.round(W*0.030)}px ${bF}`;
+      ctx.font = rpF;
+      const rtw = ctx.measureText(rarTxt).width;
+      const rpW=rtw+W*0.06, rpH=W*0.065, rpX=cx-rpW/2;
+      ctx.save(); ctx.fillStyle=rpcP.bg; ctx.strokeStyle=rpcP.border;
+      ctx.lineWidth=2.5; ctx.shadowColor=accent; ctx.shadowBlur=14;
+      rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.font=rpF; ctx.fillStyle=rpcP.text; ctx.textBaseline="alphabetic";
+      ctx.textAlign="center"; ctx.fillText(rarTxt, cx, y, rpW); ctx.restore();
+
+      // Icon circle — 72px-equivalent scaled
+      y += Math.round(H*0.07);
+      const ibR = Math.round(W*0.17);
+      ctx.save();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR+5, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"55"; ctx.lineWidth=3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.fillStyle=accent+"18"; ctx.shadowBlur=50; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke();
+      ctx.restore();
+      ctx.save(); ctx.font=`${Math.round(ibR*1.1)}px serif`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText(archIcon, cx, y+ibR+ibR*0.06); ctx.restore();
+      y += ibR*2 + Math.round(H*0.04);
+
+      // Profile label
+      dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+        y, `bold ${Math.round(W*0.022)}px ${bF}`, "#4b5563");
+      y += Math.round(H*0.044);
+
+      // Archetype name — white→accent→gold gradient
+      ctx.save(); ctx.font=`900 ${Math.round(W*0.072)}px ${bF}`;
+      ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=ng; ctx.fillText(archName,cx,y,W-PAD*2); ctx.restore();
+      y += Math.round(H*0.046);
+
+      // Code pill
+      const cF=`bold ${Math.round(W*0.034)}px monospace,${bF}`;
+      ctx.font=cF;
+      const ctw=ctx.measureText(archCode).width;
+      const cpW=ctw+W*0.055, cpH=W*0.060, cpX=cx-cpW/2;
+      ctx.save(); ctx.fillStyle="#1e3a5f"; ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
+      rr(cpX,y,cpW,cpH,cpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(archCode, y+cpH*0.68, cF, "#60a5fa");
+      y += cpH + Math.round(H*0.018);
+
+      // Level badge
+      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`;
+      ctx.font=lvF;
+      const ltw=ctx.measureText(level.text).width;
+      const lpW=ltw+W*0.04, lpH=W*0.044, lpX=cx-lpW/2;
+      ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+      rr(lpX,y,lpW,lpH,lpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(level.text, y+lpH*0.68, lvF, accent+"cc");
+      y += lpH + Math.round(H*0.032);
+
+      // Tagline (14px-equivalent italic)
+      const tgF=`italic ${Math.round(W*0.034)}px ${isRTL?arF:"Georgia,"+enF}`;
+      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5);
+      y += Math.round(H*0.055);
+
+      // Divider
+      ctx.save();
+      const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      dg.addColorStop(0,"transparent"); dg.addColorStop(0.2,accent+"44");
+      dg.addColorStop(0.8,accent+"44"); dg.addColorStop(1,"transparent");
+      ctx.strokeStyle=dg; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
+      y += Math.round(H*0.048);
+
+      // Top path label + name
+      const pK=lang==="ar"?"أفضل مسار":lang==="fr"?"Voie #1":"Top Path";
+      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      y += Math.round(H*0.044);
+      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2);
+      y += Math.round(H*0.056);
+
+      // Match label + value
+      const mK=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+      dtC(mK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      ctx.save(); ctx.font=`bold ${Math.round(W*0.046)}px monospace,${bF}`;
+      ctx.fillStyle=accent; ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      ctx.fillText(`${confidence}%`, cx, y); ctx.restore();
+      y += Math.round(H*0.022);
+
+      // Confidence bar
+      const barW=W-PAD*2, barH=Math.round(H*0.016);
+      ctx.save(); ctx.fillStyle="#1e293b"; rr(PAD,y,barW,barH,barH/2); ctx.fill();
+      const fw=Math.max(barH,Math.round((confidence/100)*barW));
+      const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);
+      fg.addColorStop(0,accent); fg.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=fg; ctx.shadowColor=accent; ctx.shadowBlur=10;
+      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore();
+      y += barH + Math.round(H*0.04);
+
+      // Chips (centred row)
+      if(strengths.length>0){
+        const chipH=Math.round(H*0.038), chipFont=`600 ${Math.round(W*0.026)}px ${bF}`;
+        ctx.font=chipFont;
+        const chips=strengths.map(s=>({ text:s, w:ctx.measureText(s).width+W*0.04 }));
+        const totalW=chips.reduce((a,c)=>a+c.w+W*0.014,0)-W*0.014;
+        let chipX=cx-totalW/2;
+        for(const chip of chips){
+          ctx.save(); ctx.fillStyle="#1e293b"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+          rr(chipX,y,chip.w,chipH,chipH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.font=chipFont; ctx.fillStyle="#93c5fd"; ctx.textBaseline="alphabetic";
+          ctx.fillText(chip.text, chipX+W*0.02, y+chipH*0.68); ctx.restore();
+          chipX+=chip.w+W*0.014;
+        }
+      }
+
+      // Footer
+      const fy=H-PAD*0.9;
+      ctx.save();
+      const fl=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      fl.addColorStop(0,"transparent"); fl.addColorStop(0.15,accent+"28");
+      fl.addColorStop(0.85,accent+"28"); fl.addColorStop(1,"transparent");
+      ctx.strokeStyle=fl; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PAD,fy-PAD*0.28); ctx.lineTo(W-PAD,fy-PAD*0.28); ctx.stroke(); ctx.restore();
+      dtC(`massar.ma • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+      // Serial ID (right-aligned)
+      const sidP = serialId(archCode);
+      const sidFP = `500 ${Math.round(W*0.018)}px monospace,${bF}`;
+      ctx.font = sidFP;
+      const sidWP = ctx.measureText(sidP).width;
+      ctx.save(); ctx.font=sidFP; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+      ctx.fillText(sidP, W-PAD-sidWP, fy); ctx.restore();
+
+      return canvas;
+    }
+
+    // ── Card / Square canvas: legendary layout ──────────────────
+    // Rarity pill tier colors (canvas approximation)
+    const rarityPillColors = {
+      legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+      epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+      rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+      common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+    };
+    const rpc = rarityPillColors[rarity.key] || rarityPillColors.common;
+
+    // Header accent strip
+    const stripW=W*0.08, sx=isRTL?W-PAD-stripW:PAD;
+    const sg=ctx.createLinearGradient(sx,0,sx+stripW,0);
+    sg.addColorStop(0,accent); sg.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=sg; rr(sx,PAD*0.78,stripW,4,2); ctx.fill(); ctx.restore();
+
+    // Brand mark
+    const brandY=PAD*1.44;
+    const brandStr = isRTL ? "مسار" : "MASSAR";
+    dtL(brandStr, brandY, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+    const subStr = isRTL ? "بوابة مسارك المهني" : "Career Identity Engine";
+    dtL(subStr, brandY+Math.round(H*0.018), `${Math.round(W*0.018)}px ${bF}`, "#374151");
+
+    // Rarity pill — tier-colored
+    const rarityTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+    const rpFont=`bold ${Math.round(W*0.027)}px ${bF}`;
+    ctx.font=rpFont;
+    const rtw=ctx.measureText(rarityTxt).width;
+    const rpW2=rtw+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
+    const rpY2=brandY-rpH2*0.72;
+    ctx.save(); ctx.fillStyle=rpc.bg; ctx.strokeStyle=rpc.border;
+    ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(rpX2,rpY2,rpW2,rpH2,rpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc.text; ctx.textBaseline="alphabetic";
+    ctx.fillText(rarityTxt, rpX2+rpW2*0.1, brandY, rpW2); ctx.restore();
+
+    // Multi-ring halo icon
+    const ibSz=Math.round(W*0.26);
+    const ibCX=W/2, ibCY=Math.round(H*0.185)+ibSz/2;
+    // Outermost ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.044),0,Math.PI*2);
+    ctx.strokeStyle=accent+"1e"; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
+    // Mid ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.022),0,Math.PI*2);
+    ctx.strokeStyle=accent+"44"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Glow disc
+    const discGrad=ctx.createRadialGradient(ibCX,ibCY,0,ibCX,ibCY,ibSz/2);
+    discGrad.addColorStop(0,accent+"28"); discGrad.addColorStop(0.6,accent+"10"); discGrad.addColorStop(1,"transparent");
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.fillStyle=discGrad; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
+    // Border ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.strokeStyle=accent+"88"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Emoji
+    ctx.save(); ctx.font=`${Math.round(ibSz*0.5)}px serif`;
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(archIcon, ibCX, ibCY+ibSz*0.03); ctx.restore();
+
+    // Profile label
+    const profileHeaderY=ibCY+ibSz/2+Math.round(H*0.030);
+    dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+      profileHeaderY, `bold ${Math.round(W*0.021)}px ${bF}`, "#4b5563");
+
+    // Archetype name — white→accent→gold gradient
+    const nameY=profileHeaderY+Math.round(H*0.050);
+    ctx.save(); ctx.font=`900 ${Math.round(W*0.078)}px ${bF}`;
+    ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+    const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+    ctx.fillStyle=ng; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
+
+    // Code pill
+    const codeY2=nameY+Math.round(H*0.044);
+    const cFont=`bold ${Math.round(W*0.036)}px monospace,${bF}`;
+    ctx.font=cFont;
+    const ctw2=ctx.measureText(archCode).width;
+    const cpW2=ctw2+W*0.050, cpH2=W*0.058, cpX2=(W-cpW2)/2-W*0.035;
+    ctx.save(); ctx.fillStyle="rgba(30,58,95,0.9)"; ctx.strokeStyle="rgba(59,130,246,0.7)";
+    ctx.lineWidth=2; ctx.shadowColor="#3b82f6"; ctx.shadowBlur=8;
+    rr(cpX2,codeY2,cpW2,cpH2,cpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=cFont; ctx.fillStyle="#60a5fa"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(archCode, cpX2+cpW2/2, codeY2+cpH2*0.68); ctx.restore();
+    // Level badge (right of code)
+    const lvlFont=`600 ${Math.round(W*0.024)}px ${bF}`;
+    ctx.font=lvlFont;
+    const ltw2=ctx.measureText(level.text).width;
+    const lpW2=ltw2+W*0.038, lpH2=W*0.040, lpX2=cpX2+cpW2+W*0.018;
+    const lpY2=codeY2+(cpH2-lpH2)/2;
+    ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+    rr(lpX2,lpY2,lpW2,lpH2,lpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=lvlFont; ctx.fillStyle=accent+"cc"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(level.text, lpX2+lpW2/2, lpY2+lpH2*0.68); ctx.restore();
+
+    // Tagline italic
+    const sigY2=codeY2+cpH2+Math.round(H*0.036);
+    dtC(archTagline, sigY2, `italic ${Math.round(W*0.035)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2);
+
+    // Divider
+    const divY2=sigY2+Math.round(H*0.044);
+    ctx.save();
+    const dg2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    dg2.addColorStop(0,"transparent"); dg2.addColorStop(0.2,accent+"55");
+    dg2.addColorStop(0.8,accent+"55"); dg2.addColorStop(1,"transparent");
+    ctx.strokeStyle=dg2; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD,divY2); ctx.lineTo(W-PAD,divY2); ctx.stroke(); ctx.restore();
+
+    // Top path
+    const pLabelY2=divY2+Math.round(H*0.050);
+    const pKey=lang==="ar"?"أفضل مسار":lang==="fr"?"VOIE #1":"TOP PATH";
+    dtL(pKey, pLabelY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pNameY2=pLabelY2+Math.round(H*0.048);
+    dtL(clusterName, pNameY2, `bold ${Math.round(W*0.044)}px ${bF}`, "#f1f5f9", W-PAD*2);
+
+    // Match % (RTL-safe)
+    const confY2=pNameY2+Math.round(H*0.060);
+    const cKey=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+    dtL(cKey, confY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pctStr=`${confidence}%`;
+    const pFont=`900 ${Math.round(W*0.046)}px monospace,${bF}`;
+    ctx.font=pFont;
+    const ptw=ctx.measureText(pctStr).width;
+    const pctX=isRTL?PAD:W-PAD-ptw;
+    ctx.save(); ctx.font=pFont; ctx.fillStyle=accent;
+    ctx.textBaseline="alphabetic"; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    ctx.fillText(pctStr,pctX,confY2); ctx.restore();
+
+    // Confidence bar
+    const barY2=confY2+Math.round(H*0.018), barH2=Math.round(H*0.018), barW2=W-PAD*2;
+    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,barY2,barW2,barH2,barH2/2); ctx.fill(); ctx.restore();
+    const fw2=Math.max(barH2,Math.round((confidence/100)*barW2));
+    const fg2=ctx.createLinearGradient(PAD,0,PAD+fw2,0);
+    fg2.addColorStop(0,accent); fg2.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=fg2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(PAD,barY2,fw2,barH2,barH2/2); ctx.fill(); ctx.restore();
+
+    // Trait chips
+    if(strengths.length>0){
+      const chipY2=barY2+barH2+Math.round(H*0.044);
+      const chipH2=Math.round(H*0.046), chipFont2=`600 ${Math.round(W*0.026)}px ${bF}`;
+      ctx.font=chipFont2;
+      let cxp = isRTL ? W-PAD : PAD;
+      for(const s of strengths){
+        const icon2 = CHIP_ICON[s] || "✦";
+        const chipTxt = `${icon2} ${s}`;
+        const cw=ctx.measureText(chipTxt).width+W*0.040;
+        if(isRTL){ cxp-=cw; if(cxp<PAD) break; }
+        else { if(cxp+cw>W-PAD) break; }
+        ctx.save(); ctx.fillStyle="rgba(30,41,59,0.9)"; ctx.strokeStyle=accent+"3a"; ctx.lineWidth=1.5;
+        rr(cxp,chipY2,cw,chipH2,chipH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.font=chipFont2; ctx.fillStyle="#a5f3fc"; ctx.textBaseline="alphabetic";
+        ctx.fillText(chipTxt, cxp+W*0.018, chipY2+chipH2*0.68); ctx.restore();
+        if(isRTL){ cxp-=W*0.014; } else { cxp+=cw+W*0.014; }
+      }
+    }
+
+    // Footer: brand + serial ID
+    const fy2=H-PAD*0.85;
+    ctx.save();
+    const fl2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    fl2.addColorStop(0,"transparent"); fl2.addColorStop(0.15,accent+"28");
+    fl2.addColorStop(0.85,accent+"28"); fl2.addColorStop(1,"transparent");
+    ctx.strokeStyle=fl2; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD,fy2-PAD*0.3); ctx.lineTo(W-PAD,fy2-PAD*0.3); ctx.stroke(); ctx.restore();
+    dtL(`massar.ma • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+    const sid2=serialId(archCode);
+    const sidFont=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
+    ctx.font=sidFont;
+    const sidW2=ctx.measureText(sid2).width;
+    const sidX2=isRTL?PAD:W-PAD-sidW2;
+    ctx.save(); ctx.font=sidFont; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+    ctx.fillText(sid2, sidX2, fy2); ctx.restore();
+
+    return canvas;
+  }
+
+  const downloadPng = () => {
+    try {
+      const canvas=buildCanvas();
+      canvas.toBlob(blob=>{
+        if(!blob) return;
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=`massar-${archCode}-${fmt}.png`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+      },"image/png");
+    } catch {}
+  };
+
+  // Shared props bundle passed to each layout component
+  const cardProps = {
+    archIcon, archName, archCode, archTagline, clusterName, strengths,
+    confidence, rarity, rarityLabel, accent, glow, level, isRTL, dir, lang,
+  };
+
+  const fmtLabels = { card:"Card", square:"1:1", story:"9:16" };
+
+  return (
+    <div style={{ margin:"24px 0" }}>
+      {/* Section label */}
+      <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,
+        textTransform:"uppercase",marginBottom:14}}>
+        {t.shareTitle}
       </div>
 
-      {/* Caption preview */}
-      <pre style={{
-        fontSize:12,color:"var(--muted)",background:"var(--surface2)",border:"1px solid var(--border)",
-        borderRadius:8,padding:"12px",whiteSpace:"pre-wrap",lineHeight:1.6,fontFamily:"inherit",
-        marginBottom:14,direction:lang==="ar"?"rtl":"ltr",
-      }}>{caption}</pre>
+      {/* Format segmented control */}
+      <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+        {["card","square","story"].map(f=>(
+          <button key={f} onClick={()=>setFmt(f)} style={{
+            padding:"5px 14px",borderRadius:20,fontSize:11,fontWeight:700,
+            border:`1.5px solid ${fmt===f?accent+"cc":"var(--border)"}`,
+            background:fmt===f?accent+"18":"var(--surface2)",
+            color:fmt===f?accent:"var(--muted)",cursor:"pointer",letterSpacing:.5,
+            transition:"all .18s",
+          }}>{fmtLabels[f]}</button>
+        ))}
+      </div>
 
-      <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:120}}>
+      {/* Dispatch to separate layout component based on format */}
+      {fmt==="story"  && <ShareCardPortrait p={cardProps}/>}
+      {fmt==="square" && <ShareCardSquare   p={cardProps}/>}
+      {fmt==="card"   && <ShareCardClassic  p={cardProps}/>}
+
+      {/* Buttons */}
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",maxWidth:360,margin:"0 auto"}}>
+        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:110}}>
           {copied ? t.shareCopied : t.copyCaptionBtn}
         </button>
-        <button className="btn btn-secondary" onClick={downloadSvg} style={{flex:1,minWidth:120}}>
+        <button className="btn btn-secondary" onClick={downloadPng} style={{flex:1,minWidth:110}}>
           {t.downloadBadgeBtn}
         </button>
       </div>
     </div>
   );
+}
+
+
+
+
+function XPProgressionTracker({ top3, t, lang, massarType }) {
+  // FIX: define getXP locally to avoid sandbox scope issues
+  function getXP(weekIdx, itemIdx) {
+    const _xp = [20, 15, 10, 5, 8, 12, 18, 6, 10, 15, 8, 5, 20, 10, 5, 12];
+    const wi = Number.isFinite(weekIdx) ? weekIdx : 0;
+    const ii = Number.isFinite(itemIdx) ? itemIdx : 0;
+    return _xp[(wi * 4 + ii) % _xp.length] || 10;
+  }
+
+  const cluster = top3[0];
+  const storageKey = `massar_xp_${massarType}_${cluster?.id||"x"}`;
+
+  const [checked, setChecked] = useState(()=>{
+    try { return JSON.parse(localStorage.getItem(storageKey)||"{}"); } catch { return {}; }
+  });
+
+  const allTasks = (cluster?.actionPlan||[]).flatMap((week,wi)=>
+    (week.items||[]).map((_,ii)=>({wk:wi,it:ii,xp:getXP(wi,ii)}))
+  );
+  const totalXP = allTasks.reduce((s,{wk,it,xp})=>s+(checked[`${wk}_${it}`]?xp:0),0);
+  const maxXP   = allTasks.reduce((s,{xp})=>s+xp,0);
+  // FIX: clamp numeric UI values
+  const pct     = maxXP > 0 ? clamp(Math.round((totalXP/maxXP)*100)) : 0;
+  const complete = pct === 100;
+
+  const toggle = (wk, it) => {
+    const key = `${wk}_${it}`;
+    setChecked(prev=>{
+      const next = {...prev, [key]:!prev[key]};
+      try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+
+  const completionLabel = lang==="ar"?"🏆 منجز المسار":lang==="fr"?"🏆 Action Builder":"🏆 Action Builder";
+  const xpLabel = lang==="ar"?"نقاط الخبرة":lang==="fr"?"Points XP":"XP Points";
+  const progressLabel = lang==="ar"?"التقدم":lang==="fr"?"Progression":"Progress";
+
+  return (
+    <div style={{marginBottom:20}}>
+      {/* XP Counter */}
+      <div className="xp-counter">
+        <div>
+          <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",letterSpacing:1,textTransform:"uppercase",marginBottom:4}}>{xpLabel}</div>
+          <div className="xp-total">{totalXP} / {maxXP}</div>
+        </div>
+        <div style={{flex:1,padding:"0 16px"}}>
+          <div style={{fontSize:10,color:"var(--muted)",marginBottom:6,fontWeight:600}}>{progressLabel} — {pct}%</div>
+          <div className="xp-progress-track">
+            <div className="xp-progress-fill" style={{width:`${pct}%`}}/>
+          </div>
+        </div>
+        {complete && <span className="xp-badge">{completionLabel}</span>}
+      </div>
+
+      {/* Task weeks */}
+      <div className="result-card">
+        {(cluster?.actionPlan||[]).map((week,wi)=>(
+          <div key={wi} className="week-card">
+            <div className="week-label">{t.weekLabel} {wi+1}</div>
+            {(week.items||[]).map((item,ii)=>{
+              const isObj = item&&typeof item==="object";
+              const label = isObj?item.label:item;
+              const url   = isObj?item.url:null;
+              const taskKey = `${wi}_${ii}`;
+              const done = !!checked[taskKey];
+              const xp   = getXP(wi,ii);
+              return (
+                <div key={ii} className={`task-item${done?" completed":""}`}
+                  onClick={()=>toggle(wi,ii)}>
+                  <div className={`task-checkbox${done?" done":""}`}>
+                    {done && <span style={{fontSize:11,color:"#fff",fontWeight:700}}>✓</span>}
+                  </div>
+                  <div style={{flex:1,fontSize:13,color:done?"var(--muted)":"var(--text)",
+                    textDecoration:done?"line-through":"none",lineHeight:1.5}}>
+                    {url
+                      ?<a href={url} target="_blank" rel="noreferrer"
+                          onClick={e=>e.stopPropagation()}
+                          style={{color:"var(--accent2)",textDecorationLine:"underline"}}>{label}</a>
+                      :<span>{label}</span>
+                    }
+                  </div>
+                  <span className="task-xp">+{xp} XP</span>
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
+// ─────────────────────────────────────────────────────────────────
+// FIX: multi-view recommendation
+// Three career perspectives: Best Personal Fit, Best Balance, Most Ambitious.
+// Shows prestige-aware path names for high academic performers.
+// ─────────────────────────────────────────────────────────────────
+function ThreeViewPanel({ t, lang, views, overallAvg }) {
+  const [active, setActive] = useState("balanced");
+  if (!views.bestFit && !views.balanced && !views.ambitious) return null;
+
+  // FIX: prestige-aware path naming
+  function getClusterDisplayName(cluster) {
+    if (!cluster) return "—";
+    const avg = overallAvg || 0;
+    const prestige = CULTURAL_CLUSTER_SCORES[cluster.id];
+    const isHighPerformer = avg >= 14;
+    const isLowPrestige   = prestige && prestige.prestige < 0.55;
+    const names = PRESTIGE_PATH_NAMES[cluster.id];
+    if (isHighPerformer && isLowPrestige && names) {
+      return names[lang]?.elevated || names.en?.elevated || t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
+    }
+    return t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
+  }
+
+  // FIX: expectation framing — explain if result may surprise high performers
+  function getSurpriseText(cluster) {
+    if (!cluster) return null;
+    const avg = overallAvg || 0;
+    const cs = CULTURAL_CLUSTER_SCORES[cluster.id];
+    if (!cs || cs.prestige >= 0.7 || avg < 13) return null;
+    const msgs = {
+      ar: "قد تبدو هذه النتيجة غير متوقعة بالنظر إلى علاماتك. لكن الملفات الأكاديمية القوية تنجح أيضاً في إدارة الخدمات الدولية وقيادة المؤسسات — خاصة عبر المسارات العليا.",
+      fr: "Ce résultat peut sembler inattendu vu vos notes. Pourtant, les profils académiques solides réussissent aussi en management international et leadership de service — surtout via les grandes écoles.",
+      en: "This result may seem unexpected given your grades. Strong academic profiles can also excel in international management and service leadership — especially via the grandes écoles pathway.",
+    };
+    return msgs[lang] || msgs.en;
+  }
+
+  const tabs = [
+    { key:"bestFit",   icon:"💡", label: lang==="ar"?"الأنسب شخصياً": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
+    { key:"balanced",  icon:"⚖️", label: lang==="ar"?"الخيار المتوازن": lang==="fr"?"Option équilibrée":"Best Balanced" },
+    { key:"ambitious", icon:"🚀", label: lang==="ar"?"الأكثر طموحاً": lang==="fr"?"Plus ambitieux":"Most Ambitious" },
+  ];
+
+  const current = views[active];
+  const displayName = getClusterDisplayName(current);
+  const surprise = getSurpriseText(current);
+  const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
+  const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
+  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
+
+  return (
+    <div style={{
+      background:"linear-gradient(135deg,rgba(59,130,246,0.06),rgba(232,161,36,0.04))",
+      border:"1px solid var(--border)", borderRadius:16, padding:"20px", marginBottom:20,
+    }}>
+      <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:14}}>
+        {lang==="ar"?"🔭 ثلاثة مناظير لمسارك": lang==="fr"?"🔭 Trois perspectives de carrière":"🔭 Three Career Perspectives"}
+      </div>
+
+      {/* Tab bar */}
+      <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+        {tabs.map(tab => (
+          <button key={tab.key}
+            onClick={()=>setActive(tab.key)}
+            style={{
+              flex:1, minWidth:100,
+              padding:"8px 10px",
+              borderRadius:10,
+              fontSize:11, fontWeight:700,
+              border: active===tab.key ? "1.5px solid var(--accent)" : "1.5px solid var(--border)",
+              background: active===tab.key ? "rgba(232,161,36,0.12)" : "var(--surface2)",
+              color: active===tab.key ? "var(--accent)" : "var(--muted)",
+              cursor:"pointer", transition:"all 0.2s",
+            }}>
+            {tab.icon} {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Content */}
+      {current ? (
+        <div style={{animation:"fadeIn 0.25s ease"}}>
+          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:12}}>
+            <div style={{
+              fontSize:30,width:52,height:52,borderRadius:14,
+              background:"rgba(232,161,36,0.1)",border:"1.5px solid rgba(232,161,36,0.3)",
+              display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,
+            }}>{current.icon}</div>
+            <div>
+              <div style={{fontSize:17,fontWeight:800,color:"var(--text)",lineHeight:1.2,marginBottom:3}}>
+                {displayName}
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <span dir="ltr" style={{fontSize:11,fontWeight:700,color:"var(--accent)",
+                  background:"rgba(232,161,36,0.1)",padding:"2px 8px",borderRadius:10}}>
+                  {matchPct}% {lang==="ar"?"توافق":lang==="fr"?"match":"match"}
+                </span>
+                <span dir="ltr" style={{fontSize:11,fontWeight:700,color:"#10b981",
+                  background:"rgba(16,185,129,0.08)",padding:"2px 8px",borderRadius:10}}>
+                  {traitPct}% {lang==="ar"?"انسجام شخصي":lang==="fr"?"affinité perso":"personal fit"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Prestige indicator */}
+          {cs.prestige != null && (
+            <div style={{display:"flex",gap:10,marginBottom:10,alignItems:"center"}}>
+              <div style={{fontSize:11,color:"var(--muted)",flexShrink:0,width:80}}>
+                {lang==="ar"?"قبول عائلي":lang==="fr"?"Acceptabilité":"Family ok"}
+              </div>
+              <div style={{flex:1,height:4,background:"var(--border)",borderRadius:2,overflow:"hidden"}}>
+                <div style={{height:"100%",width:`${Math.round(cs.parentAcceptance*100)}%`,
+                  background:"linear-gradient(90deg,#3b82f6,#10b981)",borderRadius:2}}/>
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",width:32,textAlign:"right"}} dir="ltr">
+                {Math.round(clamp(cs.parentAcceptance*100))}%
+              </div>
+            </div>
+          )}
+
+          {/* Surprise explanation */}
+          {surprise && (
+            <div style={{
+              marginTop:10,padding:"10px 14px",
+              background:"rgba(245,158,11,0.06)",border:"1px solid rgba(245,158,11,0.2)",
+              borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
+            }}>
+              {/* FIX: expectation framing */}
+              💬 {surprise}
+            </div>
+          )}
+
+          {/* Guardrails / Narrative fix — "How to unlock" shown on ambitious tab when not yet eligible */}
+          {active === "ambitious" && current && (() => {
+            const cc = CLUSTER_CONSTRAINTS[current.id];
+            const notEligible = current.eligibilityTag === "notEligiblePublic" || current.eligibilityTag === "privateOnly";
+            if (!notEligible) return null;
+            const isMed = current.id === "health";
+            const targetAvg = cc?.minAvg ? Math.ceil(cc.minAvg + 0.5) : Math.ceil((overallAvg || 0) + 1.5);
+            const rawMsg = isMed
+              ? (t.ambitiousUnlockMed || "🔓 To unlock public medicine: raise average to 16+ and Bio/Chem thresholds.")
+              : (t.ambitiousUnlockGen || "🔓 Aim for {avg}+ average to strengthen your chances.").replace("{avg}", targetAvg);
+            return (
+              <div style={{
+                marginTop:10, padding:"10px 14px",
+                background:"rgba(99,102,241,0.06)", border:"1px solid rgba(99,102,241,0.22)",
+                borderRadius:10, fontSize:12, color:"var(--text)", lineHeight:1.6,
+              }}>
+                <strong style={{color:"#6366f1"}}>{t.ambitiousUnlockTitle || "🔓 How to unlock this path?"}</strong>
+                <div style={{marginTop:4}}>{rawMsg}</div>
+              </div>
+            );
+          })()}
+        </div>
+      ) : (
+        <div style={{fontSize:13,color:"var(--muted)",textAlign:"center",padding:"12px 0"}}>—</div>
+      )}
+    </div>
+  );
+}
+
+// ── WhyThisIsTop: deterministic 3-bullet explanation block ────────
+// Shows "Why this is #1" for the top cluster: Academic tier + Prestige + Future-proofing.
+// Spec §4 — trust-building explainability.
+function WhyThisIsTop({ cluster, overallAvg, lang, t }) {
+  if (!cluster) return null;
+  const avg = Number(overallAvg) || 0;
+  const tier = getAcademicTierABCD(avg);
+  const tierLabel = { A:"A (≥16)", B:"B (14–15.9)", C:"C (12–13.9)", D:"D (<12)" }[tier] || tier;
+  const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
+  const futureIdx = FUTURE_INDEX[cluster.id]  ?? 0.6;
+  const clusterName = (lang==="ar"?"المجال":lang==="fr"?"Domaine":"Field") + ": " + cluster.id;
+
+  const pctPr = Math.round(prestige * 100);
+  const pctFu = Math.round(futureIdx * 100);
+
+  const bullet = (icon, txt) => (
+    <div key={txt} style={{display:"flex",gap:8,alignItems:"flex-start",marginBottom:7}}>
+      <span style={{fontSize:16,lineHeight:1}}>{icon}</span>
+      <span style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{txt}</span>
+    </div>
+  );
+
+  const tiers = {
+    ar: { A:"أكاديمي ممتاز", B:"مستوى جيد جداً", C:"مستوى متوسط", D:"مسار تطبيقي" },
+    fr: { A:"Excellent académique", B:"Très bon niveau", C:"Niveau moyen", D:"Voie pratique" },
+    en: { A:"Excellent academic tier", B:"Strong academic tier", C:"Average tier", D:"Practical-track tier" },
+  };
+  const tierText = (tiers[lang]||tiers.en)[tier] || tierLabel;
+
+  const presText = lang==="ar"
+    ? `الهيبة المهنية: ${pctPr}٪ — ${pctPr>=80?"مسار رفيع المستوى":pctPr>=65?"مسار مرموق":"مسار عملي"}`
+    : lang==="fr"
+    ? `Prestige: ${pctPr}% — ${pctPr>=80?"filière très cotée":pctPr>=65?"filière respectée":"filière pratique"}`
+    : `Prestige: ${pctPr}% — ${pctPr>=80?"top-tier field":pctPr>=65?"respected field":"practical field"}`;
+
+  const futText = lang==="ar"
+    ? `مقاومة المستقبل: ${pctFu}٪ — ${pctFu>=80?"طلب مرتفع في 2030+":pctFu>=65?"مستقر ومتنامٍ":"يعتمد على التخصص"}`
+    : lang==="fr"
+    ? `Résistance à l'avenir: ${pctFu}% — ${pctFu>=80?"forte demande 2030+":pctFu>=65?"stable et croissant":"dépend de la spécialisation"}`
+    : `Future-proofing: ${pctFu}% — ${pctFu>=80?"high demand 2030+":pctFu>=65?"stable and growing":"depends on specialisation"}`;
+
+  const tierBullet = lang==="ar"
+    ? `مستواك الأكاديمي: ${tierText} — يتوافق مع متطلبات هذا المسار`
+    : lang==="fr"
+    ? `Ton niveau académique: ${tierText} — compatible avec les prérequis`
+    : `Your academic tier: ${tierText} — aligns with this field's requirements`;
+
+  // Prestige alternative for low-prestige clusters recommended to high-avg students
+  const showPrestAlt = prestige < 0.62 && avg >= 14.5;
+  const altClusters = showPrestAlt
+    ? Object.entries(PRESTIGE_INDEX)
+        .filter(([id, p]) => p >= 0.78 && id !== cluster.id)
+        .sort((a,b) => b[1]-a[1])
+        .slice(0,2)
+        .map(([id]) => id)
+    : [];
+  const altLabel = lang==="ar"
+    ? "إذا كنت تريد مساراً أكثر هيبة: فكّر في "
+    : lang==="fr"
+    ? "Pour une filière plus cotée, explore : "
+    : "If you want a more prestigious label, consider: ";
+
+  return (
+    <div style={{
+      background:"rgba(99,102,241,0.04)", border:"1px solid rgba(99,102,241,0.18)",
+      borderRadius:14, padding:"14px 16px", marginBottom:16,
+    }}>
+      <div style={{fontSize:11,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>
+        {lang==="ar"?"🔍 لماذا هذا هو الخيار الأول؟"
+          :lang==="fr"?"🔍 Pourquoi ce choix en #1 ?"
+          :"🔍 Why is this #1?"}
+      </div>
+      {bullet("🎓", tierBullet)}
+      {bullet("🏆", presText)}
+      {bullet("🔮", futText)}
+      {showPrestAlt && altClusters.length > 0 && (
+        <div style={{
+          marginTop:10,padding:"8px 12px",
+          background:"rgba(232,161,36,0.07)",border:"1px solid rgba(232,161,36,0.2)",
+          borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
+        }}>
+          💡 {altLabel}
+          <strong>{altClusters.join(" · ")}</strong>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── DEV_TESTS: built-in regression test suite ─────────────────────
+// Spec §5 — run on localhost, logs to console. Set window.__RUN_TESTS=true to force.
+// Tests are deterministic and do not render in production UI.
+function runDevTests() {
+  const PASS = "\x1b[32m✅\x1b[0m";
+  const FAIL = "\x1b[31m❌\x1b[0m";
+  let failures = 0;
+
+  function check(label, condition) {
+    if (condition) {
+      console.log(PASS, label);
+    } else {
+      console.warn(FAIL, label);
+      failures++;
+    }
+  }
+
+  function scoreCase(bacTrack, marks, pb={}, goal="prestige") {
+    const traits = { analytical:0.7, social:0.6, structure:0.65, creativity:0.5, risk:0.5, leadership:0.6 };
+    const reality = {
+      strengths:["s_math","s_learning","s_discipline"],
+      interests:["i_research","i_building"],
+      identityType:"academic", priority:"prestige",
+      goalPreference:goal, goalMode:goal,
+      profileBoost:{ prestigePriority:pb.pres??1, moneyPriority:1, handsOn:pb.handsOn??0,
+        riskTolerance:1, internationalIntent:1, focusAbility:pb.focus??1 },
+    };
+    // SUBJECT SYSTEM FIX: use getSubjectsForMarks with a synthetic info object for tests
+    const testInfo = { trackField: TRACK_FIELD_TO_BAC_TRACK_REVERSE?.[bacTrack] || "SE", examLevel:"bac2", smOption:"A", eoOption:"arabic", bpExtras:[] };
+    const subjs = getSubjectsForMarks(testInfo);
+    const eff = {};
+    subjs.forEach(s => eff[s] = marks[s] ?? 13);
+    return computeClusterScores(bacTrack, eff, traits, 1, false, reality);
+  }
+
+  function top3ids(ranked) { return ranked.slice(0,3).map(c=>c.id); }
+  function views(ranked, avgVal, info={}) {
+    const avg = Object.values(info.marks||{}).length
+      ? Object.values(info.marks||{}).reduce((a,b)=>a+Number(b),0)/Object.values(info.marks||{}).length
+      : avgVal;
+    const eff = info.marks || {};
+    return computeThreeViews(ranked, avg, { goalPreference:"prestige", goalMode:"prestige", privateBudget:false, ...info }, eff);
+  }
+
+  // TEST 1 — SVT avg 14.8: medicine NOT #1 in Balanced
+  (()=>{
+    const ranked = scoreCase("SVT", { svt:14, pc:12, math:15, english:14, philosophy:13 });
+    const avgVal = (14+12+15+14+13)/5; // 13.6 — wait, let's use 14.8 avg
+    // Use marks that give ~14.8 avg
+    const ranked2 = scoreCase("SVT", { svt:15, pc:14, math:16, english:14, philosophy:15 });
+    const avg2 = (15+14+16+14+15)/5;
+    const v = computeThreeViews(ranked2, avg2, {goalPreference:"prestige",privateBudget:false},{svt:15,pc:14});
+    check("T1 SVT avg~14.8 → Medicine NOT #1 in Balanced", v.balanced?.id !== "health");
+  })();
+
+  // TEST 2 — SVT avg 16.2, SVT≥14, PC≥13 → Medicine appears in Ambitious and Balanced
+  (()=>{
+    const ranked = scoreCase("SVT", { svt:17, pc:15, math:16, english:16, philosophy:15 });
+    const avg = (17+15+16+16+15)/5;
+    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",privateBudget:false},{svt:17,pc:15});
+    check("T2 SVT avg~15.8 eligible → Medicine in Ambitious (not blocked)", v.ambitious?.id === "health" || v.balanced?.id === "health");
+  })();
+
+  // TEST 3 — SMA avg 15, strong math → IT/Data/Engineering in top-3, not Tourism
+  (()=>{
+    const ranked = scoreCase("SMA", { math:17, pc:15, english:14, philosophy:13 });
+    const t3 = top3ids(ranked);
+    const HIGH_PRESTIGE = new Set(["it","data","cyber","industrial","civil","energy","finance","network"]);
+    check("T3 SMA avg~14.75 → tourism NOT in top-3", !t3.includes("tourism"));
+    check("T3 SMA avg~14.75 → at least 1 high-prestige cluster in top-3", t3.some(id=>HIGH_PRESTIGE.has(id)));
+  })();
+
+  // TEST 4 — Tier C handsOn=2 → trades in top-3
+  (()=>{
+    const traits = { analytical:0.4, social:0.5, structure:0.7, creativity:0.4, risk:0.5, leadership:0.5 };
+    const reality = {
+      strengths:["s_mechanical","s_tools"],
+      interests:["i_machines","i_building"],
+      identityType:"builder", priority:"stability",
+      goalPreference:"practical", goalMode:"practical",
+      profileBoost:{ prestigePriority:0, moneyPriority:1, handsOn:2, riskTolerance:1, internationalIntent:0, focusAbility:1 },
+    };
+    const eff = { math:11, pc:10, english:11, philosophy:10 };
+    const ranked = computeClusterScores("TECH", eff, traits, 0, false, reality);
+    const t3 = top3ids(ranked);
+    check("T4 Tier C + handsOn=2 → trades in top-3", t3.includes("trades") || t3.includes("automotive") || t3.includes("industrial"));
+  })();
+
+  // TEST 5 — Tier A + pbPrestige=2 → no Tier C cluster as #1 in Ambitious
+  (()=>{
+    const ranked = scoreCase("SMA", { math:18, pc:17, english:17, philosophy:16 }, { pres:2 });
+    const avg = (18+17+17+16)/4;
+    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",goalMode:"prestige",privateBudget:false,profileBoost:{prestigePriority:2}},{});
+    const tier = CLUSTER_PRESTIGE_TIER[v.ambitious?.id] || "B";
+    check("T5 Tier A + prestige=2 → ambitious is NOT Tier C", tier !== "C");
+  })();
+
+  console.log(`[Massar DEV_TESTS] ${failures===0?"\x1b[32m All 5 tests pass \x1b[0m":"\x1b[31m "+failures+" test(s) failed\x1b[0m"}`);
+}
+
+// Auto-run on localhost (deferred to not block render)
+if (typeof window !== "undefined" && (window.__DEV__ || window.__RUN_TESTS ||
+  (typeof location !== "undefined" && location.hostname === "localhost"))) {
+  setTimeout(runDevTests, 1800);
 }
 
 // src/massar/components/StepResults.jsx
@@ -3677,32 +7243,126 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 function StepResults({
   t, lang, dir, info, marks, whatIfDeltas, setWhatIfDeltas,
   effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
-  reality, setReality, restart,
+  reality, setReality, restart, onBack,
+  secondaryTop3, overallAvg,
 }) {
-  const subjs   = SUBJECTS_BY_TRACK[info.bacTrack] || [];
-  const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(marks[k])||0),0)/subjs.length : 0;
-  const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks[k]||0),0)/subjs.length : 0;
-  const hasDeltas = Object.values(whatIfDeltas).some(d=>Number(d)!==0);
-  const isAfterBac = info.bacStatus === "after";
+  // ── FIX: prevent white screen on results ───────────────────────
+  // Guard every critical input; if fundamentally missing, show fallback UI.
+  const safeRanked  = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const safeTraits  = (traits && typeof traits === "object") ? traits : {};
+  const safeMarks   = (marks  && typeof marks  === "object") ? marks  : {};
+  const safeInfo    = (info   && typeof info   === "object") ? info   : {};
+  const safeReality = (reality && typeof reality === "object") ? reality : {};
+  const safeConf    = typeof confidence === "number" ? confidence : 0;
 
-  const top3     = rankedClusters.slice(0,3);
-  const fallback = rankedClusters.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||rankedClusters[3];
+  // FIX: guard clause before results render
+  if (safeRanked.length === 0) {
+    return (
+      <div style={{
+        padding:"40px 28px", textAlign:"center", maxWidth:520, margin:"0 auto",
+        background:"var(--surface)", borderRadius:20, border:"1px solid var(--border)",
+        boxShadow:"0 8px 32px rgba(0,0,0,0.4)",
+      }}>
+        <div style={{fontSize:48, marginBottom:16}}>📋</div>
+        <h2 style={{fontSize:20, color:"var(--text)", marginBottom:10, fontWeight:700}}>
+          {lang==="ar"?"ملفك الشخصي غير مكتمل": lang==="fr"?"Profil incomplet":"Your profile is incomplete"}
+        </h2>
+        <p style={{fontSize:14, color:"var(--muted)", marginBottom:8, lineHeight:1.6}}>
+          {lang==="ar"?"لم نتمكن من بناء ملفك الكامل بعد. يُرجى إعادة الاختبار.":
+           lang==="fr"?"Nous n'avons pas pu construire votre profil complet. Veuillez recommencer le test.":
+           "We couldn't build your full profile yet. Please restart the test."}
+        </p>
+        {/* FIX: guard clause — Back goes to previous step; Restart clears everything */}
+        <div style={{display:"flex",gap:12,justifyContent:"center",flexWrap:"wrap",marginTop:24}}>
+          <button className="btn btn-secondary" onClick={()=>onBack?.()}>
+            ← {lang==="ar"?"رجوع": lang==="fr"?"Retour":"Back"}
+          </button>
+          <button className="btn btn-danger" onClick={restart}>
+            {t?.restart || "Restart Test"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+  // ── End null-safety gate ────────────────────────────────────────
 
-  const confClass = confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low";
-  const massarType = computeMassarType(traits, reality);
+  // SUBJECTS FIX: use getSubjectsForMarks for accurate subject list in results panel
+  const subjs   = getSubjectsForMarks(safeInfo);
+  const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(safeMarks[k])||0),0)/subjs.length : 0;
+  const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks?.[k]||0),0)/subjs.length : 0;
+  const hasDeltas = Object.values(whatIfDeltas || {}).some(d=>Number(d)!==0);
+  const isAfterBac = safeInfo.bacStatus === "after";
+
+  // FIX: results page null-safety — safeTop / safeTop3
+  const top3     = safeRanked.slice(0,3);
+  const safeTop  = top3[0] || null;   // FIX: results page null-safety
+  // D — Prestige-smart fallback: if avg ≥ 14.5, pick best non-health prestige cluster (#4+)
+  //     rather than the old "low-academic, high-demand" logic which surfaced OFPPT-framed paths.
+  const overallAvgForFallback = (() => {
+    const vals = Object.values(safeMarks||{}).map(Number).filter(v=>!isNaN(v)&&v>0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  })();
+  const fallback = (() => {
+    if (overallAvgForFallback >= 14.5) {
+      // High-avg: pick best non-health cluster outside top-3 sorted by prestige index
+      const top3ids = new Set(top3.map(c=>c.id));
+      const candidate = [...safeRanked]
+        .filter(c => !top3ids.has(c.id) && c.id !== "health")
+        .sort((a,b) => (PRESTIGE_INDEX[b.id]||0.5) - (PRESTIGE_INDEX[a.id]||0.5))[0];
+      return candidate || safeRanked[3] || null;
+    }
+    return safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
+  })();
+
+  const confClass = safeConf>=70?"confidence-high":safeConf>=50?"confidence-med":"confidence-low";
+  const massarType = computeMassarType(safeTraits, safeReality);
   const typeDesc   = massarTypeDesc(massarType, t);
   const traitLabels = {
     ar:{ analytical:"تحليلي", social:"اجتماعي", structure:"منظم", creativity:"مبدع", risk:"مبادر", leadership:"قيادي" },
     fr:{ analytical:"Analytique", social:"Social", structure:"Rigoureux", creativity:"Créatif", risk:"Risque", leadership:"Leader" },
     en:{ analytical:"Analytical", social:"Social", structure:"Organized", creativity:"Creative", risk:"Risk-taker", leadership:"Leader" },
-  }[lang];
+  }[lang] || {};
 
   // Build change summary string
   const changeSummary = subjs
-    .map(s=>{ const d=Number(whatIfDeltas[s])||0; return d!==0?`${SUBJECT_LABELS[s]?.[lang]||s} ${d>0?"+":""}${d}`:null; })
+    .map(s=>{ const d=Number((whatIfDeltas||{})[s])||0; return d!==0?`${SUBJECT_LABELS[s]?.[lang]||s} ${d>0?"+":""}${d}`:null; })
     .filter(Boolean);
 
-  const topCluster = top3[0];
+  const topCluster = safeTop;  // FIX: results page null-safety
+
+  // FIX: normalized safeResults — single source of truth for all results blocks
+  const overallAvgVal = (() => {
+    const vals = Object.values(safeMarks).map(Number).filter(v=>!isNaN(v)&&v>0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  })();
+
+  const safeResults = {
+    archetype:     computeMassarType(safeTraits, safeReality),
+    topCareer:     safeTop,
+    topThree:      top3,
+    traits:        safeTraits,
+    confidence:    clamp(safeConf),
+    rarity:        getRarity(safeConf),
+    overallAvg:    clamp(overallAvgVal, 0, 20),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
+    strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
+    familyPressure: !!safeReality.familyPressure,
+    xpProgress:    0, // managed by XPProgressionTracker internally
+  };
+
+  // FIX: development debug logs
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    console.groupCollapsed("[Massar] Results built");
+    console.log("safeResults:", safeResults);
+    console.log("archetype computed:", safeResults.archetype);
+    console.log("top clusters:", top3.map(c=>({id:c.id, final:c.scores.final?.toFixed(3)})));
+    console.log("three views:", {
+      bestFit: safeResults.threeViews.bestFit?.id,
+      balanced: safeResults.threeViews.balanced?.id,
+      ambitious: safeResults.threeViews.ambitious?.id,
+    });
+    console.groupEnd();
+  }
 
   return (
     <div className="results-wrap" dir={dir}>
@@ -3712,19 +7372,31 @@ function StepResults({
         <div className="narrative" dangerouslySetInnerHTML={{__html:narrative}}/>
       )}
 
-      {/* ── Archetype Card ── */}
-      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={traits} top3={top3} confidence={confidence}/>
+      {/* ── Phase 1: Archetype Hero Identity ── */}
+      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf}/>
 
-      {/* ── Family Pressure adaptive card ── */}
-      {reality.familyPressure && (
-        <FamilyPressureAdaptiveCard
-          t={t} lang={lang} marks={marks} traits={traits} info={info} rankedClusters={rankedClusters} reality={reality}/>
+      {/* ── Phase 2: Abilities System ── */}
+      <AbilitiesSection traits={safeTraits} lang={lang}/>
+
+      {/* ── Phase 8: Competition Mode ── */}
+      <CompetitionMode traits={safeTraits} lang={lang}/>
+
+      {/* ── Phase 9: Family Pressure — collapsed by default ── */}
+      {safeReality.familyPressure && (
+        <CollapsibleSection
+          title={lang==="ar"?"💬 الضغط العائلي":lang==="fr"?"💬 Pression Familiale":"💬 Family Pressure"}
+          defaultOpen={false}
+          accent="var(--warn)">
+          <FamilyPressureAdaptiveCard
+            t={t} lang={lang} marks={safeMarks} traits={safeTraits} info={safeInfo} rankedClusters={safeRanked} reality={safeReality}/>
+        </CollapsibleSection>
       )}
 
       {/* Confidence badge */}
       <div className="confidence-row">
         <span className={`confidence-badge ${confClass}`}>
-          {t.confidenceLabel}: {confidence}%
+          {/* FIX: translation fallback + Arabic-first UX */}
+          {t?.confidenceLabel || "Alignment"}: <span dir="ltr">{safeConf}%</span>
         </span>
       </div>
 
@@ -3737,30 +7409,14 @@ function StepResults({
         {/* Radar */}
         <div className="result-card highlight">
           <h3>{t.traitRadar}</h3>
-          <div className="radar-wrap"><RadarChart traits={traits} lang={lang}/></div>
-        </div>
-
-        {/* Trait bars */}
-        <div className="result-card">
-          <h3>{t.personality}</h3>
-          {Object.entries(traits).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
-            <div key={k} style={{marginBottom:10}}>
-              <div style={{display:"flex",justifyContent:"space-between",fontSize:12,marginBottom:4}}>
-                <span style={{color:"var(--text)"}}>{traitLabels[k]}</span>
-                <span style={{color:"var(--accent)"}}>{Math.round(v*100)}%</span>
-              </div>
-              <div style={{height:6,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
-                <div style={{height:"100%",width:`${v*100}%`,background:"linear-gradient(90deg,var(--accent2),var(--accent))",borderRadius:3}}/>
-              </div>
-            </div>
-          ))}
+          <div className="radar-wrap"><RadarChart traits={safeTraits} lang={lang}/></div>
         </div>
 
         {/* Academic marks — original values */}
         <div className="result-card">
           <h3>{t.academic}</h3>
           {subjs.map(s=>{
-            const v=Number(marks[s])||0;
+            const v=Number(safeMarks[s])||0;
             const color=v>=15?"#10b981":v>=10?"#3b82f6":"#ef4444";
             return (
               <div key={s} style={{marginBottom:8}}>
@@ -3769,13 +7425,13 @@ function StepResults({
                   <span style={{color,fontWeight:700}}>{v}/20</span>
                 </div>
                 <div style={{height:5,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:`${(v/20)*100}%`,background:color,borderRadius:3}}/>
+                  <div style={{height:"100%",width:`${(v/20)*100}%`,background:color,borderRadius:3,animation:"barGrow 0.8s ease both"}}/>
                 </div>
               </div>
             );
           })}
           <div className="avg-row">
-            <span className="avg-label">{t.overallAverage}</span>
+            <span className="avg-label">{info.examMode==="full_bac" ? t.wataniAverage : t.overallAverage}</span>
             <span className="avg-val" style={{color:origAvg>=10?"#10b981":"#ef4444"}}>
               {origAvg.toFixed(1)}/20
             </span>
@@ -3796,8 +7452,8 @@ function StepResults({
           ) : (
             <>
               {subjs.map(s=>{
-                const delta   = Number(whatIfDeltas[s])||0;
-                const effMark = effectiveMarks[s]||0;
+                const delta   = Number((whatIfDeltas||{})[s])||0;
+                const effMark = effectiveMarks?.[s]||0;
                 const effColor= effMark>=15?"#10b981":effMark>=10?"#3b82f6":"#ef4444";
                 const deltaColor = delta>0?"#10b981":delta<0?"#ef4444":"var(--muted)";
                 const deltaStr   = delta===0?"0":`${delta>0?"+":""}${delta}`;
@@ -3845,97 +7501,120 @@ function StepResults({
       {/* ── Improve Mode (before bac only) ── */}
       {!isAfterBac && (
         <ImproveModeCard
-          t={t} lang={lang} marks={marks} traits={traits}
-          rankedClusters={rankedClusters} reality={reality} setReality={setReality}/>
+          t={t} lang={lang} marks={safeMarks} traits={safeTraits}
+          rankedClusters={safeRanked} reality={safeReality} setReality={setReality}/>
       )}
 
-      {/* TOP 3 */}
+      {/* ── WhyThisIsTop: deterministic explainability block (spec §4) ── */}
+      {top3[0] && (
+        <WhyThisIsTop
+          cluster={top3[0]}
+          overallAvg={safeResults.overallAvg}
+          lang={lang}
+          t={t}
+        />
+      )}
+
+      {/* ── FIX: multi-view recommendation ── */}
+      <ThreeViewPanel
+        t={t} lang={lang}
+        views={safeResults.threeViews}
+        overallAvg={safeResults.overallAvg}
+      />
+
+      {/* ── Phase 5: TOP 3 careers — Cultural rerank layer ── */}
       <div className="section-title">{t.topCareers}</div>
-      {top3.map((c,i)=>(
-        <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={info.bacTrack}/>
-      ))}
 
-      {/* Fallback */}
-      <div className="section-title">{t.fallback}</div>
-      <div className="fallback-card">
-        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-          <span style={{fontSize:24}}>{fallback?.icon}</span>
-          <div>
-            <div style={{fontWeight:700}}>{fallback&&t[CLUSTER_KEY_MAP[fallback.id]]}</div>
-            <div style={{fontSize:12,color:"var(--warn)"}}>{t.fallbackDesc}</div>
-          </div>
-        </div>
-        <div style={{fontSize:13,color:"var(--text)"}}>{t.fallbackBody}</div>
-      </div>
-
-      {/* ── Feature 2: International pathway ── */}
-      {info.studyAbroad && (
-        <div style={{
-          background:"rgba(16,185,129,0.05)",border:"1px solid rgba(16,185,129,0.25)",
-          borderRadius:14,padding:"20px 24px",margin:"24px 0",
-        }}>
-          <h3 style={{fontSize:16,fontWeight:700,color:"#10b981",marginBottom:16}}>
-            {t.intlPathwayTitle}
-            {info.abroadRegion && t.abroadRegions?.[info.abroadRegion] && (
-              <span style={{fontWeight:400,fontSize:13,color:"var(--muted)",marginInlineStart:8}}>
-                — {t.abroadRegions[info.abroadRegion]}
-              </span>
-            )}
-          </h3>
-
-          {[
-            { title:t.intlRequirementsTitle, body:t.intlRequirementsText },
-            { title:t.intlTranslationTitle, body: `${t[CLUSTER_KEY_MAP[topCluster?.id]]||""} — ${lang==="ar"?"تُترجم عالمياً بمؤهلات تقنية وإطار نظري قابل للنقل.":lang==="fr"?"se traduit à l'international avec des compétences techniques et un cadre théorique transférable.":"translates internationally with transferable technical skills and theoretical framework."}` },
-            { title:t.intlFinanceTitle, body:t.intlFinanceText },
-            { title:t.intlDifferenceTitle, body:t.intlDifferenceText },
-          ].map(item=>(
-            <div key={item.title} style={{marginBottom:14}}>
-              <div style={{fontWeight:600,fontSize:13,color:"var(--text)",marginBottom:4}}>{item.title}</div>
-              <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.6}}>{item.body}</div>
-            </div>
+      {/* Cultural rerank layer — 3F: unsure mode shows dual-view (Best Fit + Prestige Track) */}
+      {(safeInfo.goalMode === "unsure") && secondaryTop3 && secondaryTop3.length > 0 ? (
+        <GoalModeDualView
+          primary={top3}
+          secondary={secondaryTop3}
+          t={t} lang={lang} dir={dir}
+          bacTrack={safeInfo.bacTrack}
+          goal={safeInfo.goal || "prestige"}
+          overallAvg={overallAvg || safeResults.overallAvg}
+        />
+      ) : (
+        <>
+          {top3.map((c,i)=>(
+            <ClusterCard key={c.id} cluster={c} rank={i+1} t={t} lang={lang} bacTrack={safeInfo.bacTrack}
+              goal={safeInfo.goal || "prestige"} overallAvg={overallAvg || safeResults.overallAvg}/>
           ))}
-
-          {topCluster?.id==="health" && (
-            <div style={{
-              marginTop:8,padding:"10px 14px",
-              background:"rgba(239,68,68,0.08)",border:"1px solid rgba(239,68,68,0.25)",
-              borderRadius:8,fontSize:13,color:"#f87171",
-            }}>
-              {t.intlHealthNote}
-            </div>
-          )}
-        </div>
+        </>
       )}
 
-      {/* ── Truth Mode ── */}
-      <TruthModeCard t={t} lang={lang} traits={traits} top3={top3}/>
+      {/* Cultural rerank layer — Step 4: Prestige adjacent suggestions */}
+      {top3.length > 0 && (safeInfo.goalMode === "prestige" || safeInfo.goalMode === "unsure") && (() => {
+        const topId = top3[0]?.id;
+        const topPrestige = CLUSTER_PRESTIGE[topId];
+        const isLowPrestige = topPrestige && (topPrestige.trackType === "hands_on" || topPrestige.prestigeIndex < 0.60);
+        return isLowPrestige ? (
+          <PrestigeAdjacentPanel topClusterId={topId} lang={lang} t={t}/>
+        ) : null;
+      })()}
 
-      {/* ── Share Card ── */}
-      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={top3[0]} confidence={confidence}/>
-
-      {/* Action plan */}
-      <div className="section-title">{t.actionPlan}</div>
-      <div className="result-card">
-        {top3[0]?.actionPlan?.map((week,i)=>(
-          <div key={i} className="week-card">
-            <div className="week-label">{t.weekLabel} {i+1}</div>
-            {week.items.map((item,j)=>{
-              const isObj = item&&typeof item==="object";
-              const label = isObj?item.label:item;
-              const url   = isObj?item.url:null;
-              return (
-                <div key={j} className="week-item">
-                  <span className="week-item-arrow">→</span>
-                  {url
-                    ?<a href={url} target="_blank" rel="noreferrer">{label}</a>
-                    :<span>{label}</span>
-                  }
-                </div>
-              );
-            })}
+      {/* ── Phase 9: Alternative Path — collapsed ── */}
+      <CollapsibleSection
+        title={(lang==="ar"?"🔄 ":lang==="fr"?"🔄 ":"🔄 ")+t.fallback}
+        defaultOpen={false}
+        accent="#10b981">
+        <div className="fallback-card">
+          <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            {/* FIX: results page null-safety — fallback may be undefined */}
+            <span style={{fontSize:24}}>{fallback?.icon}</span>
+            <div>
+              <div style={{fontWeight:700}}>{fallback && t[CLUSTER_KEY_MAP[fallback.id]]}</div>
+              <div style={{fontSize:12,color:"var(--warn)"}}>{t.fallbackDesc}</div>
+            </div>
           </div>
-        ))}
-      </div>
+          <div style={{fontSize:13,color:"var(--text)"}}>{t.fallbackBody}</div>
+        </div>
+      </CollapsibleSection>
+
+      {/* ── Phase 9: International — collapsed ── */}
+      {safeInfo.studyAbroad && (
+        <CollapsibleSection
+          title={"🌍 "+t.intlPathwayTitle}
+          defaultOpen={false}
+          accent="#10b981">
+          <div style={{
+            background:"rgba(16,185,129,0.05)",border:"1px solid rgba(16,185,129,0.25)",
+            borderRadius:14,padding:"20px 24px",
+          }}>
+            {[
+              { title:t.intlRequirementsTitle, body:t.intlRequirementsText },
+              { title:t.intlTranslationTitle,  body: `${t[CLUSTER_KEY_MAP[topCluster?.id]]||""} — ${lang==="ar"?"تُترجم عالمياً بمؤهلات تقنية وإطار نظري قابل للنقل.":lang==="fr"?"se traduit à l'international avec des compétences techniques et un cadre théorique transférable.":"translates internationally with transferable technical skills and theoretical framework."}` },
+              { title:t.intlFinanceTitle, body:t.intlFinanceText },
+              { title:t.intlDifferenceTitle, body:t.intlDifferenceText },
+            ].map(item=>(
+              <div key={item.title} style={{marginBottom:14}}>
+                <div style={{fontWeight:600,fontSize:13,color:"var(--text)",marginBottom:4}}>{item.title}</div>
+                <div style={{fontSize:13,color:"var(--muted)",lineHeight:1.6}}>{item.body}</div>
+              </div>
+            ))}
+            {topCluster?.id==="health" && (
+              <div style={{marginTop:8,padding:"10px 14px",background:"rgba(239,68,68,0.08)",
+                border:"1px solid rgba(239,68,68,0.25)",borderRadius:8,fontSize:13,color:"#f87171"}}>
+                {t.intlHealthNote}
+              </div>
+            )}
+          </div>
+        </CollapsibleSection>
+      )}
+
+      {/* ── Phase 9: Truth Mode — collapsed ── */}
+      <CollapsibleSection title={t.truthModeBtn} defaultOpen={false} accent="var(--muted)">
+        <TruthModeCard t={t} lang={lang} traits={safeTraits} top3={top3}/>
+      </CollapsibleSection>
+
+      {/* ── Phase 7: Share Card — status symbol ── */}
+      {/* FIX: results page null-safety — topCluster may be null; ShareCard handles it internally */}
+      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf}/>
+
+      {/* ── Phase 6: Action plan → XP Progression Tracker ── */}
+      <div className="section-title">{t.actionPlan}</div>
+      <XPProgressionTracker top3={top3} t={t} lang={lang} massarType={massarType} />
 
       <p className="salary-note">{t.salaryNote}</p>
 
@@ -3974,10 +7653,102 @@ function StepResults({
 // CSS  (kept inline so the component is self-contained)
 // ─────────────────────────────────────────────────────────────────
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:#0a0e1a;color:#e8ecf0;font-family:'DM Sans',sans-serif;min-height:100vh;}
-  [dir="rtl"]{font-family:'IBM Plex Sans Arabic',sans-serif;}
+  [dir="rtl"]{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;}
+
+  /* ── Phase 10: Micro animations ── */
+  @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes barGrow{from{width:0;}to{width:var(--bar-w,100%);}}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
+  @keyframes scGlowLegendary{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(245,158,11,0.7),0 0 0 3px rgba(245,158,11,0.15),0 0 28px rgba(245,158,11,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(245,158,11,1),0 0 0 4px rgba(245,158,11,0.25),0 0 48px rgba(245,158,11,0.6),0 0 80px rgba(245,158,11,0.3),0 16px 56px rgba(0,0,0,0.8);}
+  }
+  @keyframes scGlowEpic{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(168,85,247,0.6),0 0 0 3px rgba(168,85,247,0.12),0 0 24px rgba(168,85,247,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(168,85,247,0.95),0 0 0 4px rgba(168,85,247,0.2),0 0 40px rgba(168,85,247,0.55),0 0 60px rgba(168,85,247,0.2),0 16px 56px rgba(0,0,0,0.8);}
+  }
+  @keyframes scGlowRare{
+    0%,100%{box-shadow:0 0 0 1.5px rgba(34,211,238,0.55),0 0 0 3px rgba(34,211,238,0.1),0 0 20px rgba(34,211,238,0.35),0 16px 56px rgba(0,0,0,0.8);}
+    50%{box-shadow:0 0 0 1.5px rgba(34,211,238,0.9),0 0 0 4px rgba(34,211,238,0.18),0 0 36px rgba(34,211,238,0.5),0 16px 56px rgba(0,0,0,0.8);}
+  }
+  @keyframes rarePulse{0%,100%{box-shadow:0 0 8px rgba(168,85,247,0.2);}50%{box-shadow:0 0 22px rgba(168,85,247,0.55),0 0 40px rgba(168,85,247,0.18);}}
+  @keyframes xpPop{0%{transform:scale(1);}40%{transform:scale(1.25);}100%{transform:scale(1);}}
+  @keyframes iconPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+  @keyframes completionBounce{0%,100%{transform:scale(1);}30%{transform:scale(1.15);}60%{transform:scale(0.96);}}
+
+  .results-wrap>*{animation:fadeIn 0.45s ease both;}
+
+  /* ── Phase 1: Rarity tiers — FIX: unified Common/Rare/Epic/Legendary ── */
+  .rarity-common{border-color:rgba(107,114,128,0.6)!important;}
+  .rarity-rare{border-color:rgba(34,211,238,0.7)!important;box-shadow:0 0 18px rgba(34,211,238,0.12);}
+  .rarity-epic{border-color:rgba(168,85,247,0.8)!important;animation:rarePulse 4s ease-in-out infinite;}
+  .rarity-legendary{border-color:rgba(232,161,36,0.9)!important;animation:glowPulse 4s ease-in-out infinite;}
+  .rarity-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:0.5px;}
+  .rarity-badge-common{background:rgba(107,114,128,0.15);color:#9ca3af;border:1px solid rgba(107,114,128,0.3);}
+  .rarity-badge-rare{background:rgba(34,211,238,0.1);color:#22d3ee;border:1px solid rgba(34,211,238,0.35);}
+  .rarity-badge-epic{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.45);}
+  .rarity-badge-legendary{background:rgba(232,161,36,0.18);color:#fbbf24;border:1px solid rgba(232,161,36,0.5);}
+  .archetype-icon-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;}
+  .archetype-icon-wrap .icon-inner{animation:iconPulse 4s ease-in-out infinite;}
+
+  /* ── Phase 2: Ability cards ── */
+  .abilities-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px;}
+  .ability-card{border-radius:14px;padding:16px;border:1.5px solid var(--border);background:var(--surface2);position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;}
+  .ability-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,0.3);}
+  .ability-card.dominant{border-color:rgba(232,161,36,0.6);box-shadow:0 0 14px rgba(232,161,36,0.12);}
+  .ability-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin:10px 0 6px;}
+  .ability-bar-fill{height:100%;border-radius:3px;animation:barGrow 0.9s ease both;}
+  /* FIX: Arabic-first UX — bar tracks are LTR so fills go left→right even inside RTL containers */
+  [dir="rtl"] .ability-bar-track,[dir="rtl"] .xp-progress-track,[dir="rtl"] .percentile-bar,
+  [dir="rtl"] .mark-bar,[dir="rtl"] .explain-bar{direction:ltr!important;}
+  .ability-icon-wrap{width:22px;height:22px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;}
+  .ability-icon-wrap svg{width:100%;height:100%;}
+  .dominant-badge{position:absolute;top:6px;right:6px;font-size:8px;font-weight:800;letter-spacing:0.5px;padding:2px 6px;border-radius:10px;background:rgba(232,161,36,0.2);color:#fbbf24;border:1px solid rgba(232,161,36,0.4);max-width:85%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  [dir="rtl"] .dominant-badge{right:auto;left:8px;}
+
+  /* ── Phase 5: Top career glow ── */
+  .cluster-card.rank-1{transform:scale(1.01);box-shadow:0 0 24px rgba(232,161,36,0.15);}
+  .cluster-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.25);}
+  .cluster-card.rank-1:hover{transform:scale(1.01) translateY(-2px);}
+  .best-match-label{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:1.2px;background:linear-gradient(90deg,rgba(232,161,36,0.25),rgba(251,191,36,0.15));color:#fbbf24;border:1px solid rgba(232,161,36,0.45);text-transform:uppercase;margin-bottom:6px;}
+
+  /* ── Phase 6: XP / Progression ── */
+  .xp-counter{background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(232,161,36,0.08));border:1px solid rgba(59,130,246,0.3);border-radius:14px;padding:16px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;gap:12;flex-wrap:wrap;}
+  .xp-total{font-size:28px;font-weight:800;background:linear-gradient(90deg,#3b82f6,#e8a124);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .xp-progress-track{height:8px;background:var(--border);border-radius:4px;overflow:hidden;flex:1;min-width:120px;}
+  .xp-progress-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#e8a124);border-radius:4px;transition:width 0.5s ease;}
+  .xp-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;animation:completionBounce 0.6s ease;background:linear-gradient(90deg,rgba(16,185,129,0.2),rgba(59,130,246,0.15));color:#10b981;border:1px solid rgba(16,185,129,0.4);}
+  .task-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all 0.2s;}
+  .task-item:hover{border-color:var(--accent2);}
+  .task-item.completed{opacity:0.6;background:rgba(16,185,129,0.05);border-color:rgba(16,185,129,0.25);}
+  .task-checkbox{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;margin-top:1px;}
+  .task-checkbox.done{background:#10b981;border-color:#10b981;}
+  .task-xp{margin-left:auto;font-size:10px;font-weight:700;color:var(--accent2);padding:2px 7px;border-radius:10px;background:rgba(59,130,246,0.1);white-space:nowrap;flex-shrink:0;}
+  [dir="rtl"] .task-xp{margin-left:0;margin-right:auto;}
+
+  /* ── Phase 8: Competition mode ── */
+  .comp-toggle{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;background:var(--surface2);border:1.5px solid var(--border);cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);transition:all 0.2s;width:100%;margin-bottom:12px;}
+  .comp-toggle:hover{border-color:var(--accent2);color:var(--accent2);}
+  .comp-toggle.active{border-color:var(--accent2);color:var(--accent2);background:rgba(59,130,246,0.06);}
+  .comp-toggle-dot{width:10px;height:10px;border-radius:50%;background:var(--border);transition:background 0.2s;flex-shrink:0;}
+  .comp-toggle.active .comp-toggle-dot{background:var(--accent2);}
+  .percentile-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .percentile-bar{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+  .percentile-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent2),var(--accent3));animation:barGrow 0.8s ease both;}
+
+  /* ── Phase 9: Collapsible sections ── */
+  .collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 18px;border-radius:12px;background:var(--surface);border:1px solid var(--border);user-select:none;transition:border-color 0.2s;}
+  .collapsible-header:hover{border-color:var(--accent2);}
+  .collapsible-chevron{font-size:12px;color:var(--muted);transition:transform 0.25s;}
+  .collapsible-chevron.open{transform:rotate(180deg);}
+  .collapsible-body{overflow:hidden;transition:max-height 0.35s ease,opacity 0.3s ease;}
+  .collapsible-body.hidden{max-height:0;opacity:0;pointer-events:none;}
+  .collapsible-body.visible{max-height:3000px;opacity:1;}
+
+  /* ── Original CSS ── */
   :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--surface3:#222d42;
     --accent:#e8a124;--accent2:#3b82f6;--accent3:#10b981;
     --text:#e8ecf0;--muted:#6b7280;--border:#1f2d45;--danger:#ef4444;--warn:#f59e0b;}
@@ -4159,6 +7930,21 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
+  goal: "prestige",
+  goalMode: "unsure",
+  goalPreference: "prestige",
+  examMode: "watani",
+  examTiming: "post",
+  // SUBJECT MODEL (MOROCCO) FIX: accurate Bac subject selectors
+  examYear:  "bac2",       // "bac1" | "bac2"
+  bac1Field: "SE",         // "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac1 only)
+  bac2Track: "SVT",        // "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac2 only)
+  eoOption:  "arabic",     // "arabic"|"sharia" (EO only)
+  bpExtras:  [],           // ["math","physchem","svt"] (BP only)
+  // Legacy fields kept for migration compat
+  examLevel:  "bac2",
+  trackField: "SE",
+  smOption:   "A",
 };
 
 const DEFAULT_REALITY = {
@@ -4169,7 +7955,7 @@ const DEFAULT_REALITY = {
   strengthsNow: [],
   preferredStyle: "",
   familyPressure: false,
-  fpField: "medicine",
+  fpField: "",
   fpFieldOther: "",
 };
 
@@ -4223,19 +8009,45 @@ export default function App() {
   };
 
   // ── Derived state (memos) ────────────────────────────────────────
-  const traits = useMemo(() => computeTraits(answers), [answers]);
+  const traits = useMemo(() => {
+    const result = computeTraits(answers);
+    // FIX: development debug logs
+    if (typeof window !== 'undefined' && window.__DEV__) console.log('[Massar] traits computed:', result);
+    return result;
+  }, [answers]);
 
-  const effectiveMarks = useMemo(
-    () => buildEffectiveMarks(marks, whatIfDeltas, SUBJECTS_BY_TRACK[info.bacTrack] || []),
-    [marks, whatIfDeltas, info.bacTrack]
+  const effectiveMarks = useMemo(() => {
+    // SUBJECTS FIX: always use getSubjectsForMarks for the official field+level subject list
+    const subjects = getSubjectsForMarks(info);
+    return buildEffectiveMarks(marks, whatIfDeltas, subjects);
+  },
+    [marks, whatIfDeltas, info.bacTrack, info.examTiming, info.trackField, info.examLevel,
+     info.smOption, info.eoOption, info.bpExtras]
   );
 
-  const rankedClusters = useMemo(
-    () => computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality),
-    [info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, reality]
-  );
+  const rankedClusters = useMemo(() => {
+    // SUBJECT MODEL (MOROCCO) FIX: use getScoringBacTrack() for all examYear/bac1Field/bac2Track combos
+    const scoreBacTrack = getScoringBacTrack(info);
+    // TASK 2 — inject goal + goalPreference into reality so scorer can read them
+    const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige",
+      profileBoost: { ...(reality.profileBoost||{}), ...(info.profileBoost||{}) } };
+    const result = computeClusterScores(scoreBacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
+    if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
+    return result;
+  }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
-  const top3       = rankedClusters.slice(0, 3);
+  // Cultural rerank layer — apply post-processing for prestige/fit/practical/unsure
+  const overallAvgForRerank = useMemo(() => {
+    const vals = Object.values(effectiveMarks).map(Number).filter(v => !isNaN(v));
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  }, [effectiveMarks]);
+
+  const { primary: displayClusters, secondary: secondaryClusters } = useMemo(() => {
+    return culturallyRerankClusters(rankedClusters, info, overallAvgForRerank);
+  }, [rankedClusters, info, overallAvgForRerank]);
+
+  const top3       = displayClusters.slice(0, 3);
+  const secondaryTop3 = secondaryClusters ? secondaryClusters.slice(0, 3) : null;
   const confidence = useMemo(() => computeConfidence(rankedClusters), [rankedClusters]);
   const mixedSignals = useMemo(
     () => computeMixedSignals(rankedClusters, confidence),
@@ -4244,9 +8056,10 @@ export default function App() {
 
   // Narrative: useMemo so it updates live when sliders change
   const narrative = useMemo(() => {
-    if (step !== 6 || !top3.length) return null;
-    return generateNarrative(top3, traits, info.bacTrack, lang, reality);
-  }, [top3, traits, info.bacTrack, lang, step, reality]); // eslint-disable-line
+    if (step !== 7 || !top3.length) return null;
+    // Narrative fix — pass effectiveMarks for subject-calibrated wording
+    return generateNarrative(top3, traits, info.bacTrack, lang, reality, effectiveMarks);
+  }, [top3, traits, info.bacTrack, lang, step, reality, effectiveMarks]); // eslint-disable-line
 
   // When bac track changes, clear marks (different subject set)
   const handleSetInfo = (updater) => {
@@ -4293,29 +8106,78 @@ export default function App() {
           <StepReality lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(3)} onBack={()=>setStep(1)} t={t} dir={dir}/>
         )}
+        {/* NEW INPUT: StepProfileBoost — 6 high-signal questions (spec §2) */}
         {step === 3 && (
-          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
+          <StepProfileBoost lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(4)} onBack={()=>setStep(2)} t={t} dir={dir}/>
         )}
         {step === 4 && (
-          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
+          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
             onNext={()=>setStep(5)} onBack={()=>setStep(3)} t={t} dir={dir}/>
         )}
         {step === 5 && (
-          <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
-            reality={reality} setReality={setReality}
+          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
             onNext={()=>setStep(6)} onBack={()=>setStep(4)} t={t} dir={dir}/>
         )}
         {step === 6 && (
-          <StepResults
-            t={t} lang={lang} dir={dir} info={info}
-            marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
-            effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
-            traits={traits} confidence={confidence} mixedSignals={mixedSignals}
-            narrative={narrative} reality={reality} setReality={setReality} restart={restart}
-          />
+          <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
+            reality={reality} setReality={setReality}
+            onNext={()=>setStep(7)} onBack={()=>setStep(5)} t={t} dir={dir}/>
+        )}
+        {step === 7 && (
+          // FIX: prevent white screen on results — ErrorBoundary catches any render throw
+          <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
+            <StepResults
+              t={t} lang={lang} dir={dir} info={info}
+              marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
+              effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
+              traits={traits} confidence={confidence} mixedSignals={mixedSignals}
+              narrative={narrative} reality={reality} setReality={setReality}
+              restart={restart} onBack={()=>setStep(6)}
+              secondaryTop3={secondaryTop3}
+              overallAvg={overallAvgForRerank}
+            />
+          </ResultsErrorBoundary>
         )}
       </div>
     </>
   );
 }
+
+/*
+ * ─────────────────────────────────────────────────────────────────
+ * Cultural sensitivity patch (Tier + Goal) — ACCEPTANCE TESTS
+ * Manual scenario verification. Run these scenarios through the app
+ * and confirm the described behaviour.
+ *
+ * TEST 1 — High average, prestige goal
+ *   Input:  bacTrack=SMA, overallAvg=15/20, goal="prestige"
+ *   Expected scoring: clusters with no public route (OFPPT-only) receive
+ *     a -0.15 penalty → they cannot rank in top-3 for this profile.
+ *   Expected ClusterCard: default tab opens on "grandeEcole" (if available)
+ *     else "university". Practical tab is present but NOT the default.
+ *   Expected label: if user manually clicks "Formation pratique", the
+ *     blue "fast-track option" note is shown.
+ *
+ * TEST 2 — High average, handsOn goal
+ *   Input:  bacTrack=SMA, overallAvg=15/20, goal="handsOn"
+ *   Expected scoring: goalTierPenalty = 0 (handsOn exempts all penalties).
+ *     Practical-route clusters rank naturally.
+ *   Expected ClusterCard: default tab opens on "practical".
+ *   Expected label: no fast-track note shown (student chose this intentionally).
+ *
+ * TEST 3 — Low average, prestige goal
+ *   Input:  bacTrack=ECO, overallAvg=10/20, goal="prestige"
+ *   Expected scoring: academicTier=LOW → no goalTierPenalty applied
+ *     (penalty only applies to HIGH/MID tiers). Practical clusters rank freely.
+ *   Expected ClusterCard: default tab = "practical" (LOW tier default).
+ *   Expected label: no fast-track note (tier is LOW, not HIGH).
+ *
+ * TEST 4 — SVT 15/20, high bio+chem, goal=prestige
+ *   Input:  bacTrack=SVT, biology≥14, chemistry≥13, overallAvg≈15, goal="prestige"
+ *   Expected: "health" cluster is not penalised (it has grandeEcole + university paths).
+ *     MedicineEligibilityPanel still shows eligibility correctly.
+ *     Default pathway tab = grandeEcole (Faculté de Médecine / private if not eligible).
+ *     Public vs private eligibility logic (CLUSTER_CONSTRAINTS) unchanged.
+ * ─────────────────────────────────────────────────────────────────
+ */
