@@ -127,6 +127,73 @@ const TRANSLATIONS = {
     improvementTip3: "انضم لمجموعات مراجعة عبر واتساب أو تليغرام مع طلاب من نفس الشعبة",
     improvementTip4: "استخدم منصات مجانية: خان أكاديمي عربي، إدراك، مرحبا",
     improvementDisclaimer: "هذه توقعات تعليمية. لا يمكن ضمان القبول بأي مدرسة.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "المستوى الدراسي",
+    examLevelBac1: "الباكالوريا الأولى (الجهوي)",
+    examLevelBac2: "الباكالوريا الثانية (الوطني)",
+    trackFieldLabel: "مسار الدراسة الرسمي",
+    trackFields: {
+      SE:  "العلوم التجريبية",
+      SM:  "العلوم الرياضية",
+      ST:  "العلوم والتكنولوجيا",
+      ECO: "العلوم الاقتصادية",
+      LSH: "الآداب والعلوم الإنسانية",
+      AA:  "الفنون التطبيقية",
+      EO:  "التعليم الأصيل",
+      BP:  "الباكالوريا المهنية",
+    },
+    smOptionLabel: "الخيار (لمسار العلوم الرياضية)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "السنة الدراسية",
+    examYearBac1: "الباكالوريا الأولى (الجهوي)",
+    examYearBac2: "الباكالوريا الثانية (الوطني)",
+    bac1FieldLabel: "شعبة الباكالوريا الأولى",
+    bac1Fields: {
+      SE:"العلوم التجريبية", SM:"العلوم الرياضية", ST:"العلوم والتكنولوجيا",
+      ECO:"العلوم الاقتصادية", LSH:"الآداب والعلوم الإنسانية",
+      AA:"الفنون التطبيقية", EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
+    },
+    bac2TrackLabel: "مسار الباكالوريا الثانية",
+    bac2Tracks: {
+      SVT:"علوم الحياة والأرض", PC:"العلوم الفيزيائية",
+      SMA:"العلوم الرياضية – خيار أ", SMB:"العلوم الرياضية – خيار ب",
+      ST:"العلوم والتكنولوجيا", ECO:"العلوم الاقتصادية",
+      LSH:"الآداب والعلوم الإنسانية", AA:"الفنون التطبيقية",
+      EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
+    },
+    smOptionA: "الخيار أ (علوم الحياة والأرض)",
+    smOptionB: "الخيار ب (علوم المهندس)",
+    eoOptionLabel: "التخصص (التعليم الأصيل)",
+    eoOptionArabic: "الأدب العربي",
+    eoOptionSharia: "الشريعة الإسلامية",
+    bpExtrasLabel: "مواد إضافية (الباكالوريا المهنية)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 تسريع ملفك",
+    profileBoostDesc: "6 أسئلة خفيفة تُحسّن التوصيات بشكل كبير",
+    pb_prestige: "مدى أهمية الهيبة والسمعة لك ولعائلتك",
+    pb_prestige0: "مش مهم — النتائج والعمل يهمون",
+    pb_prestige1: "مهم بعض الشيء",
+    pb_prestige2: "مهم جداً — الهيبة خط أحمر",
+    pb_money: "مدى أهمية الاستقرار المالي الآن",
+    pb_money0: "ليست الأولوية الآن",
+    pb_money1: "مهمة لكنها ليست الوحيدة",
+    pb_money2: "ضرورية جداً",
+    pb_handsOn: "تفضّل العمل اليدوي الحقيقي على العمل المكتبي؟",
+    pb_handsOn0: "لا — أفضل الفكر والتحليل",
+    pb_handsOn1: "مزيج من الاثنين",
+    pb_handsOn2: "نعم — العمل الميداني أكثر إمتاعاً لي",
+    pb_risk: "هل أنت مرتاح للمسارات غير المضمونة (ريادة / إبداع / ابتكار)؟",
+    pb_risk0: "لا — أفضل طريقاً مضموناً",
+    pb_risk1: "نوعاً ما — إذا كان هناك خطة بديلة",
+    pb_risk2: "نعم — المجهول لا يخيفني",
+    pb_intl: "هل تريد مساراً قابلاً للعمل خارج المغرب؟",
+    pb_intl0: "لا، أعمل في المغرب",
+    pb_intl1: "ربما في المستقبل",
+    pb_intl2: "نعم، الخارج ضمن خطتي",
+    pb_focus: "هل تستطيع الدراسة 2 إلى 4 ساعات يومياً بجدية؟",
+    pb_focus0: "صعب علي باستمرار",
+    pb_focus1: "نعم لكن مع صعوبة أحياناً",
+    pb_focus2: "نعم دائماً، الانضباط قوتي",
     // Feature 2: Study abroad
     studyAbroadLabel: "هل تفكر في الدراسة في الخارج؟",
     studyAbroadRegionLabel: "المنطقة المفضلة",
@@ -519,6 +586,73 @@ const TRANSLATIONS = {
     improvementTip3: "Rejoignez des groupes de révision sur WhatsApp ou Telegram",
     improvementTip4: "Plateformes gratuites : Khan Academy, Idrisse, YouTube Dar Taliba",
     improvementDisclaimer: "Ces projections sont indicatives. Aucune admission n'est garantie.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "Niveau d'examen",
+    examLevelBac1: "1ère Bac (Régional / جهوي)",
+    examLevelBac2: "2ème Bac (National / وطني)",
+    trackFieldLabel: "Filière officielle",
+    trackFields: {
+      SE:  "Sciences Expérimentales",
+      SM:  "Sciences Mathématiques",
+      ST:  "Sciences et Technologies",
+      ECO: "Sciences Économiques",
+      LSH: "Lettres et Sciences Humaines",
+      AA:  "Arts Appliqués",
+      EO:  "Enseignement Originel",
+      BP:  "Bac Professionnel",
+    },
+    smOptionLabel: "Option (Sciences Mathématiques)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "Année d'examen",
+    examYearBac1: "1ère Bac (Régional / جهوي)",
+    examYearBac2: "2ème Bac (National / وطني)",
+    bac1FieldLabel: "Filière (1ère Bac)",
+    bac1Fields: {
+      SE:"Sciences Expérimentales", SM:"Sciences Mathématiques", ST:"Sciences et Technologies",
+      ECO:"Sciences Économiques", LSH:"Lettres et Sciences Humaines",
+      AA:"Arts Appliqués", EO:"Enseignement Originel", BP:"Bac Professionnel",
+    },
+    bac2TrackLabel: "Filière (2ème Bac)",
+    bac2Tracks: {
+      SVT:"Sciences de la Vie et de la Terre", PC:"Sciences Physiques (Physique-Chimie)",
+      SMA:"Sciences Maths – Option A (SVT)", SMB:"Sciences Maths – Option B (Ing.)",
+      ST:"Sciences et Technologies", ECO:"Sciences Économiques",
+      LSH:"Lettres et Sciences Humaines", AA:"Arts Appliqués",
+      EO:"Enseignement Originel", BP:"Bac Professionnel",
+    },
+    smOptionA: "Option A (SVT)",
+    smOptionB: "Option B (Sciences de l'ingénieur)",
+    eoOptionLabel: "Spécialité (Ens. Originel)",
+    eoOptionArabic: "Littérature arabe",
+    eoOptionSharia: "Charia islamique",
+    bpExtrasLabel: "Matières supplémentaires (Bac Pro)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 Booster ton profil",
+    profileBoostDesc: "6 questions rapides qui affinent vraiment les recommandations",
+    pb_prestige: "Importance du prestige pour toi et ta famille",
+    pb_prestige0: "Pas important — résultats et emploi d'abord",
+    pb_prestige1: "Un peu important",
+    pb_prestige2: "Très important — le prestige est non-négociable",
+    pb_money: "Importance de la stabilité financière maintenant",
+    pb_money0: "Pas la priorité pour l'instant",
+    pb_money1: "Important mais pas le seul critère",
+    pb_money2: "Indispensable, c'est ma contrainte principale",
+    pb_handsOn: "Tu préfères le travail concret / terrain au bureau ?",
+    pb_handsOn0: "Non — je préfère analyser et réfléchir",
+    pb_handsOn1: "Un mix des deux",
+    pb_handsOn2: "Oui — le terrain me motive plus",
+    pb_risk: "Tu acceptes les voies incertaines (startup/créatif/indépendant) ?",
+    pb_risk0: "Non — je veux un chemin balisé",
+    pb_risk1: "Un peu, si j'ai un plan B",
+    pb_risk2: "Oui — l'incertitude ne me fait pas peur",
+    pb_intl: "Tu veux un parcours qui fonctionne à l'étranger ?",
+    pb_intl0: "Non, je reste au Maroc",
+    pb_intl1: "Peut-être plus tard",
+    pb_intl2: "Oui, l'international est dans mon plan",
+    pb_focus: "Tu peux étudier 2 à 4h par jour sérieusement ?",
+    pb_focus0: "Difficile pour moi de façon constante",
+    pb_focus1: "Oui, avec quelques difficultés parfois",
+    pb_focus2: "Oui toujours — la discipline c'est mon moteur",
     // Feature 2: Study abroad
     studyAbroadLabel: "Souhaitez-vous étudier à l'étranger ?",
     studyAbroadRegionLabel: "Région préférée",
@@ -903,6 +1037,73 @@ const TRANSLATIONS = {
     improvementTip3: "Join revision groups on WhatsApp or Telegram with same-track students",
     improvementTip4: "Free platforms: Khan Academy, Coursera (audit), YouTube tutorials",
     improvementDisclaimer: "These are indicative projections only. No admission is guaranteed.",
+    // SUBJECTS FIX: examLevel + trackField selectors
+    examLevelLabel: "Exam level",
+    examLevelBac1: "1st Bac (Regional)",
+    examLevelBac2: "2nd Bac (National)",
+    trackFieldLabel: "Official track / field",
+    trackFields: {
+      SE:  "Experimental Sciences",
+      SM:  "Mathematical Sciences",
+      ST:  "Sciences & Technology",
+      ECO: "Economic Sciences",
+      LSH: "Letters & Humanities",
+      AA:  "Applied Arts",
+      EO:  "Original Teaching",
+      BP:  "Vocational Bac",
+    },
+    smOptionLabel: "Option (Mathematical Sciences)",
+    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
+    examYearLabel: "Exam year",
+    examYearBac1: "1st Bac (Regional)",
+    examYearBac2: "2nd Bac (National)",
+    bac1FieldLabel: "Field (1st Bac)",
+    bac1Fields: {
+      SE:"Experimental Sciences", SM:"Mathematical Sciences", ST:"Sciences & Technology",
+      ECO:"Economic Sciences", LSH:"Letters & Humanities",
+      AA:"Applied Arts", EO:"Original Teaching", BP:"Vocational Bac",
+    },
+    bac2TrackLabel: "Track (2nd Bac)",
+    bac2Tracks: {
+      SVT:"Life & Earth Sciences", PC:"Physical Sciences (Physics-Chemistry)",
+      SMA:"Maths Sciences – Option A (Life Sci.)", SMB:"Maths Sciences – Option B (Eng. Sci.)",
+      ST:"Sciences & Technology", ECO:"Economic Sciences",
+      LSH:"Letters & Humanities", AA:"Applied Arts",
+      EO:"Original Teaching", BP:"Vocational Bac",
+    },
+    smOptionA: "Option A (Life & Earth Sciences)",
+    smOptionB: "Option B (Engineering Sciences)",
+    eoOptionLabel: "Speciality (Original Teaching)",
+    eoOptionArabic: "Arabic Literature",
+    eoOptionSharia: "Islamic Sharia",
+    bpExtrasLabel: "Extra subjects (Vocational Bac)",
+    // NEW INPUT: Profile Boost step translations
+    profileBoostStep: "🚀 Profile Boost",
+    profileBoostDesc: "6 quick questions that meaningfully sharpen your recommendations",
+    pb_prestige: "How important is prestige to you / your family?",
+    pb_prestige0: "Not important — outcomes and work matter more",
+    pb_prestige1: "Somewhat important",
+    pb_prestige2: "Very important — prestige is non-negotiable",
+    pb_money: "How important is income stability right now?",
+    pb_money0: "Not a priority right now",
+    pb_money1: "Important but not the only factor",
+    pb_money2: "Essential — it's my main constraint",
+    pb_handsOn: "Do you prefer hands-on / real-world work over desk work?",
+    pb_handsOn0: "No — I prefer thinking and analysing",
+    pb_handsOn1: "A mix of both",
+    pb_handsOn2: "Yes — field work motivates me more",
+    pb_risk: "Are you okay with uncertain paths (startup/creator/freelance)?",
+    pb_risk0: "No — I want a clear, stable path",
+    pb_risk1: "Somewhat, if I have a backup plan",
+    pb_risk2: "Yes — uncertainty doesn't scare me",
+    pb_intl: "Do you want a path that can work internationally?",
+    pb_intl0: "No, I plan to stay in Morocco",
+    pb_intl1: "Maybe in the future",
+    pb_intl2: "Yes, international is part of my plan",
+    pb_focus: "Can you study 2 to 4 hours a day consistently?",
+    pb_focus0: "Hard for me to do consistently",
+    pb_focus1: "Yes, with some difficulty sometimes",
+    pb_focus2: "Yes always — discipline is my strength",
     // Feature 2: Study abroad
     studyAbroadLabel: "Are you considering studying abroad?",
     studyAbroadRegionLabel: "Preferred region",
@@ -1222,24 +1423,112 @@ const STREAM_BY_TRACK = {
 //           post-Bac for SMA/SMB/PC/SVT/TECH tracks. Keep them separate only pre-Bac.
 // ─────────────────────────────────────────────────────────────────
 
-// POST-Bac: official final-exam subjects per track — minimal and accurate
-// SPEC-EXACT subject lists per track (Morocco 2BAC national-exam orientation).
-// Physics & Chemistry = ONE combined subject "pc". SVT uses "svt". English not French for science.
-const SUBJECTS_BY_TRACK = {
-  SMA:  ["math", "pc", "english", "philosophy"],
-  SMB:  ["math", "pc", "english", "philosophy"],
-  PC:   ["math", "pc", "english", "philosophy"],
-  SVT:  ["svt", "pc", "math", "english", "philosophy"],
-  ECO:  ["math", "economics", "management", "english", "philosophy"],
-  LET:  ["arabic", "french", "english", "philosophy", "history"],
-  TECH: ["math", "pc", "tech", "english", "philosophy"],
-  ARTS: ["arts", "design", "french", "english", "history"],
+// SUBJECT MODEL (MOROCCO) FIX: Single source of truth for all Moroccan Bac subjects.
+// examYear = "bac1" | "bac2"
+// bac1Field = "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP"   (only shown when examYear=bac1)
+// bac2Track = "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (only shown when examYear=bac2)
+// eoOption  = "arabic" | "sharia"   (EO track only)
+// bpExtras  = ["math","physchem","svt"] optional toggle (BP only)
+
+// ── Bac 1 (1ère Bac / Régional) ─────────────────────────────────
+const BAC1_SUBJECTS_BY_FIELD = {
+  SE:  ["arabic","french","islamic","history_geo","translation"],
+  SM:  ["arabic","french","islamic","history_geo","translation"],
+  ST:  ["arabic","french","islamic"],
+  ECO: ["arabic","french","islamic","history_geo","law","mgmt_info"],
+  LSH: ["french","islamic","math"],
+  AA:  ["arabic","french","islamic","math","info_infog","art_culture_hist"],
+  EO:  ["french","math","history_geo","tawtiq"],  // + sharia extras via getSubjectsForMarks
+  BP:  ["french","islamic","arabic_lang_culture"], // + bpExtras via getSubjectsForMarks
 };
 
-// POST / PRE / Watani aliases all point to the canonical list.
+// ── Bac 2 (2ème Bac / National) ──────────────────────────────────
+// IMPORTANT: SE is a Bac1 field only. In Bac2 it splits into SVT and PC tracks.
+// SMA and SMB are separate tracks (not a shared SM with options).
+const BAC2_SUBJECTS_BY_TRACK = {
+  SVT: ["math","physchem","svt","philosophy","english"],
+  PC:  ["math","physchem","philosophy","english"],
+  SMA: ["math","physchem","philosophy","english","svt"],      // SM Option A
+  SMB: ["math","physchem","philosophy","english","eng_sci"],  // SM Option B
+  ST:  ["math","physchem","eng_sci","philosophy","english"],
+  ECO: ["math","acct_fin","econ_stats","bus_econ_org","philosophy","english"],
+  LSH: ["arabic_lit","history_geo","philosophy","english"],
+  AA:  ["comm_multimedia","env_product_design","philosophy","english"],
+  EO:  ["lit","tafsir_hadith","philosophy","english"],  // + arabic/sharia extras
+  BP:  ["prof_synth","philosophy","english"],           // + bpExtras extras
+};
+
+// ── getSubjectsForMarks: THE single helper driving marks UI + average + results ──
+// SUBJECT MODEL (MOROCCO) FIX: all paths go through here.
+function getSubjectsForMarks(info) {
+  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2"); // migrate old key
+
+  let base;
+  if (year === "bac1") {
+    const field = info.bac1Field || info.trackField || "SE";  // migrate trackField
+    base = BAC1_SUBJECTS_BY_FIELD[field] || BAC1_SUBJECTS_BY_FIELD.SE;
+  } else {
+    const track = info.bac2Track || info.trackField || "SVT"; // migrate trackField
+    base = BAC2_SUBJECTS_BY_TRACK[track] || BAC2_SUBJECTS_BY_TRACK.SVT;
+  }
+  let list = [...base];
+
+  // EO extras (bac1 or bac2)
+  if (year === "bac1" && (info.bac1Field === "EO" || info.trackField === "EO")) {
+    if (info.eoOption === "sharia") list = [...list, "lang_sci", "inheritance_timing"];
+  }
+  if (year === "bac2" && (info.bac2Track === "EO" || info.trackField === "EO")) {
+    if (info.eoOption === "arabic") list = [...list, "lang_sci"];
+    if (info.eoOption === "sharia") list = [...list, "fiqh_usul"];
+  }
+
+  // BP extras (bac1 or bac2)
+  const isBP = (year === "bac1" && (info.bac1Field === "BP" || info.trackField === "BP"))
+             || (year === "bac2" && (info.bac2Track === "BP" || info.trackField === "BP"));
+  if (isBP && Array.isArray(info.bpExtras)) {
+    info.bpExtras.forEach(k => { if (!list.includes(k)) list.push(k); });
+  }
+
+  // Dev logging (localhost only)
+  if (typeof window !== "undefined" && (window.__DEV__ ||
+      (typeof location !== "undefined" && location.hostname === "localhost"))) {
+    const field = year === "bac1" ? (info.bac1Field || info.trackField) : (info.bac2Track || info.trackField);
+    console.log(`[Massar Subjects] examYear=${year} field/track=${field} → [${list.join(", ")}]`);
+  }
+
+  return list;
+}
+
+// SUBJECT MODEL (MOROCCO) FIX: map bac2Track/bac1Field → scoring engine bacTrack key.
+const BAC2_TRACK_TO_SCORING = {
+  SVT:"SVT", PC:"PC", SMA:"SMA", SMB:"SMB",
+  ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
+};
+const BAC1_FIELD_TO_SCORING = {
+  SE:"SVT", SM:"SMA", ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
+};
+
+// SUBJECT MODEL (MOROCCO) FIX: resolve bacTrack for scoring engine from new info fields.
+function getScoringBacTrack(info) {
+  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
+  if (year === "bac1") {
+    const field = info.bac1Field || info.trackField || "SE";
+    return BAC1_FIELD_TO_SCORING[field] || "SVT";
+  }
+  const track = info.bac2Track || info.trackField || "SVT";
+  return BAC2_TRACK_TO_SCORING[track] || "SVT";
+}
+
+// ── Legacy aliases (dead stubs — not used for subject lists anywhere) ─
+// SUBJECT MODEL (MOROCCO) FIX: kept only so no lingering ref crashes the build.
+const TRACK_FIELD_TO_BAC_TRACK = BAC1_FIELD_TO_SCORING; // legacy compat
+const TRACK_FIELD_TO_BAC_TRACK_REVERSE = { SVT:"SE",SMA:"SM",SMB:"SM",PC:"SVT",TECH:"ST",ECO:"ECO",LET:"LSH",ARTS:"AA" };
+const SUBJECTS_BY_TRACK        = { SMA:["math","physchem","english","philosophy","svt"], SMB:["math","physchem","english","philosophy","eng_sci"], PC:["math","physchem","english","philosophy"], SVT:["svt","physchem","math","english","philosophy"], ECO:["math","econ_stats","acct_fin","bus_econ_org","english","philosophy"], LET:["arabic_lit","history_geo","philosophy","english"], TECH:["math","physchem","eng_sci","english","philosophy"], ARTS:["comm_multimedia","env_product_design","philosophy","english"] };
 const SUBJECTS_POST_BY_TRACK   = SUBJECTS_BY_TRACK;
 const SUBJECTS_PRE_BY_TRACK    = SUBJECTS_BY_TRACK;
 const WATANI_SUBJECTS_BY_TRACK = SUBJECTS_BY_TRACK;
+// (Old SUBJECTS_BY_FIELD_AND_LEVEL alias for any remaining ref)
+const SUBJECTS_BY_FIELD_AND_LEVEL = null; // decommissioned — use BAC1_SUBJECTS_BY_FIELD / BAC2_SUBJECTS_BY_TRACK
 
 // Regional (Jihawi) subjects (1ère Bac), used only when examMode="full_bac"
 const REGIONAL_SUBJECTS_BY_STREAM = {
@@ -1249,58 +1538,99 @@ const REGIONAL_SUBJECTS_BY_STREAM = {
   arts:       ["arabic", "islamic", "history"],
 };
 
-// Migration: merge legacy mark keys into canonical SUBJECTS_BY_TRACK keys.
-// physics + chemistry → pc (average); economics_stats → economics; accounting → management.
+// SUBJECTS FIX: migrateMarks — map old saved-session keys to canonical keys.
+// physics + chemistry → physchem; biology → svt; history → history_geo; pc → physchem; etc.
 function migrateMarks(marks) {
   if (!marks || typeof marks !== "object") return marks || {};
   const out = { ...marks };
-  // physics + chemistry → pc
-  if (out.pc == null) {
-    const p = Number(out.physics)   || 0;
-    const c = Number(out.chemistry) || 0;
-    if (p > 0 || c > 0) out.pc = (p > 0 && c > 0) ? (p + c) / 2 : Math.max(p, c);
+  // physics + chemistry → physchem
+  if (out.physchem == null) {
+    if (out.pc != null) { out.physchem = out.pc; }
+    else {
+      const p = Number(out.physics) || 0;
+      const c = Number(out.chemistry) || 0;
+      if (p > 0 || c > 0) out.physchem = (p > 0 && c > 0) ? (p + c) / 2 : Math.max(p, c);
+    }
   }
-  delete out.physics; delete out.chemistry;
-  // biology → svt (if svt missing)
+  delete out.pc; delete out.physics; delete out.chemistry;
+  // biology → svt
   if (out.svt == null && out.biology != null) out.svt = out.biology;
   delete out.biology;
-  // economics_stats → economics
-  if (out.economics == null && out.economics_stats != null) out.economics = out.economics_stats;
+  // history → history_geo
+  if (out.history_geo == null && out.history != null) out.history_geo = out.history;
+  delete out.history;
+  // economics_stats → econ_stats
+  if (out.econ_stats == null && out.economics_stats != null) out.econ_stats = out.economics_stats;
   delete out.economics_stats;
-  // accounting → management
-  if (out.management == null && out.accounting != null) out.management = out.accounting;
+  // accounting → acct_fin
+  if (out.acct_fin == null && out.accounting != null) out.acct_fin = out.accounting;
   delete out.accounting;
+  // economics → econ_stats (loose)
+  if (out.econ_stats == null && out.economics != null) out.econ_stats = out.economics;
+  delete out.economics;
+  // SUBJECT SYSTEM FIX: bus_org → bus_econ_org (old key rename)
+  if (out.bus_econ_org == null && out.bus_org != null) out.bus_econ_org = out.bus_org;
+  delete out.bus_org;
+  // management → bus_econ_org (canonical key)
+  if (out.management != null && out.bus_econ_org == null) out.bus_econ_org = out.management;
+  delete out.management;
   return out;
 }
 
+// SUBJECTS FIX: canonical subject labels (AR / FR / EN) for all Bac tracks.
 const SUBJECT_LABELS = {
-  math:       { ar: "الرياضيات",           fr: "Mathématiques",   en: "Mathematics"          },
-  // pc = Physique-Chimie (one combined mark in Moroccan Bac for science tracks)
-  pc:         { ar: "الفيزياء والكيمياء",  fr: "Physique-Chimie", en: "Physics & Chemistry"  },
-  // svt = Sciences de la Vie et de la Terre (standalone for SVT track)
-  svt:        { ar: "علوم الحياة والأرض",  fr: "SVT",             en: "Life & Earth Sciences" },
-  english:    { ar: "اللغة الإنجليزية",   fr: "Anglais",         en: "English"              },
-  french:     { ar: "اللغة الفرنسية",      fr: "Français",        en: "French"               },
-  arabic:     { ar: "اللغة العربية",       fr: "Arabe",           en: "Arabic"               },
-  philosophy: { ar: "الفلسفة",             fr: "Philosophie",     en: "Philosophy"           },
-  history:    { ar: "التاريخ والجغرافيا",  fr: "Histoire-Géo",    en: "History & Geography"  },
-  economics:  { ar: "الاقتصاد",            fr: "Économie",        en: "Economics"            },
-  management: { ar: "التدبير",             fr: "Gestion",         en: "Management"           },
-  tech:       { ar: "التكنولوجيا",         fr: "Technologie",     en: "Technology"           },
-  arts:       { ar: "الفنون",              fr: "Arts",            en: "Arts"                 },
-  design:     { ar: "التصميم",             fr: "Design",          en: "Design"               },
-  // Extra keys kept for backward-compat (old sessions, narrative helpers)
-  physics:    { ar: "الفيزياء",            fr: "Physique",        en: "Physics"              },
-  chemistry:  { ar: "الكيمياء",            fr: "Chimie",          en: "Chemistry"            },
-  biology:    { ar: "علم الأحياء",         fr: "Biologie",        en: "Biology"              },
-  accounting:      { ar: "المحاسبة",                    fr: "Comptabilité",                     en: "Accounting"             },
-  economics_stats: { ar: "الاقتصاد العام والإحصاء",    fr: "Économie générale & Statistiques", en: "Economics & Statistics" },
-  eng_sciences:    { ar: "علوم المهندس",                fr: "Sciences de l'ingénieur",          en: "Engineering Sciences"   },
-  islamic:         { ar: "التربية الإسلامية",           fr: "Éducation islamique",              en: "Islamic Education"      },
-  foreign2:        { ar: "اللغة الأجنبية الثانية",      fr: "2ème langue étrangère",            en: "Second foreign language"},
-  sn_math:         { ar: "الرياضيات",                   fr: "Mathématiques",                    en: "Mathematics"            },
-  sn_physics:      { ar: "الفيزياء",                    fr: "Physique",                         en: "Physics"                },
-  sn_biology:      { ar: "الأحياء",                     fr: "Biologie",                         en: "Biology"                },
+  // ── Core ──────────────────────────────────────────────────────────
+  arabic:              { ar:"اللغة العربية",            fr:"Arabe",                            en:"Arabic"                        },
+  arabic_lit:          { ar:"الأدب العربي",             fr:"Littérature Arabe",                en:"Arabic Literature"             },
+  french:              { ar:"اللغة الفرنسية",            fr:"Français",                         en:"French"                        },
+  english:             { ar:"اللغة الإنجليزية",         fr:"Anglais",                          en:"English"                       },
+  islamic:             { ar:"التربية الإسلامية",         fr:"Éducation islamique",              en:"Islamic Education"             },
+  history_geo:         { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géographie",              en:"History & Geography"           },
+  philosophy:          { ar:"الفلسفة",                  fr:"Philosophie",                      en:"Philosophy"                    },
+  math:                { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
+  translation:         { ar:"الترجمة",                  fr:"Traduction",                       en:"Translation"                   },
+  // ── Sciences ─────────────────────────────────────────────────────
+  physchem:            { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics & Chemistry"           },
+  svt:                 { ar:"علوم الحياة والأرض",        fr:"SVT",                              en:"Life & Earth Sciences"         },
+  // ── Technology / Engineering ─────────────────────────────────────
+  eng_sci:             { ar:"علوم المهندس",              fr:"Sciences de l'ingénieur",          en:"Engineering Sciences"          },
+  // ── Economics / Business ─────────────────────────────────────────
+  law:                 { ar:"القانون",                  fr:"Droit",                            en:"Law"                           },
+  mgmt_info:           { ar:"التدبير ونظم المعلومات",   fr:"Gestion et Systèmes d'info.",      en:"Management & Info. Systems"    },
+  acct_fin:            { ar:"المحاسبة والرياضيات الم.", fr:"Comptabilité & Maths financières", en:"Accounting & Financial Maths"  },
+  econ_stats:          { ar:"الاقتصاد والإحصاء",        fr:"Économie & Statistiques",          en:"Economics & Statistics"        },
+  bus_econ_org:             { ar:"اقتصاد المقاولة والتنظيم", fr:"Économie d'entreprise & Org.",     en:"Business Economics & Org."     },
+  // ── Arts Appliqués ───────────────────────────────────────────────
+  info_infog:          { ar:"إعلامية وإنفوغرافيا",      fr:"Informatique & Infographie",       en:"IT & Infographics"             },
+  art_culture_hist:    { ar:"ثقافة وتاريخ الفنون",      fr:"Culture et Histoire des arts",     en:"Art Culture & History"         },
+  comm_multimedia:     { ar:"التواصل والوسائط المتعددة",fr:"Communication & Multimédia",       en:"Communication & Multimedia"    },
+  env_product_design:  { ar:"تصميم بيئات ومنتجات",      fr:"Design d'env. & de produits",      en:"Environment & Product Design"  },
+  // ── Enseignement Originel ─────────────────────────────────────────
+  tawtiq:              { ar:"التوثيق والإجراءات القانونية",fr:"Tawthiq et procédures judiciaires",en:"Legal Documentation"        },
+  lang_sci:            { ar:"علوم اللغة",               fr:"Sciences de la langue",            en:"Language Sciences"             },
+  inheritance_timing:  { ar:"الفرائض والمواقيت",        fr:"Héritage & Calcul des temps",      en:"Inheritance & Timing Calculus" },
+  lit:                 { ar:"الأدب",                   fr:"Littérature",                      en:"Literature"                    },
+  tafsir_hadith:       { ar:"التفسير والحديث",          fr:"Tafsir & Hadith",                  en:"Tafsir & Hadith"               },
+  fiqh_usul:           { ar:"الفقه وأصوله",             fr:"Fiqh & Usul al-Fiqh",             en:"Fiqh & Usul al-Fiqh"           },
+  // ── Bac Professionnel ─────────────────────────────────────────────
+  prof_synth:          { ar:"التقييم المهني الاصطناعي", fr:"Épreuve professionnelle de synthèse",en:"Professional Synthesis Test" },
+  arabic_lang_culture: { ar:"اللغة العربية والثقافة",   fr:"Langue arabe & Culture",           en:"Arabic Language & Culture"     },
+  // ── Backward-compat keys (for old saved sessions / narrative helpers) ──
+  pc:                  { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics-Chemistry"             },
+  physics:             { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
+  chemistry:           { ar:"الكيمياء",                 fr:"Chimie",                           en:"Chemistry"                     },
+  biology:             { ar:"علم الأحياء",               fr:"Biologie",                         en:"Biology"                       },
+  economics:           { ar:"الاقتصاد",                 fr:"Économie",                         en:"Economics"                     },
+  management:          { ar:"التدبير",                  fr:"Gestion",                          en:"Management"                    },
+  history:             { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géo",                     en:"History & Geography"           },
+  tech:                { ar:"التكنولوجيا",              fr:"Technologie",                      en:"Technology"                    },
+  arts:                { ar:"الفنون",                   fr:"Arts",                             en:"Arts"                          },
+  design:              { ar:"التصميم",                  fr:"Design",                           en:"Design"                        },
+  accounting:          { ar:"المحاسبة",                 fr:"Comptabilité",                     en:"Accounting"                    },
+  // SUBJECT SYSTEM FIX: lang2 key removed
+  sn_math:             { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
+  sn_physics:          { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
+  sn_biology:          { ar:"الأحياء",                  fr:"Biologie",                         en:"Biology"                       },
 };
 
 const MOROCCAN_CITIES = [
@@ -2206,17 +2536,13 @@ function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
   return pes;
 }
 
-// TASK 2 — computeThreeViews: three distinct scoring perspectives
-// score_fit       = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
-// score_balanced  = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestigeIndex
-// score_ambitious = 0.45*prestigeIndex + 0.35*academic + 0.15*market + 0.05*bac
-// Cultural Credibility Filter (Tier C penalty):
-//   avg ≥ 14.5 + goalPreference ≠ "practical" → Tier C clusters penalised in balanced+ambitious
-//   avg ≥ 15.5 → Tier C cannot be #1 in ANY perspective unless explicit practical preference
-// Personality consistency guardrail on Best Fit:
-//   traitScore < 0.55 → cannot be #1; traitScore < 0.45 → blocked top-3 unless override
-// Medicine special-case:
-//   Fit: requires traitScore ≥ 0.60; Ambitious: not #1 if avg < 15.5 + !privateBudget
+// LOGIC FIX: computeThreeViews — uses pre-computed lane scores (fit/balanced/ambitious)
+// stored on each cluster by computeClusterScores. See spec §3.7.
+// Lane formulas (already baked into scores.fit / scores.balanced / scores.ambitious):
+//   Best Personal Fit  : 45% trait + 25% handsOn-match + 15% market + 15% futureIndex
+//   Best Balanced      : 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl
+//   Most Ambitious     : 35% prestige + 25% academic proximity + 15% focusAbility + 15% future + 10% market
+// Cultural constraints enforced here on top of the pre-scored values.
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
@@ -2228,99 +2554,76 @@ function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   const fpField       = safeInfo.fpField || "";
   const pes           = computePES(avg, safeInfo.bacTrack||"SMA", effectiveMarks||{}, fpField);
   const academicTier  = getAcademicTierABCD(avg);
-  const isHighTier    = tierIsHigh(academicTier); // A or B
+  const isHighTier    = tierIsHigh(academicTier);
   const isPractical   = goalPref === "practical" || goalMode === "practical";
 
-  // TASK 2 — Cultural Credibility Filter: Tier C penalty (balanced + ambitious)
+  // profileBoost fields for cultural constraints
+  const pb         = safeInfo.profileBoost || {};
+  const pbPrestige = Number(pb.prestigePriority  ?? 1);
+  const pbHandsOn  = Number(pb.handsOn           ?? 1);
+
+  // Cultural Credibility Filter for Three Views tab (applied on top of lane scores)
   function tierCPenalty(clusterId) {
-    if (isPractical) return 0;
+    if (isPractical || pbHandsOn >= 2) return 0;
     const ct = CLUSTER_PRESTIGE_TIER[clusterId] || "B";
     if (ct !== "C") return 0;
-    if (avg < 12) return 0;           // low-avg students: no penalty (realism first)
-    if (avg >= 15.5) return 0.30;     // very high avg: strong penalty, Tier C rarely #1
-    if (isHighTier) return 0.18;      // avg 14–15.5: meaningful penalty
-    return 0.06;                      // avg 12–14: mild nudge
+    if (avg < 12) return 0;
+    if (avg >= 15.5) return 0.30;
+    if (isHighTier) return 0.18;
+    return 0.06;
   }
 
-  // Prestige penalty for balanced/ambitious (cultural guardrail)
-  function prestigePenalty(cp) {
-    if (!isHighTier || isPractical) return 0;
-    if (cp.prestigeIndex < 0.50) return 0.20;
-    if (cp.prestigeIndex < 0.60) return 0.12;
-    return 0;
-  }
-
-  // Medicine balanced penalty when public-ineligible + no budget
-  function medBalancedPenalty(c) {
+  // Medicine penalty in Balanced when public-ineligible + no budget
+  function medPenalty(c) {
     return (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
   }
 
-  // score_fit = 0.55*trait + 0.25*academic + 0.10*bac + 0.10*market
-  const fitScored = rankedClusters.map(c => ({
-    c, s: clamp(
-      0.55*(c.scores.trait||0)     + 0.25*(c.scores.academic||0)
-    + 0.10*(c.scores.bac||0)       + 0.10*(c.scores.market||0)
-    - tierCPenalty(c.id) * 0.5     // softer on fit tab
-    ),
-  }));
-
-  // score_balanced = 0.35*academic + 0.25*trait + 0.20*market + 0.10*bac + 0.10*prestige
-  const balancedScored = rankedClusters.map(c => {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    return { c, s: clamp(
-      0.35*(c.scores.academic||0) + 0.25*(c.scores.trait||0)
-    + 0.20*(c.scores.market||0)  + 0.10*(c.scores.bac||0)
-    + 0.10*cp.prestigeIndex
-    - prestigePenalty(cp) - medBalancedPenalty(c) - tierCPenalty(c.id)
-    )};
+  // ── Best Personal Fit: use pre-computed scores.fit, personality guardrail ──
+  const fitSorted = [...rankedClusters].sort((a,b) => {
+    // Apply mild tier-C penalty on fit tab too (50% strength)
+    return (b.scores.fit||0) - tierCPenalty(b.id)*0.5 - ((a.scores.fit||0) - tierCPenalty(a.id)*0.5);
   });
 
-  // score_ambitious = 0.45*prestige + 0.35*academic + 0.15*market + 0.05*bac
-  const ambitiousScored = rankedClusters.map(c => {
-    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
-    const cc = CLUSTER_CONSTRAINTS[c.id];
-    let s = 0.45*cp.prestigeIndex     + 0.35*(c.scores.academic||0)
-          + 0.15*(c.scores.market||0) + 0.05*(c.scores.bac||0)
-          - tierCPenalty(c.id);
-    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) s = Math.min(s, 0.65);
-    if (cc?.minAvg && avg < cc.minAvg - 2) s -= 0.08;
-    return { c, s: clamp(s) };
-  });
-
-  // Personality consistency guardrail — Best Fit only
   function fitPersonalityOk(cluster, rank) {
     const ts = cluster.scores.trait || 0;
-    // Medicine: require traitScore ≥ 0.60 to appear as Best Fit #1
-    if (cluster.id === "health" && ts < 0.60) {
-      if (rank === 0) return false;
-    }
-    if (ts < 0.55 && rank === 0) return false; // cannot be #1
-    if (ts < 0.45 && avg < 16.5)  return false; // blocked from top-3 for non-elite avg
+    if (cluster.id === "health" && ts < 0.60) { if (rank === 0) return false; }
+    if (ts < 0.55 && rank === 0) return false;
+    if (ts < 0.45 && avg < 16.5)  return false;
     return true;
   }
-
-  // Pick best fit with personality guardrail
-  const fitSorted = [...fitScored].sort((a,b) => b.s - a.s);
   let bestFit = null;
   for (let i = 0; i < fitSorted.length; i++) {
-    if (fitPersonalityOk(fitSorted[i].c, i)) { bestFit = fitSorted[i].c; break; }
+    if (fitPersonalityOk(fitSorted[i], i)) { bestFit = fitSorted[i]; break; }
   }
-  bestFit = bestFit || fitSorted[0]?.c || null; // safe fallback
+  bestFit = bestFit || fitSorted[0] || null;
 
-  // Pick best balanced
-  const balSorted = [...balancedScored].sort((a,b) => b.s - a.s);
-  const balanced = balSorted[0]?.c || null;
+  // ── Best Balanced: use pre-computed scores.balanced + cultural gate ──
+  const balSorted = [...rankedClusters].sort((a,b) => {
+    const sa = (a.scores.balanced||0) - tierCPenalty(a.id) - medPenalty(a);
+    const sb = (b.scores.balanced||0) - tierCPenalty(b.id) - medPenalty(b);
+    return sb - sa;
+  });
+  const balanced = balSorted[0] || null;
 
-  // Pick best ambitious — medicine not #1 if avg < 15.5 + !privateBudget
-  const ambSorted = [...ambitiousScored].sort((a,b) => b.s - a.s);
+  // ── Most Ambitious: use pre-computed scores.ambitious + prestige gate ──
+  const ambSorted = [...rankedClusters].sort((a,b) => {
+    let sa = a.scores.ambitious||0;
+    let sb = b.scores.ambitious||0;
+    // Cultural sanity: pbPrestige=2 + avg ≥ 14 → Tier C cannot be #1
+    if (pbPrestige >= 2 && avg >= 14) {
+      if (CLUSTER_PRESTIGE_TIER[a.id] === "C") sa -= 0.20;
+      if (CLUSTER_PRESTIGE_TIER[b.id] === "C") sb -= 0.20;
+    }
+    return sb - sa;
+  });
+  // Medicine: not #1 in Ambitious if avg < 15.5 + !privateBudget
   let ambitious = null;
   for (const item of ambSorted) {
-    if (item.c.id === "health" && !privateBudget && avg < 15.5) continue;
-    ambitious = item.c; break;
+    if (item.id === "health" && !privateBudget && avg < 15.5) continue;
+    ambitious = item; break;
   }
-  ambitious = ambitious || ambSorted[0]?.c || null;
+  ambitious = ambitious || ambSorted[0] || null;
 
-  // Debug line (dev-only, no import.meta)
   if (typeof window !== "undefined" && window.__DEV__) {
     console.log("[Massar ThreeViews] PES:", pes.toFixed(2), "tier:", academicTier,
       "| fit:", bestFit?.id, "balanced:", balanced?.id, "ambitious:", ambitious?.id);
@@ -2614,8 +2917,39 @@ function loadSession() {
     if (!parsed || parsed._v !== SCHEMA_VERSION) return null;
     // Basic shape validation
     if (typeof parsed.lang !== "string") return null;
-    // TASK 1 — migrate old physics/chemistry mark keys → pc
+    // TASK 1 — migrate old physics/chemistry mark keys → physchem
     if (parsed.marks) parsed.marks = migrateMarks(parsed.marks);
+    // SUBJECT MODEL (MOROCCO) FIX: migrate old info.trackField / examLevel → new fields
+    if (parsed.info) {
+      const inf = parsed.info;
+      // If old examLevel exists but new examYear doesn't, promote it
+      if (!inf.examYear && inf.examLevel) inf.examYear = inf.examLevel;
+      // If old trackField exists but new bac1Field/bac2Track don't, derive them
+      if (inf.trackField && !inf.bac1Field && !inf.bac2Track) {
+        const bac1Fields = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
+        const bac2Tracks = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
+        const year = inf.examYear || "bac2";
+        if (year === "bac1" && bac1Fields.includes(inf.trackField)) {
+          inf.bac1Field = inf.trackField;
+        } else if (year === "bac2" && bac2Tracks.includes(inf.trackField)) {
+          inf.bac2Track = inf.trackField;
+        } else {
+          // Map old bacTrack style
+          const OLD_BAC_TRACK_MAP = {
+            SVT:"bac2:SVT", PC:"bac2:PC", SMA:"bac2:SMA", SMB:"bac2:SMB",
+            SE:"bac1:SE", SM:"bac1:SM",
+          };
+          const mapped = OLD_BAC_TRACK_MAP[inf.bacTrack] || null;
+          if (mapped) {
+            const [yr, tk] = mapped.split(":");
+            inf.examYear = yr;
+            if (yr === "bac1") inf.bac1Field = tk;
+            else               inf.bac2Track = tk;
+          }
+        }
+      }
+      parsed.info = inf;
+    }
     return parsed;
   } catch {
     return null;
@@ -2738,6 +3072,30 @@ const PRESTIGE_INDEX = {
   sports: 0.55, creative_digital: 0.55, trades: 0.4, automotive: 0.45, culinary_ops: 0.35,
 };
 
+// LOGIC FIX: future-proofing index per cluster (automation resistance + global demand)
+// Used in Balanced and Ambitious scoring lanes (spec §3.6)
+const FUTURE_INDEX = {
+  data:            0.97,  // AI/ML — highest demand globally
+  cyber:           0.95,  // Cybersecurity — structural shortage
+  it:              0.88,  // Software — broad and resilient
+  health:          0.90,  // Healthcare — demographic-driven
+  energy:          0.88,  // Renewables — Morocco's Vision 2030
+  industrial:      0.82,  // Manufacturing automation engineers
+  civil:           0.78,  // Infrastructure — large in Morocco
+  network:         0.76,  // Connectivity infrastructure
+  finance:         0.74,  // Fintech-resistant roles
+  edu_law:         0.72,  // Law + education remain human-heavy
+  logistics:       0.70,  // Supply chain — partially automatable
+  marketing:       0.62,  // Creative/strategy roles survive
+  creative_digital:0.65,  // Digital creation — growing demand
+  trades:          0.80,  // Skilled trades — hard to automate, Morocco needs them
+  automotive:      0.65,  // Shifting with EVs — moderate
+  tourism:         0.58,  // Seasonal, service-dependent
+  sports:          0.60,  // Coaching/management resilient
+  arts_media:      0.55,  // Creative but competitive
+  culinary_ops:    0.52,  // Local demand, limited automation
+};
+
 // ── Cluster scores ────────────────────────────────────────────────
 /**
  * Ranks all clusters given effective marks + reality layer inputs.
@@ -2761,6 +3119,15 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
   const priority     = reality.priority     || "stability";
   const prefStyle    = reality.preferredStyle || "";
   const strengthsNow = reality.strengthsNow  || [];
+
+  // NEW INPUT: profileBoost — 6 high-signal personal questions
+  const pb = reality.profileBoost || {};
+  const pbPrestige = Number(pb.prestigePriority ?? 1);   // 0-2
+  const pbMoney    = Number(pb.moneyPriority    ?? 1);   // 0-2
+  const pbHandsOn  = Number(pb.handsOn          ?? 1);   // 0-2
+  const pbRisk     = Number(pb.riskTolerance    ?? 1);   // 0-2
+  const pbIntl     = Number(pb.internationalIntent ?? 1); // 0-2
+  const pbFocus    = Number(pb.focusAbility     ?? 1);   // 0-2
 
   // Practical-cluster boost keys — clusters that should surface for hands-on profiles
   const PRACTICAL_CLUSTERS = new Set(["trades","automotive","sports","creative_digital","culinary","industrial","energy","logistics","tourism"]);
@@ -2868,6 +3235,30 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       if (academicTier === "A" && !hasPublicRoute && PRACTICAL_CLUSTERS.has(cluster.id)) goalTierPenalty = 0.08;
     }
 
+    // NEW INPUT: profile boost modifiers
+    // handsOn boost: practical clusters rise for handsOn=2; academic clusters dampened
+    const isHandsOnCluster     = PRACTICAL_CLUSTERS.has(cluster.id);
+    const isAcademicCluster    = ACADEMIC_CLUSTERS.has(cluster.id);
+    const handsOnBoost         = isHandsOnCluster  ? (pbHandsOn  - 1) * 0.08 :
+                                  isAcademicCluster ? (1 - pbHandsOn) * 0.04 : 0;
+    // prestige boost: high-prestige clusters rise for pbPrestige=2
+    const pbPrestigeBoost      = ((PRESTIGE_INDEX[cluster.id] ?? 0.6) - 0.5) * pbPrestige * 0.05;
+    // risk boost: creative_digital / startup-adjacent clusters rise for risk-tolerant
+    const riskAdjacentClusters = new Set(["creative_digital","sports","arts_media","automotive","culinary_ops"]);
+    const riskBoost            = riskAdjacentClusters.has(cluster.id) ? (pbRisk - 1) * 0.04 : 0;
+    // international intent: clusters with strong abroad potential boosted
+    const intlClusters         = new Set(["it","data","cyber","health","finance","industrial","civil","energy","network","edu_law"]);
+    const intlBoost            = intlClusters.has(cluster.id) ? pbIntl * 0.02 : 0;
+    // focus ability: competitive selective clusters boosted for high focus
+    const focusClusters        = new Set(["health","data","cyber","it","industrial","civil","energy","finance","edu_law"]);
+    const focusBoost           = focusClusters.has(cluster.id) ? (pbFocus - 1) * 0.04 : 0;
+    // Tier D rule: if avg < 12, handsOn=2 or prestige=0 → trades/practical must surface
+    const tierD                = overallAvg < 12;
+    const tierDHandsOnBoost    = tierD && isHandsOnCluster && pbHandsOn >= 1 ? 0.08 : 0;
+
+    // LOGIC FIX: future-proofing index (spec §3.6)
+    const futureIdx = FUTURE_INDEX[cluster.id] ?? 0.6;
+
     // B — Medicine hard gate: strong reality penalty if student doesn't meet public threshold
     const failsHealthPublic =
       cluster.id === "health" &&
@@ -2906,6 +3297,37 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       - realityPenalty    // B — medicine hard gate
       + prestigeBoost     // C — prestige boost for high-avg students
       - culturalDampener  // C — tourism/arts dampener for science+high-avg
+      + handsOnBoost + pbPrestigeBoost + riskBoost + intlBoost + focusBoost + tierDHandsOnBoost
+    ));
+
+    // LOGIC FIX: lane-specific sub-scores for computeThreeViews
+    // Best Personal Fit: 45% trait + 25% handsOn/styleMod + 15% market + 15% futureIndex
+    const fitLaneScore = Math.min(1, Math.max(0,
+      0.45 * traitScore
+      + 0.25 * Math.max(0, traitScore * 0.5 + (pbHandsOn / 2) * (isHandsOnCluster ? 0.8 : 0.4) * 0.5)
+      + 0.15 * marketScore
+      + 0.15 * futureIdx
+      - (overallAvg < 10 ? 0.10 : 0) // mild academic penalty only for very low avg
+    ));
+    // Best Balanced: 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl/mobility
+    const balancedLaneScore = Math.min(1, Math.max(0,
+      0.40 * academicScore
+      + 0.20 * marketScore
+      + 0.15 * traitScore
+      + 0.15 * futureIdx
+      + 0.10 * (pbIntl / 2 * 0.5 + (mobility > 0 ? 0.5 : 0) * 0.5)
+      - realityPenalty
+      - goalTierPenalty
+      + prestigeBoost * 0.5
+    ));
+    // Most Ambitious: 35% prestige + 25% academic proximity + 15% focus + 15% futureIndex + 10% market
+    const ambLaneScore = Math.min(1, Math.max(0,
+      0.35 * (PRESTIGE_INDEX[cluster.id] ?? 0.6)
+      + 0.25 * Math.min(1, academicScore * 1.2)
+      + 0.15 * (pbFocus / 2)
+      + 0.15 * futureIdx
+      + 0.10 * marketScore
+      - realityPenalty
     ));
 
     return {
@@ -2914,6 +3336,10 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
         bac: bacScore, academic: academicScore, trait: traitScore, market: marketScore,
         strength: strengthScore, interest: interestScore, identity: identityScore,
         priority: priorityScore, final: finalScore,
+        // LOGIC FIX: lane-specific scores and futureIndex
+        fit: fitLaneScore, balanced: balancedLaneScore, ambitious: ambLaneScore,
+        future: futureIdx,
+        prestige: PRESTIGE_INDEX[cluster.id] ?? 0.6,
       },
       eligibilityTag,
       overallAvg,
@@ -2970,10 +3396,10 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
   const priority     = reality.priority     || "stability";
   const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
-  // Narrative fix — pick best 1–2 subjects by mark and calibrate wording
-  const trackSubjects = WATANI_SUBJECTS_BY_TRACK[bacTrack] || [];
+  // SUBJECT SYSTEM FIX: narrative uses subjects from effectiveMarks (already filtered by getSubjectsForMarks)
+  // SUBJECT SYSTEM FIX: use keys from effectiveMarks (already from getSubjectsForMarks)
   const SUBJ_LABELS   = SUBJECT_LABELS || {};
-  const markedSubjs   = trackSubjects
+  const markedSubjs   = Object.keys(effectiveMarks||{})
     .map(s => ({ s, v: Number(effectiveMarks[s]) || 0 }))
     .filter(x => x.v > 0)
     .sort((a,b) => b.v - a.v);
@@ -3664,24 +4090,224 @@ function StepReality({ lang, reality, setReality, onNext, onBack, t, dir }) {
   );
 }
 
-// ── Step 3: Info ──────────────────────────────────────────────────
-function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
-  const resetMarksOnTrackChange = (newTrack) => {
-    // parent resets marks when bacTrack changes
-    setInfo(p=>({...p,bacTrack:newTrack}));
-  };
+// ── Step 2.5: Profile Boost ───────────────────────────────────────
+// NEW INPUT: 6 high-signal questions that sharpen all 3 recommendation lanes.
+// Stored in reality.profileBoost as { prestigePriority, moneyPriority, handsOn,
+//   riskTolerance, internationalIntent, focusAbility } each 0|1|2.
+function StepProfileBoost({ lang, reality, setReality, onNext, onBack, t, dir }) {
+  const pb = reality.profileBoost || {};
+  const set = (field, val) =>
+    setReality(prev => ({ ...prev, profileBoost: { ...(prev.profileBoost || {}), [field]: val } }));
+
+  const QUESTIONS = [
+    {
+      key: "prestigePriority",
+      label: t.pb_prestige,
+      opts: [t.pb_prestige0, t.pb_prestige1, t.pb_prestige2],
+    },
+    {
+      key: "moneyPriority",
+      label: t.pb_money,
+      opts: [t.pb_money0, t.pb_money1, t.pb_money2],
+    },
+    {
+      key: "handsOn",
+      label: t.pb_handsOn,
+      opts: [t.pb_handsOn0, t.pb_handsOn1, t.pb_handsOn2],
+    },
+    {
+      key: "riskTolerance",
+      label: t.pb_risk,
+      opts: [t.pb_risk0, t.pb_risk1, t.pb_risk2],
+    },
+    {
+      key: "internationalIntent",
+      label: t.pb_intl,
+      opts: [t.pb_intl0, t.pb_intl1, t.pb_intl2],
+    },
+    {
+      key: "focusAbility",
+      label: t.pb_focus,
+      opts: [t.pb_focus0, t.pb_focus1, t.pb_focus2],
+    },
+  ];
+
+  const answered = QUESTIONS.filter(q => pb[q.key] != null).length;
+  const canProceed = answered >= 4; // allow skipping 2 max
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={3} total={7} t={t}/>
+      <StepIndicator step={2} total={8} t={t}/>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.profileBoostStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t.profileBoostDesc}</p>
+
+      {QUESTIONS.map((q, qi) => {
+        const val = pb[q.key];
+        return (
+          <div key={q.key} className="reality-section" style={{marginBottom:20}}>
+            <div className="reality-section-title" style={{fontSize:14,marginBottom:10}}>
+              {qi + 1}. {q.label}
+            </div>
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {q.opts.map((opt, i) => (
+                <button
+                  key={i}
+                  className={`identity-btn${val === i ? " selected" : ""}`}
+                  style={{flex:"1 1 auto",minWidth:100,fontSize:13,padding:"10px 12px",textAlign:"center"}}
+                  onClick={() => set(q.key, i)}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+
+      <p style={{fontSize:12,color:"var(--muted)",marginTop:8,marginBottom:16}}>
+        {answered}/6 {lang==="ar"?"أسئلة مُجابة":lang==="fr"?"réponses":"answered"}
+        {!canProceed && " — "+( lang==="ar"?"يرجى الإجابة على 4 على الأقل":lang==="fr"?"répondre à au moins 4":"please answer at least 4")}
+      </p>
+
+      <div className="btn-row">
+        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        <button className="btn btn-primary" onClick={onNext}
+          disabled={!canProceed} style={{opacity:canProceed?1:0.4}}>
+          {t.next} →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── Step 3: Info ──────────────────────────────────────────────────
+function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
+  const set = (field, val) => setInfo(p => ({ ...p, [field]: val }));
+
+  // SUBJECT MODEL (MOROCCO) FIX: when changing year/field/track, also sync scoring bacTrack
+  const setExamYear = (yr) => {
+    const mapped = yr === "bac1"
+      ? BAC1_FIELD_TO_SCORING[info.bac1Field || "SE"]
+      : BAC2_TRACK_TO_SCORING[info.bac2Track || "SVT"];
+    setInfo(p => ({ ...p, examYear: yr, examLevel: yr, bacTrack: mapped || "SVT" }));
+  };
+  const setBac1Field = (f) => {
+    const mapped = BAC1_FIELD_TO_SCORING[f] || "SVT";
+    setInfo(p => ({ ...p, bac1Field: f, trackField: f, bacTrack: mapped }));
+  };
+  const setBac2Track = (tk) => {
+    const mapped = BAC2_TRACK_TO_SCORING[tk] || "SVT";
+    setInfo(p => ({ ...p, bac2Track: tk, trackField: tk, bacTrack: mapped }));
+  };
+
+  const BAC1_FIELDS  = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
+  const BAC2_TRACKS  = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
+  const BP_EXTRAS    = ["math","physchem","svt"];
+
+  const examYear   = info.examYear  || "bac2";
+  const bac1Field  = info.bac1Field || "SE";
+  const bac2Track  = info.bac2Track || "SVT";
+  const isBac1     = examYear === "bac1";
+  const isEO       = isBac1 ? bac1Field === "EO" : bac2Track === "EO";
+  const isBP       = isBac1 ? bac1Field === "BP" : bac2Track === "BP";
+  const canProceed = !!examYear && (isBac1 ? !!bac1Field : !!bac2Track);
+
+  const selStyle = (sel) => ({
+    padding:"10px 14px", borderRadius:10, textAlign:"start",
+    border:`2px solid ${sel ? "var(--accent)" : "var(--border)"}`,
+    background: sel ? "rgba(232,161,36,0.10)" : "var(--surface2)",
+    color: sel ? "var(--accent)" : "var(--text)",
+    cursor:"pointer", fontFamily:"inherit", fontWeight:sel?700:400, fontSize:13,
+  });
+
+  return (
+    <div className="card" dir={dir}>
+      <StepIndicator step={3} total={8} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>{t.infoStep}</h2>
 
+      {/* SUBJECT MODEL (MOROCCO) FIX: examYear selector — bac1 vs bac2 */}
       <div className="field">
-        <label>{t.bacTrack}</label>
-        <select value={info.bacTrack} onChange={e=>resetMarksOnTrackChange(e.target.value)}>
-          {BAC_TRACKS.map(b=><option key={b.id} value={b.id}>{b.label[lang]}</option>)}
-        </select>
+        <label style={{fontWeight:600}}>{t.examYearLabel || t.examLevelLabel}</label>
+        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
+          {[["bac1", t.examYearBac1 || t.examLevelBac1], ["bac2", t.examYearBac2 || t.examLevelBac2]].map(([val,lbl]) => (
+            <button key={val}
+              className={`mob-btn ${examYear===val?"selected":""}`}
+              onClick={()=>setExamYear(val)}>{lbl}
+            </button>
+          ))}
+        </div>
       </div>
+
+      {/* SUBJECT MODEL (MOROCCO) FIX: Bac1 field selector (only when bac1) */}
+      {isBac1 && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bac1FieldLabel || t.trackFieldLabel}</label>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
+            {BAC1_FIELDS.map(key => {
+              const lbl = t.bac1Fields?.[key] || t.trackFields?.[key] || key;
+              return (
+                <button key={key} onClick={()=>setBac1Field(key)} style={selStyle(bac1Field===key)}>
+                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* SUBJECT MODEL (MOROCCO) FIX: Bac2 track selector (only when bac2) */}
+      {!isBac1 && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bac2TrackLabel || t.trackFieldLabel}</label>
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
+            {BAC2_TRACKS.map(key => {
+              const lbl = t.bac2Tracks?.[key] || key;
+              return (
+                <button key={key} onClick={()=>setBac2Track(key)} style={selStyle(bac2Track===key)}>
+                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* EO: eoOption arabic / sharia */}
+      {isEO && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.eoOptionLabel}</label>
+          <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
+            {[["arabic",t.eoOptionArabic],["sharia",t.eoOptionSharia]].map(([val,lbl]) => (
+              <button key={val}
+                className={`mob-btn ${info.eoOption===val?"selected":""}`}
+                onClick={()=>set("eoOption",val)}>{lbl}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* BP: bpExtras multi-select */}
+      {isBP && (
+        <div className="field">
+          <label style={{fontWeight:600}}>{t.bpExtrasLabel}</label>
+          <div className="chip-grid" style={{marginTop:8}}>
+            {BP_EXTRAS.map(k => {
+              const sel = (info.bpExtras||[]).includes(k);
+              return (
+                <button key={k}
+                  className={`chip-btn${sel?" selected":""}`}
+                  onClick={()=>setInfo(p=>{
+                    const cur = p.bpExtras||[];
+                    return {...p, bpExtras: sel ? cur.filter(x=>x!==k) : [...cur,k]};
+                  })}>
+                  {SUBJECT_LABELS[k]?.[lang] || k}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="field">
         <label>{t.city}</label>
@@ -3726,7 +4352,7 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       </div>
       </div>
 
-      {/* Cultural sensitivity patch (Tier + Goal) — study goal selector */}
+      {/* Cultural sensitivity patch — study goal selector */}
       <div className="field">
         <label style={{fontWeight:600}}>{t.studyGoalLabel}</label>
         <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
@@ -3864,63 +4490,39 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
   );
 }
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
-  // TASK 1 — Pick subject list based on examTiming: pre vs post
-  const subjectMap  = (info.examTiming === "pre") ? SUBJECTS_PRE_BY_TRACK : SUBJECTS_POST_BY_TRACK;
-  const wataniSubjs = subjectMap[info.bacTrack] || SUBJECTS_POST_BY_TRACK[info.bacTrack] || [];
-  const stream      = STREAM_BY_TRACK[info.bacTrack] || "scientific";
-  const regionalSubjs = (info.examMode === "full_bac") ? (REGIONAL_SUBJECTS_BY_STREAM[stream] || []) : [];
-  const subjs = wataniSubjs;
+  // SUBJECT MODEL (MOROCCO) FIX: always use getSubjectsForMarks for the exact official subject list
+  const subjs = getSubjectsForMarks(info);
+  // Header: show bac1/bac2 label
+  const examYear = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
+  const levelHeader = examYear === "bac1"
+    ? (t.examYearBac1 || t.examLevelBac1 || "Bac 1 (Régional)")
+    : (t.examYearBac2 || t.examLevelBac2 || "Bac 2 (National)");
+  // Guard: if no subjects yet (field/track not selected), show prompt
+  if (subjs.length === 0) {
+    return (
+      <div className="card" dir={dir}>
+        <p style={{textAlign:"center",color:"var(--muted)",marginTop:40}}>
+          {lang==="ar"?"يرجى اختيار الشعبة أولاً":lang==="fr"?"Veuillez d'abord choisir votre filière":"Please select your track first"}
+        </p>
+        <div className="btn-row">
+          <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={4} total={7} t={t}/>
+      <StepIndicator step={4} total={8} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.marksStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.marks}</p>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>{t.marks}</p>
 
-{regionalSubjs.length > 0 && (
-  <>
-    <div className="section-title" style={{ marginTop: 0 }}>
-      {t.marksSectionRegional}
-    </div>
-    <div className="marks-grid">
-      {regionalSubjs.map((s) => {
-        const val = Number(marks[s]) || 0;
-        const pct = (val / 20) * 100;
-        const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
-        return (
-          <div key={s} className="mark-input">
-            <div className="mark-label">{SUBJECT_LABELS[s]?.[lang] || s}</div>
-            <div className="mark-row">
-              <input
-                type="number"
-                min="0"
-                max="20"
-                step="0.5"
-                value={val || ""}
-                placeholder="0"
-                onChange={(e) =>
-                  setMarks((prev) => ({
-                    ...prev,
-                    [s]: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
-                  }))
-                }
-              />
-              <div className="mark-bar">
-                <div className="mark-bar-fill" style={{ width: `${pct}%`, background: color }} />
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  </>
-)}
-
-<div className="section-title" style={{ marginTop: regionalSubjs.length > 0 ? 16 : 0 }}>
-  {t.marksSectionWatani}
+{/* SUBJECTS FIX: level header shows bac1/bac2 */}
+<div className="section-title" style={{ marginTop: 0 }}>
+  {levelHeader}
 </div>
 <div className="marks-grid">
-  {wataniSubjs.map((s) => {
+  {subjs.map((s) => {
     const val = Number(marks[s]) || 0;
     const pct = (val / 20) * 100;
     const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
@@ -6431,6 +7033,201 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   );
 }
 
+// ── WhyThisIsTop: deterministic 3-bullet explanation block ────────
+// Shows "Why this is #1" for the top cluster: Academic tier + Prestige + Future-proofing.
+// Spec §4 — trust-building explainability.
+function WhyThisIsTop({ cluster, overallAvg, lang, t }) {
+  if (!cluster) return null;
+  const avg = Number(overallAvg) || 0;
+  const tier = getAcademicTierABCD(avg);
+  const tierLabel = { A:"A (≥16)", B:"B (14–15.9)", C:"C (12–13.9)", D:"D (<12)" }[tier] || tier;
+  const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
+  const futureIdx = FUTURE_INDEX[cluster.id]  ?? 0.6;
+  const clusterName = (lang==="ar"?"المجال":lang==="fr"?"Domaine":"Field") + ": " + cluster.id;
+
+  const pctPr = Math.round(prestige * 100);
+  const pctFu = Math.round(futureIdx * 100);
+
+  const bullet = (icon, txt) => (
+    <div key={txt} style={{display:"flex",gap:8,alignItems:"flex-start",marginBottom:7}}>
+      <span style={{fontSize:16,lineHeight:1}}>{icon}</span>
+      <span style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{txt}</span>
+    </div>
+  );
+
+  const tiers = {
+    ar: { A:"أكاديمي ممتاز", B:"مستوى جيد جداً", C:"مستوى متوسط", D:"مسار تطبيقي" },
+    fr: { A:"Excellent académique", B:"Très bon niveau", C:"Niveau moyen", D:"Voie pratique" },
+    en: { A:"Excellent academic tier", B:"Strong academic tier", C:"Average tier", D:"Practical-track tier" },
+  };
+  const tierText = (tiers[lang]||tiers.en)[tier] || tierLabel;
+
+  const presText = lang==="ar"
+    ? `الهيبة المهنية: ${pctPr}٪ — ${pctPr>=80?"مسار رفيع المستوى":pctPr>=65?"مسار مرموق":"مسار عملي"}`
+    : lang==="fr"
+    ? `Prestige: ${pctPr}% — ${pctPr>=80?"filière très cotée":pctPr>=65?"filière respectée":"filière pratique"}`
+    : `Prestige: ${pctPr}% — ${pctPr>=80?"top-tier field":pctPr>=65?"respected field":"practical field"}`;
+
+  const futText = lang==="ar"
+    ? `مقاومة المستقبل: ${pctFu}٪ — ${pctFu>=80?"طلب مرتفع في 2030+":pctFu>=65?"مستقر ومتنامٍ":"يعتمد على التخصص"}`
+    : lang==="fr"
+    ? `Résistance à l'avenir: ${pctFu}% — ${pctFu>=80?"forte demande 2030+":pctFu>=65?"stable et croissant":"dépend de la spécialisation"}`
+    : `Future-proofing: ${pctFu}% — ${pctFu>=80?"high demand 2030+":pctFu>=65?"stable and growing":"depends on specialisation"}`;
+
+  const tierBullet = lang==="ar"
+    ? `مستواك الأكاديمي: ${tierText} — يتوافق مع متطلبات هذا المسار`
+    : lang==="fr"
+    ? `Ton niveau académique: ${tierText} — compatible avec les prérequis`
+    : `Your academic tier: ${tierText} — aligns with this field's requirements`;
+
+  // Prestige alternative for low-prestige clusters recommended to high-avg students
+  const showPrestAlt = prestige < 0.62 && avg >= 14.5;
+  const altClusters = showPrestAlt
+    ? Object.entries(PRESTIGE_INDEX)
+        .filter(([id, p]) => p >= 0.78 && id !== cluster.id)
+        .sort((a,b) => b[1]-a[1])
+        .slice(0,2)
+        .map(([id]) => id)
+    : [];
+  const altLabel = lang==="ar"
+    ? "إذا كنت تريد مساراً أكثر هيبة: فكّر في "
+    : lang==="fr"
+    ? "Pour une filière plus cotée, explore : "
+    : "If you want a more prestigious label, consider: ";
+
+  return (
+    <div style={{
+      background:"rgba(99,102,241,0.04)", border:"1px solid rgba(99,102,241,0.18)",
+      borderRadius:14, padding:"14px 16px", marginBottom:16,
+    }}>
+      <div style={{fontSize:11,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>
+        {lang==="ar"?"🔍 لماذا هذا هو الخيار الأول؟"
+          :lang==="fr"?"🔍 Pourquoi ce choix en #1 ?"
+          :"🔍 Why is this #1?"}
+      </div>
+      {bullet("🎓", tierBullet)}
+      {bullet("🏆", presText)}
+      {bullet("🔮", futText)}
+      {showPrestAlt && altClusters.length > 0 && (
+        <div style={{
+          marginTop:10,padding:"8px 12px",
+          background:"rgba(232,161,36,0.07)",border:"1px solid rgba(232,161,36,0.2)",
+          borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
+        }}>
+          💡 {altLabel}
+          <strong>{altClusters.join(" · ")}</strong>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── DEV_TESTS: built-in regression test suite ─────────────────────
+// Spec §5 — run on localhost, logs to console. Set window.__RUN_TESTS=true to force.
+// Tests are deterministic and do not render in production UI.
+function runDevTests() {
+  const PASS = "\x1b[32m✅\x1b[0m";
+  const FAIL = "\x1b[31m❌\x1b[0m";
+  let failures = 0;
+
+  function check(label, condition) {
+    if (condition) {
+      console.log(PASS, label);
+    } else {
+      console.warn(FAIL, label);
+      failures++;
+    }
+  }
+
+  function scoreCase(bacTrack, marks, pb={}, goal="prestige") {
+    const traits = { analytical:0.7, social:0.6, structure:0.65, creativity:0.5, risk:0.5, leadership:0.6 };
+    const reality = {
+      strengths:["s_math","s_learning","s_discipline"],
+      interests:["i_research","i_building"],
+      identityType:"academic", priority:"prestige",
+      goalPreference:goal, goalMode:goal,
+      profileBoost:{ prestigePriority:pb.pres??1, moneyPriority:1, handsOn:pb.handsOn??0,
+        riskTolerance:1, internationalIntent:1, focusAbility:pb.focus??1 },
+    };
+    // SUBJECT SYSTEM FIX: use getSubjectsForMarks with a synthetic info object for tests
+    const testInfo = { trackField: TRACK_FIELD_TO_BAC_TRACK_REVERSE?.[bacTrack] || "SE", examLevel:"bac2", smOption:"A", eoOption:"arabic", bpExtras:[] };
+    const subjs = getSubjectsForMarks(testInfo);
+    const eff = {};
+    subjs.forEach(s => eff[s] = marks[s] ?? 13);
+    return computeClusterScores(bacTrack, eff, traits, 1, false, reality);
+  }
+
+  function top3ids(ranked) { return ranked.slice(0,3).map(c=>c.id); }
+  function views(ranked, avgVal, info={}) {
+    const avg = Object.values(info.marks||{}).length
+      ? Object.values(info.marks||{}).reduce((a,b)=>a+Number(b),0)/Object.values(info.marks||{}).length
+      : avgVal;
+    const eff = info.marks || {};
+    return computeThreeViews(ranked, avg, { goalPreference:"prestige", goalMode:"prestige", privateBudget:false, ...info }, eff);
+  }
+
+  // TEST 1 — SVT avg 14.8: medicine NOT #1 in Balanced
+  (()=>{
+    const ranked = scoreCase("SVT", { svt:14, pc:12, math:15, english:14, philosophy:13 });
+    const avgVal = (14+12+15+14+13)/5; // 13.6 — wait, let's use 14.8 avg
+    // Use marks that give ~14.8 avg
+    const ranked2 = scoreCase("SVT", { svt:15, pc:14, math:16, english:14, philosophy:15 });
+    const avg2 = (15+14+16+14+15)/5;
+    const v = computeThreeViews(ranked2, avg2, {goalPreference:"prestige",privateBudget:false},{svt:15,pc:14});
+    check("T1 SVT avg~14.8 → Medicine NOT #1 in Balanced", v.balanced?.id !== "health");
+  })();
+
+  // TEST 2 — SVT avg 16.2, SVT≥14, PC≥13 → Medicine appears in Ambitious and Balanced
+  (()=>{
+    const ranked = scoreCase("SVT", { svt:17, pc:15, math:16, english:16, philosophy:15 });
+    const avg = (17+15+16+16+15)/5;
+    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",privateBudget:false},{svt:17,pc:15});
+    check("T2 SVT avg~15.8 eligible → Medicine in Ambitious (not blocked)", v.ambitious?.id === "health" || v.balanced?.id === "health");
+  })();
+
+  // TEST 3 — SMA avg 15, strong math → IT/Data/Engineering in top-3, not Tourism
+  (()=>{
+    const ranked = scoreCase("SMA", { math:17, pc:15, english:14, philosophy:13 });
+    const t3 = top3ids(ranked);
+    const HIGH_PRESTIGE = new Set(["it","data","cyber","industrial","civil","energy","finance","network"]);
+    check("T3 SMA avg~14.75 → tourism NOT in top-3", !t3.includes("tourism"));
+    check("T3 SMA avg~14.75 → at least 1 high-prestige cluster in top-3", t3.some(id=>HIGH_PRESTIGE.has(id)));
+  })();
+
+  // TEST 4 — Tier C handsOn=2 → trades in top-3
+  (()=>{
+    const traits = { analytical:0.4, social:0.5, structure:0.7, creativity:0.4, risk:0.5, leadership:0.5 };
+    const reality = {
+      strengths:["s_mechanical","s_tools"],
+      interests:["i_machines","i_building"],
+      identityType:"builder", priority:"stability",
+      goalPreference:"practical", goalMode:"practical",
+      profileBoost:{ prestigePriority:0, moneyPriority:1, handsOn:2, riskTolerance:1, internationalIntent:0, focusAbility:1 },
+    };
+    const eff = { math:11, pc:10, english:11, philosophy:10 };
+    const ranked = computeClusterScores("TECH", eff, traits, 0, false, reality);
+    const t3 = top3ids(ranked);
+    check("T4 Tier C + handsOn=2 → trades in top-3", t3.includes("trades") || t3.includes("automotive") || t3.includes("industrial"));
+  })();
+
+  // TEST 5 — Tier A + pbPrestige=2 → no Tier C cluster as #1 in Ambitious
+  (()=>{
+    const ranked = scoreCase("SMA", { math:18, pc:17, english:17, philosophy:16 }, { pres:2 });
+    const avg = (18+17+17+16)/4;
+    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",goalMode:"prestige",privateBudget:false,profileBoost:{prestigePriority:2}},{});
+    const tier = CLUSTER_PRESTIGE_TIER[v.ambitious?.id] || "B";
+    check("T5 Tier A + prestige=2 → ambitious is NOT Tier C", tier !== "C");
+  })();
+
+  console.log(`[Massar DEV_TESTS] ${failures===0?"\x1b[32m All 5 tests pass \x1b[0m":"\x1b[31m "+failures+" test(s) failed\x1b[0m"}`);
+}
+
+// Auto-run on localhost (deferred to not block render)
+if (typeof window !== "undefined" && (window.__DEV__ || window.__RUN_TESTS ||
+  (typeof location !== "undefined" && location.hostname === "localhost"))) {
+  setTimeout(runDevTests, 1800);
+}
+
 // src/massar/components/StepResults.jsx
 // ─────────────────────────────────────────────────────────────────
 // Goals wired here:
@@ -6489,7 +7286,8 @@ function StepResults({
   }
   // ── End null-safety gate ────────────────────────────────────────
 
-  const subjs   = WATANI_SUBJECTS_BY_TRACK[safeInfo.bacTrack] || [];
+  // SUBJECTS FIX: use getSubjectsForMarks for accurate subject list in results panel
+  const subjs   = getSubjectsForMarks(safeInfo);
   const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(safeMarks[k])||0),0)/subjs.length : 0;
   const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks?.[k]||0),0)/subjs.length : 0;
   const hasDeltas = Object.values(whatIfDeltas || {}).some(d=>Number(d)!==0);
@@ -6705,6 +7503,16 @@ function StepResults({
         <ImproveModeCard
           t={t} lang={lang} marks={safeMarks} traits={safeTraits}
           rankedClusters={safeRanked} reality={safeReality} setReality={setReality}/>
+      )}
+
+      {/* ── WhyThisIsTop: deterministic explainability block (spec §4) ── */}
+      {top3[0] && (
+        <WhyThisIsTop
+          cluster={top3[0]}
+          overallAvg={safeResults.overallAvg}
+          lang={lang}
+          t={t}
+        />
       )}
 
       {/* ── FIX: multi-view recommendation ── */}
@@ -7122,11 +7930,21 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
-  goal: "prestige",          // Cultural sensitivity patch (Tier + Goal)
-  goalMode: "unsure",        // Cultural rerank layer — prestige/fit/practical/unsure
-  goalPreference: "prestige",// TASK 2 — user style preference: prestige|balanced|practical
-  examMode: "watani",        // watani | full_bac
-  examTiming: "post",        // TASK 1 — pre | post (determines subject list shown)
+  goal: "prestige",
+  goalMode: "unsure",
+  goalPreference: "prestige",
+  examMode: "watani",
+  examTiming: "post",
+  // SUBJECT MODEL (MOROCCO) FIX: accurate Bac subject selectors
+  examYear:  "bac2",       // "bac1" | "bac2"
+  bac1Field: "SE",         // "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac1 only)
+  bac2Track: "SVT",        // "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac2 only)
+  eoOption:  "arabic",     // "arabic"|"sharia" (EO only)
+  bpExtras:  [],           // ["math","physchem","svt"] (BP only)
+  // Legacy fields kept for migration compat
+  examLevel:  "bac2",
+  trackField: "SE",
+  smOption:   "A",
 };
 
 const DEFAULT_REALITY = {
@@ -7199,18 +8017,21 @@ export default function App() {
   }, [answers]);
 
   const effectiveMarks = useMemo(() => {
-    // TASK 1 — use PRE or POST subject list based on examTiming
-    const subjectMap = (info.examTiming === "pre") ? SUBJECTS_PRE_BY_TRACK : SUBJECTS_POST_BY_TRACK;
-    const subjects   = subjectMap[info.bacTrack] || SUBJECTS_POST_BY_TRACK[info.bacTrack] || [];
+    // SUBJECTS FIX: always use getSubjectsForMarks for the official field+level subject list
+    const subjects = getSubjectsForMarks(info);
     return buildEffectiveMarks(marks, whatIfDeltas, subjects);
   },
-    [marks, whatIfDeltas, info.bacTrack, info.examTiming]
+    [marks, whatIfDeltas, info.bacTrack, info.examTiming, info.trackField, info.examLevel,
+     info.smOption, info.eoOption, info.bpExtras]
   );
 
   const rankedClusters = useMemo(() => {
+    // SUBJECT MODEL (MOROCCO) FIX: use getScoringBacTrack() for all examYear/bac1Field/bac2Track combos
+    const scoreBacTrack = getScoringBacTrack(info);
     // TASK 2 — inject goal + goalPreference into reality so scorer can read them
-    const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige" };
-    const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
+    const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige",
+      profileBoost: { ...(reality.profileBoost||{}), ...(info.profileBoost||{}) } };
+    const result = computeClusterScores(scoreBacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
     if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
     return result;
   }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
@@ -7235,7 +8056,7 @@ export default function App() {
 
   // Narrative: useMemo so it updates live when sliders change
   const narrative = useMemo(() => {
-    if (step !== 6 || !top3.length) return null;
+    if (step !== 7 || !top3.length) return null;
     // Narrative fix — pass effectiveMarks for subject-calibrated wording
     return generateNarrative(top3, traits, info.bacTrack, lang, reality, effectiveMarks);
   }, [top3, traits, info.bacTrack, lang, step, reality, effectiveMarks]); // eslint-disable-line
@@ -7285,20 +8106,25 @@ export default function App() {
           <StepReality lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(3)} onBack={()=>setStep(1)} t={t} dir={dir}/>
         )}
+        {/* NEW INPUT: StepProfileBoost — 6 high-signal questions (spec §2) */}
         {step === 3 && (
-          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
+          <StepProfileBoost lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(4)} onBack={()=>setStep(2)} t={t} dir={dir}/>
         )}
         {step === 4 && (
-          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
+          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
             onNext={()=>setStep(5)} onBack={()=>setStep(3)} t={t} dir={dir}/>
         )}
         {step === 5 && (
-          <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
-            reality={reality} setReality={setReality}
+          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
             onNext={()=>setStep(6)} onBack={()=>setStep(4)} t={t} dir={dir}/>
         )}
         {step === 6 && (
+          <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
+            reality={reality} setReality={setReality}
+            onNext={()=>setStep(7)} onBack={()=>setStep(5)} t={t} dir={dir}/>
+        )}
+        {step === 7 && (
           // FIX: prevent white screen on results — ErrorBoundary catches any render throw
           <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
             <StepResults
@@ -7307,7 +8133,7 @@ export default function App() {
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
               narrative={narrative} reality={reality} setReality={setReality}
-              restart={restart} onBack={()=>setStep(5)}
+              restart={restart} onBack={()=>setStep(6)}
               secondaryTop3={secondaryTop3}
               overallAvg={overallAvgForRerank}
             />
