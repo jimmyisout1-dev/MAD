@@ -16,25 +16,26 @@ const TRANSLATIONS = {
     dir: "rtl",
     // App shell
     // HOME PAGE 3D CSS — translations
-    homeHero: "اكتشف مسارك المهني المثالي",
-    homeHeroSub: "اختبار ذكي مُصمَّم خصيصاً للطلاب المغاربة — يجمع بين شخصيتك وعلاماتك وواقع سوق الشغل.",
-    homeCTA: "ابدأ الاختبار مجاناً",
+    homeHero: "اعرف مسارك — اختر بثقة",
+    homeHeroSub: "اختبار ذكي مُصمَّم للطلاب المغاربة — يجمع شخصيتك ونقطك وواقع سوق الشغل في توصية واحدة واضحة.",
+    homeCTA: "ابدأ الآن — مجاناً",
     homeHowItWorks: "كيف يعمل؟",
     homeStep1Title: "اختبار الشخصية",
-    homeStep1Desc: "10 دقائق فقط — أسئلة تكشف ميولك الحقيقية لا ما تريد سماعه.",
-    homeStep2Title: "أدخل درجاتك",
-    homeStep2Desc: "نظام مواد دقيق لكل مسار باك 1 أو باك 2.",
+    homeStep1Desc: "10 دقائق — أسئلة تكشف ميولك الحقيقية، لا ما تظن أنك تريده.",
+    homeStep2Title: "أدخل نقطك",
+    homeStep2Desc: "مواد دقيقة لكل شعبة — باك 1 أو باك 2 — دون تخمين.",
     homeStep3Title: "احصل على خارطة طريقك",
-    homeStep3Desc: "3 مناظير مهنية: الأنسب، المتوازن، الأكثر طموحاً — مع خطة عمل فورية.",
-    homeTrust1: "باكالوريا 1 وباكالوريا 2",
-    homeTrust2: "تعليم عام وخاص",
-    homeTrust3: "الأهلية الفعلية وليس الحلم فقط",
-    homeFooterBy: "مسار — دليلك المهني المغربي",
+    homeStep3Desc: "ثلاث زوايا: أفضل توافق، الخيار المتوازن، الأكثر طموحاً — مع خطة عمل فورية.",
+    homeTrust1: "باك 1 وباك 2",
+    homeTrust2: "التعليم العام والخاص",
+    homeTrust3: "الأهلية الفعلية — لا مجرد أحلام",
+    homeFooterBy: "مسار — دليلك المهني بالمغرب",
     homeFooterContact: "contact@massar.ma",
-    homeBackToTest: "العودة للمعالج",
-    backHome: "← الصفحة الرئيسية",
-        appTitle: "مسار | دليلك المهني المغربي",
-    appSubtitle: "اكتشف مسارك المهني المثالي في المغرب",
+    homeBackToTest: "متابعة الاختبار",
+    backHome: "الرئيسية",
+        // Arabic rewrite
+    appTitle: "مسار | دليلك المهني بالمغرب",
+    appSubtitle: "اكتشف مسارك الدراسي والمهني المناسب لك",
     next: "التالي",
     back: "السابق",
     start: "ابدأ الآن",
@@ -43,11 +44,11 @@ const TRANSLATIONS = {
     of: "من",
     // Steps
     langStep: "اختر لغتك",
-    langDesc: "سيتم عرض التطبيق بالكامل بالغة المختارة",
+    langDesc: "ستُعرض جميع الصفحات باللغة التي تختارها",
     personalityStep: "اختبار الشخصية",
-    personalityDesc: "أجب بصدق – لا توجد إجابات خاطئة",
+    personalityDesc: "أجب بصدق — لا توجد إجابات خاطئة",
     infoStep: "معلوماتك الدراسية",
-    marksStep: "درجاتك",
+    marksStep: "نقطك",
     resultsStep: "نتائجك",
     // Info fields
     bacTrack: "شعبة الباكالوريا",
@@ -60,21 +61,21 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     // Marks
-    marks: "درجاتك /20",
-    examModeLabel: "نوع النقط المدخلة",
+    marks: "نقطك الحالية /20",
+    examModeLabel: "نوع النقط التي ستُدخلها",
     examModeWatani: "نقط الامتحان الوطني فقط",
-    examModeFull: "باك كامل (جهوي + وطني + مراقبة مستمرة)",
+    examModeFull: "الباكالوريا كاملة (جهوي + وطني + مراقبة مستمرة)",
     // TASK 1 — examTiming: pre-Bac vs post-Bac determines which subject list to show
     examTimingLabel: "متى تُجري هذا التقييم؟",
     examTimingPre: "قبل نتائج الباكالوريا (لا يزال بإمكاني التحسين)",
     examTimingPost: "بعد الباكالوريا (نتائج نهائية رسمية)",
     examTimingHint: "يحدد هذا قائمة المواد الدقيقة المعروضة",
     // TASK 2 — goalPreference: prestige / balanced / practical (replaces goalMode selector)
-    goalPreferenceLabel: "ما الأسلوب الذي يناسبك الآن؟",
+    goalPreferenceLabel: "أي أسلوب يناسبك الآن؟",
     goalPreferenceOptions: {
-      prestige:   { icon:"🏆", label:"الهيبة ودراسة طويلة (المسابقات والمدارس الكبرى)" },
-      balanced:   { icon:"⚖️", label:"متوازن — أفضل خيار يناسبني ويبقى مرموقاً" },
-      practical:  { icon:"🔧", label:"دخل سريع / مسار تطبيقي (OFPPT / BTS)" },
+      prestige:   { icon:"🏆", label:"المكانة والمدارس الكبرى (مسار مسابقاتي)" },
+      balanced:   { icon:"⚖️", label:"متوازن — أفضل خيار يناسبني مع الحفاظ على المكانة" },
+      practical:  { icon:"🔧", label:"دخل سريع / مسار تطبيقي (OFPPT أو BTS)" },
     },
     marksSectionWatani: "الامتحان الوطني (الوطني)",
     marksSectionRegional: "الامتحان الجهوي (الجهوي)",
@@ -84,36 +85,36 @@ const TRANSLATIONS = {
     continuousAverage: "معدل المراقبة المستمرة",
     overallAverage: "المعدل العام",
     // What-if sliders (Goal 2)
-    whatIf: "ماذا لو؟ – تعديل الدرجات",
+    whatIf: "ماذا لو؟ — تعديل النقط",
     adjustedAverage: "المعدل بعد التعديل",
-    sliderHint: "↑ تغيير الدرجات لإعادة حساب التوصيات فوراً",
+    sliderHint: "↑ عدّل النقط لإعادة حساب التوصيات فوراً",
     sliderChangeSummary: "التغييرات",
-    sliderNoChange: "لم تُجرَ أي تعديلات بعد",
+    sliderNoChange: "لم تُجرَ أي تعديلات حتى الآن",
     // Results
     traitRadar: "ملف شخصيتك",
-    topCareers: "أفضل المسارات المهنية",
+    topCareers: "أبرز المسارات المهنية المناسبة لك",
     pathways: "المسارات التعليمية",
     actionPlan: "خطة العمل – 30 يوماً",
     fallback: "مسار بديل",
-    fallbackDesc: "مسار احتياطي ذو قيمة متساوية",
-    fallbackBody: "OFPPT والتكوين المهني ليسا مساراً ثانوياً — بل بوابةً مباشرة لسوق العمل بمهارات تقنية مرتفعة الطلب.",
+    fallbackDesc: "خيار آخر بقيمة مساوية",
+    fallbackBody: "OFPPT والتكوين التطبيقي ليسا خياراً ثانوياً — بل مدخل مباشر لسوق الشغل بكفاءات تقنية مطلوبة.",
     explainability: "لماذا هذه التوصية؟",
     // Confidence / signals
     confidenceLabel: "مستوى الثقة",
-    mixedSignals: "📊 تباين في الملف – العوامل الأكاديمية وعوامل الهوية تشير إلى مجالات مختلفة. راجع المسارات مع الأخذ بالسياق الكامل.",
+    mixedSignals: "📊 تباين في الملف — المعطيات الدراسية وعوامل الهوية تشير إلى مجالات مختلفة. راجع المسارات مع الأخذ بالسياق الكامل.",
     // Pathways
     universityRoute: "المسار الجامعي",
     grandeEcoleRoute: "المدارس العليا",
-    practicalRoute: "التكوين المهني",
+    practicalRoute: "التكوين التطبيقي",
     durationLabel: "المدة",
     pathwayMissing: "تفاصيل قريباً",
     // Eligibility
     privateOnly: "مدارس خاصة فقط",
-    notEligiblePublic: "تنافسية عالية (عام)",
+    notEligiblePublic: "تنافسية عالية (التعليم العام)",
     // Medicine eligibility note (Goal 3)
     eligibilityTitle: "شرط القبول – الطب العام",
     eligibilityThresholdLabel: "العتبة الرسمية للقبول العام",
-    eligibilityThresholdValue: "المعدل ≥ 16/20 · علم الأحياء ≥ 14 · الكيمياء ≥ 13",
+    eligibilityThresholdValue: "المعدل ≥ 16/20 · علوم الحياة والأرض ≥ 14 · الفيزياء والكيمياء ≥ 13",
     eligibilityYourAvg: "معدلك الحالي",
     eligibilityMeetsPublic: "✅ مؤهل للمسار العام",
     eligibilityFailsPublic: "❌ لا يفي بشروط الطب العام الحكومي",
@@ -128,23 +129,23 @@ const TRANSLATIONS = {
     ],
     // Narrative fix / Guardrails — ambitious tab "How to unlock"
     ambitiousUnlockTitle: "🔓 كيف تبلغ هذا المسار؟",
-    ambitiousUnlockMed:   "لفتح الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة ≥ 14 والكيمياء ≥ 13.",
-    ambitiousUnlockGen:   "ارفع معدلك العام إلى {avg}+ وحسّن المواد الأساسية لزيادة حظوظك.",
+    ambitiousUnlockMed:   "لفتح مسار الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة والأرض ≥ 14 والفيزياء والكيمياء ≥ 13.",
+    ambitiousUnlockGen:   "ارفع معدلك إلى {avg}+ وحسّن نقطك في المواد الأساسية لتعزيز فرصك.",
     // Feature 1: Exam timing
     examTimingStep: "توقيت التقييم",
     examTimingQuestion: "هل أجريت هذا التقييم قبل أم بعد امتحان الباكالوريا؟",
     examTimingBefore: "قبل نتائج الباكالوريا",
     examTimingAfter: "بعد نتائج الباكالوريا",
     examTimingDesc: "يؤثر هذا على طريقة عرض التوصيات وخطط التحسين",
-    whatIfDisabled: "الدرجات نهائية – لا يمكن تعديلها بعد إعلان النتائج.",
-    improvementTitle: "💡 كيف تحسّن حظوظك قبل الباكالوريا؟",
+    whatIfDisabled: "النقط نهائية — لا يمكن تعديلها بعد إعلان النتائج.",
+    improvementTitle: "💡 كيف تُحسِّن فرصك قبل الباكالوريا؟",
     improvementSubjectHint: "المواد الأهم لمسارك:",
     improvementUnlock: "رفع درجة +2 يفتح لك:",
     improvementTip1: "ركّز على المسائل المتكررة في مواضيع الامتحانات السابقة",
     improvementTip2: "التحضير لمسابقات القبول يبدأ 6 أشهر مسبقاً",
     improvementTip3: "انضم لمجموعات مراجعة عبر واتساب أو تليغرام مع طلاب من نفس الشعبة",
     improvementTip4: "استخدم منصات مجانية: خان أكاديمي عربي، إدراك، مرحبا",
-    improvementDisclaimer: "هذه توقعات تعليمية. لا يمكن ضمان القبول بأي مدرسة.",
+    improvementDisclaimer: "هذه توقعات تربوية. لا يمكن ضمان القبول في أي مؤسسة.",
     // SUBJECTS FIX: examLevel + trackField selectors
     examLevelLabel: "المستوى الدراسي",
     examLevelBac1: "الباكالوريا الأولى (الجهوي)",
@@ -189,7 +190,7 @@ const TRANSLATIONS = {
     profileBoostStep: "🚀 تسريع ملفك",
     profileBoostDesc: "6 أسئلة خفيفة تُحسّن التوصيات بشكل كبير",
     pb_prestige: "مدى أهمية الهيبة والسمعة لك ولعائلتك",
-    pb_prestige0: "مش مهم — النتائج والعمل يهمون",
+    pb_prestige0: "ليس مهماً — النتائج والعمل هما الأساس",
     pb_prestige1: "مهم بعض الشيء",
     pb_prestige2: "مهم جداً — الهيبة خط أحمر",
     pb_money: "مدى أهمية الاستقرار المالي الآن",
@@ -235,12 +236,12 @@ const TRANSLATIONS = {
     },
     practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
     // Goal mode input (Cultural rerank layer)
-    goalModeLabel: "شنو الأهم دابا بالنسبة ليك؟",
+    goalModeLabel: "ما الأهم لك الآن؟",
     goalModeOptions: {
       prestige:  { icon:"🏆", label:"أفضل مدرسة / المسار الأرفع مستوى" },
       fit:       { icon:"🎯", label:"الأنسب لشخصيتي" },
       practical: { icon:"🔧", label:"دخل سريع / مهارة ملموسة" },
-      unsure:    { icon:"🤷", label:"مش عارف — أريني الاثنين" },
+      unsure:    { icon:"🤷", label:"لست متأكداً — أرني الخيارين" },
     },
     prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
     prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
@@ -260,8 +261,8 @@ const TRANSLATIONS = {
     why: "لماذا؟",
     score: "النتيجة",
     personality: "الشخصية",
-    academic: "أكاديمي",
-    market: "السوق",
+    academic: "الدراسة",
+    market: "سوق الشغل",
     constraints: "القيود",
     salaryNote: "* الأرقام تقديرية وتعتمد على الخبرة والشركة والمنطقة",
     salary: "الراتب المتوقع (تقديري)",
@@ -270,7 +271,7 @@ const TRANSLATIONS = {
     resume: "استأنف من حيث توقفت",
     resumeSaved: "لديك جلسة سابقة محفوظة",
     resumeDesc: "جلسة محفوظة في متناول يدك – هل تريد الاستمرار من حيث توقفت؟",
-    restart: "بدء من جديد",
+    restart: "إعادة البدء",
     // CTA (Goal 5)
     ctaButton: "📄 احصل على خطة الطريق الكاملة PDF",
     ctaModalTitle: "خطة الطريق الكاملة – قريباً",
@@ -404,7 +405,7 @@ const TRANSLATIONS = {
     // Truth Mode
     truthModeBtn: "🔍 وضع الحقيقة",
     truthModeTitle: "🔍 تحليل واقعي لملفك",
-    truthModeDesc: "تحليل موضوعي — لا مبالغة، لا ترهيب. فقط معطيات.",
+    truthModeDesc: "نظرة موضوعية على مسارك — بدون مبالغة ولا تهويل. فقط معطيات.",
     burnoutRisk: "خطر الإرهاق المهني",
     stressRisk: "خطر الضغط",
     incomeVolatility: "تقلب الدخل",
@@ -2803,7 +2804,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
 // ─────────────────────────────────────────────────────────────────
 // TASK 3 — Logic Self-Check (dev-only, 5 cases)
 // Runs once on localhost to validate scoring logic.
-// No import.meta. No crashes if checks fail.
+// No import.meta usage — uses window.__DEV__ or hostname check only.
 // ─────────────────────────────────────────────────────────────────
 function runLogicSelfCheck() {
   try {
@@ -8556,14 +8557,38 @@ const css = `
   .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
   .home-footer a:hover { color: #e8a124; }
 
-  /* ── Back to home link (in test header) ── */
-  .back-home-btn {
-    font-size: 12px; font-weight: 600; color: rgba(232,236,240,0.45);
-    background: none; border: none; cursor: pointer;
-    padding: 4px 0; transition: color 0.2s;
-    font-family: inherit;
+  /* ── Fix: top nav placement — TopBar for wizard ── */
+  .wizard-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px 6px;
+    min-height: 44px;
+    background: transparent;
   }
-  .back-home-btn:hover { color: #e8a124; }
+  .back-home-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12.5px; font-weight: 700;
+    color: rgba(232,236,240,0.55);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+    flex-shrink: 0;
+  }
+  .back-home-btn:hover {
+    color: #e8a124; background: rgba(232,161,36,0.08); border-color: rgba(232,161,36,0.35);
+  }
+  .back-home-btn:focus-visible {
+    outline: 2px solid #e8a124; outline-offset: 2px;
+  }
+  .wizard-topbar-spacer { flex: 1; }
+  /* RTL: back button keeps correct directional arrow */
+  [dir="rtl"] .back-home-btn .back-home-arrow { transform: scaleX(-1); display:inline-block; }
 
   /* ── Mobile tweaks ── */
   @media (max-width: 480px) {
@@ -8614,6 +8639,57 @@ const DEFAULT_REALITY = {
 // ─────────────────────────────────────────────────────────────────
 // APP
 // ─────────────────────────────────────────────────────────────────
+// Safety: ErrorBoundary — catches runtime errors, shows branded fallback instead of white page.
+class AppErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(err) { return { hasError: true, error: err }; }
+  componentDidCatch(err, info) {
+    if (typeof window !== "undefined" && window.__DEV__) console.error("[Massar] Uncaught:", err, info);
+  }
+  resetApp() {
+    try {
+      // Clear only Massar-specific localStorage keys
+      ["massar_session","massar_cta_emails"].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+    } catch {}
+    window.location.reload();
+  }
+  render() {
+    if (!this.state.hasError) return this.props.children;
+    const lang = this.props.lang || "fr";
+    const msgs = {
+      ar: { title:"حدث خطأ غير متوقع", reload:"إعادة التحميل", reset:"مسح البيانات وإعادة البدء" },
+      fr: { title:"Une erreur inattendue s'est produite", reload:"Recharger", reset:"Réinitialiser l'application" },
+      en: { title:"Something went wrong", reload:"Reload", reset:"Reset app" },
+    };
+    const m = msgs[lang] || msgs.fr;
+    return (
+      <div dir={lang === "ar" ? "rtl" : "ltr"} style={{
+        minHeight:"100vh", background:"#070b16", color:"#e8ecf0",
+        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
+        gap:20, padding:32, fontFamily:"DM Sans, sans-serif", textAlign:"center",
+      }}>
+        <div style={{fontSize:40}}>⚠️</div>
+        <div style={{fontSize:20, fontWeight:700, maxWidth:400}}>{m.title}</div>
+        <div style={{display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center"}}>
+          <button onClick={() => window.location.reload()} style={{
+            padding:"10px 24px", borderRadius:10, fontWeight:700, fontSize:14,
+            background:"#e8a124", color:"#0a0e1a", border:"none", cursor:"pointer",
+          }}>{m.reload}</button>
+          <button onClick={() => this.resetApp()} style={{
+            padding:"10px 24px", borderRadius:10, fontWeight:700, fontSize:14,
+            background:"rgba(255,255,255,0.08)", color:"#e8ecf0",
+            border:"1px solid rgba(255,255,255,0.15)", cursor:"pointer",
+          }}>{m.reset}</button>
+        </div>
+        <div style={{fontSize:11, color:"rgba(232,236,240,0.3)", marginTop:8}}>massar.ma</div>
+      </div>
+    );
+  }
+}
+
 export default function App() {
   const [step,         setStep]         = useState(0);
   const [lang,         setLang]         = useState("fr");
@@ -8726,6 +8802,7 @@ export default function App() {
 
   // ── Render ───────────────────────────────────────────────────────
   return (
+    <AppErrorBoundary lang={lang}>
     <>
       <style>{css}</style>
 
@@ -8743,12 +8820,15 @@ export default function App() {
       {view === "test" && (
       <div className="app" dir={dir}>
 
-        <div className="header" style={{position:"relative"}}>
-          {/* HOME PAGE 3D CSS — Back to Home link */}
-          <button className="back-home-btn" onClick={() => setView("home")}
-            style={{position:"absolute", top:12, insetInlineStart:16}}>
-            {t.backHome || "← Home"}
+        {/* Fix: top nav placement — TopBar sits above header, never overlaps title */}
+        <div className="wizard-topbar">
+          <button className="back-home-btn" onClick={() => setView("home")} aria-label={t.backHome || "Home"}>
+            <span className="back-home-arrow" aria-hidden="true">{dir === "rtl" ? "→" : "←"}</span>
+            <span>{t.backHome || "Home"}</span>
           </button>
+          <span className="wizard-topbar-spacer"/>
+        </div>
+        <div className="header">
           <h1>{t.appTitle}</h1>
           <p>{t.appSubtitle}</p>
         </div>
@@ -8814,6 +8894,7 @@ export default function App() {
       </div>
       )} {/* end view==="test" */}
     </>
+    </AppErrorBoundary>
   );
 }
 
