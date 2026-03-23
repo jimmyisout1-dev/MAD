@@ -15,7 +15,25 @@ const TRANSLATIONS = {
   ar: {
     dir: "rtl",
     // App shell
-    appTitle: "مسار | دليلك المهني المغربي",
+    // HOME PAGE 3D CSS — translations
+    homeHero: "اكتشف مسارك المهني المثالي",
+    homeHeroSub: "اختبار ذكي مُصمَّم خصيصاً للطلاب المغاربة — يجمع بين شخصيتك وعلاماتك وواقع سوق الشغل.",
+    homeCTA: "ابدأ الاختبار مجاناً",
+    homeHowItWorks: "كيف يعمل؟",
+    homeStep1Title: "اختبار الشخصية",
+    homeStep1Desc: "10 دقائق فقط — أسئلة تكشف ميولك الحقيقية لا ما تريد سماعه.",
+    homeStep2Title: "أدخل درجاتك",
+    homeStep2Desc: "نظام مواد دقيق لكل مسار باك 1 أو باك 2.",
+    homeStep3Title: "احصل على خارطة طريقك",
+    homeStep3Desc: "3 مناظير مهنية: الأنسب، المتوازن، الأكثر طموحاً — مع خطة عمل فورية.",
+    homeTrust1: "باكالوريا 1 وباكالوريا 2",
+    homeTrust2: "تعليم عام وخاص",
+    homeTrust3: "الأهلية الفعلية وليس الحلم فقط",
+    homeFooterBy: "مسار — دليلك المهني المغربي",
+    homeFooterContact: "contact@massar.ma",
+    homeBackToTest: "العودة للمعالج",
+    backHome: "← الصفحة الرئيسية",
+        appTitle: "مسار | دليلك المهني المغربي",
     appSubtitle: "اكتشف مسارك المهني المثالي في المغرب",
     next: "التالي",
     back: "السابق",
@@ -482,7 +500,25 @@ const TRANSLATIONS = {
 
   fr: {
     dir: "ltr",
-    appTitle: "Massar | Guide Carrière Maroc",
+    // HOME PAGE 3D CSS — translations
+    homeHero: "Trouve ta voie professionnelle idéale",
+    homeHeroSub: "Un test intelligent conçu pour les lycéens marocains — croise ta personnalité, tes notes et le marché de l'emploi.",
+    homeCTA: "Commencer le test gratuitement",
+    homeHowItWorks: "Comment ça marche ?",
+    homeStep1Title: "Test de personnalité",
+    homeStep1Desc: "10 minutes — des questions qui révèlent tes vraies affinités, pas ce que tu veux entendre.",
+    homeStep2Title: "Saisis tes notes",
+    homeStep2Desc: "Matières exactes selon ta filière — Bac 1 ou Bac 2.",
+    homeStep3Title: "Obtiens ta feuille de route",
+    homeStep3Desc: "3 perspectives : Meilleure affinité, Équilibré, Ambitieux — avec un plan d'action immédiat.",
+    homeTrust1: "Bac 1 et Bac 2",
+    homeTrust2: "Public et privé",
+    homeTrust3: "Éligibilité réelle, pas du rêve",
+    homeFooterBy: "Massar — Guide Carrière Maroc",
+    homeFooterContact: "contact@massar.ma",
+    homeBackToTest: "Reprendre le test",
+    backHome: "← Accueil",
+        appTitle: "Massar | Guide Carrière Maroc",
     appSubtitle: "Découvrez votre voie professionnelle idéale au Maroc",
     next: "Suivant",
     back: "Retour",
@@ -933,7 +969,25 @@ const TRANSLATIONS = {
 
   en: {
     dir: "ltr",
-    appTitle: "Massar | Morocco Career Guide",
+    // HOME PAGE 3D CSS — translations
+    homeHero: "Find Your Ideal Career Path",
+    homeHeroSub: "A smart test built for Moroccan students — matching your personality, grades and the real job market.",
+    homeCTA: "Start the free test",
+    homeHowItWorks: "How it works",
+    homeStep1Title: "Personality test",
+    homeStep1Desc: "10 minutes — questions that surface your real affinities, not what you want to hear.",
+    homeStep2Title: "Enter your grades",
+    homeStep2Desc: "Exact subjects for your track — Bac 1 or Bac 2.",
+    homeStep3Title: "Get your roadmap",
+    homeStep3Desc: "3 perspectives: Best Fit, Balanced, Ambitious — with an immediate action plan.",
+    homeTrust1: "Bac 1 & Bac 2",
+    homeTrust2: "Public & private paths",
+    homeTrust3: "Real eligibility, not wishful thinking",
+    homeFooterBy: "Massar — Morocco Career Guide",
+    homeFooterContact: "contact@massar.ma",
+    homeBackToTest: "Resume the test",
+    backHome: "← Home",
+        appTitle: "Massar | Morocco Career Guide",
     appSubtitle: "Discover your ideal career path in Morocco",
     next: "Next",
     back: "Back",
@@ -3903,6 +3957,237 @@ function StepIndicator({ step, total, t }) {
       <span style={{fontSize:12,color:"var(--muted)",marginInlineStart:6}}>
         {t.step} {step+1} {t.of} {total}
       </span>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────
+// HOME MOTION ENGINE (parallax + reveal)
+// ────────────────────────────────────────────────────────────────
+
+/** Returns true when prefers-reduced-motion is set. */
+function usePrefersReducedMotion() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+/**
+ * useRevealOnScroll — attaches an IntersectionObserver to a ref.
+ * Adds class "reveal--in" when element enters viewport.
+ * @param {number} [threshold=0.15]
+ */
+function useRevealOnScroll(threshold = 0.15) {
+  const ref = React.useRef(null);
+  const reduced = usePrefersReducedMotion();
+
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduced) { el.classList.add("reveal--in"); return; }
+
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { el.classList.add("reveal--in"); obs.disconnect(); } },
+      { threshold }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [reduced, threshold]);
+
+  return ref;
+}
+
+// ────────────────────────────────────────────────────────────────
+// HOME PAGE UI
+// ────────────────────────────────────────────────────────────────
+function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
+  const reduced = usePrefersReducedMotion();
+
+  // ── Parallax refs (DOM-only, no setState) ────────────────────
+  const scrollYRef  = React.useRef(0);
+  const rafRef      = React.useRef(null);
+  const layer1Ref   = React.useRef(null); // slow orb  — speed 0.08
+  const layer2Ref   = React.useRef(null); // mid grid  — speed 0.14
+  const layer3Ref   = React.useRef(null); // spotlight — speed 0.06
+  const heroPanelRef = React.useRef(null); // hero content — mild parallax
+
+  // ── Mouse tilt (hero card, desktop only) ─────────────────────
+  const heroCardRef = React.useRef(null);
+
+  // ── rAF parallax loop ────────────────────────────────────────
+  React.useEffect(() => {
+    if (reduced) return;
+
+    const onScroll = () => { scrollYRef.current = window.scrollY; };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    const tick = () => {
+      const sy = scrollYRef.current;
+      if (layer1Ref.current)    layer1Ref.current.style.transform   = `translate3d(0, ${sy * 0.08}px, 0)`;
+      if (layer2Ref.current)    layer2Ref.current.style.transform   = `translate3d(0, ${sy * 0.14}px, 0)`;
+      if (layer3Ref.current)    layer3Ref.current.style.transform   = `translate3d(0, ${sy * 0.06}px, 0)`;
+      if (heroPanelRef.current) heroPanelRef.current.style.transform = `translate3d(0, ${sy * 0.04}px, 0)`;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [reduced]);
+
+  // ── Mouse tilt on hero card (desktop only) ───────────────────
+  React.useEffect(() => {
+    if (reduced) return;
+    const card = heroCardRef.current;
+    if (!card) return;
+
+    const isMobile = window.matchMedia("(hover: none)").matches;
+    if (isMobile) return;
+
+    const onMove = (e) => {
+      const rect = card.getBoundingClientRect();
+      const cx = rect.left + rect.width  / 2;
+      const cy = rect.top  + rect.height / 2;
+      const dx = (e.clientX - cx) / (rect.width  / 2);
+      const dy = (e.clientY - cy) / (rect.height / 2);
+      card.style.transform = `perspective(900px) rotateX(${-dy * 5}deg) rotateY(${dx * 5}deg)`;
+    };
+    const onLeave = () => { card.style.transform = ""; };
+
+    card.addEventListener("mousemove", onMove);
+    card.addEventListener("mouseleave", onLeave);
+    return () => {
+      card.removeEventListener("mousemove", onMove);
+      card.removeEventListener("mouseleave", onLeave);
+    };
+  }, [reduced]);
+
+  // ── Scroll reveal refs for sections ─────────────────────────
+  const revealHow    = useRevealOnScroll(0.12);
+  const revealTrust  = useRevealOnScroll(0.2);
+  const revealFooter = useRevealOnScroll(0.3);
+
+  const scrollToHow = () => {
+    const el = document.getElementById("how-it-works");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const LANGS = [{ code:"ar", lbl:"عربية" }, { code:"fr", lbl:"Français" }, { code:"en", lbl:"English" }];
+
+  const steps = [
+    { n:"1", title: t.homeStep1Title, desc: t.homeStep1Desc },
+    { n:"2", title: t.homeStep2Title, desc: t.homeStep2Desc },
+    { n:"3", title: t.homeStep3Title, desc: t.homeStep3Desc },
+  ];
+
+  const trusts = [
+    { label: t.homeTrust1, icon:"🎓" },
+    { label: t.homeTrust2, icon:"🏫" },
+    { label: t.homeTrust3, icon:"✅" },
+  ];
+
+  return (
+    <div className="home-root" dir={dir}>
+
+      {/* ── Parallax depth layers ── */}
+      <div className="home-parallax" aria-hidden="true">
+        {/* Layer 1 — large blue orb (slow) */}
+        <div ref={layer1Ref} className="hp-layer hp-orb1" style={{willChange:"transform"}}/>
+        {/* Layer 2 — grid glow (mid) */}
+        <div ref={layer2Ref} className="hp-layer hp-grid" style={{willChange:"transform"}}/>
+        {/* Layer 3 — gold spotlight (very slow) */}
+        <div ref={layer3Ref} className="hp-layer hp-spot" style={{willChange:"transform"}}/>
+        {/* Floating ornaments (CSS-only, no scroll) */}
+        <div className="hp-float hp-sparkle" aria-hidden="true"/>
+        <div className="hp-float hp-blob"    aria-hidden="true"/>
+      </div>
+
+      {/* ── Nav ── */}
+      <nav className="home-nav">
+        <span className="home-nav-brand">مسار</span>
+        <div className="home-nav-lang">
+          {LANGS.map(l => (
+            <button key={l.code}
+              className={lang === l.code ? "active" : ""}
+              onClick={() => setLang(l.code)}>
+              {l.lbl}
+            </button>
+          ))}
+        </div>
+      </nav>
+
+      {/* ── Hero (sticky anchor) ── */}
+      <section className="home-hero-wrap">
+        <div ref={heroPanelRef} className="home-hero" style={{willChange: reduced ? undefined : "transform"}}>
+          <div ref={heroCardRef} className="home-hero-card">
+            <span className="home-hero-eyebrow">🇲🇦 Morocco • الباكالوريا • Maroc</span>
+            <h1>{t.homeHero}</h1>
+            <p>{t.homeHeroSub}</p>
+            <div className="home-hero-glass">
+              <div className="home-cta-row">
+                <button className="home-btn-primary" onClick={onStartTest}>
+                  {savedSession ? t.homeBackToTest : t.homeCTA}
+                </button>
+                <button className="home-btn-secondary" onClick={scrollToHow}>
+                  {t.homeHowItWorks} ↓
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
+      <section id="how-it-works" className="home-how">
+        <div ref={revealHow} className="reveal">
+          <div className="home-section-label">
+            🔍 {lang==="ar"?"آلية العمل":lang==="fr"?"Fonctionnement":"How it works"}
+          </div>
+          <h2 className="home-section-title">{t.homeHowItWorks}</h2>
+          <div className="home-steps">
+            {steps.map((s, i) => (
+              <StepCard key={s.n} step={s} delay={i * 80} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Trust row ── */}
+      <div ref={revealTrust} className="home-trust reveal">
+        {trusts.map((tr, i) => (
+          <div key={i} className="home-trust-chip" style={{"--chip-delay": `${i * 60}ms`}}>
+            <span className="home-trust-chip-dot"/>
+            <span>{tr.icon} {tr.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── CTA repeat ── */}
+      <div ref={revealFooter} className="reveal" style={{textAlign:"center",paddingBottom:56,position:"relative",zIndex:1}}>
+        <button className="home-btn-primary" onClick={onStartTest} style={{fontSize:17,padding:"17px 44px"}}>
+          {savedSession ? t.homeBackToTest : t.homeCTA}
+        </button>
+      </div>
+
+      {/* ── Footer ── */}
+      <footer className="home-footer">
+        <div style={{marginBottom:4}}>{t.homeFooterBy}</div>
+        <a href={`mailto:${t.homeFooterContact}`}>{t.homeFooterContact}</a>
+      </footer>
+    </div>
+  );
+}
+
+/** Individual step card with scroll-reveal + hover tilt. */
+function StepCard({ step, delay }) {
+  const ref = useRevealOnScroll(0.1);
+
+  return (
+    <div ref={ref} className="home-step-card reveal" style={{"--reveal-delay": `${delay}ms`}}>
+      <div className="home-step-num">{step.n}</div>
+      <h3>{step.title}</h3>
+      <p>{step.desc}</p>
     </div>
   );
 }
@@ -7920,7 +8205,374 @@ const css = `
   .reality-section{margin-bottom:24px;}
   .reality-section-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
   .reality-section-desc{font-size:12px;color:var(--muted);margin-bottom:8px;}
-`;
+
+  /* ════════════════════════════════════════════════════════════════
+     HOME MOTION ENGINE (parallax + reveal) — CSS
+  ════════════════════════════════════════════════════════════════ */
+
+  /* ── Scroll reveal base ── */
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition:
+      opacity 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms),
+      transform 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms);
+  }
+  .reveal--in {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  /* Trust chips stagger */
+  .home-trust-chip {
+    transition-delay: var(--chip-delay, 0ms);
+  }
+
+  /* ── Reduced-motion: everything instant ── */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .reveal--in { opacity:1; transform:none; transition:none; }
+    .hp-layer, .hp-float { animation: none !important; }
+    .home-hero { transition: none !important; }
+  }
+
+  /* ════════════════════════════════════════════════════════════════
+     HOME PAGE UI — landing page styles
+  ════════════════════════════════════════════════════════════════ */
+
+  /* ── Home root ── */
+  .home-root {
+    min-height: 100vh;
+    background: #070b16;
+    color: #e8ecf0;
+    font-family: inherit;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* ── Parallax container ── */
+  .home-parallax {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .hp-layer {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  /* Layer 1 — large blue orb */
+  .hp-orb1 {
+    width: 700px; height: 700px;
+    top: -180px; left: 50%;
+    transform: translateX(-50%);
+    background: radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%);
+    filter: blur(60px);
+  }
+  /* Layer 2 — subtle grid glow (SVG data-uri, no external asset) */
+  .hp-grid {
+    inset: 0; border-radius: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
+    opacity: 0.7;
+  }
+  /* Layer 3 — warm gold spotlight */
+  .hp-spot {
+    width: 500px; height: 500px;
+    top: 40px; right: -120px;
+    background: radial-gradient(circle, rgba(232,161,36,0.14) 0%, transparent 65%);
+    filter: blur(80px);
+  }
+
+  /* ── Floating ornaments (CSS keyframes only) ── */
+  .hp-float { position: absolute; pointer-events: none; }
+
+  /* Sparkle — tiny glowing dot cluster */
+  .hp-sparkle {
+    width: 6px; height: 6px;
+    top: 22%; left: 12%;
+    border-radius: 50%;
+    background: #fbbf24;
+    box-shadow:
+      0 0 6px 2px rgba(251,191,36,0.6),
+      18px 30px 0 rgba(251,191,36,0.3),
+      36px 8px 0 rgba(251,191,36,0.2),
+      -14px 40px 0 rgba(59,130,246,0.4);
+    animation: sparkleFloat 7s ease-in-out infinite;
+    z-index: 2;
+  }
+  @keyframes sparkleFloat {
+    0%,100% { transform: translate3d(0,0,0) scale(1);   opacity: 0.7; }
+    40%     { transform: translate3d(4px,-12px,0) scale(1.15); opacity: 1; }
+    70%     { transform: translate3d(-3px,-6px,0) scale(0.9);  opacity: 0.55; }
+  }
+
+  /* Blob — slow drifting ambient shape */
+  .hp-blob {
+    width: 280px; height: 280px;
+    bottom: 15%; right: 6%;
+    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+    background: linear-gradient(135deg, rgba(99,102,241,0.14), rgba(232,161,36,0.07));
+    filter: blur(36px);
+    animation: blobDrift 14s ease-in-out infinite;
+    z-index: 0;
+  }
+  @keyframes blobDrift {
+    0%,100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
+    33%     { transform: translate3d(-20px,16px,0) scale(1.06) rotate(6deg); }
+    66%     { transform: translate3d(14px,-10px,0) scale(0.96) rotate(-4deg); }
+  }
+
+  /* ── Nav ── */
+  .home-nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(7,11,22,0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .home-nav-brand {
+    font-size: 20px; font-weight: 900; letter-spacing: -0.5px;
+    background: linear-gradient(90deg,#e8a124,#fbbf24);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .home-nav-lang { display:flex; gap:6px; }
+  .home-nav-lang button {
+    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    border: 1.5px solid rgba(255,255,255,0.12); background: transparent;
+    color: rgba(232,236,240,0.6); cursor: pointer; transition: all 0.2s;
+  }
+  .home-nav-lang button.active,
+  .home-nav-lang button:hover {
+    border-color: rgba(232,161,36,0.6); color: #e8a124; background: rgba(232,161,36,0.08);
+  }
+
+  /* ── Hero wrap (sticky anchor) ── */
+  .home-hero-wrap {
+    position: relative; z-index: 1;
+    padding: 0;
+    /* Sticky hero: stays visible for ~260px before scrolling away */
+    min-height: 520px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .home-hero {
+    position: sticky;
+    top: 60px;
+    width: 100%;
+    text-align: center;
+    padding: 72px 24px 60px;
+    max-width: 760px;
+    margin: 0 auto;
+    transition: transform 0.05s linear;
+  }
+  /* hero card (mouse tilt target) */
+  .home-hero-card {
+    transition: transform 0.18s ease;
+    transform-origin: center center;
+  }
+  .home-hero-eyebrow {
+    display: inline-block; margin-bottom: 18px;
+    padding: 5px 16px; border-radius: 20px;
+    font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #fbbf24;
+    background: rgba(232,161,36,0.10);
+    border: 1px solid rgba(232,161,36,0.28);
+  }
+  .home-hero h1 {
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 900; line-height: 1.07; letter-spacing: -1.5px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffffff 25%, rgba(255,255,255,0.62));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .home-hero p {
+    font-size: clamp(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
+    line-height: 1.65; margin-bottom: 36px;
+    max-width: 560px; margin-left: auto; margin-right: auto;
+  }
+  [dir="rtl"] .home-hero h1,
+  [dir="rtl"] .home-hero p { font-family: 'Tajawal', sans-serif; }
+
+  /* ── Glass panel behind CTAs ── */
+  .home-hero-glass {
+    display: inline-block;
+    padding: 20px 28px 18px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.07) inset;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  /* ── CTA buttons ── */
+  .home-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+  .home-btn-primary {
+    position: relative; overflow: hidden;
+    padding: 15px 36px; border-radius: 14px;
+    font-size: 16px; font-weight: 800; letter-spacing: -0.2px;
+    color: #0a0e1a;
+    background: linear-gradient(135deg, #fbbf24 0%, #e8a124 60%, #d97706 100%);
+    border: none; cursor: pointer;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 32px rgba(232,161,36,0.45), 0 2px 8px rgba(0,0,0,0.5);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    font-family: inherit;
+  }
+  .home-btn-primary::before {
+    content:""; position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 55%);
+    border-radius: inherit; pointer-events:none;
+  }
+  .home-btn-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 14px 44px rgba(232,161,36,0.55), 0 4px 12px rgba(0,0,0,0.5);
+  }
+  .home-btn-primary:active { transform: translateY(0) scale(0.99); }
+
+  .home-btn-secondary {
+    padding: 14px 28px; border-radius: 14px;
+    font-size: 15px; font-weight: 700;
+    color: rgba(232,236,240,0.85);
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    cursor: pointer; transition: all 0.2s;
+    backdrop-filter: blur(6px);
+    font-family: inherit;
+  }
+  .home-btn-secondary:hover {
+    border-color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.09); color: #fff;
+  }
+
+  /* ── How it works ── */
+  .home-how {
+    position: relative; z-index: 1;
+    padding: 80px 24px 60px; max-width: 940px; margin: 0 auto;
+  }
+  .home-section-label {
+    text-align: center; font-size: 11px; font-weight: 800;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: #e8a124; margin-bottom: 12px;
+  }
+  .home-section-title {
+    text-align: center; font-size: clamp(22px, 4vw, 36px);
+    font-weight: 800; color: #fff; margin-bottom: 44px; letter-spacing: -0.5px;
+  }
+  [dir="rtl"] .home-section-title { font-family: 'Tajawal', sans-serif; }
+
+  /* ── Step cards (3D depth + reveal) ── */
+  .home-steps {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px;
+  }
+  .home-step-card {
+    position: relative;
+    background: linear-gradient(145deg, rgba(26,34,53,0.96), rgba(17,24,39,0.97));
+    border-radius: 20px; padding: 28px 24px 26px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 -1px 0 rgba(0,0,0,0.4) inset,
+      0 16px 48px rgba(0,0,0,0.5),
+      0 4px 16px rgba(0,0,0,0.3);
+    transition: transform 0.32s cubic-bezier(.22,1,.36,1), box-shadow 0.32s ease;
+    overflow: hidden;
+    cursor: default;
+  }
+  /* border gradient highlight */
+  .home-step-card::after {
+    content:""; position:absolute; inset:0; border-radius:inherit;
+    background: linear-gradient(135deg, rgba(255,255,255,0.09) 0%, transparent 45%);
+    pointer-events:none;
+  }
+  /* Desktop hover tilt */
+  @media (hover: hover) and (pointer: fine) {
+    .home-step-card:hover {
+      transform: perspective(600px) rotateX(-4deg) rotateY(3deg) translateY(-8px);
+      box-shadow:
+        0 1px 0 rgba(255,255,255,0.10) inset,
+        0 28px 64px rgba(0,0,0,0.6),
+        0 8px 24px rgba(59,130,246,0.14);
+    }
+  }
+  /* Mobile — no tilt */
+  @media (hover: none) { .home-step-card:active { transform: scale(0.98); } }
+  [dir="rtl"] .home-step-card:hover {
+    transform: perspective(600px) rotateX(-4deg) rotateY(-3deg) translateY(-8px);
+  }
+  .home-step-num {
+    position: relative; z-index: 1;
+    display: inline-flex; align-items:center; justify-content:center;
+    width: 38px; height: 38px; border-radius: 12px;
+    font-size: 16px; font-weight: 900; color: #0a0e1a;
+    background: linear-gradient(135deg, #fbbf24, #e8a124);
+    margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(232,161,36,0.4);
+  }
+  .home-step-card h3 {
+    position: relative; z-index: 1;
+    font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 8px;
+  }
+  .home-step-card p {
+    position: relative; z-index: 1;
+    font-size: 13.5px; color: rgba(232,236,240,0.62); line-height: 1.6;
+  }
+  [dir="rtl"] .home-step-card h3,
+  [dir="rtl"] .home-step-card p { font-family: 'Tajawal', sans-serif; }
+
+  /* ── Trust row ── */
+  .home-trust {
+    position: relative; z-index: 1;
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    padding: 0 24px 60px;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .home-trust-chip {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 18px; border-radius: 30px;
+    font-size: 13px; font-weight: 600;
+    color: rgba(232,236,240,0.8);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.2s var(--chip-delay, 0ms);
+  }
+  .home-trust-chip:hover { border-color: rgba(232,161,36,0.4); background: rgba(232,161,36,0.06); }
+  .home-trust-chip-dot { width:7px; height:7px; border-radius:50%; background:#e8a124; flex-shrink:0; }
+  [dir="rtl"] .home-trust-chip { font-family:'Tajawal',sans-serif; }
+
+  /* ── Footer ── */
+  .home-footer {
+    position: relative; z-index: 1;
+    text-align: center; padding: 24px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-size: 12.5px; color: rgba(232,236,240,0.35);
+  }
+  .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
+  .home-footer a:hover { color: #e8a124; }
+
+  /* ── Back to home link (in test header) ── */
+  .back-home-btn {
+    font-size: 12px; font-weight: 600; color: rgba(232,236,240,0.45);
+    background: none; border: none; cursor: pointer;
+    padding: 4px 0; transition: color 0.2s;
+    font-family: inherit;
+  }
+  .back-home-btn:hover { color: #e8a124; }
+
+  /* ── Mobile tweaks ── */
+  @media (max-width: 480px) {
+    .home-hero { padding: 60px 16px 48px; }
+    .home-hero-glass { padding: 14px 16px; }
+    .hp-blob { display: none; }
+    .home-step-card { padding: 22px 18px 20px; }
+  }`;
+
 
 // ─────────────────────────────────────────────────────────────────
 // DEFAULT STATE
@@ -7972,6 +8624,8 @@ export default function App() {
   const [reality,      setReality]      = useState(DEFAULT_REALITY);
   // Goal 1: session banner
   const [savedSession, setSavedSession] = useState(null);
+  // HOME PAGE 3D CSS — view state
+  const [view,         setView]         = useState("home");
 
   const t   = TRANSLATIONS[lang];
   const dir = t.dir;
@@ -8074,9 +8728,27 @@ export default function App() {
   return (
     <>
       <style>{css}</style>
+
+      {/* HOME PAGE 3D CSS — show landing page when view==="home" */}
+      {view === "home" && (
+        <HomePage
+          lang={lang} setLang={setLang}
+          onStartTest={() => setView("test")}
+          savedSession={savedSession}
+          t={t} dir={dir}
+        />
+      )}
+
+      {/* TEST VIEW (existing) — show wizard when view==="test" */}
+      {view === "test" && (
       <div className="app" dir={dir}>
 
-        <div className="header">
+        <div className="header" style={{position:"relative"}}>
+          {/* HOME PAGE 3D CSS — Back to Home link */}
+          <button className="back-home-btn" onClick={() => setView("home")}
+            style={{position:"absolute", top:12, insetInlineStart:16}}>
+            {t.backHome || "← Home"}
+          </button>
           <h1>{t.appTitle}</h1>
           <p>{t.appSubtitle}</p>
         </div>
@@ -8140,6 +8812,7 @@ export default function App() {
           </ResultsErrorBoundary>
         )}
       </div>
+      )} {/* end view==="test" */}
     </>
   );
 }
