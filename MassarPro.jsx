@@ -18,7 +18,7 @@ const TRANSLATIONS = {
     // HOME PAGE 3D CSS — translations
     homeHero: "اختر مسارك بثقة… وبالأرقام",
     homeHeroSub: "مسار يقرأ شخصيتك ويحلّل نقطك حسب شعبتك (باك 1/باك 2)، ثم يمنحك 3 توصيات واضحة: الأنسب لك، الخيار المتوازن، والأكثر طموحاً — مع أسباب مقنعة وخطة عمل.",
-    homeCTA: "ابدأ الاختبار مجاناً",
+    homeCTA: "ابدأ مجاناً",
     homeSecondaryCTA: "شاهد مثالاً للنتيجة",
     homeMicroTrust: "بدون وعود كاذبة. نعرض الأهلية والبدائل بوضوح: عمومي/خصوصي.",
     homeParentLine: "مناسب للطالب… ومقنع للأسرة.",
@@ -27,12 +27,12 @@ const TRANSLATIONS = {
     homeNotSure: "إن كنت متردداً، فهذا طبيعي. سنقدّم لك 3 مسارات قوية لتجربتها هذا الشهر. النتيجة بوصلة… وليست حكماً.",
     homeFamilyNote: "نعرف الضغط العائلي. لذلك نعرض «مساراً طموحاً» يمكن شرحه للأسرة، مع شروطه وخطة الوصول إليه.",
     homeShareCTA: "شارك نتيجتك — ودعها تتكلم عنك.",
-    homeHowItWorks: "كيف يعمل؟",
+    homeHowItWorks: "كيف يعمل مسار؟",
     homeStep1Title: "اختبار الشخصية",
     homeStep1Desc: "8–12 دقيقة — أسئلة ذكية ومباشرة تكشف ميولك الحقيقية.",
     homeStep2Title: "أدخل نقطك",
     homeStep2Desc: "0 إلى 20 — حسب شعبتك فقط، بلا تخمين.",
-    homeStep3Title: "خريطة طريقك",
+    homeStep3Title: "خطة الطريق",
     homeStep3Desc: "توصيات + تبرير + خطة عمل — في ثلاث زوايا: الأنسب، المتوازن، الطموح.",
     homeTrust1: "باك 1 / باك 2",
     homeTrust2: "عمومي / خصوصي",
@@ -40,26 +40,26 @@ const TRANSLATIONS = {
     homeFooterBy: "مسار — بوصلتك المهنية بالمغرب",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "متابعة الاختبار",
-    backHome: "الرئيسية",
+    backHome: "العودة للرئيسية",
         // Arabic rewrite
     appTitle: "مسار | دليلك المهني بالمغرب",
     appSubtitle: "اكتشف مسارك الدراسي والمهني المناسب لك",
-    next: "التالي",
-    back: "السابق",
-    start: "ابدأ الآن",
-    finish: "احصل على نتائجي",
+    next: "متابعة",
+    back: "رجوع",
+    start: "ابدأ الاختبار",
+    finish: "اعرض نتائجي",
     step: "الخطوة",
     of: "من",
     // Steps
-    langStep: "اختر لغتك",
-    langDesc: "ستُعرض جميع الصفحات باللغة التي تختارها",
+    langStep: "اختر لغة التطبيق",
+    langDesc: "سيُعرض التطبيق كاملاً باللغة التي تختارها",
     personalityStep: "اختبار الشخصية",
     personalityDesc: "أجب بصدق — لا توجد إجابات خاطئة",
-    infoStep: "معلوماتك الدراسية",
-    marksStep: "نقطك",
+    infoStep: "شعبتك ومعلوماتك",
+    marksStep: "أدخل نقطك",
     resultsStep: "نتائجك",
     // Info fields
-    bacTrack: "شعبة الباكالوريا",
+    bacTrack: "الشعبة",
     city: "مدينتك الحالية",
     mobility: "استعدادك للتنقل",
     mobilityOptions: ["نفس المدينة فقط", "مستعد للانتقال داخل المغرب", "أقبل التعلم عن بُعد"],
@@ -69,7 +69,7 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     // Marks
-    marks: "نقطك الحالية /20",
+    marks: "نقطك (من 20)",
     examModeLabel: "نوع النقط التي ستُدخلها",
     examModeWatani: "نقط الامتحان الوطني فقط",
     examModeFull: "الباكالوريا كاملة (جهوي + وطني + مراقبة مستمرة)",
@@ -100,9 +100,9 @@ const TRANSLATIONS = {
     sliderNoChange: "لم تُجرَ أي تعديلات حتى الآن",
     // Results
     traitRadar: "ملف شخصيتك",
-    topCareers: "أبرز المسارات المهنية المناسبة لك",
+    topCareers: "أبرز المسارات المناسبة لك",
     pathways: "المسارات التعليمية",
-    actionPlan: "خطة العمل – 30 يوماً",
+    actionPlan: "خطة 30 يوماً",
     fallback: "مسار بديل",
     fallbackDesc: "خيار آخر بقيمة مساوية",
     fallbackBody: "OFPPT والتكوين التطبيقي ليسا خياراً ثانوياً — بل مدخل مباشر لسوق الشغل بكفاءات تقنية مطلوبة.",
@@ -113,19 +113,19 @@ const TRANSLATIONS = {
     // Pathways
     universityRoute: "المسار الجامعي",
     grandeEcoleRoute: "المدارس العليا",
-    practicalRoute: "التكوين التطبيقي",
+    practicalRoute: "التكوين المهني",
     durationLabel: "المدة",
     pathwayMissing: "تفاصيل قريباً",
     // Eligibility
     privateOnly: "مدارس خاصة فقط",
     notEligiblePublic: "تنافسية عالية (التعليم العام)",
     // Medicine eligibility note (Goal 3)
-    eligibilityTitle: "شرط القبول – الطب العام",
+    eligibilityTitle: "شروط القبول – الطب العام",
     eligibilityThresholdLabel: "العتبة الرسمية للقبول العام",
     eligibilityThresholdValue: "المعدل ≥ 16/20 · علوم الحياة والأرض ≥ 14 · الفيزياء والكيمياء ≥ 13",
     eligibilityYourAvg: "معدلك الحالي",
-    eligibilityMeetsPublic: "✅ مؤهل للمسار العام",
-    eligibilityFailsPublic: "❌ لا يفي بشروط الطب العام الحكومي",
+    eligibilityMeetsPublic: "✅ مستوفٍ لشروط القبول العام",
+    eligibilityFailsPublic: "❌ لا تتوفر شروط الطب العام حالياً",
     eligibilityPrivateNote: "الطب الخاص متاح برسوم عالية (UIR، UIC…). تحقق من المنح المتاحة.",
     eligibilityAlternativesLabel: "مسارات قريبة بشروط أخف:",
     eligibilityAlternatives: [
@@ -195,8 +195,8 @@ const TRANSLATIONS = {
     eoOptionSharia: "الشريعة الإسلامية",
     bpExtrasLabel: "مواد إضافية (الباكالوريا المهنية)",
     // NEW INPUT: Profile Boost step translations
-    profileBoostStep: "🚀 تسريع ملفك",
-    profileBoostDesc: "6 أسئلة خفيفة تُحسّن التوصيات بشكل كبير",
+    profileBoostStep: "🚀 دقّق توصياتك",
+    profileBoostDesc: "6 أسئلة سريعة — تجعل التوصيات أدق وأقرب إليك",
     pb_prestige: "مدى أهمية الهيبة والسمعة لك ولعائلتك",
     pb_prestige0: "ليس مهماً — النتائج والعمل هما الأساس",
     pb_prestige1: "مهم بعض الشيء",
@@ -254,10 +254,10 @@ const TRANSLATIONS = {
     prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
     prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
     bridgeOptionLabel: "خيار جسر",
-    bestFitTab: "الأنسب لك",
+    bestFitTab: "أفضل توافق",
     prestigeTrackTab: "المسار الأرفع",
-    familyPressureLabel: "هل تواجه ضغطاً عائلياً نحو تخصص معين؟",
-    familyPressureTitle: "💬 كلمة صريحة بشأن الضغط العائلي",
+    familyPressureLabel: "هل تواجه ضغطاً من الأسرة نحو تخصص معين؟",
+    familyPressureTitle: "💬 ضغط الأسرة — كلام واضح",
     familyPressureText: "من الطبيعي أن تحمل عائلتك آمالاً كبيرة. لكن مسيرة مهنية موفقة تبنى على مزيج من الميول الحقيقية، والواقع الأكاديمي، وظروف سوق الشغل.",
     familyPressureAltsTitle: "مسارات مجاورة ذات قيمة عالية:",
     familyPressureAlts: {
@@ -266,20 +266,20 @@ const TRANSLATIONS = {
       law: ["إدارة الشركات (ENCG)", "محاسبة ومالية", "الوظيفة العمومية"],
     },
     // Misc
-    why: "لماذا؟",
-    score: "النتيجة",
+    why: "السبب",
+    score: "النقطة",
     personality: "الشخصية",
-    academic: "الدراسة",
+    academic: "الجانب الدراسي",
     market: "سوق الشغل",
-    constraints: "القيود",
+    constraints: "الشروط",
     salaryNote: "* الأرقام تقديرية وتعتمد على الخبرة والشركة والمنطقة",
     salary: "الراتب المتوقع (تقديري)",
     weekLabel: "الأسبوع",
     // Session (Goal 1)
-    resume: "استأنف من حيث توقفت",
+    resume: "متابعة من حيث توقفت",
     resumeSaved: "لديك جلسة سابقة محفوظة",
     resumeDesc: "جلسة محفوظة في متناول يدك – هل تريد الاستمرار من حيث توقفت؟",
-    restart: "إعادة البدء",
+    restart: "بدء من جديد",
     // CTA (Goal 5)
     ctaButton: "📄 احصل على خطة الطريق الكاملة PDF",
     ctaModalTitle: "خطة الطريق الكاملة – قريباً",
@@ -412,7 +412,7 @@ const TRANSLATIONS = {
     },
     // Truth Mode
     truthModeBtn: "🔍 وضع الحقيقة",
-    truthModeTitle: "🔍 تحليل واقعي لملفك",
+    truthModeTitle: "🔍 كلام واضح عن ملفك",
     truthModeDesc: "نظرة موضوعية على مسارك — بدون مبالغة ولا تهويل. فقط معطيات.",
     burnoutRisk: "خطر الإرهاق المهني",
     stressRisk: "خطر الضغط",
@@ -442,21 +442,21 @@ const TRANSLATIONS = {
       A:"تحليلي", C:"مبدع", S:"اجتماعي", I:"مستقل", P:"عملي", O:"نظري", R:"مجازف", K:"مستقر",
     },
     massarTypeDesc: "رمز مكون من 4 أحرف مشتق من شخصيتك وتفضيلاتك",
-    shareTitle: "📤 شارك مسارك",
+    shareTitle: "📤 شارك نتيجتك",
     copyCaptionBtn: "نسخ النص",
     downloadBadgeBtn: "تحميل البطاقة",
     shareCopied: "✓ تم النسخ!",
     shareCaptionTpl: "اكتشفت نوع مساري: {type} 🧬\nأفضل مسار: {cluster} ({confidence}% توافق)\nاكتشف نوعك على Massar 👇",
     // Reality layer
-    realityStep: "حياتك وهويتك",
-    realityDesc: "4 أسئلة سريعة – تختار وتنتهي في 3 دقائق",
-    realityStrengthsTitle: "ما الذي تُتقنه فعلاً الآن؟",
+    realityStep: "شخصيتك وأولوياتك",
+    realityDesc: "4 أسئلة قصيرة — تنتهي في 3 دقائق",
+    realityStrengthsTitle: "ما الذي تتقنه فعلاً؟",
     realityStrengthsDesc: "اختر حتى 5 مهارات تشعر أنك قوي فيها",
     realityInterestsTitle: "ما الذي تستمتع به بشكل طبيعي؟",
     realityInterestsDesc: "اختر حتى 5 أنشطة تشدّك",
     realityIdentityTitle: "كيف تصف نفسك؟",
-    realityPriorityTitle: "ما الأهم بالنسبة إليك الآن؟",
-    realityMaxHint: "(اختر حتى 5)",
+    realityPriorityTitle: "ما أهم شيء بالنسبة إليك الآن؟",
+    realityMaxHint: "(اختر 5 كحد أقصى)",
     realityStrengths: {
       s_math:"حل مسائل الرياضيات", s_writing:"الكتابة والتعبير", s_speaking:"الإلقاء والخطابة",
       s_mechanical:"إصلاح الأشياء الميكانيكية", s_tools:"استخدام الأدوات اليدوية",
@@ -7227,7 +7227,7 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   }
 
   const tabs = [
-    { key:"bestFit",   icon:"💡", label: lang==="ar"?"الأنسب شخصياً": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
+    { key:"bestFit",   icon:"💡", label: lang==="ar"?"أفضل توافق": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
     { key:"balanced",  icon:"⚖️", label: lang==="ar"?"الخيار المتوازن": lang==="fr"?"Option équilibrée":"Best Balanced" },
     { key:"ambitious", icon:"🚀", label: lang==="ar"?"الأكثر طموحاً": lang==="fr"?"Plus ambitieux":"Most Ambitious" },
   ];
@@ -7973,8 +7973,27 @@ function StepResults({
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:#0a0e1a;color:#e8ecf0;font-family:'DM Sans',sans-serif;min-height:100vh;}
-  [dir="rtl"]{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;}
+  body{
+    background:#0a0e1a;color:#e8ecf0;
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;
+    /* Prevent text inflation on mobile */
+    -webkit-text-size-adjust:100%; text-size-adjust:100%;
+    /* Smooth font rendering */
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+  }
+  /* Arabic: Tajawal primary, proper line height and word spacing */
+  [dir="rtl"]{
+    font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;
+    line-height:1.75;
+    word-spacing:0.02em;
+  }
+  [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{
+    line-height:1.4;
+    font-weight:700;
+  }
+  /* Arabic punctuation spacing */
+  [dir="rtl"] p { text-align: right; }
 
   /* ── Phase 10: Micro animations ── */
   @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
@@ -8070,15 +8089,57 @@ const css = `
   :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--surface3:#222d42;
     --accent:#e8a124;--accent2:#3b82f6;--accent3:#10b981;
     --text:#e8ecf0;--muted:#6b7280;--border:#1f2d45;--danger:#ef4444;--warn:#f59e0b;}
-  .app{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 60px;}
-  .header{text-align:center;margin-bottom:32px;padding-top:16px;}
-  .header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);
+
+  /* ── Mobile-first root — zero overflow, safe-area, no fixed widths */
+  html { box-sizing: border-box; overflow-x: hidden; }
+  *, *::before, *::after { box-sizing: inherit; }
+  html, body { width: 100%; min-height: 100%; }
+  body {
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Prevent bounce/overscroll from exposing white bg */
+    background: #0a0e1a;
+  }
+  #root {
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+    isolation: isolate;
+  }
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Responsive padding — never wider than screen */
+    padding: clamp(12px, 3vw, 22px) clamp(12px, 4vw, 18px);
+    padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom, 0px)));
+    padding-top: max(12px, env(safe-area-inset-top, 0px));
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+  .header{text-align:center;margin-bottom:32px;padding-top:16px;width:100%;}
+  .header h1{
+    font-size: clamp(24px,6vw,48px);
     background:linear-gradient(135deg,#e8a124,#f59e0b,#fbbf24);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;line-height:1.1;}
-  [dir="rtl"] .header h1{font-family:'IBM Plex Sans Arabic',sans-serif;}
-  .header p{color:#9ca3af;margin-top:8px;font-size:15px;}
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
-    padding:28px;width:100%;max-width:720px;box-shadow:0 4px 24px rgba(0,0,0,0.4);}
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:-1px;line-height:1.1;
+    word-break:break-word;
+  }
+  [dir="rtl"] .header h1{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;letter-spacing:0;}
+  .header p{color:#9ca3af;margin-top:8px;font-size:clamp(13px,3.5vw,15px);}
+
+  /* Fix 1: Card — no fixed max-width wider than viewport, responsive padding */
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding: clamp(18px,4vw,28px);
+    width:100%;max-width:720px;
+    box-shadow:0 4px 24px rgba(0,0,0,0.4);
+    box-sizing:border-box;
+  }
   .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:13px;color:var(--muted);}
   .step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
   .step-dot.active{background:var(--accent);}
@@ -8119,8 +8180,14 @@ const css = `
   .mark-row input:focus{border-color:var(--accent);}
   .mark-bar{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
   .mark-bar-fill{height:100%;border-radius:3px;transition:width 0.3s;}
-  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;}
-  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;}
+  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap;}
+  .btn{
+    padding:12px 24px;border-radius:10px;border:none;cursor:pointer;
+    font-size:clamp(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
+    min-height:48px;/* Fix 5: 48px tap target */
+    display:inline-flex;align-items:center;justify-content:center;
+    font-family:inherit;
+  }
   .btn-primary{background:var(--accent);color:#000;} .btn-primary:hover{background:#f59e0b;}
   .btn-secondary{background:transparent;border:1.5px solid var(--border);color:var(--muted);}
   .btn-secondary:hover{border-color:var(--text);color:var(--text);}
@@ -8141,9 +8208,20 @@ const css = `
     color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:6px;transition:color 0.2s;}
   .cta-close:hover{color:var(--text);}
   [dir="rtl"] .cta-close{right:auto;left:14px;}
-  .results-wrap{width:100%;max-width:900px;}
+  /* Fix 1: results-wrap — full width on mobile, max 900px on desktop */
+  .results-wrap{width:100%;max-width:min(900px,100%);}
   .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-  @media(max-width:600px){.results-grid{grid-template-columns:1fr;}.marks-grid{grid-template-columns:1fr;}}
+  @media(max-width:600px){
+    .results-grid{grid-template-columns:1fr;}
+    .marks-grid{grid-template-columns:1fr;}
+    .abilities-grid{grid-template-columns:repeat(2,1fr);}
+    .mobility-grid{grid-template-columns:1fr 1fr;}
+    .lang-grid{grid-template-columns:repeat(3,1fr);}
+  }
+  @media(max-width:360px){
+    .lang-grid{grid-template-columns:1fr;}
+    .abilities-grid{grid-template-columns:1fr;}
+  }
   .result-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
   .result-card.highlight{border-color:var(--accent);background:rgba(232,161,36,0.05);}
   .result-card h3{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;}
@@ -8178,6 +8256,9 @@ const css = `
   .explain-fill{height:100%;border-radius:4px;}
   .explain-pct{font-size:12px;color:var(--text);width:36px;text-align:left;}
   [dir="rtl"] .explain-pct{text-align:right;}
+  /* Arabic glossary overrides — consistent terminology */
+  [dir="rtl"] .pathway-tab[data-tab="university"]::before { content: "المسار الجامعي"; }
+  [dir="rtl"] .best-match-label::before { content: ""; }
   .week-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
   .week-label{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
   .week-item{font-size:13px;padding:4px 0;border-bottom:1px solid var(--border);color:var(--text);display:flex;align-items:flex-start;gap:6px;}
@@ -8251,7 +8332,7 @@ const css = `
       opacity 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms),
       transform 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms);
   }
-  .reveal--in {
+  .reveal--in, .reveal.is-visible {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }
@@ -8435,13 +8516,16 @@ const css = `
   /* ── Glass panel behind CTAs ── */
   .home-hero-glass {
     display: inline-block;
-    padding: 20px 28px 18px;
+    /* Never wider than viewport */
+    width: min(100%, 480px);
+    padding: 20px 24px 18px;
     border-radius: 20px;
     background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.09);
     box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.07) inset;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    box-sizing: border-box;
   }
 
   /* ── CTA buttons ── */
@@ -8589,46 +8673,103 @@ const css = `
   .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
   .home-footer a:hover { color: #e8a124; }
 
-  /* ── Fix: top nav placement — TopBar for wizard ── */
+  /* Fix 3+5: TopBar — above header, safe-area, never overlaps title ── */
   .wizard-topbar {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px 6px;
-    min-height: 44px;
-    background: transparent;
-  }
-  .back-home-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 12.5px; font-weight: 700;
-    color: rgba(232,236,240,0.55);
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    padding: 6px 14px;
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s, border-color 0.2s;
-    font-family: inherit;
-    letter-spacing: 0.01em;
+    width: 100%;
+    max-width: 720px;
+    /* Top safe-area on iPhone notch */
+    padding: max(10px, env(safe-area-inset-top, 0px)) 0 4px;
+    min-height: 52px;
+    box-sizing: border-box;
     flex-shrink: 0;
   }
-  .back-home-btn:hover {
-    color: #e8a124; background: rgba(232,161,36,0.08); border-color: rgba(232,161,36,0.35);
+  .back-home-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 700;
+    color: rgba(232,236,240,0.65);
+    background: rgba(255,255,255,0.065);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 24px;
+    /* 44px min tap target — iOS HIG */
+    padding: 10px 18px;
+    min-height: 44px;
+    cursor: pointer;
+    transition: color 0.18s, background 0.18s, border-color 0.18s;
+    font-family: inherit;
+    flex-shrink: 0;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
   }
-  .back-home-btn:focus-visible {
-    outline: 2px solid #e8a124; outline-offset: 2px;
+  .back-home-btn:hover, .back-home-btn:focus {
+    color: #e8a124;
+    background: rgba(232,161,36,0.09);
+    border-color: rgba(232,161,36,0.4);
   }
+  .back-home-btn:focus-visible { outline: 2px solid #e8a124; outline-offset: 3px; }
+  .back-home-btn:active { transform: scale(0.96); }
   .wizard-topbar-spacer { flex: 1; }
-  /* RTL: back button keeps correct directional arrow */
-  [dir="rtl"] .back-home-btn .back-home-arrow { transform: scaleX(-1); display:inline-block; }
+  [dir="rtl"] .back-home-btn .back-home-arrow { display: inline-block; transform: scaleX(-1); }
+  @media (max-width: 360px) {
+    .back-home-btn { font-size: 11.5px; padding: 8px 13px; }
+  }
 
-  /* ── Mobile tweaks ── */
+  /* Fix 5: Mobile polish ── */
   @media (max-width: 480px) {
-    .home-hero { padding: 60px 16px 48px; }
+    .home-hero { padding: 60px 16px 44px; }
     .home-hero-glass { padding: 14px 16px; }
     .hp-blob { display: none; }
-    .home-step-card { padding: 22px 18px 20px; }
+    .home-step-card { padding: 20px 16px 18px; }
+    /* Prevent any card from overflowing viewport */
+    .card { padding: 18px 14px; border-radius: 14px; width: 100%; }
+    .cluster-card { padding: 14px 12px; }
+    .result-card { padding: 16px 12px; }
+    /* Thumb-friendly inputs */
+    .field select, .field input { font-size: 16px; } /* prevents iOS zoom */
+    .mark-row input { font-size: 18px; min-height: 44px; }
+    .btn { min-height: 48px; font-size: 15px; }
+    /* Narrower marks grid on very small screens */
+    .marks-grid { grid-template-columns: 1fr; }
+    /* Better tap target for identity grid */
+    .identity-btn { min-height: 60px; }
+    /* Chip buttons — wrap nicely */
+    .chip-grid { gap: 6px; }
+    /* section headers breathe */
+    .section-title { margin: 16px 0 10px; }
+    /* whatif rows — stack on tiny screens */
+    .whatif-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .whatif-label { width: auto; }
+    .whatif-row input[type=range] { width: 100%; }
+    /* Results grid — always 1 col on mobile */
+    .results-grid { grid-template-columns: 1fr !important; }
+    .pathway-tabs { gap: 6px; }
+    .pathway-tab { font-size: 11px; padding: 5px 10px; }
+    /* Mark inputs readable on mobile */
+    .mark-row input { font-size: 18px; padding: 10px 8px; }
+    /* Wider likert buttons on small screens */
+    .likert-btn { width: 40px; height: 40px; }
+    /* Resume banner wraps cleanly */
+    .resume-banner { flex-direction: column; align-items: flex-start; }
+    /* Week cards readable */
+    .week-item { font-size: 12px; }
+    /* What-if inputs */
+    .whatif-row { gap: 6px; }
+    .whatif-label { width: 70px; font-size: 11px; }
   }
+
+  /* Fix 5: Arabic typography enhancement */
+  [dir="rtl"] .card { font-size: clamp(13px, 3.8vw, 15px); line-height: 1.75; }
+  [dir="rtl"] .q-text { font-size: clamp(14px, 4vw, 16px); line-height: 1.8; }
+  [dir="rtl"] .cluster-title { font-size: clamp(14px, 4vw, 17px); }
+  [dir="rtl"] .mark-label { letter-spacing: 0; font-size: 12px; }
+  [dir="rtl"] .field label { letter-spacing: 0; }
+  [dir="rtl"] .btn { font-size: clamp(13px, 3.8vw, 15px); }
+
+  /* Fix 1: Prevent any child from causing horizontal scroll */
+  .app *, .home-root * { max-width: 100%; }
+  img, svg, video { max-width: 100%; height: auto; }
 
   /* ── New copy elements ── */
   /* Parent line under CTA buttons */
@@ -8718,56 +8859,126 @@ const DEFAULT_REALITY = {
 // ─────────────────────────────────────────────────────────────────
 // APP
 // ─────────────────────────────────────────────────────────────────
-// Safety: ErrorBoundary — catches runtime errors, shows branded fallback instead of white page.
+// Safety: ErrorBoundary — catches runtime errors, shows branded fallback + debug copy.
 class AppErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, copied: false };
   }
   static getDerivedStateFromError(err) { return { hasError: true, error: err }; }
   componentDidCatch(err, info) {
-    if (typeof window !== "undefined" && window.__DEV__) console.error("[Massar] Uncaught:", err, info);
+    // Always log to console for debugging
+    console.error("[Massar] Uncaught error:", err);
+    console.error("[Massar] Component stack:", info?.componentStack);
   }
   resetApp() {
     try {
-      // Clear only Massar-specific localStorage keys
-      ["massar_session","massar_cta_emails"].forEach(k => { try { localStorage.removeItem(k); } catch {} });
+      ["massar_session","massar_cta_emails"].forEach(k => {
+        try { localStorage.removeItem(k); } catch {}
+      });
     } catch {}
     window.location.reload();
+  }
+  copyDebug() {
+    const info = [
+      "Massar Error Report",
+      "─────────────────",
+      `Error: ${this.state.error?.message || "Unknown"}`,
+      `URL: ${window.location.href}`,
+      `UA: ${navigator.userAgent}`,
+      `Time: ${new Date().toISOString()}`,
+    ].join("\n");
+    try {
+      navigator.clipboard.writeText(info).then(() => {
+        this.setState({ copied: true });
+        setTimeout(() => this.setState({ copied: false }), 2000);
+      });
+    } catch {
+      // Fallback for environments without clipboard API
+      const el = document.createElement("textarea");
+      el.value = info;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+      this.setState({ copied: true });
+      setTimeout(() => this.setState({ copied: false }), 2000);
+    }
   }
   render() {
     if (!this.state.hasError) return this.props.children;
     const lang = this.props.lang || "fr";
     const msgs = {
-      ar: { title:"حدث خطأ غير متوقع", reload:"إعادة التحميل", reset:"مسح البيانات وإعادة البدء" },
-      fr: { title:"Une erreur inattendue s'est produite", reload:"Recharger", reset:"Réinitialiser l'application" },
-      en: { title:"Something went wrong", reload:"Reload", reset:"Reset app" },
+      ar: {
+        title:"حدث خطأ غير متوقع",
+        sub:"نعتذر عن هذا الخلل. انقر على «إعادة المحاولة» للمتابعة.",
+        reload:"إعادة التحميل",
+        reset:"مسح البيانات والبدء من جديد",
+        copyDebug:"نسخ معلومات الخطأ",
+        copied:"✓ تم النسخ",
+      },
+      fr: {
+        title:"Une erreur inattendue s'est produite",
+        sub:"Désolé pour ce problème. Cliquez sur «Recharger» pour continuer.",
+        reload:"Recharger",
+        reset:"Réinitialiser l'application",
+        copyDebug:"Copier les infos d'erreur",
+        copied:"✓ Copié",
+      },
+      en: {
+        title:"Something went wrong",
+        sub:"Sorry for the glitch. Click «Reload» to continue.",
+        reload:"Reload",
+        reset:"Reset app",
+        copyDebug:"Copy debug info",
+        copied:"✓ Copied",
+      },
     };
     const m = msgs[lang] || msgs.fr;
+    const isRtl = lang === "ar";
     return (
-      <div dir={lang === "ar" ? "rtl" : "ltr"} style={{
+      <div dir={isRtl ? "rtl" : "ltr"} style={{
         minHeight:"100vh", background:"#070b16", color:"#e8ecf0",
         display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-        gap:20, padding:32, fontFamily:"DM Sans, sans-serif", textAlign:"center",
+        gap:16, padding:"32px 20px",
+        fontFamily: isRtl ? "'Tajawal', sans-serif" : "'DM Sans', sans-serif",
+        textAlign:"center", boxSizing:"border-box",
       }}>
-        <div style={{fontSize:40}}>⚠️</div>
-        <div style={{fontSize:20, fontWeight:700, maxWidth:400}}>{m.title}</div>
-        <div style={{display:"flex", gap:12, flexWrap:"wrap", justifyContent:"center"}}>
+        <div style={{fontSize:48, marginBottom:4}}>⚠️</div>
+        <div style={{fontSize:clamp(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
+          {m.title}
+        </div>
+        <div style={{fontSize:14, color:"rgba(232,236,240,0.55)", maxWidth:360, lineHeight:1.6}}>
+          {m.sub}
+        </div>
+        <div style={{display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center", marginTop:8}}>
           <button onClick={() => window.location.reload()} style={{
-            padding:"10px 24px", borderRadius:10, fontWeight:700, fontSize:14,
+            padding:"13px 28px", borderRadius:12, fontWeight:700, fontSize:15,
             background:"#e8a124", color:"#0a0e1a", border:"none", cursor:"pointer",
+            minHeight:48, fontFamily:"inherit",
           }}>{m.reload}</button>
           <button onClick={() => this.resetApp()} style={{
-            padding:"10px 24px", borderRadius:10, fontWeight:700, fontSize:14,
-            background:"rgba(255,255,255,0.08)", color:"#e8ecf0",
+            padding:"13px 20px", borderRadius:12, fontWeight:700, fontSize:14,
+            background:"rgba(255,255,255,0.07)", color:"#e8ecf0",
             border:"1px solid rgba(255,255,255,0.15)", cursor:"pointer",
+            minHeight:48, fontFamily:"inherit",
           }}>{m.reset}</button>
         </div>
-        <div style={{fontSize:11, color:"rgba(232,236,240,0.3)", marginTop:8}}>massar.ma</div>
+        <button onClick={() => this.copyDebug()} style={{
+          padding:"8px 16px", borderRadius:8, fontWeight:600, fontSize:12,
+          background:"transparent", color:this.state.copied ? "#10b981" : "rgba(232,236,240,0.4)",
+          border:"1px solid rgba(255,255,255,0.1)", cursor:"pointer",
+          fontFamily:"inherit", marginTop:4, transition:"color 0.2s",
+        }}>
+          {this.state.copied ? m.copied : m.copyDebug}
+        </button>
+        <div style={{fontSize:11, color:"rgba(232,236,240,0.2)", marginTop:8}}>massar.ma</div>
       </div>
     );
   }
 }
+// Helper for ErrorBoundary font-size (no CSS available inside ErrorBoundary render)
+function clamp(min, val, max) { return Math.min(Math.max(min, val), max); }
 
 export default function App() {
   const [step,         setStep]         = useState(0);
