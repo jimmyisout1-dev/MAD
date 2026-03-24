@@ -2565,7 +2565,7 @@ const PRESTIGE_PATH_NAMES = {
 };
 
 // FIX: clamp numeric UI values
-function clamp(val, min = 0, max = 100) {
+function clampNum(val, min = 0, max = 100) {
   const n = Number(val);
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
@@ -2604,7 +2604,7 @@ function getAcademicTier(overallAvg) {
 // TASK 2 — computePES: Prestige Expectation Score [0..1]
 // Deterministic. Reads average, track stream, top subject, and family pressure field.
 function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
-  const avg = clamp(Number(overallAvg) || 0, 0, 20);
+  const avg = clampNum(Number(overallAvg) || 0, 0, 20);
   const stream = STREAM_BY_TRACK[bacTrack] || "scientific";
   let pes = avg / 20;
   if (stream === "scientific") pes = Math.min(1, pes * 1.15);
@@ -2625,7 +2625,7 @@ function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
-  const avg           = clamp(Number(overallAvg) || 0, 0, 20);
+  const avg           = clampNum(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
   const goalMode      = safeInfo.goalMode      || "unsure";
   const goalPref      = safeInfo.goalPreference || "prestige";
@@ -2738,7 +2738,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   const goalMode  = info.goalMode  || "unsure";
   // TASK 2 — goalPreference overrides goalMode for the practical exemption check
   const goalPref  = info.goalPreference || "prestige";
-  const avg       = clamp(Number(overallAvg) || 0, 0, 20);
+  const avg       = clampNum(Number(overallAvg) || 0, 0, 20);
   const isHighAvg = avg >= 14.5;
   // Practical mode: user explicitly chose practical route — no prestige gates apply
   const isPractical = goalPref === "practical" || goalMode === "practical";
@@ -3589,7 +3589,7 @@ function ScoreContribChart({ cluster, t }) {
             <div className="explain-fill" style={{width:`${f.value*100}%`,background:f.color}}/>
           </div>
           {/* FIX: Arabic-first UX — percentage must render LTR even in RTL layout */}
-          <div className="explain-pct" dir="ltr">{Math.round(clamp(f.value*100))}%</div>
+          <div className="explain-pct" dir="ltr">{Math.round(clampNum(f.value*100))}%</div>
         </div>
       ))}
     </div>
@@ -5374,11 +5374,11 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   // Compute 3 meter scores
   // FIX: clamp numeric UI values
   const safeTrA = traits && typeof traits === "object" ? traits : {};
-  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
+  const identityFitPct = clampNum(Math.round(Math.max(0.35, Math.min(0.95,
     ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
-  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
+  const academicFitPct = clampNum(Math.round(Math.max(0.3, Math.min(0.9,
     top3[0]?.scores?.academic ?? 0.5)) * 100));
-  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
+  const marketFitPct = clampNum(Math.round(Math.max(0.4, Math.min(0.95,
     top3[0]?.scores?.market ?? 0.7)) * 100));
 
   // Phase 4: Alignment story — weakest dimension
@@ -5449,7 +5449,7 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
         <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
           borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
           <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
-            {clamp(confidence)}%
+            {clampNum(confidence)}%
           </div>
           <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
         </div>
@@ -5615,7 +5615,7 @@ function AbilitiesSection({ traits, lang }) {
         {sorted.map(([key, val])=>{
           const meta = ABILITY_META[key] || {};
           // FIX: clamp numeric UI values — never NaN, always 0–100
-          const pct  = Math.round(clamp(val * 100));
+          const pct  = Math.round(clampNum(val * 100));
           const isDom = topTwo.has(key);
           const [c1, c2] = meta.gradients || ["#3b82f6","#1d4ed8"];
           const svgStr = ABILITY_SVG[key] || "";
@@ -5678,7 +5678,7 @@ function CompetitionMode({ traits, lang }) {
         <div style={{background:"var(--surface)",border:"1px solid var(--border)",
           borderRadius:14,padding:"20px 22px",animation:"fadeIn 0.3s ease"}}>
           {Object.entries(safeTr).sort((a,b)=>b[1]-a[1]).map(([k])=>{
-            const p = clamp(percentiles[k] || 50);  // FIX: clamp numeric UI values
+            const p = clampNum(percentiles[k] || 50);  // FIX: clamp numeric UI values
             return (
               <div key={k} className="percentile-row">
                 <div style={{fontSize:12,color:"var(--text)",fontWeight:600,width:90,flexShrink:0}}>
@@ -5953,7 +5953,7 @@ function cornerSVG(color) {
 }
 
 // CardShell — upgraded: 3-layer bg, texture, neon border, corner ornaments
-// Exposes --cardScale CSS var (set from container width) for clamp()-based internal scaling.
+// Exposes --cardScale CSS var (set from container width) for clampNum()-based internal scaling.
 function CardShell({ accent, glow, rarity, width, aspectRatio, maxHeight, borderRadius, children, dir }) {
   const shellRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -6133,7 +6133,7 @@ function MatchBar({ pct, accent, glow, height }) {
       borderRadius:h, overflow:"hidden", flexShrink:0,
       boxShadow:`inset 0 1px 3px rgba(0,0,0,0.5)` }}>
       <div style={{
-        height:"100%", width:`${clamp(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
+        height:"100%", width:`${clampNum(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
         background:`linear-gradient(90deg, ${accent}, #fbbf24)`,
         boxShadow:`0 0 8px ${glow}`,
         transition:"width .5s cubic-bezier(0.34,1.56,0.64,1)",
@@ -7117,7 +7117,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   const totalXP = allTasks.reduce((s,{wk,it,xp})=>s+(checked[`${wk}_${it}`]?xp:0),0);
   const maxXP   = allTasks.reduce((s,{xp})=>s+xp,0);
   // FIX: clamp numeric UI values
-  const pct     = maxXP > 0 ? clamp(Math.round((totalXP/maxXP)*100)) : 0;
+  const pct     = maxXP > 0 ? clampNum(Math.round((totalXP/maxXP)*100)) : 0;
   const complete = pct === 100;
 
   const toggle = (wk, it) => {
@@ -7236,8 +7236,8 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   const displayName = getClusterDisplayName(current);
   const surprise = getSurpriseText(current);
   const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
-  const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
-  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
+  const matchPct = current ? Math.round(clampNum(current.scores.final * 100)) : 0;
+  const traitPct = current ? Math.round(clampNum((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
 
   return (
     <div style={{
@@ -7305,7 +7305,7 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
                   background:"linear-gradient(90deg,#3b82f6,#10b981)",borderRadius:2}}/>
               </div>
               <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",width:32,textAlign:"right"}} dir="ltr">
-                {Math.round(clamp(cs.parentAcceptance*100))}%
+                {Math.round(clampNum(cs.parentAcceptance*100))}%
               </div>
             </div>
           )}
@@ -8542,9 +8542,9 @@ function StepResults({
     topCareer:     safeTop,
     topThree:      top3,
     traits:        safeTraits,
-    confidence:    clamp(safeConf),
+    confidence:    clampNum(safeConf),
     rarity:        getRarity(safeConf),
-    overallAvg:    clamp(overallAvgVal, 0, 20),
+    overallAvg:    clampNum(overallAvgVal, 0, 20),
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure: !!safeReality.familyPressure,
@@ -8996,7 +8996,7 @@ const css = `
     flex-direction: column;
     align-items: center;
     /* Responsive padding — never wider than screen */
-    padding: clamp(12px, 3vw, 22px) clamp(12px, 4vw, 18px);
+    padding: clampNum(12px, 3vw, 22px) clampNum(12px, 4vw, 18px);
     padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom, 0px)));
     padding-top: max(12px, env(safe-area-inset-top, 0px));
     width: 100%;
@@ -9006,19 +9006,19 @@ const css = `
   }
   .header{text-align:center;margin-bottom:32px;padding-top:16px;width:100%;}
   .header h1{
-    font-size: clamp(24px,6vw,48px);
+    font-size: clampNum(24px,6vw,48px);
     background:linear-gradient(135deg,#e8a124,#f59e0b,#fbbf24);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     letter-spacing:-1px;line-height:1.1;
     word-break:break-word;
   }
   [dir="rtl"] .header h1{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;letter-spacing:0;}
-  .header p{color:#9ca3af;margin-top:8px;font-size:clamp(13px,3.5vw,15px);}
+  .header p{color:#9ca3af;margin-top:8px;font-size:clampNum(13px,3.5vw,15px);}
 
   /* Fix 1: Card — no fixed max-width wider than viewport, responsive padding */
   .card{
     background:var(--surface);border:1px solid var(--border);border-radius:16px;
-    padding: clamp(18px,4vw,28px);
+    padding: clampNum(18px,4vw,28px);
     width:100%;max-width:720px;
     box-shadow:0 4px 24px rgba(0,0,0,0.4);
     box-sizing:border-box;
@@ -9066,7 +9066,7 @@ const css = `
   .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap;}
   .btn{
     padding:12px 24px;border-radius:10px;border:none;cursor:pointer;
-    font-size:clamp(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
+    font-size:clampNum(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
     min-height:48px;/* Fix 5: 48px tap target */
     display:inline-flex;align-items:center;justify-content:center;
     font-family:inherit;
@@ -9382,14 +9382,14 @@ const css = `
     border: 1px solid rgba(232,161,36,0.28);
   }
   .home-hero h1 {
-    font-size: clamp(32px, 6vw, 64px);
+    font-size: clampNum(32px, 6vw, 64px);
     font-weight: 900; line-height: 1.07; letter-spacing: -1.5px;
     margin-bottom: 20px;
     background: linear-gradient(135deg, #ffffff 25%, rgba(255,255,255,0.62));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .home-hero p {
-    font-size: clamp(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
+    font-size: clampNum(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
     line-height: 1.65; margin-bottom: 36px;
     max-width: 560px; margin-left: auto; margin-right: auto;
   }
@@ -9462,7 +9462,7 @@ const css = `
     color: #e8a124; margin-bottom: 12px;
   }
   .home-section-title {
-    text-align: center; font-size: clamp(22px, 4vw, 36px);
+    text-align: center; font-size: clampNum(22px, 4vw, 36px);
     font-weight: 800; color: #fff; margin-bottom: 44px; letter-spacing: -0.5px;
   }
   [dir="rtl"] .home-section-title { font-family: 'Tajawal', sans-serif; }
@@ -9676,12 +9676,12 @@ const css = `
   }
 
   /* Fix 5: Arabic typography enhancement */
-  [dir="rtl"] .card { font-size: clamp(13px, 3.8vw, 15px); line-height: 1.75; }
-  [dir="rtl"] .q-text { font-size: clamp(14px, 4vw, 16px); line-height: 1.8; }
-  [dir="rtl"] .cluster-title { font-size: clamp(14px, 4vw, 17px); }
+  [dir="rtl"] .card { font-size: clampNum(13px, 3.8vw, 15px); line-height: 1.75; }
+  [dir="rtl"] .q-text { font-size: clampNum(14px, 4vw, 16px); line-height: 1.8; }
+  [dir="rtl"] .cluster-title { font-size: clampNum(14px, 4vw, 17px); }
   [dir="rtl"] .mark-label { letter-spacing: 0; font-size: 12px; }
   [dir="rtl"] .field label { letter-spacing: 0; }
-  [dir="rtl"] .btn { font-size: clamp(13px, 3.8vw, 15px); }
+  [dir="rtl"] .btn { font-size: clampNum(13px, 3.8vw, 15px); }
 
   /* Fix 1: Prevent any child from causing horizontal scroll */
   .app *, .home-root * { max-width: 100%; }
@@ -9861,7 +9861,7 @@ class AppErrorBoundary extends React.Component {
         textAlign:"center", boxSizing:"border-box",
       }}>
         <div style={{fontSize:48, marginBottom:4}}>⚠️</div>
-        <div style={{fontSize:clamp(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
+        <div style={{fontSize:clampNum(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
           {m.title}
         </div>
         <div style={{fontSize:14, color:"rgba(232,236,240,0.55)", maxWidth:360, lineHeight:1.6}}>
