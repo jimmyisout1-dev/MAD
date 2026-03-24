@@ -7546,6 +7546,889 @@ if (typeof window !== "undefined" && (window.__DEV__ || window.__RUN_TESTS ||
   setTimeout(runDevTests, 1800);
 }
 
+
+// ─────────────────────────────────────────────────────────────────
+// RESULTS FLOW — 5-screen Gary V Jab→Right Hook journey
+// Screens: 0=Identity Card | 1=Three Directions | 2=Prestige Ladder
+//          3=7-Day Plan    | 4=PDF Offer (Right Hook)
+// ─────────────────────────────────────────────────────────────────
+
+// Prestige ladder mapping by bacTrack → relevant prestige routes
+const PRESTIGE_LADDER = {
+  SMA:  ["ENSA","ENSIAS","INPT","ENSEM","Classe Prépa"],
+  SMB:  ["ENSA","ENSIAS","ENSEM","Classe Prépa","BTS Tech"],
+  PC:   ["ENSA","ENSIAS","INPT","FST (Ingénierie)","Classe Prépa"],
+  SVT:  ["Médecine","Pharmacie","ENSA","FST","IFCS"],
+  ECO:  ["ENCG","ISCAE","HEM","FSJES","ESCA"],
+  LET:  ["FSJES","Sciences Humaines","Journalisme (ISIC)","ENCG (Management)"],
+  TECH: ["ENSA","ENSAM","FST Tech","OFPPT BTS"],
+  ARTS: ["ESAV","ISADAC","ENSAD","Écoles de design"],
+  SVT_bac2: ["Médecine","Pharmacie","ENSA","FST","IFCS"],
+  SMA_bac2: ["ENSA","ENSIAS","INPT","ENSEM","Classe Prépa"],
+};
+
+function getPrestigeRoutes(info) {
+  const track = info.bac2Track || info.bacTrack || "SMA";
+  return PRESTIGE_LADDER[track] || PRESTIGE_LADDER.SMA;
+}
+
+function genOrderId() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return "MSR-" + Array.from({length:6}, ()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+}
+
+// ── Results Flow translations (appended to existing t object) ────
+const RF_COPY = {
+  ar: {
+    screenLabel:      (n,tot) => `${n} من ${tot}`,
+    jab1Title:        "هويتك المهنية",
+    jab1Sub:          "هذا بوصلة — ليس حكماً نهائياً.",
+    jab1StrengthsLabel:"نقاط قوتك",
+    sharePrompt:      "شارك نتيجتك",
+    captionOpts:      (arch, path) => [
+      `طلعت ${arch} — أفضل مسار: ${path} 🧭 #مسار`,
+      `هويتي: ${arch}… ونتيجتك؟ 🔥`,
+      "توجيه باك المغرب… لكن بشكل مفيد فعلاً 👀",
+    ],
+    continueBtn:      "متابعة",
+    backBtn:          "رجوع",
+    jab2Title:        "ثلاثة اتجاهات مناسبة لك",
+    jab2Sub:          "يمكنك تغيير رأيك. هذا استكشاف.",
+    fitLabel:         "أفضل توافق",
+    balLabel:         "الخيار المتوازن",
+    ambLabel:         "الأكثر طموحاً",
+    matchPct:         (p) => `${p}% توافق`,
+    whyLabel:         "السبب",
+    jab3Title:        "سلّم المكانة والمسارات التنافسية",
+    jab3Sub:          "نظرة موضوعية على موقعك الحالي وما يمكن تحقيقه.",
+    typicalReq:       "المتطلب المعتاد",
+    yourPosition:     "موقعك الحالي",
+    priorityUpgrade:  "الخطوة الأولى",
+    strongAvg:        "معدل مرتفع عادةً (≥15)",
+    veryStrongAvg:    "معدل مرتفع جداً (≥16)",
+    solidAvg:         "معدل جيد (≥12)",
+    yourAvg:          (a) => `معدلك: ${a.toFixed(1)}/20`,
+    raiseKey:         "ارفع نقطك في المواد الأساسية",
+    jab4Title:        "خطتك في 7 أيام",
+    jab4Sub:          "5 خطوات عملية تبدأ اليوم.",
+    jab4Upsell:       "هل تريد الخطة الكاملة لـ 90 يوماً + قائمة المدارس؟ احصل على ملف PDF.",
+    taskDone:         "تم",
+    rfTitle:          "ملف PDF الشامل — 199 درهم",
+    rfSub:            "يُرسل إلى بريدك الإلكتروني خلال 24 ساعة بعد تأكيد الدفع.",
+    rfPrice:          "199 درهم — مرة واحدة فقط",
+    rfBenefits:       [
+      "قائمة المدارس المناسبة لمدينتك وتنقّلك وميزانيتك (6–12 مؤسسة)",
+      "خطة المكانة A/B/C مع جدول زمني للوصول إلى ENSA/ENCG/الطب",
+      "استراتيجية رفع النقط: المواد الأهم والخطوات الواقعية",
+      "نص محادثة مع الأسرة (عربي + فرنسي) مخصص لضغط أسرتك",
+      "مصفوفة القرار: توافق / جدوى / مكانة / سوق / مخاطر / وقت",
+      "خريطة طريق 90 يوماً (الأسابيع 2–12) + موارد مختارة",
+    ],
+    teaserCards:      [
+      { icon:"🏫", title:"قائمة المدارس لمدينتك", blur:"ENSA الرباط، ENCG الدار البيضاء، INPT، …" },
+      { icon:"🏆", title:"خطة المكانة A/B/C",     blur:"المسار أ: 6 أشهر مكثفة → ENSA…" },
+      { icon:"📅", title:"خطة 90 يوماً + موارد",  blur:"الأسبوع 2: تمارين فيزياء يومية…" },
+    ],
+    emailLabel:       "البريد الإلكتروني",
+    phoneLabel:       "الهاتف (اختياري)",
+    uploadLabel:      "إثبات الدفع (صورة أو PDF)",
+    orderIdLabel:     "رقم الطلب",
+    submitBtn:        "أرسل طلبي",
+    submitSuccess:    "تم استلام طلبك — سنرسل ملف PDF بعد التحقق من الدفع.",
+    refundNote:       "في حالة تعذّر التحقق، نعيد المبلغ أو نمنحك رصيداً.",
+    copyId:           "نسخ رقم الطلب",
+    copied:           "✓ تم",
+    lockLabel:        "محتوى حصري في ملف PDF",
+  },
+  fr: {
+    screenLabel:      (n,tot) => `${n} / ${tot}`,
+    jab1Title:        "Ton identité professionnelle",
+    jab1Sub:          "C'est une boussole — pas un verdict définitif.",
+    jab1StrengthsLabel:"Tes points forts",
+    sharePrompt:      "Partage ton résultat",
+    captionOpts:      (arch, path) => [
+      `Je suis ${arch} — top voie: ${path} 🧭 #MassarPro`,
+      `Identité: ${arch}. Et toi? 🔥`,
+      "Orientation Bac Maroc, mais vraiment utile 👀",
+    ],
+    continueBtn:      "Continuer",
+    backBtn:          "Retour",
+    jab2Title:        "Trois directions pour toi",
+    jab2Sub:          "Tu peux changer d'avis. C'est de l'exploration.",
+    fitLabel:         "Meilleur fit",
+    balLabel:         "Option équilibrée",
+    ambLabel:         "Plus ambitieux",
+    matchPct:         (p) => `${p}% compatibilité`,
+    whyLabel:         "Pourquoi",
+    jab3Title:        "L'échelle de prestige au Maroc",
+    jab3Sub:          "Où tu en es et ce que tu peux atteindre.",
+    typicalReq:       "Prérequis typique",
+    yourPosition:     "Ton niveau actuel",
+    priorityUpgrade:  "Première priorité",
+    strongAvg:        "Moyenne élevée souvent requise (≥15)",
+    veryStrongAvg:    "Très haute moyenne (≥16)",
+    solidAvg:         "Bonne moyenne (≥12)",
+    yourAvg:          (a) => `Ton moy. : ${a.toFixed(1)}/20`,
+    raiseKey:         "Améliore tes notes dans les matières clés",
+    jab4Title:        "Ton plan 7 jours",
+    jab4Sub:          "5 actions concrètes à démarrer aujourd'hui.",
+    jab4Upsell:       "Tu veux le plan complet 90 jours + shortlist écoles ? Obtiens le PDF.",
+    taskDone:         "Fait",
+    rfTitle:          "Dossier PDF complet — 199 MAD",
+    rfSub:            "Envoyé à ton email sous 24h après confirmation du paiement.",
+    rfPrice:          "199 MAD — paiement unique",
+    rfBenefits:       [
+      "Shortlist d'écoles pour ta ville, mobilité et budget (6–12 établissements)",
+      "Plan Prestige A/B/C avec timeline pour ENSA/ENCG/Médecine alternatives",
+      "Stratégie de révision : matières prioritaires + étapes réalistes",
+      "Script de conversation famille (arabe + français) adapté à ta pression",
+      "Matrice de décision : fit / faisabilité / prestige / marché / risque / durée",
+      "Roadmap 90 jours (semaines 2–12) + ressources sélectionnées",
+    ],
+    teaserCards:      [
+      { icon:"🏫", title:"Shortlist écoles de ta ville",  blur:"ENSA Rabat, ENCG Casa, INPT, …" },
+      { icon:"🏆", title:"Plan Prestige A/B/C",           blur:"Plan A : 6 mois intensif → ENSA…" },
+      { icon:"📅", title:"Roadmap 90 jours + ressources", blur:"Semaine 2 : exercices phys. quotidiens…" },
+    ],
+    emailLabel:       "Email",
+    phoneLabel:       "Téléphone (optionnel)",
+    uploadLabel:      "Preuve de paiement (image ou PDF)",
+    orderIdLabel:     "Numéro de commande",
+    submitBtn:        "Envoyer ma demande",
+    submitSuccess:    "Demande reçue — on t'enverra le PDF après vérification du paiement.",
+    refundNote:       "En cas de problème de vérification, remboursement ou crédit garanti.",
+    copyId:           "Copier le numéro",
+    copied:           "✓ Copié",
+    lockLabel:        "Contenu réservé au PDF",
+  },
+  en: {
+    screenLabel:      (n,tot) => `${n} of ${tot}`,
+    jab1Title:        "Your Professional Identity",
+    jab1Sub:          "This is a compass — not a final verdict.",
+    jab1StrengthsLabel:"Your strengths",
+    sharePrompt:      "Share your result",
+    captionOpts:      (arch, path) => [
+      `I got ${arch} — top path: ${path} 🧭 #MassarPro`,
+      `My career identity: ${arch}. What's yours? 🔥`,
+      "Moroccan Bac orientation, but actually useful 👀",
+    ],
+    continueBtn:      "Continue",
+    backBtn:          "Back",
+    jab2Title:        "Three Directions for You",
+    jab2Sub:          "You can change your mind. This is exploration.",
+    fitLabel:         "Best Fit",
+    balLabel:         "Balanced",
+    ambLabel:         "Most Ambitious",
+    matchPct:         (p) => `${p}% match`,
+    whyLabel:         "Why",
+    jab3Title:        "Prestige Ladder in Morocco",
+    jab3Sub:          "An honest view of where you stand and what's reachable.",
+    typicalReq:       "Typical requirement",
+    yourPosition:     "Your current level",
+    priorityUpgrade:  "First priority",
+    strongAvg:        "Strong average often needed (≥15)",
+    veryStrongAvg:    "Very high average needed (≥16)",
+    solidAvg:         "Solid average (≥12)",
+    yourAvg:          (a) => `Your avg: ${a.toFixed(1)}/20`,
+    raiseKey:         "Raise your grades in key subjects",
+    jab4Title:        "Your 7-Day Starter Plan",
+    jab4Sub:          "5 practical actions you can start today.",
+    jab4Upsell:       "Want the full 90-day plan + school shortlist? Get the PDF.",
+    taskDone:         "Done",
+    rfTitle:          "Full PDF Dossier — 199 MAD",
+    rfSub:            "Delivered to your email within 24h after payment confirmation.",
+    rfPrice:          "199 MAD — one-time payment",
+    rfBenefits:       [
+      "School shortlist for your city, mobility & budget (6–12 institutions)",
+      "Prestige Plan A/B/C with timeline to reach ENSA/ENCG/Medicine alternatives",
+      "Grade-raise strategy: key subjects + realistic steps",
+      "Family conversation script (Arabic + French) tailored to your situation",
+      "Decision matrix: fit / feasibility / prestige / market / risk / time",
+      "90-day roadmap (weeks 2–12) + curated resources",
+    ],
+    teaserCards:      [
+      { icon:"🏫", title:"School shortlist for your city", blur:"ENSA Rabat, ENCG Casa, INPT, …" },
+      { icon:"🏆", title:"Prestige Plan A/B/C",            blur:"Plan A: 6-month intensive → ENSA…" },
+      { icon:"📅", title:"90-day roadmap + resources",     blur:"Week 2: daily physics exercises…" },
+    ],
+    emailLabel:       "Email",
+    phoneLabel:       "Phone (optional)",
+    uploadLabel:      "Payment proof (image or PDF)",
+    orderIdLabel:     "Order ID",
+    submitBtn:        "Submit my request",
+    submitSuccess:    "Request received — we'll send your PDF after verifying payment.",
+    refundNote:       "If we can't verify payment, we'll refund or credit you.",
+    copyId:           "Copy order ID",
+    copied:           "✓ Copied",
+    lockLabel:        "PDF-exclusive content",
+  },
+};
+
+// ── Helper: pick correct RF copy ─────────────────────────────────
+function rf(lang) { return RF_COPY[lang] || RF_COPY.en; }
+
+// ── Progress bar ─────────────────────────────────────────────────
+function RFProgress({ step, total, lang, dir }) {
+  const c = rf(lang);
+  return (
+    <div style={{
+      display:"flex", alignItems:"center", gap:10,
+      padding:"12px 0 4px", marginBottom:4,
+    }}>
+      <div style={{display:"flex", gap:5, flex:1}}>
+        {Array.from({length:total}).map((_,i) => (
+          <div key={i} style={{
+            flex:1, height:3, borderRadius:2,
+            background: i <= step ? "var(--accent)" : "var(--border)",
+            transition:"background 0.3s",
+          }}/>
+        ))}
+      </div>
+      <span style={{fontSize:11, color:"var(--muted)", whiteSpace:"nowrap", flexShrink:0}}>
+        {c.screenLabel(step+1, total)}
+      </span>
+    </div>
+  );
+}
+
+// ── Sticky bottom nav ────────────────────────────────────────────
+function RFNav({ step, total, onBack, onNext, lang, dir, nextLabel, nextDisabled }) {
+  const c = rf(lang);
+  return (
+    <div style={{
+      position:"sticky", bottom:0, zIndex:50,
+      background:"linear-gradient(0deg, var(--bg) 70%, transparent)",
+      padding:"12px 0",
+      paddingBottom:"max(12px, env(safe-area-inset-bottom, 0px))",
+      display:"flex", gap:10,
+    }}>
+      {step > 0 && (
+        <button className="btn btn-secondary" onClick={onBack}
+          style={{flex:"0 0 auto", minWidth:72}}>
+          {dir==="rtl" ? "→" : "←"} {c.backBtn}
+        </button>
+      )}
+      <button
+        className="btn btn-primary"
+        onClick={onNext}
+        disabled={!!nextDisabled}
+        style={{flex:1, opacity: nextDisabled ? 0.5 : 1}}>
+        {nextLabel || c.continueBtn} {step < total-1 ? (dir==="rtl" ? "←" : "→") : ""}
+      </button>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// JAB 1 — Identity Card
+// ─────────────────────────────────────────────────────────────────
+function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
+  const c = rf(lang);
+  const [selectedCaption, setSelectedCaption] = React.useState(0);
+  const [copied, setCopied]                   = React.useState(false);
+
+  const archetype = safeResults.archetype || "ACSI";
+  const topCluster = safeResults.topCareer;
+  const topPath = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
+  const rarity  = safeResults.rarity;
+  const conf    = safeResults.confidence;
+  const confClass = conf >= 70 ? "confidence-high" : conf >= 50 ? "confidence-med" : "confidence-low";
+
+  const rarityColors = {
+    common:    "#9ca3af",
+    rare:      "#22d3ee",
+    epic:      "#c084fc",
+    legendary: "#fbbf24",
+  };
+  const rarityColor = rarityColors[rarity] || rarityColors.common;
+
+  const captions = c.captionOpts(archetype, topPath);
+
+  const doCopy = () => {
+    const text = captions[selectedCaption];
+    try {
+      navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = text; document.body.appendChild(el); el.select();
+      document.execCommand("copy"); document.body.removeChild(el);
+      setCopied(true); setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const strengthKeys = (safeResults.strengths || []).slice(0,3);
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab1Title}</h2>
+      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab1Sub}</p>
+
+      {/* Archetype hero card */}
+      <div style={{
+        background:`linear-gradient(135deg, rgba(${rarity==="legendary"?"232,161,36":rarity==="epic"?"168,85,247":rarity==="rare"?"34,211,238":"107,114,128"},0.12), var(--surface2))`,
+        border:`1.5px solid ${rarityColor}50`,
+        borderRadius:20, padding:"24px 20px", marginBottom:16, textAlign:"center",
+        boxShadow:`0 0 40px ${rarityColor}15`,
+      }}>
+        <div style={{fontSize:11, fontWeight:800, letterSpacing:2, textTransform:"uppercase",
+          color:rarityColor, marginBottom:8}}>
+          {rarity?.toUpperCase()}
+        </div>
+        <div style={{fontSize:52, marginBottom:8}}>
+          {rarity==="legendary"?"🌟":rarity==="epic"?"💎":rarity==="rare"?"⚡":"🔹"}
+        </div>
+        <div style={{fontSize:28, fontWeight:900, letterSpacing:-0.5, color:"var(--text)", marginBottom:4}}>
+          {archetype}
+        </div>
+        <div style={{fontSize:13, color:"var(--muted)", marginBottom:14}}>
+          {(massarTypeDesc && massarTypeDesc(archetype, t)?.label) || archetype}
+        </div>
+        <div className={`confidence-badge ${confClass}`} style={{display:"inline-flex"}}>
+          {lang==="ar"?"مستوى الثقة":lang==="fr"?"Niveau de confiance":"Confidence"}: {conf}%
+        </div>
+      </div>
+
+      {/* Share section */}
+      <div style={{background:"var(--surface2)", borderRadius:16, padding:16, marginBottom:16}}>
+        <div style={{fontSize:13, fontWeight:700, marginBottom:12}}>{c.sharePrompt}</div>
+        <div style={{display:"flex", flexDirection:"column", gap:8, marginBottom:12}}>
+          {captions.map((cap, i) => (
+            <button key={i}
+              onClick={() => setSelectedCaption(i)}
+              style={{
+                textAlign: dir==="rtl" ? "right" : "left",
+                padding:"10px 14px", borderRadius:10, fontSize:12, lineHeight:1.5,
+                background: selectedCaption===i ? "rgba(232,161,36,0.12)" : "var(--surface3)",
+                border:`1.5px solid ${selectedCaption===i ? "var(--accent)" : "var(--border)"}`,
+                color:"var(--text)", cursor:"pointer", fontFamily:"inherit",
+              }}>
+              {cap}
+            </button>
+          ))}
+        </div>
+        <button className="btn btn-primary" onClick={doCopy} style={{width:"100%"}}>
+          {copied
+            ? (lang==="ar"?"✓ تم النسخ":lang==="fr"?"✓ Copié":"✓ Copied")
+            : (lang==="ar"?"نسخ النص":lang==="fr"?"Copier":"Copy caption")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// JAB 2 — Three Directions
+// ─────────────────────────────────────────────────────────────────
+function Jab2Directions({ lang, dir, safeResults, t }) {
+  const c = rf(lang);
+  const { threeViews } = safeResults;
+  if (!threeViews) return null;
+
+  const cards = [
+    { key:"bestFit",   label:c.fitLabel,  cluster:threeViews.bestFit,   icon:"💡" },
+    { key:"balanced",  label:c.balLabel,  cluster:threeViews.balanced,  icon:"⚖️" },
+    { key:"ambitious", label:c.ambLabel,  cluster:threeViews.ambitious, icon:"🚀" },
+  ].filter(x => x.cluster);
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab2Title}</h2>
+      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab2Sub}</p>
+
+      {cards.map(({key, label, cluster, icon}) => {
+        const clName = (t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id);
+        const pct = Math.round((cluster.scores.final || 0) * 100);
+        const why = (lang==="ar"
+          ? `يتوافق مع ملفك الدراسي والشخصي بنسبة ${pct}%`
+          : lang==="fr"
+          ? `Compatible à ${pct}% avec ton profil`
+          : `${pct}% compatible with your profile`);
+        const eligTag = cluster.eligibilityTag;
+
+        return (
+          <div key={key} style={{
+            background:"var(--surface2)", border:"1.5px solid var(--border)",
+            borderRadius:16, padding:"18px 16px", marginBottom:14,
+            borderLeft: key==="bestFit" ? "3px solid var(--accent3)"
+                      : key==="balanced" ? "3px solid var(--accent2)"
+                      : "3px solid var(--accent)",
+          }}>
+            <div style={{display:"flex", alignItems:"center", gap:10, marginBottom:8}}>
+              <span style={{fontSize:22}}>{icon}</span>
+              <div>
+                <div style={{fontSize:11, fontWeight:700, textTransform:"uppercase",
+                  letterSpacing:1, color:"var(--muted)", marginBottom:2}}>{label}</div>
+                <div style={{fontSize:17, fontWeight:800, color:"var(--text)"}}>{clName}</div>
+              </div>
+              <span style={{
+                marginInlineStart:"auto", fontSize:12, fontWeight:700,
+                background:"rgba(16,185,129,0.12)", color:"var(--accent3)",
+                padding:"3px 10px", borderRadius:20,
+              }}>
+                {c.matchPct(pct)}
+              </span>
+            </div>
+            <p style={{fontSize:13, color:"rgba(232,236,240,0.7)", lineHeight:1.55, margin:0}}>
+              {why}
+            </p>
+            {eligTag === "notEligiblePublic" && (
+              <div style={{marginTop:8, fontSize:11, color:"var(--warn)",
+                background:"rgba(245,158,11,0.08)", padding:"5px 10px",
+                borderRadius:8, display:"inline-block"}}>
+                ⚠️ {lang==="ar"?"تنافسية عالية — المسار الخاص متاح":
+                    lang==="fr"?"Très sélectif — filière privée possible":
+                    "Highly selective — private route available"}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// JAB 3 — Prestige Ladder
+// ─────────────────────────────────────────────────────────────────
+function Jab3Prestige({ lang, dir, info, safeResults }) {
+  const c = rf(lang);
+  const avg = safeResults.overallAvg || 0;
+  const routes = getPrestigeRoutes(info);
+
+  function getReq(school) {
+    if (/[Mm]édecine|Medicine|طب/.test(school))  return { req: c.veryStrongAvg, gap: avg < 16 ? c.raiseKey : null };
+    if (/ENSA|ENSIAS|INPT|Prépa/.test(school))    return { req: c.strongAvg,     gap: avg < 15 ? c.raiseKey : null };
+    return                                               { req: c.solidAvg,      gap: avg < 12 ? c.raiseKey : null };
+  }
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab3Title}</h2>
+      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab3Sub}</p>
+
+      <div style={{
+        background:"rgba(232,161,36,0.07)", border:"1px solid rgba(232,161,36,0.25)",
+        borderRadius:12, padding:"12px 14px", marginBottom:16, fontSize:13,
+        display:"flex", alignItems:"center", gap:8,
+      }}>
+        <span style={{fontSize:20}}>📊</span>
+        <span style={{color:"var(--text)"}}>{c.yourAvg(avg)}</span>
+      </div>
+
+      {routes.slice(0,4).map((school, i) => {
+        const { req, gap } = getReq(school);
+        return (
+          <div key={i} style={{
+            background:"var(--surface2)", border:"1px solid var(--border)",
+            borderRadius:14, padding:"14px 16px", marginBottom:10,
+          }}>
+            <div style={{fontWeight:700, fontSize:15, marginBottom:6}}>{school}</div>
+            <div style={{display:"flex", flexDirection:"column", gap:4}}>
+              <div style={{fontSize:12, color:"var(--muted)"}}>
+                <span style={{fontWeight:600}}>{c.typicalReq}: </span>{req}
+              </div>
+              <div style={{fontSize:12, color: gap ? "var(--warn)" : "var(--accent3)"}}>
+                <span style={{fontWeight:600}}>{c.yourPosition}: </span>
+                {gap
+                  ? `${avg.toFixed(1)}/20 — ${c.raiseKey}`
+                  : `${avg.toFixed(1)}/20 ✓`}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// JAB 4 — 7-Day Starter Plan
+// ─────────────────────────────────────────────────────────────────
+function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
+  const c = rf(lang);
+  const [done, setDone] = React.useState({});
+  const topCluster = safeResults.topCareer;
+
+  // Generate 5 practical tasks from top cluster action plan
+  const rawPlan = topCluster?.actionPlan || [];
+  const tasks = [];
+  rawPlan.slice(0,2).forEach(week => {
+    (week.items || []).slice(0,2).forEach(item => {
+      if (tasks.length < 5) tasks.push(typeof item === "string" ? item : item.label || "");
+    });
+  });
+  // If fewer than 5, pad with generic tasks
+  const genericTasks = lang==="ar" ? [
+    "ابحث عن 3 طلاب من نفس شعبتك وتبادل التجارب",
+    "راجع متطلبات القبول في مؤسسة تستهدفها",
+    "اقرأ أو شاهد محتوى عن المجال المقترح (30 دقيقة)",
+    "ارسم خطة أسبوعية للمراجعة",
+    "تحدث مع شخص يعمل في المجال الذي يثير اهتمامك",
+  ] : lang==="fr" ? [
+    "Trouve 3 étudiants dans ta filière et échange avec eux",
+    "Vérifie les prérequis d'une école qui t'intéresse",
+    "Lis ou regarde du contenu sur le domaine proposé (30 min)",
+    "Rédige un planning de révision hebdomadaire",
+    "Parle à quelqu'un qui travaille dans le domaine qui t'attire",
+  ] : [
+    "Connect with 3 students in your track and exchange experiences",
+    "Check admission requirements for one school you're targeting",
+    "Read or watch content about the suggested field (30 min)",
+    "Write a weekly revision plan",
+    "Talk to someone who works in a field that interests you",
+  ];
+  while (tasks.length < 5) tasks.push(genericTasks[tasks.length]);
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab4Title}</h2>
+      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab4Sub}</p>
+
+      {tasks.slice(0,5).map((task, i) => (
+        <div key={i}
+          onClick={() => setDone(d => ({...d, [i]: !d[i]}))}
+          style={{
+            display:"flex", alignItems:"flex-start", gap:12, padding:"14px 16px",
+            background:"var(--surface2)", border:`1.5px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
+            borderRadius:14, marginBottom:10, cursor:"pointer",
+            opacity: done[i] ? 0.65 : 1, transition:"all 0.2s",
+          }}>
+          <div style={{
+            width:22, height:22, borderRadius:6, flexShrink:0, marginTop:1,
+            background: done[i] ? "var(--accent3)" : "var(--surface3)",
+            border:`2px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
+            display:"flex", alignItems:"center", justifyContent:"center",
+            fontSize:13, color:"#fff", transition:"all 0.2s",
+          }}>
+            {done[i] && "✓"}
+          </div>
+          <div style={{fontSize:13, color:"var(--text)", lineHeight:1.55, flex:1,
+            textDecoration: done[i] ? "line-through" : "none", textDecorationColor:"var(--muted)"}}>
+            {task}
+          </div>
+          <span style={{fontSize:11, color:"var(--accent)", fontWeight:700, flexShrink:0}}>
+            +10 XP
+          </span>
+        </div>
+      ))}
+
+      <div style={{
+        marginTop:20, padding:"16px 18px",
+        background:"linear-gradient(135deg, rgba(232,161,36,0.1), rgba(59,130,246,0.06))",
+        border:"1px solid rgba(232,161,36,0.3)", borderRadius:14,
+        display:"flex", alignItems:"center", justifyContent:"space-between",
+        gap:12, flexWrap:"wrap",
+      }}>
+        <p style={{fontSize:13, color:"var(--text)", margin:0, flex:1, lineHeight:1.5}}>
+          {c.jab4Upsell}
+        </p>
+        <button className="btn btn-primary" onClick={onGoToPDF}
+          style={{flexShrink:0, minWidth:100}}>
+          📄 PDF →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RIGHT HOOK — PDF Offer
+// ─────────────────────────────────────────────────────────────────
+function RightHookPDF({ lang, dir, safeResults }) {
+  const c = rf(lang);
+  const [email, setEmail]   = React.useState("");
+  const [phone, setPhone]   = React.useState("");
+  const [file, setFile]     = React.useState(null);
+  const [submitted, setSubmitted] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [orderId]           = React.useState(() => genOrderId());
+  const [error, setError]   = React.useState("");
+
+  const handleSubmit = () => {
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      setError(lang==="ar"?"يرجى إدخال بريد إلكتروني صحيح":
+               lang==="fr"?"Veuillez entrer un email valide":
+               "Please enter a valid email");
+      return;
+    }
+    if (!file) {
+      setError(lang==="ar"?"يرجى إرفاق إثبات الدفع":
+               lang==="fr"?"Veuillez joindre la preuve de paiement":
+               "Please attach payment proof");
+      return;
+    }
+    try {
+      const entry = {
+        orderId, email, phone: phone || null,
+        fileName: file?.name || null,
+        timestamp: new Date().toISOString(),
+        archetype: safeResults.archetype,
+        topPath: safeResults.topCareer?.id || "",
+      };
+      const existing = JSON.parse(localStorage.getItem("massar_pdf_orders") || "[]");
+      existing.push(entry);
+      localStorage.setItem("massar_pdf_orders", JSON.stringify(existing));
+    } catch {}
+    setSubmitted(true);
+    setError("");
+  };
+
+  const copyOrderId = () => {
+    try { navigator.clipboard.writeText(orderId); } catch { }
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
+  };
+
+  const inputStyle = {
+    width:"100%", padding:"12px 14px",
+    background:"var(--surface2)", border:"1.5px solid var(--border)",
+    borderRadius:10, color:"var(--text)", fontSize:15, outline:"none",
+    fontFamily:"inherit", boxSizing:"border-box", marginBottom:12,
+  };
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      {/* Hero offer card */}
+      <div style={{
+        background:"linear-gradient(135deg, rgba(232,161,36,0.12), rgba(59,130,246,0.08))",
+        border:"1.5px solid rgba(232,161,36,0.4)", borderRadius:20, padding:"22px 18px",
+        marginBottom:18, textAlign:"center",
+        boxShadow:"0 8px 40px rgba(232,161,36,0.12)",
+      }}>
+        <div style={{fontSize:36, marginBottom:8}}>📄</div>
+        <h2 style={{fontSize:19, fontWeight:900, marginBottom:6, letterSpacing:-0.3}}>
+          {c.rfTitle}
+        </h2>
+        <p style={{fontSize:13, color:"var(--muted)", marginBottom:12, lineHeight:1.55}}>
+          {c.rfSub}
+        </p>
+        <div style={{fontSize:22, fontWeight:900, color:"var(--accent)", marginBottom:4}}>
+          {c.rfPrice}
+        </div>
+      </div>
+
+      {/* Benefits list */}
+      <div style={{background:"var(--surface2)", borderRadius:14, padding:"16px 14px", marginBottom:16}}>
+        {c.rfBenefits.map((b, i) => (
+          <div key={i} style={{
+            display:"flex", gap:10, alignItems:"flex-start",
+            paddingBottom:i<c.rfBenefits.length-1?10:0,
+            marginBottom:i<c.rfBenefits.length-1?10:0,
+            borderBottom:i<c.rfBenefits.length-1?"1px solid var(--border)":"none",
+          }}>
+            <span style={{color:"var(--accent3)", fontSize:14, flexShrink:0, marginTop:2}}>✓</span>
+            <span style={{fontSize:13, color:"var(--text)", lineHeight:1.5}}>{b}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* 3 teaser cards */}
+      <div style={{display:"flex", flexDirection:"column", gap:10, marginBottom:20}}>
+        {c.teaserCards.map((card, i) => (
+          <div key={i} style={{
+            background:"var(--surface2)", border:"1px solid var(--border)",
+            borderRadius:14, padding:"14px 16px",
+            display:"flex", gap:12, alignItems:"flex-start", position:"relative", overflow:"hidden",
+          }}>
+            <span style={{fontSize:20, flexShrink:0}}>{card.icon}</span>
+            <div style={{flex:1}}>
+              <div style={{fontSize:13, fontWeight:700, marginBottom:4}}>{card.title}</div>
+              <div style={{
+                fontSize:12, color:"var(--muted)", lineHeight:1.4,
+                filter:"blur(4px)", userSelect:"none", pointerEvents:"none",
+              }}>
+                {card.blur}
+              </div>
+            </div>
+            <div style={{
+              position:"absolute", inset:0,
+              background:"linear-gradient(90deg, transparent, rgba(17,24,39,0.85))",
+              display:"flex", alignItems:"center", justifyContent:"flex-end",
+              paddingInlineEnd:14,
+            }}>
+              <div style={{
+                fontSize:11, fontWeight:700, color:"var(--muted)",
+                background:"var(--surface3)", padding:"4px 10px", borderRadius:20,
+                border:"1px solid var(--border)", display:"flex", gap:5, alignItems:"center",
+              }}>
+                🔒 {c.lockLabel}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Payment instructions */}
+      <div style={{
+        background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)",
+        borderRadius:12, padding:"12px 14px", marginBottom:16, fontSize:12, lineHeight:1.6,
+      }}>
+        {lang==="ar"
+          ? "💳 أرسل 199 درهم عبر CIH Pay أو Wafacash أو تحويل بنكي، ثم ارفع إثبات الدفع أدناه."
+          : lang==="fr"
+          ? "💳 Envoyez 199 MAD via CIH Pay, Wafacash ou virement bancaire, puis joignez la preuve ci-dessous."
+          : "💳 Send 199 MAD via CIH Pay, Wafacash or bank transfer, then attach payment proof below."}
+      </div>
+
+      {!submitted ? (
+        <div>
+          {/* Order ID */}
+          <div style={{
+            background:"var(--surface2)", border:"1px solid var(--border)",
+            borderRadius:10, padding:"12px 14px", marginBottom:14,
+            display:"flex", alignItems:"center", justifyContent:"space-between", gap:8,
+          }}>
+            <div>
+              <div style={{fontSize:11, color:"var(--muted)", marginBottom:2}}>{c.orderIdLabel}</div>
+              <div style={{fontFamily:"monospace", fontSize:16, fontWeight:700, color:"var(--accent)"}}>
+                {orderId}
+              </div>
+            </div>
+            <button className="btn btn-secondary" onClick={copyOrderId}
+              style={{fontSize:12, padding:"6px 14px", minHeight:36}}>
+              {copied ? c.copied : c.copyId}
+            </button>
+          </div>
+
+          <input type="email" required placeholder={c.emailLabel} value={email}
+            onChange={e=>setEmail(e.target.value)} style={inputStyle}/>
+          <input type="tel" placeholder={c.phoneLabel} value={phone}
+            onChange={e=>setPhone(e.target.value)} style={inputStyle}/>
+          <label style={{display:"block", fontSize:12, color:"var(--muted)", marginBottom:6}}>
+            {c.uploadLabel}
+          </label>
+          <input type="file" accept="image/*,application/pdf"
+            onChange={e=>setFile(e.target.files[0])}
+            style={{...inputStyle, padding:"10px 12px", fontSize:13, cursor:"pointer"}}/>
+
+          {error && (
+            <div style={{color:"var(--danger)", fontSize:12, marginBottom:10, marginTop:-4}}>
+              {error}
+            </div>
+          )}
+
+          <button className="btn btn-primary" onClick={handleSubmit}
+            style={{width:"100%", marginTop:4, fontSize:15, padding:"15px 24px"}}>
+            {c.submitBtn}
+          </button>
+          <p style={{textAlign:"center", fontSize:11, color:"var(--muted)", marginTop:10, lineHeight:1.5}}>
+            {c.refundNote}
+          </p>
+        </div>
+      ) : (
+        <div style={{
+          textAlign:"center", padding:"32px 20px",
+          background:"rgba(16,185,129,0.08)", borderRadius:16,
+          border:"1px solid rgba(16,185,129,0.3)",
+        }}>
+          <div style={{fontSize:42, marginBottom:12}}>✅</div>
+          <div style={{fontSize:16, fontWeight:700, color:"var(--accent3)", marginBottom:8}}>
+            {c.submitSuccess}
+          </div>
+          <div style={{fontSize:12, color:"var(--muted)", marginTop:6}}>
+            {lang==="ar"?"رقم طلبك":lang==="fr"?"Ton numéro":"Your order ID"}:{" "}
+            <span style={{fontFamily:"monospace", color:"var(--accent)"}}>{orderId}</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RESULTS FLOW — orchestrator
+// ─────────────────────────────────────────────────────────────────
+function ResultsFlow({
+  t, lang, dir, info,
+  marks, whatIfDeltas, setWhatIfDeltas,
+  effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
+  reality, setReality, restart, onBack,
+  secondaryTop3, overallAvg,
+}) {
+  const [rfStep, setRfStep] = React.useState(0);
+  const TOTAL = 5;
+
+  // Guard
+  const safeRanked  = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const safeTraits  = (traits && typeof traits === "object") ? traits : {};
+  const safeMarks   = (marks  && typeof marks  === "object") ? marks  : {};
+  const safeInfo    = (info   && typeof info   === "object") ? info   : {};
+  const safeReality = (reality && typeof reality === "object") ? reality : {};
+  const safeConf    = typeof confidence === "number" ? confidence : 0;
+
+  if (safeRanked.length === 0) {
+    return (
+      <div className="card" dir={dir} style={{textAlign:"center", padding:"40px 24px"}}>
+        <div style={{fontSize:48, marginBottom:16}}>📋</div>
+        <h2 style={{marginBottom:12, fontWeight:700}}>
+          {lang==="ar"?"ملفك الشخصي غير مكتمل":lang==="fr"?"Profil incomplet":"Incomplete profile"}
+        </h2>
+        <div style={{display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginTop:16}}>
+          <button className="btn btn-secondary" onClick={()=>onBack?.()}>← {lang==="ar"?"رجوع":lang==="fr"?"Retour":"Back"}</button>
+          <button className="btn btn-danger" onClick={restart}>{t?.restart || "Restart"}</button>
+        </div>
+      </div>
+    );
+  }
+
+  const overallAvgVal = (() => {
+    const vals = Object.values(safeMarks).map(Number).filter(v=>!isNaN(v)&&v>0);
+    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  })();
+
+  const safeResults = {
+    archetype:     computeMassarType(safeTraits, safeReality),
+    topCareer:     safeRanked[0] || null,
+    topThree:      safeRanked.slice(0,3),
+    traits:        safeTraits,
+    confidence:    Math.round(Math.min(100, Math.max(0, safeConf))),
+    rarity:        getRarity(safeConf),
+    overallAvg:    Math.min(20, Math.max(0, overallAvgVal)),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
+    strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
+    familyPressure:!!safeReality.familyPressure,
+  };
+
+  const rfCopy = rf(lang);
+  const goNext = () => setRfStep(s => Math.min(TOTAL-1, s+1));
+  const goBack = () => {
+    if (rfStep === 0) onBack?.();
+    else setRfStep(s => Math.max(0, s-1));
+  };
+
+  const screens = [
+    <Jab1Identity key="j1" lang={lang} dir={dir} safeResults={safeResults} safeRanked={safeRanked} t={t} traits={safeTraits}/>,
+    <Jab2Directions key="j2" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
+    <Jab3Prestige key="j3" lang={lang} dir={dir} info={safeInfo} safeResults={safeResults}/>,
+    <Jab4Plan key="j4" lang={lang} dir={dir} safeResults={safeResults} onGoToPDF={() => setRfStep(4)}/>,
+    <RightHookPDF key="rh" lang={lang} dir={dir} safeResults={safeResults}/>,
+  ];
+
+  const stepLabels = [
+    lang==="ar"?"الهوية":lang==="fr"?"Identité":"Identity",
+    lang==="ar"?"الاتجاهات":lang==="fr"?"Directions":"Directions",
+    lang==="ar"?"المكانة":lang==="fr"?"Prestige":"Prestige",
+    lang==="ar"?"الخطة":lang==="fr"?"Plan":"Plan",
+    lang==="ar"?"الملف":lang==="fr"?"PDF":"PDF",
+  ];
+
+  return (
+    <div className="card" dir={dir} style={{maxWidth:720, width:"100%"}}>
+      <RFProgress step={rfStep} total={TOTAL} lang={lang} dir={dir}/>
+      <div style={{minHeight:400, paddingBottom:16}}>
+        {screens[rfStep]}
+      </div>
+      <RFNav
+        step={rfStep} total={TOTAL}
+        onBack={goBack}
+        onNext={goNext}
+        lang={lang} dir={dir}
+        nextLabel={rfStep < TOTAL-1 ? rfCopy.continueBtn : undefined}
+        nextDisabled={rfStep === TOTAL-1}
+      />
+    </div>
+  );
+}
+
 // src/massar/components/StepResults.jsx
 // ─────────────────────────────────────────────────────────────────
 // Goals wired here:
@@ -8673,7 +9556,40 @@ const css = `
   .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
   .home-footer a:hover { color: #e8a124; }
 
-  /* Fix 3+5: TopBar — above header, safe-area, never overlaps title ── */
+  /* ── ResultsFlow — 5-screen journey ── */
+  /* Screen fade transition */
+  @keyframes rfFadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  /* Sticky bottom nav safe-area */
+  .rf-sticky-nav {
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    background: linear-gradient(0deg, var(--bg) 70%, transparent);
+    padding: 12px 0;
+    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  }
+  /* Progress bar track */
+  .rf-progress-track {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 0 4px; margin-bottom: 4px;
+  }
+  /* Teaser card blur overlay */
+  .rf-teaser-blur { filter: blur(4px); user-select: none; pointer-events: none; }
+  /* Mobile: ensure full-width single column */
+  @media (max-width: 480px) {
+    .rf-direction-cards { flex-direction: column; }
+    .rf-teaser-row { flex-direction: column; }
+  }
+
+  /* Reduced-motion: no transitions on result screens */
+  @media (prefers-reduced-motion: reduce) {
+    [style*="animation"] { animation: none !important; }
+  }
+
+  /* Fix: top nav placement — TopBar for wizard ── */
   .wizard-topbar {
     display: flex;
     align-items: center;
@@ -9169,7 +10085,7 @@ export default function App() {
         {step === 7 && (
           // FIX: prevent white screen on results — ErrorBoundary catches any render throw
           <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
-            <StepResults
+            <ResultsFlow
               t={t} lang={lang} dir={dir} info={info}
               marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
