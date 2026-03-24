@@ -16,20 +16,28 @@ const TRANSLATIONS = {
     dir: "rtl",
     // App shell
     // HOME PAGE 3D CSS — translations
-    homeHero: "اعرف مسارك — اختر بثقة",
-    homeHeroSub: "اختبار ذكي مُصمَّم للطلاب المغاربة — يجمع شخصيتك ونقطك وواقع سوق الشغل في توصية واحدة واضحة.",
-    homeCTA: "ابدأ الآن — مجاناً",
+    homeHero: "اختر مسارك بثقة… وبالأرقام",
+    homeHeroSub: "مسار يقرأ شخصيتك ويحلّل نقطك حسب شعبتك (باك 1/باك 2)، ثم يمنحك 3 توصيات واضحة: الأنسب لك، الخيار المتوازن، والأكثر طموحاً — مع أسباب مقنعة وخطة عمل.",
+    homeCTA: "ابدأ الاختبار مجاناً",
+    homeSecondaryCTA: "شاهد مثالاً للنتيجة",
+    homeMicroTrust: "بدون وعود كاذبة. نعرض الأهلية والبدائل بوضوح: عمومي/خصوصي.",
+    homeParentLine: "مناسب للطالب… ومقنع للأسرة.",
+    homeValueBullets: ["مواد دقيقة حسب الشعبة — بلا تخمين","3 زوايا: الأنسب • المتوازن • الطموح","أهلية واقعية: ماذا يمكنك فعلاً؟","خطة 30 يوماً بخطوات قابلة للتنفيذ","نتيجة قابلة للمشاركة + وصف جاهز"],
+    homeTrustChips: ["مُفسَّر","واقعي","مناسب للهاتف","مهيّأ للمغرب"],
+    homeNotSure: "إن كنت متردداً، فهذا طبيعي. سنقدّم لك 3 مسارات قوية لتجربتها هذا الشهر. النتيجة بوصلة… وليست حكماً.",
+    homeFamilyNote: "نعرف الضغط العائلي. لذلك نعرض «مساراً طموحاً» يمكن شرحه للأسرة، مع شروطه وخطة الوصول إليه.",
+    homeShareCTA: "شارك نتيجتك — ودعها تتكلم عنك.",
     homeHowItWorks: "كيف يعمل؟",
     homeStep1Title: "اختبار الشخصية",
-    homeStep1Desc: "10 دقائق — أسئلة تكشف ميولك الحقيقية، لا ما تظن أنك تريده.",
+    homeStep1Desc: "8–12 دقيقة — أسئلة ذكية ومباشرة تكشف ميولك الحقيقية.",
     homeStep2Title: "أدخل نقطك",
-    homeStep2Desc: "مواد دقيقة لكل شعبة — باك 1 أو باك 2 — دون تخمين.",
-    homeStep3Title: "احصل على خارطة طريقك",
-    homeStep3Desc: "ثلاث زوايا: أفضل توافق، الخيار المتوازن، الأكثر طموحاً — مع خطة عمل فورية.",
-    homeTrust1: "باك 1 وباك 2",
-    homeTrust2: "التعليم العام والخاص",
-    homeTrust3: "الأهلية الفعلية — لا مجرد أحلام",
-    homeFooterBy: "مسار — دليلك المهني بالمغرب",
+    homeStep2Desc: "0 إلى 20 — حسب شعبتك فقط، بلا تخمين.",
+    homeStep3Title: "خريطة طريقك",
+    homeStep3Desc: "توصيات + تبرير + خطة عمل — في ثلاث زوايا: الأنسب، المتوازن، الطموح.",
+    homeTrust1: "باك 1 / باك 2",
+    homeTrust2: "عمومي / خصوصي",
+    homeTrust3: "أهلية واقعية — لا وعود فارغة",
+    homeFooterBy: "مسار — بوصلتك المهنية بالمغرب",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "متابعة الاختبار",
     backHome: "الرئيسية",
@@ -502,20 +510,28 @@ const TRANSLATIONS = {
   fr: {
     dir: "ltr",
     // HOME PAGE 3D CSS — translations
-    homeHero: "Trouve ta voie professionnelle idéale",
-    homeHeroSub: "Un test intelligent conçu pour les lycéens marocains — croise ta personnalité, tes notes et le marché de l'emploi.",
-    homeCTA: "Commencer le test gratuitement",
+    homeHero: "Choisis ta voie. Avec du concret.",
+    homeHeroSub: "Massar croise ta personnalité + tes notes (matières exactes Bac 1/Bac 2) pour te proposer 3 parcours : Fit, Équilibré, Ambitieux — avec le «pourquoi», l'éligibilité (public/privé) et un plan d'action.",
+    homeCTA: "Commencer gratuitement",
+    homeSecondaryCTA: "Voir un exemple",
+    homeMicroTrust: "Zéro promesse bidon. Des règles claires, des alternatives réelles.",
+    homeParentLine: "Clair pour toi — convaincant pour tes parents.",
+    homeValueBullets: ["Matières exactes selon ta filière","3 vues : Fit • Équilibré • Ambitieux","Éligibilité claire : public/privé, seuils, options","Plan 30 jours (actions concrètes)","Résultat partageable + caption prête"],
+    homeTrustChips: ["Explicable","Réaliste","Mobile-first","Pensé pour le Maroc"],
+    homeNotSure: "Si tu hésites, c'est normal. On te donne 3 directions solides à tester ce mois-ci. Le résultat est une boussole — pas une étiquette.",
+    homeFamilyNote: "On connaît la pression. On te donne un «parcours ambitieux» défendable devant tes parents, avec les conditions et le plan pour y arriver.",
+    homeShareCTA: "Partage ton profil — et fais parler le résultat.",
     homeHowItWorks: "Comment ça marche ?",
     homeStep1Title: "Test de personnalité",
-    homeStep1Desc: "10 minutes — des questions qui révèlent tes vraies affinités, pas ce que tu veux entendre.",
+    homeStep1Desc: "8–12 min — questions utiles, directes, sans détour.",
     homeStep2Title: "Saisis tes notes",
-    homeStep2Desc: "Matières exactes selon ta filière — Bac 1 ou Bac 2.",
-    homeStep3Title: "Obtiens ta feuille de route",
-    homeStep3Desc: "3 perspectives : Meilleure affinité, Équilibré, Ambitieux — avec un plan d'action immédiat.",
-    homeTrust1: "Bac 1 et Bac 2",
-    homeTrust2: "Public et privé",
-    homeTrust3: "Éligibilité réelle, pas du rêve",
-    homeFooterBy: "Massar — Guide Carrière Maroc",
+    homeStep2Desc: "/20, selon ta filière exacte — zéro approximation.",
+    homeStep3Title: "Ta roadmap",
+    homeStep3Desc: "Parcours + raisons + actions — en 3 perspectives : Fit, Équilibré, Ambitieux.",
+    homeTrust1: "Bac 1 / Bac 2",
+    homeTrust2: "Public / privé",
+    homeTrust3: "Éligibilité réelle — pas de fausses promesses",
+    homeFooterBy: "Massar — ta boussole carrière au Maroc",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "Reprendre le test",
     backHome: "← Accueil",
@@ -971,20 +987,28 @@ const TRANSLATIONS = {
   en: {
     dir: "ltr",
     // HOME PAGE 3D CSS — translations
-    homeHero: "Find Your Ideal Career Path",
-    homeHeroSub: "A smart test built for Moroccan students — matching your personality, grades and the real job market.",
-    homeCTA: "Start the free test",
+    homeHero: "Pick your path — with clarity.",
+    homeHeroSub: "Massar combines your personality + your Bac marks (track-accurate subjects for Bac 1/Bac 2) and returns 3 directions: Best Fit, Balanced, Ambitious — with reasons, eligibility (public/private), and a 30-day action plan.",
+    homeCTA: "Start free",
+    homeSecondaryCTA: "See an example",
+    homeMicroTrust: "No fake promises. Clear rules, real alternatives.",
+    homeParentLine: "Clear for you — credible for parents.",
+    homeValueBullets: ["Accurate subjects for your track","3 views: Fit • Balanced • Ambitious","Eligibility shown: public vs private","Practical 30-day plan","Shareable result + ready caption"],
+    homeTrustChips: ["Explainable","Realistic","Mobile-first","Built for Morocco"],
+    homeNotSure: "If you're unsure, that's normal. We'll give you 3 strong directions to test this month. A result is a compass — not a label.",
+    homeFamilyNote: "We get it. We include an 'ambitious track' you can defend to parents, with requirements and a plan to reach it.",
+    homeShareCTA: "Share your profile — let the card speak.",
     homeHowItWorks: "How it works",
     homeStep1Title: "Personality test",
-    homeStep1Desc: "10 minutes — questions that surface your real affinities, not what you want to hear.",
+    homeStep1Desc: "8–12 minutes — smart, direct questions that surface real affinities.",
     homeStep2Title: "Enter your grades",
-    homeStep2Desc: "Exact subjects for your track — Bac 1 or Bac 2.",
-    homeStep3Title: "Get your roadmap",
-    homeStep3Desc: "3 perspectives: Best Fit, Balanced, Ambitious — with an immediate action plan.",
-    homeTrust1: "Bac 1 & Bac 2",
-    homeTrust2: "Public & private paths",
-    homeTrust3: "Real eligibility, not wishful thinking",
-    homeFooterBy: "Massar — Morocco Career Guide",
+    homeStep2Desc: "/20, track-accurate subjects — zero guesswork.",
+    homeStep3Title: "Your roadmap",
+    homeStep3Desc: "Paths + reasons + next steps — in 3 views: Fit, Balanced, Ambitious.",
+    homeTrust1: "Bac 1 / Bac 2",
+    homeTrust2: "Public / private",
+    homeTrust3: "Real eligibility — no empty promises",
+    homeFooterBy: "Massar — your career compass in Morocco",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "Resume the test",
     backHome: "← Home",
@@ -3998,81 +4022,58 @@ function useRevealOnScroll(threshold = 0.15) {
 }
 
 // ────────────────────────────────────────────────────────────────
-// HOME PAGE UI
+// HOME PAGE UI — updated with premium copy
 // ────────────────────────────────────────────────────────────────
 function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
   const reduced = usePrefersReducedMotion();
 
-  // ── Parallax refs (DOM-only, no setState) ────────────────────
-  const scrollYRef  = React.useRef(0);
-  const rafRef      = React.useRef(null);
-  const layer1Ref   = React.useRef(null); // slow orb  — speed 0.08
-  const layer2Ref   = React.useRef(null); // mid grid  — speed 0.14
-  const layer3Ref   = React.useRef(null); // spotlight — speed 0.06
-  const heroPanelRef = React.useRef(null); // hero content — mild parallax
+  const scrollYRef   = React.useRef(0);
+  const rafRef       = React.useRef(null);
+  const layer1Ref    = React.useRef(null);
+  const layer2Ref    = React.useRef(null);
+  const layer3Ref    = React.useRef(null);
+  const heroPanelRef = React.useRef(null);
+  const heroCardRef  = React.useRef(null);
 
-  // ── Mouse tilt (hero card, desktop only) ─────────────────────
-  const heroCardRef = React.useRef(null);
-
-  // ── rAF parallax loop ────────────────────────────────────────
   React.useEffect(() => {
     if (reduced) return;
-
     const onScroll = () => { scrollYRef.current = window.scrollY; };
     window.addEventListener("scroll", onScroll, { passive: true });
-
     const tick = () => {
       const sy = scrollYRef.current;
-      if (layer1Ref.current)    layer1Ref.current.style.transform   = `translate3d(0, ${sy * 0.08}px, 0)`;
-      if (layer2Ref.current)    layer2Ref.current.style.transform   = `translate3d(0, ${sy * 0.14}px, 0)`;
-      if (layer3Ref.current)    layer3Ref.current.style.transform   = `translate3d(0, ${sy * 0.06}px, 0)`;
+      if (layer1Ref.current)    layer1Ref.current.style.transform    = `translate3d(0, ${sy * 0.08}px, 0)`;
+      if (layer2Ref.current)    layer2Ref.current.style.transform    = `translate3d(0, ${sy * 0.14}px, 0)`;
+      if (layer3Ref.current)    layer3Ref.current.style.transform    = `translate3d(0, ${sy * 0.06}px, 0)`;
       if (heroPanelRef.current) heroPanelRef.current.style.transform = `translate3d(0, ${sy * 0.04}px, 0)`;
       rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    };
+    return () => { window.removeEventListener("scroll", onScroll); if (rafRef.current) cancelAnimationFrame(rafRef.current); };
   }, [reduced]);
 
-  // ── Mouse tilt on hero card (desktop only) ───────────────────
   React.useEffect(() => {
     if (reduced) return;
     const card = heroCardRef.current;
-    if (!card) return;
-
-    const isMobile = window.matchMedia("(hover: none)").matches;
-    if (isMobile) return;
-
+    if (!card || window.matchMedia("(hover: none)").matches) return;
     const onMove = (e) => {
       const rect = card.getBoundingClientRect();
-      const cx = rect.left + rect.width  / 2;
-      const cy = rect.top  + rect.height / 2;
-      const dx = (e.clientX - cx) / (rect.width  / 2);
-      const dy = (e.clientY - cy) / (rect.height / 2);
+      const dx = (e.clientX - rect.left - rect.width/2) / (rect.width/2);
+      const dy = (e.clientY - rect.top  - rect.height/2) / (rect.height/2);
       card.style.transform = `perspective(900px) rotateX(${-dy * 5}deg) rotateY(${dx * 5}deg)`;
     };
     const onLeave = () => { card.style.transform = ""; };
-
     card.addEventListener("mousemove", onMove);
     card.addEventListener("mouseleave", onLeave);
-    return () => {
-      card.removeEventListener("mousemove", onMove);
-      card.removeEventListener("mouseleave", onLeave);
-    };
+    return () => { card.removeEventListener("mousemove", onMove); card.removeEventListener("mouseleave", onLeave); };
   }, [reduced]);
 
-  // ── Scroll reveal refs for sections ─────────────────────────
-  const revealHow    = useRevealOnScroll(0.12);
-  const revealTrust  = useRevealOnScroll(0.2);
-  const revealFooter = useRevealOnScroll(0.3);
+  const revealHow     = useRevealOnScroll(0.12);
+  const revealValue   = useRevealOnScroll(0.15);
+  const revealTrust   = useRevealOnScroll(0.2);
+  const revealNotSure = useRevealOnScroll(0.15);
+  const revealFooter  = useRevealOnScroll(0.3);
 
-  const scrollToHow = () => {
-    const el = document.getElementById("how-it-works");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const scrollToHow = () => { const el = document.getElementById("how-it-works"); if (el) el.scrollIntoView({ behavior: "smooth" }); };
 
   const LANGS = [{ code:"ar", lbl:"عربية" }, { code:"fr", lbl:"Français" }, { code:"en", lbl:"English" }];
 
@@ -4082,47 +4083,43 @@ function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
     { n:"3", title: t.homeStep3Title, desc: t.homeStep3Desc },
   ];
 
-  const trusts = [
-    { label: t.homeTrust1, icon:"🎓" },
-    { label: t.homeTrust2, icon:"🏫" },
-    { label: t.homeTrust3, icon:"✅" },
-  ];
+  const trustChips  = t.homeTrustChips  || [t.homeTrust1, t.homeTrust2, t.homeTrust3];
+  const valueBullets = t.homeValueBullets || [];
+
+  const tagline = lang==="ar" ? "المغرب • الباكالوريا • سوق الشغل"
+                : lang==="fr" ? "Maroc • Bac • Marché de l'emploi"
+                :               "Morocco • Bac • Job market";
 
   return (
     <div className="home-root" dir={dir}>
 
-      {/* ── Parallax depth layers ── */}
+      {/* Parallax depth layers */}
       <div className="home-parallax" aria-hidden="true">
-        {/* Layer 1 — large blue orb (slow) */}
         <div ref={layer1Ref} className="hp-layer hp-orb1" style={{willChange:"transform"}}/>
-        {/* Layer 2 — grid glow (mid) */}
         <div ref={layer2Ref} className="hp-layer hp-grid" style={{willChange:"transform"}}/>
-        {/* Layer 3 — gold spotlight (very slow) */}
         <div ref={layer3Ref} className="hp-layer hp-spot" style={{willChange:"transform"}}/>
-        {/* Floating ornaments (CSS-only, no scroll) */}
         <div className="hp-float hp-sparkle" aria-hidden="true"/>
         <div className="hp-float hp-blob"    aria-hidden="true"/>
       </div>
 
-      {/* ── Nav ── */}
+      {/* Nav */}
       <nav className="home-nav">
         <span className="home-nav-brand">مسار</span>
         <div className="home-nav-lang">
           {LANGS.map(l => (
-            <button key={l.code}
-              className={lang === l.code ? "active" : ""}
-              onClick={() => setLang(l.code)}>
+            <button key={l.code} className={lang === l.code ? "active" : ""} onClick={() => setLang(l.code)}>
               {l.lbl}
             </button>
           ))}
         </div>
       </nav>
 
-      {/* ── Hero (sticky anchor) ── */}
+      {/* Hero */}
       <section className="home-hero-wrap">
         <div ref={heroPanelRef} className="home-hero" style={{willChange: reduced ? undefined : "transform"}}>
           <div ref={heroCardRef} className="home-hero-card">
-            <span className="home-hero-eyebrow">🇲🇦 Morocco • الباكالوريا • Maroc</span>
+            {/* Tagline chip — Morocco-localised */}
+            <span className="home-hero-eyebrow">{tagline}</span>
             <h1>{t.homeHero}</h1>
             <p>{t.homeHeroSub}</p>
             <div className="home-hero-glass">
@@ -4131,47 +4128,83 @@ function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
                   {savedSession ? t.homeBackToTest : t.homeCTA}
                 </button>
                 <button className="home-btn-secondary" onClick={scrollToHow}>
-                  {t.homeHowItWorks} ↓
+                  {t.homeSecondaryCTA || t.homeHowItWorks} ↓
                 </button>
               </div>
+              {/* Parent line under buttons */}
+              {t.homeParentLine && (
+                <p className="home-parent-line">{t.homeParentLine}</p>
+              )}
             </div>
+            {/* Micro trust */}
+            {t.homeMicroTrust && (
+              <p className="home-micro-trust">{t.homeMicroTrust}</p>
+            )}
           </div>
         </div>
       </section>
 
-      {/* ── How it works ── */}
+      {/* Value bullets */}
+      {valueBullets.length > 0 && (
+        <div ref={revealValue} className="home-value-bullets reveal">
+          <ul>
+            {valueBullets.map((b, i) => (
+              <li key={i}><span className="home-bullet-dot" aria-hidden="true">✦</span>{b}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* How it works */}
       <section id="how-it-works" className="home-how">
         <div ref={revealHow} className="reveal">
-          <div className="home-section-label">
-            🔍 {lang==="ar"?"آلية العمل":lang==="fr"?"Fonctionnement":"How it works"}
-          </div>
+          <div className="home-section-label">🔍 {t.homeHowItWorks}</div>
           <h2 className="home-section-title">{t.homeHowItWorks}</h2>
           <div className="home-steps">
-            {steps.map((s, i) => (
-              <StepCard key={s.n} step={s} delay={i * 80} />
-            ))}
+            {steps.map((s, i) => <StepCard key={s.n} step={s} delay={i * 80} />)}
           </div>
         </div>
       </section>
 
-      {/* ── Trust row ── */}
+      {/* Trust chips */}
       <div ref={revealTrust} className="home-trust reveal">
-        {trusts.map((tr, i) => (
+        {trustChips.map((label, i) => (
           <div key={i} className="home-trust-chip" style={{"--chip-delay": `${i * 60}ms`}}>
             <span className="home-trust-chip-dot"/>
-            <span>{tr.icon} {tr.label}</span>
+            <span>{label}</span>
           </div>
         ))}
       </div>
 
-      {/* ── CTA repeat ── */}
-      <div ref={revealFooter} className="reveal" style={{textAlign:"center",paddingBottom:56,position:"relative",zIndex:1}}>
+      {/* Not-sure + family note */}
+      {(t.homeNotSure || t.homeFamilyNote) && (
+        <div ref={revealNotSure} className="home-reassure-row reveal">
+          {t.homeNotSure && (
+            <div className="home-reassure-card">
+              <div className="home-reassure-icon">🧭</div>
+              <p>{t.homeNotSure}</p>
+            </div>
+          )}
+          {t.homeFamilyNote && (
+            <div className="home-reassure-card">
+              <div className="home-reassure-icon">👨‍👩‍👧</div>
+              <p>{t.homeFamilyNote}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Bottom CTA + share line */}
+      <div ref={revealFooter} className="reveal" style={{textAlign:"center",padding:"0 24px 56px",position:"relative",zIndex:1}}>
         <button className="home-btn-primary" onClick={onStartTest} style={{fontSize:17,padding:"17px 44px"}}>
           {savedSession ? t.homeBackToTest : t.homeCTA}
         </button>
+        {t.homeShareCTA && (
+          <p style={{marginTop:14,fontSize:13,color:"rgba(232,236,240,0.45)"}}>{t.homeShareCTA}</p>
+        )}
       </div>
 
-      {/* ── Footer ── */}
+      {/* Footer */}
       <footer className="home-footer">
         <div style={{marginBottom:4}}>{t.homeFooterBy}</div>
         <a href={`mailto:${t.homeFooterContact}`}>{t.homeFooterContact}</a>
@@ -4183,7 +4216,6 @@ function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
 /** Individual step card with scroll-reveal + hover tilt. */
 function StepCard({ step, delay }) {
   const ref = useRevealOnScroll(0.1);
-
   return (
     <div ref={ref} className="home-step-card reveal" style={{"--reveal-delay": `${delay}ms`}}>
       <div className="home-step-num">{step.n}</div>
@@ -8596,7 +8628,54 @@ const css = `
     .home-hero-glass { padding: 14px 16px; }
     .hp-blob { display: none; }
     .home-step-card { padding: 22px 18px 20px; }
-  }`;
+  }
+
+  /* ── New copy elements ── */
+  /* Parent line under CTA buttons */
+  .home-parent-line {
+    margin-top: 12px; font-size: 12.5px; text-align: center;
+    color: rgba(232,236,240,0.48); line-height: 1.5;
+  }
+  /* Micro trust under hero card */
+  .home-micro-trust {
+    margin-top: 16px; font-size: 12px; text-align: center;
+    color: rgba(232,236,240,0.36); letter-spacing: 0.01em;
+  }
+  /* Value bullets block */
+  .home-value-bullets {
+    position: relative; z-index: 1;
+    max-width: 520px; margin: 0 auto; padding: 0 24px 40px;
+  }
+  .home-value-bullets ul {
+    list-style: none; display: flex; flex-direction: column; gap: 10px;
+  }
+  .home-value-bullets li {
+    display: flex; align-items: baseline; gap: 10px;
+    font-size: 14px; color: rgba(232,236,240,0.75); line-height: 1.5;
+  }
+  [dir="rtl"] .home-value-bullets li { flex-direction: row-reverse; text-align: right; }
+  .home-bullet-dot {
+    font-size: 10px; color: #e8a124; flex-shrink: 0; margin-top: 2px;
+  }
+  /* Reassure row (not-sure + family note) */
+  .home-reassure-row {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px; max-width: 860px; margin: 0 auto; padding: 0 24px 48px;
+  }
+  .home-reassure-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 22px 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  }
+  [dir="rtl"] .home-reassure-card { flex-direction: row-reverse; }
+  .home-reassure-icon { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+  .home-reassure-card p {
+    font-size: 13.5px; color: rgba(232,236,240,0.68); line-height: 1.65; margin: 0;
+  }
+  [dir="rtl"] .home-reassure-card p { font-family: 'Tajawal', sans-serif; text-align: right; }`;
 
 
 // ─────────────────────────────────────────────────────────────────
