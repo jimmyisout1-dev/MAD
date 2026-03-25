@@ -9893,9 +9893,6 @@ class AppErrorBoundary extends React.Component {
     );
   }
 }
-// Helper for ErrorBoundary font-size (no CSS available inside ErrorBoundary render)
-function clampNum(min, val, max) { return Math.min(Math.max(min, val), max); }
-
 export default function App() {
   const [step,         setStep]         = useState(0);
   const [lang,         setLang]         = useState("fr");
