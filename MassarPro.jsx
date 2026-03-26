@@ -40,7 +40,77 @@ const TRANSLATIONS = {
     homeFooterBy: "مسار — بوصلتك المهنية بالمغرب",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "متابعة الاختبار",
-    backHome: "العودة للرئيسية",
+    // Journey stage + learner type — new translations
+    journeyTitle: "أين أنت الآن؟",
+    journeyDesc: "سيساعدنا هذا في تخصيص التوصيات لوضعك الحالي.",
+    journeyPreBac: "قبل الباكالوريا (أنا لا أزال أدرس)",
+    journeyPostBac: "بعد الباكالوريا (لديّ نتائج نهائية)",
+    journeyPreBacHint: "سنقترح مسارات بناءً على شخصيتك وميولك وتوقعاتك",
+    journeyPostBacHint: "سنحلّل نقطك الفعلية ونوفر توصيات دقيقة",
+    preBacStrengthsTitle: "ما الذي تُتقنه فعلاً الآن؟",
+    preBacStrengthsDesc: "اختر 3 نقاط قوة تشعر أنها حقيقية لديك",
+    preBacStrengthsOpts: {
+      teaching:"الشرح والتعليم", solving:"حل المشكلات", designing:"التصميم والإبداع",
+      negotiating:"الإقناع والتفاوض", organizing:"التنظيم والقيادة",
+      building:"الصنع والتركيب اليدوي", sports:"الانضباط الرياضي",
+      writing:"الكتابة والتواصل", tech:"الفضول التقني",
+    },
+    preBacInterestsTitle: "ما الذي تستمتع به أكثر؟",
+    preBacInterestsDesc: "اختر 3 اهتمامات تصف شغفك",
+    preBacInterestsOpts: {
+      competition:"المنافسة", helping:"مساعدة الناس", building2:"بناء الأشياء",
+      creativity:"الإبداع", business:"الأعمال والمال", technology:"التكنولوجيا",
+      languages:"اللغات والسفر", outdoors:"الطبيعة والخارج", handson:"العمل اليدوي",
+    },
+    preBacSliderTitle: "تقدير ذاتي للمواد (1 = ضعيف / 5 = قوي)",
+    preBacConstraints: "قيودك وأولوياتك",
+    prestige_priority: "أهمية المكانة والهيبة",
+    prestige_low:"غير مهمة",prestige_med:"مهمة بعض الشيء",prestige_high:"ضرورية جداً",
+    learnerTitle: "كيف تتعلم؟",
+    learnerDesc: "6 أسئلة قصيرة لفهم أسلوبك في الدراسة والإنجاز",
+    learnerTypes: {
+      architect:"البنّاء الذهني", striker:"المُنْجِز", diplomat:"المُقنِع",
+      sprinter:"عدّاء اللحظة الأخيرة", sentinel:"الحارس", visionary:"المُبتكِر",
+    },
+    learnerTypeIcons: {
+      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
+    },
+    // Results pages
+    resultsPage: "الصفحة",
+    resultsOf: "من",
+    identityMirrorTitle: "مرآة هويتك المهنية",
+    underPressure: "كيف تفكر تحت الضغط",
+    consistencySecret: "ما تحتاجه للمثابرة",
+    unfairAdvantage: "ميزتك غير المتوقعة",
+    blindSpot: "نقطة عمياء تحتاج وعياً",
+    credibilityLine: "إن لم تشعر بالتوافق التام، هذا طبيعي — العوامل التشخيصية تقترب من الواقع، لا تُحدّده.",
+    prestigePage2Title: "المكانة وواقع الأسرة في المغرب",
+    marketPage3Title: "مسارك في سوق 2030",
+    directionsPage4Title: "توصياتك المفصّلة",
+    planPage5Title: "خطة الانطلاق",
+    pdfPage6Title: "ملف المدرّب الشخصي الكامل",
+    futureProofScore: "مؤشر المستقبل",
+    moroccoDemandsLabel: "الطلب في المغرب",
+    globalDemandsLabel: "الطلب العالمي",
+    hedgeSkillLabel: "مهارة التحوّط الموصى بها",
+    weakPoint2Win: "قوّتك هذا الأسبوع",
+    riskAvoid: "خطر تجنّبه",
+    prioritySelector: "اضبط عرض النتائج حسب أولويتك",
+    previewLocked: "محتوى حصري في ملف PDF",
+    pdfBenefits: [
+      "قائمة مدارس مخصصة لمدينتك وتنقّلك وميزانيتك (6–12 مؤسسة)",
+      "خطة المكانة A/B/C مع جدول زمني (نخبة / قوية / مباشرة للسوق)",
+      "استراتيجية رفع النقط: المواد الأهم + الخطوات الواقعية",
+      "نص المحادثة العائلية كاملاً (عربي + فرنسي) مع ردود الاعتراضات",
+      "مصفوفة القرار الكاملة + مقارنة السيناريوهات",
+      "خارطة طريق 90 يوماً (الأسابيع 2–12) + موارد مختارة",
+      "دليل المنح والرسوم (عام / خاص)",
+      "أسلوب الفوز حسب نمط تعلّمك — كتيّب كامل",
+      "المصائد الشخصية التي تجنّبها",
+      "دليل المسار الدولي (اختياري)",
+    ],
+
+        backHome: "العودة للرئيسية",
         // Arabic rewrite
     appTitle: "مسار | دليلك المهني بالمغرب",
     appSubtitle: "اكتشف مسارك الدراسي والمهني المناسب لك",
@@ -447,6 +517,17 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "تحميل البطاقة",
     shareCopied: "✓ تم النسخ!",
     shareCaptionTpl: "اكتشفت نوع مساري: {type} 🧬\nأفضل مسار: {cluster} ({confidence}% توافق)\nاكتشف نوعك على Massar 👇",
+    // Viral share upgrade
+    challengeLine:       "عطينا نتيجتك فالكومنت 👀",
+    captionShort:        "مختصر",
+    captionFull:         "كامل",
+    shareFormatStory:    "ستوري 9:16",
+    shareFormatSquare:   "مربع 1:1",
+    shareCopyLink:       "نسخ الرابط",
+    shareDownloadPng:    "تحميل PNG",
+    shareMobileBtn:      "مشاركة",
+    shareMobileFallback: "حمّل الصورة ثم شاركها في واتساب أو تيكتوك",
+    shareLinkCopied:     "✓ تم نسخ الرابط",
     // Reality layer
     realityStep: "شخصيتك وأولوياتك",
     realityDesc: "4 أسئلة قصيرة — تنتهي في 3 دقائق",
@@ -534,7 +615,75 @@ const TRANSLATIONS = {
     homeFooterBy: "Massar — ta boussole carrière au Maroc",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "Reprendre le test",
-    backHome: "← Accueil",
+    // Journey stage + learner type
+    journeyTitle: "Où en es-tu maintenant ?",
+    journeyDesc: "Cela nous aide à personnaliser les recommandations.",
+    journeyPreBac: "Avant le Bac (je suis encore en cours d'études)",
+    journeyPostBac: "Après le Bac (j'ai mes résultats définitifs)",
+    journeyPreBacHint: "On te propose des orientations selon ta personnalité et tes intérêts",
+    journeyPostBacHint: "On analyse tes vraies notes pour des recommandations précises",
+    preBacStrengthsTitle: "Qu'est-ce que tu maîtrises vraiment ?",
+    preBacStrengthsDesc: "Choisis 3 points forts qui te semblent vrais",
+    preBacStrengthsOpts: {
+      teaching:"Expliquer/enseigner", solving:"Résoudre des problèmes", designing:"Créer/designer",
+      negotiating:"Persuader/négocier", organizing:"Organiser/diriger",
+      building:"Construire/réparer", sports:"Discipline sportive",
+      writing:"Écrire/communiquer", tech:"Curiosité tech",
+    },
+    preBacInterestsTitle: "Qu'est-ce qui te passionne le plus ?",
+    preBacInterestsDesc: "Choisis 3 intérêts qui décrivent ta passion",
+    preBacInterestsOpts: {
+      competition:"La compétition", helping:"Aider les gens", building2:"Construire des choses",
+      creativity:"La créativité", business:"Business / argent", technology:"Technologie",
+      languages:"Langues / voyages", outdoors:"Dehors / nature", handson:"Travail manuel",
+    },
+    preBacSliderTitle: "Auto-évaluation par matière (1 = faible / 5 = fort)",
+    preBacConstraints: "Contraintes et priorités",
+    prestige_priority: "Importance du prestige",
+    prestige_low:"Peu important",prestige_med:"Assez important",prestige_high:"Très important",
+    learnerTitle: "Comment tu apprends ?",
+    learnerDesc: "6 questions courtes pour cerner ton style d'apprentissage",
+    learnerTypes: {
+      architect:"L'Architecte", striker:"L'Exécutant", diplomat:"Le Diplomate",
+      sprinter:"Le Sprinter", sentinel:"La Sentinelle", visionary:"Le Visionnaire",
+    },
+    learnerTypeIcons: {
+      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
+    },
+    resultsPage: "Page", resultsOf: "sur",
+    identityMirrorTitle: "Miroir de ton identité professionnelle",
+    underPressure: "Comment tu penses sous pression",
+    consistencySecret: "Ce dont tu as besoin pour rester constant",
+    unfairAdvantage: "Ton avantage inattendu",
+    blindSpot: "Point aveugle à conscientiser",
+    credibilityLine: "Si ça ne semble pas totalement juste, c'est normal — c'est une approximation, pas une vérité absolue.",
+    prestigePage2Title: "Prestige & Réalité familiale (Maroc)",
+    marketPage3Title: "Ton marché en 2030",
+    directionsPage4Title: "Tes recommandations détaillées",
+    planPage5Title: "Ton plan de démarrage",
+    pdfPage6Title: "Dossier Coach Personnel Complet",
+    futureProofScore: "Score futur",
+    moroccoDemandsLabel: "Demande au Maroc",
+    globalDemandsLabel: "Demande mondiale",
+    hedgeSkillLabel: "Compétence tampon recommandée",
+    weakPoint2Win: "Ta victoire cette semaine",
+    riskAvoid: "Risque à éviter",
+    prioritySelector: "Ajuste selon ta priorité",
+    previewLocked: "Contenu réservé au PDF",
+    pdfBenefits: [
+      "Shortlist d'écoles pour ta ville, mobilité & budget (6–12 établissements)",
+      "Plan Prestige A/B/C avec timeline (élite / solide / direct-marché)",
+      "Stratégie de révision : matières clés + étapes réalistes",
+      "Script famille complet (arabe + français) + réponses aux objections",
+      "Matrice de décision complète + comparaison de scénarios",
+      "Roadmap 90 jours (semaines 2–12) + ressources sélectionnées",
+      "Guide des bourses et frais (public / privé)",
+      "Comment gagner selon ton style d'apprentissage — playbook complet",
+      "Pièges personnalisés à éviter",
+      "Guide de la voie internationale (optionnel)",
+    ],
+
+        backHome: "← Accueil",
         appTitle: "Massar | Guide Carrière Maroc",
     appSubtitle: "Découvrez votre voie professionnelle idéale au Maroc",
     next: "Suivant",
@@ -916,6 +1065,17 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "Télécharger le badge",
     shareCopied: "✓ Copié !",
     shareCaptionTpl: "Mon Type Massar : {type} 🧬\nMeilleure voie : {cluster} ({confidence}% compatibilité)\nDécouvre le tien sur Massar 👇",
+    // Viral share upgrade
+    challengeLine:       "Balance ton code en story 👀",
+    captionShort:        "Court",
+    captionFull:         "Complet",
+    shareFormatStory:    "Story 9:16",
+    shareFormatSquare:   "Carré 1:1",
+    shareCopyLink:       "Copier le lien",
+    shareDownloadPng:    "Télécharger PNG",
+    shareMobileBtn:      "Partager",
+    shareMobileFallback: "Télécharge puis partage dans WhatsApp ou TikTok",
+    shareLinkCopied:     "✓ Lien copié",
     // Reality layer
     realityStep: "Réalité & Identité",
     realityDesc: "4 questions rapides – tap, sélectionne, terminé en 3 min",
@@ -1011,7 +1171,75 @@ const TRANSLATIONS = {
     homeFooterBy: "Massar — your career compass in Morocco",
     homeFooterContact: "contact@massar.ma",
     homeBackToTest: "Resume the test",
-    backHome: "← Home",
+    // Journey stage + learner type
+    journeyTitle: "Where are you right now?",
+    journeyDesc: "This helps us personalise your recommendations.",
+    journeyPreBac: "Pre-Bac (still studying / before final results)",
+    journeyPostBac: "Post-Bac (I have my final Bac results)",
+    journeyPreBacHint: "We'll suggest directions based on your personality and interests",
+    journeyPostBacHint: "We'll analyse your actual grades for precise recommendations",
+    preBacStrengthsTitle: "What are you really good at right now?",
+    preBacStrengthsDesc: "Pick 3 strengths that feel genuinely true",
+    preBacStrengthsOpts: {
+      teaching:"Explaining/teaching", solving:"Problem solving", designing:"Designing/creating",
+      negotiating:"Persuading/negotiating", organizing:"Organizing/leading",
+      building:"Hands-on building/repair", sports:"Sports discipline",
+      writing:"Writing/communication", tech:"Tech curiosity",
+    },
+    preBacInterestsTitle: "What do you enjoy most?",
+    preBacInterestsDesc: "Pick 3 interests that describe your passion",
+    preBacInterestsOpts: {
+      competition:"Competition", helping:"Helping people", building2:"Building things",
+      creativity:"Creativity", business:"Business/money", technology:"Technology",
+      languages:"Languages/travel", outdoors:"Outdoors/nature", handson:"Hands-on work",
+    },
+    preBacSliderTitle: "Self-rate key subjects (1 = weak / 5 = strong)",
+    preBacConstraints: "Constraints & priorities",
+    prestige_priority: "Prestige importance",
+    prestige_low:"Not important", prestige_med:"Somewhat important", prestige_high:"Very important",
+    learnerTitle: "How do you learn?",
+    learnerDesc: "6 quick questions to understand your learning style",
+    learnerTypes: {
+      architect:"The Architect", striker:"The Striker", diplomat:"The Diplomat",
+      sprinter:"The Sprinter", sentinel:"The Sentinel", visionary:"The Visionary",
+    },
+    learnerTypeIcons: {
+      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
+    },
+    resultsPage: "Page", resultsOf: "of",
+    identityMirrorTitle: "Your Career Identity Mirror",
+    underPressure: "How you think under pressure",
+    consistencySecret: "What you need to stay consistent",
+    unfairAdvantage: "Your unfair advantage",
+    blindSpot: "Blind spot to be aware of",
+    credibilityLine: "If this doesn't feel completely right, that's normal — it's a guide, not a verdict.",
+    prestigePage2Title: "Prestige & Family Reality (Morocco)",
+    marketPage3Title: "Your market in 2030",
+    directionsPage4Title: "Your detailed directions",
+    planPage5Title: "Your starter plan",
+    pdfPage6Title: "Full Personal Coach Dossier",
+    futureProofScore: "Future score",
+    moroccoDemandsLabel: "Morocco demand",
+    globalDemandsLabel: "Global demand",
+    hedgeSkillLabel: "Recommended hedge skill",
+    weakPoint2Win: "Your win this week",
+    riskAvoid: "Risk to avoid",
+    prioritySelector: "Adjust by priority",
+    previewLocked: "PDF-exclusive content",
+    pdfBenefits: [
+      "City-specific school shortlist (6–12 institutions)",
+      "Prestige Plan A/B/C with timeline (elite / solid / direct-to-market)",
+      "Grade-raise strategy: key subjects + realistic steps",
+      "Full family script (Arabic + French) + objection replies",
+      "Full decision matrix + scenario comparisons",
+      "90-day roadmap (weeks 2–12) + resources",
+      "Scholarships & fees guide (public / private)",
+      "How you win as your learner type — full playbook",
+      "Personalised traps to avoid",
+      "International pathway guide (optional)",
+    ],
+
+        backHome: "← Home",
         appTitle: "Massar | Morocco Career Guide",
     appSubtitle: "Discover your ideal career path in Morocco",
     next: "Next",
@@ -1393,6 +1621,17 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "Download badge",
     shareCopied: "✓ Copied!",
     shareCaptionTpl: "My Massar Type: {type} 🧬\nTop path: {cluster} ({confidence}% match)\nDiscover yours at Massar 👇",
+    // Viral share upgrade
+    challengeLine:       "Drop your code in story 👀",
+    captionShort:        "Short",
+    captionFull:         "Full",
+    shareFormatStory:    "Story 9:16",
+    shareFormatSquare:   "Square 1:1",
+    shareCopyLink:       "Copy Link",
+    shareDownloadPng:    "Download PNG",
+    shareMobileBtn:      "Share",
+    shareMobileFallback: "Download then share in WhatsApp or TikTok",
+    shareLinkCopied:     "✓ Link copied",
     // Reality layer
     realityStep: "Reality & Identity",
     realityDesc: "4 quick questions – tap, select, done in 3 minutes",
@@ -2565,7 +2804,7 @@ const PRESTIGE_PATH_NAMES = {
 };
 
 // FIX: clamp numeric UI values
-function clampNum(val, min = 0, max = 100) {
+function clamp(val, min = 0, max = 100) {
   const n = Number(val);
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
@@ -2604,7 +2843,7 @@ function getAcademicTier(overallAvg) {
 // TASK 2 — computePES: Prestige Expectation Score [0..1]
 // Deterministic. Reads average, track stream, top subject, and family pressure field.
 function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
-  const avg = clampNum(Number(overallAvg) || 0, 0, 20);
+  const avg = clamp(Number(overallAvg) || 0, 0, 20);
   const stream = STREAM_BY_TRACK[bacTrack] || "scientific";
   let pes = avg / 20;
   if (stream === "scientific") pes = Math.min(1, pes * 1.15);
@@ -2625,7 +2864,7 @@ function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
-  const avg           = clampNum(Number(overallAvg) || 0, 0, 20);
+  const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
   const goalMode      = safeInfo.goalMode      || "unsure";
   const goalPref      = safeInfo.goalPreference || "prestige";
@@ -2738,7 +2977,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   const goalMode  = info.goalMode  || "unsure";
   // TASK 2 — goalPreference overrides goalMode for the practical exemption check
   const goalPref  = info.goalPreference || "prestige";
-  const avg       = clampNum(Number(overallAvg) || 0, 0, 20);
+  const avg       = clamp(Number(overallAvg) || 0, 0, 20);
   const isHighAvg = avg >= 14.5;
   // Practical mode: user explicitly chose practical route — no prestige gates apply
   const isPractical = goalPref === "practical" || goalMode === "practical";
@@ -3589,7 +3828,7 @@ function ScoreContribChart({ cluster, t }) {
             <div className="explain-fill" style={{width:`${f.value*100}%`,background:f.color}}/>
           </div>
           {/* FIX: Arabic-first UX — percentage must render LTR even in RTL layout */}
-          <div className="explain-pct" dir="ltr">{Math.round(clampNum(f.value*100))}%</div>
+          <div className="explain-pct" dir="ltr">{Math.round(clamp(f.value*100))}%</div>
         </div>
       ))}
     </div>
@@ -5374,11 +5613,11 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
   // Compute 3 meter scores
   // FIX: clamp numeric UI values
   const safeTrA = traits && typeof traits === "object" ? traits : {};
-  const identityFitPct = clampNum(Math.round(Math.max(0.35, Math.min(0.95,
+  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
     ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
-  const academicFitPct = clampNum(Math.round(Math.max(0.3, Math.min(0.9,
+  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
     top3[0]?.scores?.academic ?? 0.5)) * 100));
-  const marketFitPct = clampNum(Math.round(Math.max(0.4, Math.min(0.95,
+  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
     top3[0]?.scores?.market ?? 0.7)) * 100));
 
   // Phase 4: Alignment story — weakest dimension
@@ -5449,7 +5688,7 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
         <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
           borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
           <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
-            {clampNum(confidence)}%
+            {clamp(confidence)}%
           </div>
           <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
         </div>
@@ -5615,7 +5854,7 @@ function AbilitiesSection({ traits, lang }) {
         {sorted.map(([key, val])=>{
           const meta = ABILITY_META[key] || {};
           // FIX: clamp numeric UI values — never NaN, always 0–100
-          const pct  = Math.round(clampNum(val * 100));
+          const pct  = Math.round(clamp(val * 100));
           const isDom = topTwo.has(key);
           const [c1, c2] = meta.gradients || ["#3b82f6","#1d4ed8"];
           const svgStr = ABILITY_SVG[key] || "";
@@ -5678,7 +5917,7 @@ function CompetitionMode({ traits, lang }) {
         <div style={{background:"var(--surface)",border:"1px solid var(--border)",
           borderRadius:14,padding:"20px 22px",animation:"fadeIn 0.3s ease"}}>
           {Object.entries(safeTr).sort((a,b)=>b[1]-a[1]).map(([k])=>{
-            const p = clampNum(percentiles[k] || 50);  // FIX: clamp numeric UI values
+            const p = clamp(percentiles[k] || 50);  // FIX: clamp numeric UI values
             return (
               <div key={k} className="percentile-row">
                 <div style={{fontSize:12,color:"var(--text)",fontWeight:600,width:90,flexShrink:0}}>
@@ -5953,7 +6192,7 @@ function cornerSVG(color) {
 }
 
 // CardShell — upgraded: 3-layer bg, texture, neon border, corner ornaments
-// Exposes --cardScale CSS var (set from container width) for clampNum()-based internal scaling.
+// Exposes --cardScale CSS var (set from container width) for clamp()-based internal scaling.
 function CardShell({ accent, glow, rarity, width, aspectRatio, maxHeight, borderRadius, children, dir }) {
   const shellRef = useRef(null);
   const [scale, setScale] = useState(1);
@@ -6082,7 +6321,7 @@ function CardEmblem({ archIcon, accent, glow, size }) {
 }
 
 // Rarity pill with tier-specific styling
-function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
+function RarityPill({ rarity, rarityLabel, accent, glow, fontSize, shimmer, onShimmerDone }) {
   const fs = fontSize || 9;
   // Special styling per tier — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
   const tierStyle = {
@@ -6093,7 +6332,7 @@ function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
   }[rarity.key] || {};
 
   return (
-    <span style={{
+    <span className="sc-shimmer-wrap" style={{
       display:"inline-flex", alignItems:"center", gap:3,
       padding:`${Math.round(fs*0.33)}px ${Math.round(fs*1.1)}px`,
       borderRadius:20, fontSize:fs, fontWeight:800, letterSpacing:".06em",
@@ -6101,6 +6340,7 @@ function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
       ...tierStyle,
     }}>
       {rarity.emoji}&nbsp;{rarityLabel.toUpperCase()}
+      {shimmer && <span className="sc-shimmer-ray" onAnimationEnd={onShimmerDone}/>}
     </span>
   );
 }
@@ -6133,7 +6373,7 @@ function MatchBar({ pct, accent, glow, height }) {
       borderRadius:h, overflow:"hidden", flexShrink:0,
       boxShadow:`inset 0 1px 3px rgba(0,0,0,0.5)` }}>
       <div style={{
-        height:"100%", width:`${clampNum(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
+        height:"100%", width:`${clamp(pct)}%`, borderRadius:h,  // FIX: clamp numeric UI values
         background:`linear-gradient(90deg, ${accent}, #fbbf24)`,
         boxShadow:`0 0 8px ${glow}`,
         transition:"width .5s cubic-bezier(0.34,1.56,0.64,1)",
@@ -6148,6 +6388,44 @@ function serialId(archCode) {
   for (let i = 0; i < archCode.length; i++) h = (h * 31 + archCode.charCodeAt(i)) & 0xffffffff;
   const n = ((h >>> 0) % 99) + 1;
   return `MS-${archCode}-${n.toString().padStart(2,"0")}`;
+}
+
+// viralShareId — deterministic 3-digit suffix (uses code + confidence for uniqueness)
+function viralShareId(archCode, confidence) {
+  const s = (archCode || "XXXX") + String(Math.round(confidence || 0));
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0xffffffff;
+  const n = ((h >>> 0) % 900) + 100; // 100–999: always 3 digits
+  return `MS-${archCode}-${n}`;
+}
+
+// QRPill — URL "massarpro.com" fallback pill (no external QR lib needed)
+function QRPill({ accent }) {
+  const ac = accent || "#22d3ee";
+  return (
+    <span dir="ltr" style={{
+      display:"inline-flex", alignItems:"center", gap:3,
+      padding:"2px 6px 2px 4px", borderRadius:5,
+      background:"rgba(0,0,0,0.45)", border:`1px solid ${ac}33`,
+      fontSize:"clamp(5px,1.2vw,7px)", fontWeight:700, fontFamily:"monospace",
+      color:ac+"77", letterSpacing:".04em", flexShrink:0, lineHeight:1.3,
+      userSelect:"none",
+    }}>
+      <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style={{flexShrink:0}}>
+        <rect x="0" y="0" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
+        <rect x="5" y="0" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
+        <rect x="0" y="5" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
+        <rect x="1" y="1" width="2" height="2" fill={ac} opacity="0.85"/>
+        <rect x="6" y="1" width="2" height="2" fill={ac} opacity="0.85"/>
+        <rect x="1" y="6" width="2" height="2" fill={ac} opacity="0.85"/>
+        <rect x="5" y="5" width="1" height="1" fill={ac} opacity="0.65"/>
+        <rect x="7" y="5" width="1" height="1" fill={ac} opacity="0.65"/>
+        <rect x="5" y="7" width="1" height="1" fill={ac} opacity="0.65"/>
+        <rect x="8" y="8" width="1" height="1" fill={ac} opacity="0.65"/>
+      </svg>
+      massarpro.com
+    </span>
+  );
 }
 
 // Icon mapping for trait chips
@@ -6219,7 +6497,7 @@ function ShareCardClassic({ p }) {
               {isRTL ? "بوابة مسارك المهني" : "Career Identity Engine"}
             </span>
           </div>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
         </div>
 
         {/* ── EMBLEM — wrapped with glow padding ── */}
@@ -6321,20 +6599,33 @@ function ShareCardClassic({ p }) {
           ))}
         </div>
 
+        {/* ── CHALLENGE LINE ── */}
+        <div style={{
+          textAlign:"center", fontSize:"clamp(5.5px,1.3%,7.5px)", fontWeight:600,
+          color:accent+"66", fontStyle:"italic", letterSpacing:".03em",
+          marginBottom:"1.5%", marginTop:"1%",
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+        }}>
+          {p.challengeLine}
+        </div>
+
         {/* ── FOOTER ── */}
         <div style={{
-          marginTop:"3%", paddingTop:"2%", flexShrink:0,
+          marginTop:"1%", paddingTop:"2%", flexShrink:0,
           borderTop:`1px solid ${accent}1e`,
           display:"flex", justifyContent:"space-between", alignItems:"center",
           flexDirection: isRTL ? "row-reverse" : "row",
         }}>
           <span style={{ fontSize:"clamp(5px,1.4%,7px)", fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
-            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+            massar.ma
           </span>
-          <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
-            letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
-            {sid}
-          </span>
+          <div style={{display:"flex",alignItems:"center",gap:4,flexDirection:isRTL?"row-reverse":"row"}}>
+            <QRPill accent={accent}/>
+            <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
+              letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
+              {p.shareId}
+            </span>
+          </div>
         </div>
 
       </div>
@@ -6368,7 +6659,7 @@ function ShareCardSquare({ p }) {
           <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:".2em" }}>
             {isRTL ? "مسار" : "MASSAR"}
           </span>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
         </div>
 
         {/* Emblem — 60px with glow breathing room */}
@@ -6411,15 +6702,25 @@ function ShareCardSquare({ p }) {
         </div>
         <MatchBar pct={confidence} accent={accent} glow={glow} height={6}/>
 
+        {/* Challenge line */}
+        <div style={{
+          fontSize:6.5, fontWeight:600, color:accent+"66", fontStyle:"italic",
+          letterSpacing:".03em", textAlign:"center", marginBottom:4,
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%",
+        }}>{p.challengeLine}</div>
+
         {/* Footer */}
         <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
           alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize:7, fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
-            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+            massar.ma
           </span>
-          <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
-            {sid}
-          </span>
+          <div style={{display:"flex",alignItems:"center",gap:3,flexDirection:isRTL?"row-reverse":"row"}}>
+            <QRPill accent={accent}/>
+            <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
+              {p.shareId}
+            </span>
+          </div>
         </div>
 
       </div>
@@ -6457,7 +6758,7 @@ function ShareCardPortrait({ p }) {
           <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:"0.2em" }}>
             {isRTL ? "مسار" : "MASSAR"}
           </span>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
         </div>
 
         {/* Emblem — 72px with glow breathing room */}
@@ -6548,19 +6849,29 @@ function ShareCardPortrait({ p }) {
           ))}
         </div>
 
+        {/* Challenge line */}
+        <div style={{
+          width:"100%", fontSize:8, fontWeight:600, color:accent+"66", fontStyle:"italic",
+          letterSpacing:".03em", textAlign:"center", marginTop:4, marginBottom:2,
+          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
+        }}>{p.challengeLine}</div>
+
         {/* Footer */}
         <div style={{
-          width:"100%", marginTop:8, paddingTop:7, flexShrink:0,
+          width:"100%", marginTop:4, paddingTop:7, flexShrink:0,
           borderTop:`1px solid ${accent}1e`,
           display:"flex", justifyContent:"space-between", alignItems:"center",
           flexDirection: isRTL ? "row-reverse" : "row",
         }}>
           <span style={{ fontSize:7.5, fontWeight:700, color:"#374151", letterSpacing:".12em" }}>
-            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
+            massar.ma
           </span>
-          <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
-            {sid}
-          </span>
+          <div style={{display:"flex",alignItems:"center",gap:3,flexDirection:isRTL?"row-reverse":"row"}}>
+            <QRPill accent={accent}/>
+            <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
+              {p.shareId}
+            </span>
+          </div>
         </div>
 
       </div>
@@ -6570,13 +6881,15 @@ function ShareCardPortrait({ p }) {
 
 // ─────────────────────────────────────────────────────────────────
 // ShareCard: responsive collectible card (DOM preview + canvas export, no deps)
-// Preview = pure CSS/DOM — three separate layout components per format.
-// Export  = Canvas API — runs only on download click.
+// Viral upgrade: shimmer reveal, challenge line, QR pill, SharePanel
 // ─────────────────────────────────────────────────────────────────
 function ShareCard({ t, lang, massarType, topCluster, confidence }) {
-  const [copied,  setCopied]  = useState(false);
-  // format: "card" (5:7) | "square" (1:1) | "story" (9:16)
-  const [fmt, setFmt] = useState("card");
+  const [fmt, setFmt]             = useState("story");   // story | square | card
+  const [captionMode, setCaptionMode] = useState("full"); // full | short
+  const [copiedCaption, setCopiedCaption] = useState(false);
+  const [copiedLink,    setCopiedLink]    = useState(false);
+  const [shimmerDone,   setShimmerDone]  = useState(false);
+  const [shareTooltip,  setShareTooltip] = useState(false);
 
   const archetype   = getArchetype(massarType);
   const archName    = archetype.name?.[lang]    || archetype.name?.en    || massarType;
@@ -6585,19 +6898,17 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const archTagline = archetype.tagline?.[lang] || archetype.tagline?.en || archName;
   const rawStrengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
   const strengths   = rawStrengths.slice(0, 3).map(s => s.length > 22 ? s.slice(0, 21) + "…" : s);
-  // FIX: translation fallback — clusterName safe default
   const clusterName = t?.[CLUSTER_KEY_MAP?.[topCluster?.id]] || topCluster?.id || "";
   const isRTL       = lang === "ar";
+  const dir         = isRTL ? "rtl" : "ltr";
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
+    if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+      console.log("[Massar] share card prepared:", { massarType, archCode, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
-  const dir         = isRTL ? "rtl" : "ltr";
 
-  // Level from confidence
   function cardLevel(conf) {
     const lvl = Math.min(5, Math.max(1, Math.ceil(conf / 20)));
     const labels = {
@@ -6613,7 +6924,6 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   }
   const level = cardLevel(confidence);
 
-  // Rarity tiers — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
   function cardRarity(conf) {
     if (conf>=85) return { key:"legendary", label:{ar:"أسطوري",fr:"Légendaire",en:"Legendary"}, emoji:"👑", color:"#f59e0b", glow:"rgba(245,158,11,0.55)" };
     if (conf>=70) return { key:"epic",      label:{ar:"ملحمي",  fr:"Épique",    en:"Epic"      }, emoji:"⚡", color:"#a855f7", glow:"rgba(168,85,247,0.5)"  };
@@ -6625,29 +6935,54 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const accent      = rarity.color;
   const glow        = rarity.glow;
 
-  // Viral caption (unchanged)
-  const caption = lang==="ar"
-    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
+  // Share ID — deterministic 3-digit, includes confidence
+  const shareId = viralShareId(archCode, confidence);
+  // Challenge line
+  const challengeLine = t?.challengeLine || { ar:"عطينا نتيجتك فالكومنت 👀", fr:"Balance ton code en story 👀", en:"Drop your code in story 👀" }[lang] || "";
+
+  // ── Viral captions ────────────────────────────────────────────
+  const rarityGem = rarity.key==="legendary"?"🔥":rarity.key==="epic"?"💎":rarity.key==="rare"?"💎":"✨";
+  const hashtags  = lang==="ar" ? "#مسار #MassarPro" : "#Massar #MassarPro";
+  const captionFull = lang==="ar"
+    ? `${archName} ${rarityGem} ${rarityLabel}
+${archTagline}
+${challengeLine}
+${hashtags}`
     : lang==="fr"
-    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
-    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
+    ? `${archName} ${rarityGem} ${rarityLabel}
+${archTagline}
+${challengeLine}
+${hashtags}`
+    : `${archName} ${rarityGem} ${rarityLabel}
+${archTagline}
+${challengeLine}
+${hashtags}`;
+  const captionShortText = lang==="ar"
+    ? `${archName} · ${shareId}
+نتيجتك؟ 👀`
+    : lang==="fr"
+    ? `${archName} · ${shareId}
+Et toi? 👀`
+    : `${archName} · ${shareId}
+Yours? 👀`;
+  const caption = captionMode==="short" ? captionShortText : captionFull;
 
   // Format metadata
   const FMT = {
-    card:   { label:"Card", exportW:1260, exportH:1764 },
-    square: { label:"1:1",  exportW:1080, exportH:1080 },
-    story:  { label:"9:16", exportW:1080, exportH:1920 },
+    story:  { label: t?.shareFormatStory  || "Story 9:16",  exportW:1080, exportH:1920 },
+    square: { label: t?.shareFormatSquare || "Square 1:1",  exportW:1080, exportH:1080 },
+    card:   { label:"Card",                                  exportW:1260, exportH:1764 },
   };
-  const fmtMeta = FMT[fmt] || FMT.card;
+  const fmtMeta = FMT[fmt] || FMT.story;
 
-  // Copy caption (unchanged)
-  const copyCaption = () => {
-    const doSet = () => { setCopied(true); setTimeout(()=>setCopied(false), 2500); };
-    try { navigator.clipboard.writeText(caption).then(doSet).catch(()=>fallbackCopy(doSet)); }
-    catch { fallbackCopy(doSet); }
+  // Copy helpers
+  const doCopyText = (text, setter) => {
+    const done = () => { setter(true); setTimeout(()=>setter(false), 2500); };
+    try { navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopyText(text,done)); }
+    catch { fallbackCopyText(text, done); }
   };
-  const fallbackCopy = (cb) => {
-    const ta=document.createElement("textarea"); ta.value=caption;
+  const fallbackCopyText = (text, cb) => {
+    const ta=document.createElement("textarea"); ta.value=text;
     document.body.appendChild(ta); ta.select();
     try { document.execCommand("copy"); } catch {}
     document.body.removeChild(ta); cb();
@@ -6655,14 +6990,15 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
 
   // ── Canvas export ─────────────────────────────────────────────
   function buildCanvas() {
-    const W=fmtMeta.exportW, H=fmtMeta.exportH;
-    const PAD=Math.round(W*0.074);
-    const canvas=document.createElement("canvas");
+    const W = fmtMeta.exportW;
+    const H = fmtMeta.exportH;
+    const PAD = Math.round(W*0.074);
+    const canvas = document.createElement("canvas");
     canvas.width=W; canvas.height=H;
-    const ctx=canvas.getContext("2d");
-    const arF="Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
-    const enF="system-ui,-apple-system,Segoe UI,sans-serif";
-    const bF=isRTL?arF:enF;
+    const ctx = canvas.getContext("2d");
+    const arF = "Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
+    const enF = "system-ui,-apple-system,Segoe UI,sans-serif";
+    const bF  = isRTL ? arF : enF;
 
     function rr(x,y,w,h,r){
       ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
@@ -6672,7 +7008,8 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
       ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
     }
     const dtC=(txt,y,font,col,mw)=>{
-      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.save(); ctx.font=font; ctx.fillStyle=col;
+      ctx.textAlign="center"; ctx.textBaseline="alphabetic";
       ctx.fillText(txt,W/2,y,mw||W-PAD*2); ctx.restore();
     };
     const dtL=(txt,y,font,col,mw)=>{
@@ -6682,7 +7019,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
       ctx.restore();
     };
 
-    // Background + grain + blobs (shared)
+    // Background + grain + accent blob
     const bg=ctx.createLinearGradient(0,0,W,H);
     bg.addColorStop(0,"#060a14"); bg.addColorStop(0.5,"#0a1020"); bg.addColorStop(1,"#0d1628");
     ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
@@ -6694,7 +7031,6 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
     const blob=ctx.createRadialGradient(gx,H*0.06,0,gx,H*0.06,W*0.45);
     blob.addColorStop(0,accent+"30"); blob.addColorStop(1,"transparent");
     ctx.fillStyle=blob; ctx.fillRect(0,0,W,H);
-
     // Neon border
     ctx.save(); ctx.strokeStyle=accent; ctx.lineWidth=5;
     ctx.shadowColor=accent; ctx.shadowBlur=40;
@@ -6702,140 +7038,102 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
     ctx.save(); ctx.strokeStyle=accent+"22"; ctx.lineWidth=2;
     rr(26,26,W-52,H-52,Math.round(W*0.026)); ctx.stroke(); ctx.restore();
 
-    // ── Portrait (9:16) canvas: centred vertical layout ──────────
-    if (fmt === "story") {
-      const cx = W/2;
-      let y = PAD*1.3;
-
-      // Rarity pill — tier-colored (matches DOM)
-      const rarityPillColorsP = {
+    // ── Story (9:16) layout ───────────────────────────────────
+    if (fmt==="story" || H > W) {
+      const cx=W/2; let y=PAD*1.3;
+      const rarityPillColors = {
         legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
         epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
         rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
         common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
       };
-      const rpcP = rarityPillColorsP[rarity.key] || rarityPillColorsP.common;
-
-      // Brand line (centred)
-      dtC(isRTL ? "مسار" : "MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
-
-      // Rarity pill (centred)
-      y += Math.round(H*0.038);
-      const rarTxt = `${rarity.emoji} ${rarityLabel.toUpperCase()}`;
-      const rpF = `bold ${Math.round(W*0.030)}px ${bF}`;
-      ctx.font = rpF;
-      const rtw = ctx.measureText(rarTxt).width;
+      const rpcP=rarityPillColors[rarity.key]||rarityPillColors.common;
+      dtC(isRTL?"مسار":"MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      y+=Math.round(H*0.038);
+      const rarTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+      const rpF=`bold ${Math.round(W*0.030)}px ${bF}`;
+      ctx.font=rpF; const rtw=ctx.measureText(rarTxt).width;
       const rpW=rtw+W*0.06, rpH=W*0.065, rpX=cx-rpW/2;
       ctx.save(); ctx.fillStyle=rpcP.bg; ctx.strokeStyle=rpcP.border;
       ctx.lineWidth=2.5; ctx.shadowColor=accent; ctx.shadowBlur=14;
       rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
       ctx.save(); ctx.font=rpF; ctx.fillStyle=rpcP.text; ctx.textBaseline="alphabetic";
-      ctx.textAlign="center"; ctx.fillText(rarTxt, cx, y, rpW); ctx.restore();
-
-      // Icon circle — 72px-equivalent scaled
-      y += Math.round(H*0.07);
-      const ibR = Math.round(W*0.17);
-      ctx.save();
-      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR+5, 0, Math.PI*2);
+      ctx.textAlign="center"; ctx.fillText(rarTxt,cx,y,rpW); ctx.restore();
+      y+=Math.round(H*0.07);
+      const ibR=Math.round(W*0.17);
+      ctx.save(); ctx.beginPath(); ctx.arc(cx,y+ibR,ibR+5,0,Math.PI*2);
       ctx.strokeStyle=accent+"55"; ctx.lineWidth=3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.beginPath(); ctx.arc(cx,y+ibR,ibR,0,Math.PI*2);
       ctx.fillStyle=accent+"18"; ctx.shadowBlur=50; ctx.fill();
-      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
-      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke();
-      ctx.restore();
+      ctx.beginPath(); ctx.arc(cx,y+ibR,ibR,0,Math.PI*2);
+      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
       ctx.save(); ctx.font=`${Math.round(ibR*1.1)}px serif`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(archIcon, cx, y+ibR+ibR*0.06); ctx.restore();
-      y += ibR*2 + Math.round(H*0.04);
-
-      // Profile label
+      ctx.fillText(archIcon,cx,y+ibR+ibR*0.06); ctx.restore();
+      y+=ibR*2+Math.round(H*0.04);
       dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
         y, `bold ${Math.round(W*0.022)}px ${bF}`, "#4b5563");
-      y += Math.round(H*0.044);
-
-      // Archetype name — white→accent→gold gradient
+      y+=Math.round(H*0.044);
       ctx.save(); ctx.font=`900 ${Math.round(W*0.072)}px ${bF}`;
       ctx.textBaseline="alphabetic"; ctx.textAlign="center";
       const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
       ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
       ctx.fillStyle=ng; ctx.fillText(archName,cx,y,W-PAD*2); ctx.restore();
-      y += Math.round(H*0.046);
-
-      // Code pill
+      y+=Math.round(H*0.046);
       const cF=`bold ${Math.round(W*0.034)}px monospace,${bF}`;
-      ctx.font=cF;
-      const ctw=ctx.measureText(archCode).width;
+      ctx.font=cF; const ctw=ctx.measureText(archCode).width;
       const cpW=ctw+W*0.055, cpH=W*0.060, cpX=cx-cpW/2;
       ctx.save(); ctx.fillStyle="#1e3a5f"; ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
       rr(cpX,y,cpW,cpH,cpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      dtC(archCode, y+cpH*0.68, cF, "#60a5fa");
-      y += cpH + Math.round(H*0.018);
-
-      // Level badge
-      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`;
-      ctx.font=lvF;
+      dtC(archCode, y+cpH*0.68, cF, "#60a5fa"); y+=cpH+Math.round(H*0.018);
+      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`; ctx.font=lvF;
       const ltw=ctx.measureText(level.text).width;
       const lpW=ltw+W*0.04, lpH=W*0.044, lpX=cx-lpW/2;
       ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
       rr(lpX,y,lpW,lpH,lpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      dtC(level.text, y+lpH*0.68, lvF, accent+"cc");
-      y += lpH + Math.round(H*0.032);
-
-      // Tagline (14px-equivalent italic)
+      dtC(level.text, y+lpH*0.68, lvF, accent+"cc"); y+=lpH+Math.round(H*0.032);
       const tgF=`italic ${Math.round(W*0.034)}px ${isRTL?arF:"Georgia,"+enF}`;
-      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5);
-      y += Math.round(H*0.055);
-
-      // Divider
+      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5); y+=Math.round(H*0.055);
       ctx.save();
       const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);
       dg.addColorStop(0,"transparent"); dg.addColorStop(0.2,accent+"44");
       dg.addColorStop(0.8,accent+"44"); dg.addColorStop(1,"transparent");
       ctx.strokeStyle=dg; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-      y += Math.round(H*0.048);
-
-      // Top path label + name
+      y+=Math.round(H*0.048);
       const pK=lang==="ar"?"أفضل مسار":lang==="fr"?"Voie #1":"Top Path";
-      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
-      y += Math.round(H*0.044);
-      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2);
-      y += Math.round(H*0.056);
-
-      // Match label + value
+      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280"); y+=Math.round(H*0.044);
+      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2); y+=Math.round(H*0.056);
       const mK=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
       dtC(mK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
       ctx.save(); ctx.font=`bold ${Math.round(W*0.046)}px monospace,${bF}`;
       ctx.fillStyle=accent; ctx.textBaseline="alphabetic"; ctx.textAlign="center";
-      ctx.fillText(`${confidence}%`, cx, y); ctx.restore();
-      y += Math.round(H*0.022);
-
-      // Confidence bar
+      ctx.fillText(`${confidence}%`,cx,y); ctx.restore(); y+=Math.round(H*0.022);
       const barW=W-PAD*2, barH=Math.round(H*0.016);
       ctx.save(); ctx.fillStyle="#1e293b"; rr(PAD,y,barW,barH,barH/2); ctx.fill();
       const fw=Math.max(barH,Math.round((confidence/100)*barW));
       const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);
       fg.addColorStop(0,accent); fg.addColorStop(1,"#fbbf24");
       ctx.fillStyle=fg; ctx.shadowColor=accent; ctx.shadowBlur=10;
-      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore();
-      y += barH + Math.round(H*0.04);
-
-      // Chips (centred row)
+      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore(); y+=barH+Math.round(H*0.04);
       if(strengths.length>0){
         const chipH=Math.round(H*0.038), chipFont=`600 ${Math.round(W*0.026)}px ${bF}`;
         ctx.font=chipFont;
-        const chips=strengths.map(s=>({ text:s, w:ctx.measureText(s).width+W*0.04 }));
+        const chips=strengths.map(s=>({text:s, w:ctx.measureText(s).width+W*0.04}));
         const totalW=chips.reduce((a,c)=>a+c.w+W*0.014,0)-W*0.014;
         let chipX=cx-totalW/2;
         for(const chip of chips){
           ctx.save(); ctx.fillStyle="#1e293b"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
           rr(chipX,y,chip.w,chipH,chipH/2); ctx.fill(); ctx.stroke(); ctx.restore();
           ctx.save(); ctx.font=chipFont; ctx.fillStyle="#93c5fd"; ctx.textBaseline="alphabetic";
-          ctx.fillText(chip.text, chipX+W*0.02, y+chipH*0.68); ctx.restore();
+          ctx.fillText(chip.text,chipX+W*0.02,y+chipH*0.68); ctx.restore();
           chipX+=chip.w+W*0.014;
         }
+        y+=chipH+Math.round(H*0.024);
       }
-
+      // Challenge line on canvas
+      const clF=`italic ${Math.round(W*0.022)}px ${bF}`;
+      dtC(challengeLine, y, clF, accent+"55"); y+=Math.round(H*0.032);
       // Footer
       const fy=H-PAD*0.9;
       ctx.save();
@@ -6844,116 +7142,85 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
       fl.addColorStop(0.85,accent+"28"); fl.addColorStop(1,"transparent");
       ctx.strokeStyle=fl; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(PAD,fy-PAD*0.28); ctx.lineTo(W-PAD,fy-PAD*0.28); ctx.stroke(); ctx.restore();
-      dtC(`massar.ma • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-      // Serial ID (right-aligned)
-      const sidP = serialId(archCode);
-      const sidFP = `500 ${Math.round(W*0.018)}px monospace,${bF}`;
-      ctx.font = sidFP;
-      const sidWP = ctx.measureText(sidP).width;
-      ctx.save(); ctx.font=sidFP; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
-      ctx.fillText(sidP, W-PAD-sidWP, fy); ctx.restore();
-
+      dtC(`massarpro.com • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+      const sidF=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
+      ctx.font=sidF;
+      const sidW=ctx.measureText(shareId).width;
+      ctx.save(); ctx.font=sidF; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+      ctx.fillText(shareId, W-PAD-sidW, fy); ctx.restore();
       return canvas;
     }
 
-    // ── Card / Square canvas: legendary layout ──────────────────
-    // Rarity pill tier colors (canvas approximation)
-    const rarityPillColors = {
+    // ── Square (1:1) layout ────────────────────────────────────
+    const rarityPillColors2 = {
       legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
       epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
       rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
       common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
     };
-    const rpc = rarityPillColors[rarity.key] || rarityPillColors.common;
-
-    // Header accent strip
+    const rpc2=rarityPillColors2[rarity.key]||rarityPillColors2.common;
     const stripW=W*0.08, sx=isRTL?W-PAD-stripW:PAD;
     const sg=ctx.createLinearGradient(sx,0,sx+stripW,0);
     sg.addColorStop(0,accent); sg.addColorStop(1,"#fbbf24");
     ctx.save(); ctx.fillStyle=sg; rr(sx,PAD*0.78,stripW,4,2); ctx.fill(); ctx.restore();
-
-    // Brand mark
     const brandY=PAD*1.44;
-    const brandStr = isRTL ? "مسار" : "MASSAR";
+    const brandStr=isRTL?"مسار":"MASSAR";
     dtL(brandStr, brandY, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
-    const subStr = isRTL ? "بوابة مسارك المهني" : "Career Identity Engine";
+    const subStr=isRTL?"بوابة مسارك المهني":"Career Identity Engine";
     dtL(subStr, brandY+Math.round(H*0.018), `${Math.round(W*0.018)}px ${bF}`, "#374151");
-
-    // Rarity pill — tier-colored
     const rarityTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
     const rpFont=`bold ${Math.round(W*0.027)}px ${bF}`;
-    ctx.font=rpFont;
-    const rtw=ctx.measureText(rarityTxt).width;
-    const rpW2=rtw+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
+    ctx.font=rpFont; const rtw2=ctx.measureText(rarityTxt).width;
+    const rpW2=rtw2+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
     const rpY2=brandY-rpH2*0.72;
-    ctx.save(); ctx.fillStyle=rpc.bg; ctx.strokeStyle=rpc.border;
+    ctx.save(); ctx.fillStyle=rpc2.bg; ctx.strokeStyle=rpc2.border;
     ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=12;
     rr(rpX2,rpY2,rpW2,rpH2,rpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc.text; ctx.textBaseline="alphabetic";
-    ctx.fillText(rarityTxt, rpX2+rpW2*0.1, brandY, rpW2); ctx.restore();
-
-    // Multi-ring halo icon
+    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc2.text; ctx.textBaseline="alphabetic";
+    ctx.fillText(rarityTxt,rpX2+rpW2*0.1,brandY,rpW2); ctx.restore();
     const ibSz=Math.round(W*0.26);
     const ibCX=W/2, ibCY=Math.round(H*0.185)+ibSz/2;
-    // Outermost ring
     ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.044),0,Math.PI*2);
     ctx.strokeStyle=accent+"1e"; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
-    // Mid ring
     ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.022),0,Math.PI*2);
     ctx.strokeStyle=accent+"44"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
-    // Glow disc
     const discGrad=ctx.createRadialGradient(ibCX,ibCY,0,ibCX,ibCY,ibSz/2);
     discGrad.addColorStop(0,accent+"28"); discGrad.addColorStop(0.6,accent+"10"); discGrad.addColorStop(1,"transparent");
     ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
     ctx.fillStyle=discGrad; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
-    // Border ring
     ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
     ctx.strokeStyle=accent+"88"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
-    // Emoji
     ctx.save(); ctx.font=`${Math.round(ibSz*0.5)}px serif`;
     ctx.textAlign="center"; ctx.textBaseline="middle";
-    ctx.fillText(archIcon, ibCX, ibCY+ibSz*0.03); ctx.restore();
-
-    // Profile label
+    ctx.fillText(archIcon,ibCX,ibCY+ibSz*0.03); ctx.restore();
     const profileHeaderY=ibCY+ibSz/2+Math.round(H*0.030);
     dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
       profileHeaderY, `bold ${Math.round(W*0.021)}px ${bF}`, "#4b5563");
-
-    // Archetype name — white→accent→gold gradient
     const nameY=profileHeaderY+Math.round(H*0.050);
     ctx.save(); ctx.font=`900 ${Math.round(W*0.078)}px ${bF}`;
     ctx.textBaseline="alphabetic"; ctx.textAlign="center";
-    const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
-    ctx.fillStyle=ng; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
-
-    // Code pill
+    const ng2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    ng2.addColorStop(0,"#ffffff"); ng2.addColorStop(0.45,accent); ng2.addColorStop(1,"#fbbf24");
+    ctx.fillStyle=ng2; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
     const codeY2=nameY+Math.round(H*0.044);
     const cFont=`bold ${Math.round(W*0.036)}px monospace,${bF}`;
-    ctx.font=cFont;
-    const ctw2=ctx.measureText(archCode).width;
+    ctx.font=cFont; const ctw2=ctx.measureText(archCode).width;
     const cpW2=ctw2+W*0.050, cpH2=W*0.058, cpX2=(W-cpW2)/2-W*0.035;
     ctx.save(); ctx.fillStyle="rgba(30,58,95,0.9)"; ctx.strokeStyle="rgba(59,130,246,0.7)";
     ctx.lineWidth=2; ctx.shadowColor="#3b82f6"; ctx.shadowBlur=8;
     rr(cpX2,codeY2,cpW2,cpH2,cpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
     ctx.save(); ctx.font=cFont; ctx.fillStyle="#60a5fa"; ctx.textBaseline="alphabetic";
-    ctx.textAlign="center"; ctx.fillText(archCode, cpX2+cpW2/2, codeY2+cpH2*0.68); ctx.restore();
-    // Level badge (right of code)
+    ctx.textAlign="center"; ctx.fillText(archCode,cpX2+cpW2/2,codeY2+cpH2*0.68); ctx.restore();
     const lvlFont=`600 ${Math.round(W*0.024)}px ${bF}`;
-    ctx.font=lvlFont;
-    const ltw2=ctx.measureText(level.text).width;
+    ctx.font=lvlFont; const ltw2=ctx.measureText(level.text).width;
     const lpW2=ltw2+W*0.038, lpH2=W*0.040, lpX2=cpX2+cpW2+W*0.018;
     const lpY2=codeY2+(cpH2-lpH2)/2;
     ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
     rr(lpX2,lpY2,lpW2,lpH2,lpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
     ctx.save(); ctx.font=lvlFont; ctx.fillStyle=accent+"cc"; ctx.textBaseline="alphabetic";
-    ctx.textAlign="center"; ctx.fillText(level.text, lpX2+lpW2/2, lpY2+lpH2*0.68); ctx.restore();
-
-    // Tagline italic
+    ctx.textAlign="center"; ctx.fillText(level.text,lpX2+lpW2/2,lpY2+lpH2*0.68); ctx.restore();
     const sigY2=codeY2+cpH2+Math.round(H*0.036);
     dtC(archTagline, sigY2, `italic ${Math.round(W*0.035)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2);
-
-    // Divider
     const divY2=sigY2+Math.round(H*0.044);
     ctx.save();
     const dg2=ctx.createLinearGradient(PAD,0,W-PAD,0);
@@ -6961,28 +7228,21 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
     dg2.addColorStop(0.8,accent+"55"); dg2.addColorStop(1,"transparent");
     ctx.strokeStyle=dg2; ctx.lineWidth=1.5;
     ctx.beginPath(); ctx.moveTo(PAD,divY2); ctx.lineTo(W-PAD,divY2); ctx.stroke(); ctx.restore();
-
-    // Top path
     const pLabelY2=divY2+Math.round(H*0.050);
     const pKey=lang==="ar"?"أفضل مسار":lang==="fr"?"VOIE #1":"TOP PATH";
     dtL(pKey, pLabelY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
     const pNameY2=pLabelY2+Math.round(H*0.048);
     dtL(clusterName, pNameY2, `bold ${Math.round(W*0.044)}px ${bF}`, "#f1f5f9", W-PAD*2);
-
-    // Match % (RTL-safe)
     const confY2=pNameY2+Math.round(H*0.060);
     const cKey=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
     dtL(cKey, confY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
     const pctStr=`${confidence}%`;
     const pFont=`900 ${Math.round(W*0.046)}px monospace,${bF}`;
-    ctx.font=pFont;
-    const ptw=ctx.measureText(pctStr).width;
+    ctx.font=pFont; const ptw=ctx.measureText(pctStr).width;
     const pctX=isRTL?PAD:W-PAD-ptw;
     ctx.save(); ctx.font=pFont; ctx.fillStyle=accent;
     ctx.textBaseline="alphabetic"; ctx.shadowColor=accent; ctx.shadowBlur=12;
     ctx.fillText(pctStr,pctX,confY2); ctx.restore();
-
-    // Confidence bar
     const barY2=confY2+Math.round(H*0.018), barH2=Math.round(H*0.018), barW2=W-PAD*2;
     ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,barY2,barW2,barH2,barH2/2); ctx.fill(); ctx.restore();
     const fw2=Math.max(barH2,Math.round((confidence/100)*barW2));
@@ -6990,28 +7250,27 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
     fg2.addColorStop(0,accent); fg2.addColorStop(1,"#fbbf24");
     ctx.save(); ctx.fillStyle=fg2; ctx.shadowColor=accent; ctx.shadowBlur=12;
     rr(PAD,barY2,fw2,barH2,barH2/2); ctx.fill(); ctx.restore();
-
-    // Trait chips
     if(strengths.length>0){
       const chipY2=barY2+barH2+Math.round(H*0.044);
       const chipH2=Math.round(H*0.046), chipFont2=`600 ${Math.round(W*0.026)}px ${bF}`;
-      ctx.font=chipFont2;
-      let cxp = isRTL ? W-PAD : PAD;
+      ctx.font=chipFont2; let cxp=isRTL?W-PAD:PAD;
       for(const s of strengths){
-        const icon2 = CHIP_ICON[s] || "✦";
-        const chipTxt = `${icon2} ${s}`;
+        const icon2=CHIP_ICON[s]||"✦";
+        const chipTxt=`${icon2} ${s}`;
         const cw=ctx.measureText(chipTxt).width+W*0.040;
-        if(isRTL){ cxp-=cw; if(cxp<PAD) break; }
+        if(isRTL){cxp-=cw; if(cxp<PAD) break; }
         else { if(cxp+cw>W-PAD) break; }
         ctx.save(); ctx.fillStyle="rgba(30,41,59,0.9)"; ctx.strokeStyle=accent+"3a"; ctx.lineWidth=1.5;
         rr(cxp,chipY2,cw,chipH2,chipH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
         ctx.save(); ctx.font=chipFont2; ctx.fillStyle="#a5f3fc"; ctx.textBaseline="alphabetic";
-        ctx.fillText(chipTxt, cxp+W*0.018, chipY2+chipH2*0.68); ctx.restore();
-        if(isRTL){ cxp-=W*0.014; } else { cxp+=cw+W*0.014; }
+        ctx.fillText(chipTxt,cxp+W*0.018,chipY2+chipH2*0.68); ctx.restore();
+        if(isRTL){cxp-=W*0.014;} else {cxp+=cw+W*0.014;}
       }
     }
-
-    // Footer: brand + serial ID
+    // Challenge line on canvas
+    const clY2=H-PAD*1.8;
+    dtC(challengeLine, clY2, `italic ${Math.round(W*0.022)}px ${bF}`, accent+"55", W-PAD*2);
+    // Footer
     const fy2=H-PAD*0.85;
     ctx.save();
     const fl2=ctx.createLinearGradient(PAD,0,W-PAD,0);
@@ -7019,79 +7278,164 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
     fl2.addColorStop(0.85,accent+"28"); fl2.addColorStop(1,"transparent");
     ctx.strokeStyle=fl2; ctx.lineWidth=1;
     ctx.beginPath(); ctx.moveTo(PAD,fy2-PAD*0.3); ctx.lineTo(W-PAD,fy2-PAD*0.3); ctx.stroke(); ctx.restore();
-    dtL(`massar.ma • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-    const sid2=serialId(archCode);
+    dtL(`massarpro.com • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
     const sidFont=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
-    ctx.font=sidFont;
-    const sidW2=ctx.measureText(sid2).width;
+    ctx.font=sidFont; const sidW2=ctx.measureText(shareId).width;
     const sidX2=isRTL?PAD:W-PAD-sidW2;
     ctx.save(); ctx.font=sidFont; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
-    ctx.fillText(sid2, sidX2, fy2); ctx.restore();
-
+    ctx.fillText(shareId,sidX2,fy2); ctx.restore();
     return canvas;
   }
 
+  // Download PNG — toBlob with toDataURL fallback
   const downloadPng = () => {
     try {
-      const canvas=buildCanvas();
-      canvas.toBlob(blob=>{
-        if(!blob) return;
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement("a");
-        a.href=url; a.download=`massar-${archCode}-${fmt}.png`;
-        document.body.appendChild(a); a.click();
-        document.body.removeChild(a); URL.revokeObjectURL(url);
-      },"image/png");
-    } catch {}
+      const canvas = buildCanvas();
+      const fn = `massar-${archCode}-${shareId}-${fmt}.png`;
+      try {
+        canvas.toBlob(blob => {
+          if (!blob) { dlDataUrl(canvas, fn); return; }
+          const url = URL.createObjectURL(blob);
+          const a   = document.createElement("a");
+          a.href=url; a.download=fn;
+          document.body.appendChild(a); a.click();
+          document.body.removeChild(a); URL.revokeObjectURL(url);
+        }, "image/png");
+      } catch {
+        dlDataUrl(canvas, fn);
+      }
+    } catch (e) { console.error("[Massar] canvas export failed:", e); }
+  };
+  const dlDataUrl = (canvas, fn) => {
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = fn;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
   };
 
-  // Shared props bundle passed to each layout component
+  // Share Mobile — Web Share API
+  const shareMobile = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        const canvas = buildCanvas();
+        const fn = `massar-${archCode}-${shareId}.png`;
+        const blob = await new Promise((res, rej) => {
+          try { canvas.toBlob(b => b ? res(b) : rej(new Error("no blob")), "image/png"); }
+          catch(e){ rej(e); }
+        });
+        const file = new File([blob], fn, { type:"image/png" });
+        await navigator.share({ files:[file], text:caption, title:"MassarPro" });
+      } catch (e) {
+        // If share fails or no file support, fallback
+        if (e?.name !== "AbortError") setShareTooltip(true);
+        setTimeout(() => setShareTooltip(false), 3500);
+      }
+    } else {
+      setShareTooltip(true);
+      setTimeout(() => setShareTooltip(false), 3500);
+    }
+  };
+
+  // cardProps bundle
   const cardProps = {
     archIcon, archName, archCode, archTagline, clusterName, strengths,
     confidence, rarity, rarityLabel, accent, glow, level, isRTL, dir, lang,
+    challengeLine,
+    shareId,
+    shimmer: !shimmerDone,
+    onShimmerDone: () => setShimmerDone(true),
   };
 
-  const fmtLabels = { card:"Card", square:"1:1", story:"9:16" };
+  const shareLink = `massarpro.com?id=${shareId}`;
 
   return (
-    <div style={{ margin:"24px 0" }}>
+    <div style={{ margin:"24px 0" }} dir={dir}>
       {/* Section label */}
       <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,
         textTransform:"uppercase",marginBottom:14}}>
         {t.shareTitle}
       </div>
 
-      {/* Format segmented control */}
+      {/* Format segmented control — Story / Square / Card */}
       <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
-        {["card","square","story"].map(f=>(
+        {(["story","square","card"]).map(f => (
           <button key={f} onClick={()=>setFmt(f)} style={{
             padding:"5px 14px",borderRadius:20,fontSize:11,fontWeight:700,
             border:`1.5px solid ${fmt===f?accent+"cc":"var(--border)"}`,
             background:fmt===f?accent+"18":"var(--surface2)",
             color:fmt===f?accent:"var(--muted)",cursor:"pointer",letterSpacing:.5,
             transition:"all .18s",
-          }}>{fmtLabels[f]}</button>
+          }}>
+            {FMT[f]?.label || f}
+          </button>
         ))}
       </div>
 
-      {/* Dispatch to separate layout component based on format */}
+      {/* Card preview */}
       {fmt==="story"  && <ShareCardPortrait p={cardProps}/>}
       {fmt==="square" && <ShareCardSquare   p={cardProps}/>}
       {fmt==="card"   && <ShareCardClassic  p={cardProps}/>}
 
-      {/* Buttons */}
-      <div style={{display:"flex",gap:10,flexWrap:"wrap",maxWidth:360,margin:"0 auto"}}>
-        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:110}}>
-          {copied ? t.shareCopied : t.copyCaptionBtn}
-        </button>
-        <button className="btn btn-secondary" onClick={downloadPng} style={{flex:1,minWidth:110}}>
-          {t.downloadBadgeBtn}
-        </button>
+      {/* Share Panel */}
+      <div className="share-panel" style={{marginTop:16}}>
+
+        {/* Caption toggle */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
+          <div className="share-panel-seg" style={{flex:1}}>
+            {["full","short"].map(m => (
+              <button key={m} className={captionMode===m?"active":""}
+                onClick={()=>setCaptionMode(m)}>
+                {m==="full"
+                  ? (t?.captionFull   || "Full")
+                  : (t?.captionShort  || "Short")}
+              </button>
+            ))}
+          </div>
+          {/* Caption preview */}
+          <div style={{fontSize:11,color:"var(--muted)",flex:1,
+            background:"var(--surface2)",borderRadius:8,padding:"6px 10px",
+            maxHeight:52,overflow:"hidden",lineHeight:1.4,
+            whiteSpace:"pre-line",wordBreak:"break-word"}}>
+            {caption.split("
+")[0]}…
+          </div>
+        </div>
+
+        {/* Row 1: Copy Caption + Copy Link */}
+        <div className="share-panel-row">
+          <button className="share-panel-btn" onClick={()=>doCopyText(caption, setCopiedCaption)}>
+            {copiedCaption
+              ? (t?.shareCopied || "✓")
+              : (t?.copyCaptionBtn || "Copy Caption")}
+          </button>
+          <button className="share-panel-btn" onClick={()=>doCopyText(shareLink, setCopiedLink)}>
+            {copiedLink
+              ? (t?.shareLinkCopied || "✓ Copied")
+              : (t?.shareCopyLink   || "Copy Link")}
+          </button>
+        </div>
+
+        {/* Row 2: Download PNG + Share Mobile */}
+        <div className="share-panel-row">
+          <button className="share-panel-btn primary" onClick={downloadPng}>
+            ⬇ {t?.shareDownloadPng || "Download PNG"}
+          </button>
+          <button className="share-panel-btn" onClick={shareMobile}
+            style={{position:"relative"}}>
+            ↗ {t?.shareMobileBtn || "Share"}
+          </button>
+        </div>
+
+        {/* Share fallback tooltip */}
+        {shareTooltip && (
+          <div className="share-tooltip">
+            {t?.shareMobileFallback || "Download then share in WhatsApp or TikTok"}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
 
 
 
@@ -7117,7 +7461,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   const totalXP = allTasks.reduce((s,{wk,it,xp})=>s+(checked[`${wk}_${it}`]?xp:0),0);
   const maxXP   = allTasks.reduce((s,{xp})=>s+xp,0);
   // FIX: clamp numeric UI values
-  const pct     = maxXP > 0 ? clampNum(Math.round((totalXP/maxXP)*100)) : 0;
+  const pct     = maxXP > 0 ? clamp(Math.round((totalXP/maxXP)*100)) : 0;
   const complete = pct === 100;
 
   const toggle = (wk, it) => {
@@ -7236,8 +7580,8 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   const displayName = getClusterDisplayName(current);
   const surprise = getSurpriseText(current);
   const cs = current ? (CULTURAL_CLUSTER_SCORES[current.id] || {}) : {};
-  const matchPct = current ? Math.round(clampNum(current.scores.final * 100)) : 0;
-  const traitPct = current ? Math.round(clampNum((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
+  const matchPct = current ? Math.round(clamp(current.scores.final * 100)) : 0;
+  const traitPct = current ? Math.round(clamp((current.scores.trait + current.scores.interest) / 2 * 100)) : 0;
 
   return (
     <div style={{
@@ -7305,7 +7649,7 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
                   background:"linear-gradient(90deg,#3b82f6,#10b981)",borderRadius:2}}/>
               </div>
               <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",width:32,textAlign:"right"}} dir="ltr">
-                {Math.round(clampNum(cs.parentAcceptance*100))}%
+                {Math.round(clamp(cs.parentAcceptance*100))}%
               </div>
             </div>
           )}
@@ -7544,6 +7888,422 @@ function runDevTests() {
 if (typeof window !== "undefined" && (window.__DEV__ || window.__RUN_TESTS ||
   (typeof location !== "undefined" && location.hostname === "localhost"))) {
   setTimeout(runDevTests, 1800);
+}
+
+
+
+// ─────────────────────────────────────────────────────────────────
+// CHANGELOG (top-12 lines):
+// 1. Two journeys: journeyStage "prebac" | "postbac" — step inserted after language
+// 2. Pre-Bac flow: strengths/interests/sliders/constraints instead of marks
+// 3. Learner Type test (6 questions) → 6 types: Architect/Striker/Diplomat/Sprinter/Sentinel/Visionary
+// 4. Results rebuilt as 6 guided pages (Page 1/6 → 6/6)
+// 5. Page 1: Identity Mirror (pressure/consistency/advantage/blindspot)
+// 6. Page 2: Prestige & Family Reality with eligibility truth blocks
+// 7. Page 3: Future-Proof & Market 2030 with demand bars
+// 8. Page 4: Top 3 Directions (match breakdown bars + coach explanation)
+// 9. Page 5: 7-day plan + starter wins + risk + priority selector
+// 10. Page 6: PDF offer (10-item list + teaser previews + payment form)
+// 11. All new strings tri-lingual AR/FR/EN (MSA Arabic, no dialect)
+// 12. Fixed duplicate clamp; clamp(min,val,max) removed; kept clamp(val,min,max)
+// ─────────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────────
+// LEARNER TYPE SYSTEM
+// ─────────────────────────────────────────────────────────────────
+const LEARNER_QUESTIONS = [
+  {
+    id:"lq1",
+    ar:"حين تتعلم موضوعاً جديداً، ما أول شيء تفعله عفوياً؟",
+    fr:"Quand tu apprends un nouveau sujet, que fais-tu en premier naturellement ?",
+    en:"When you learn something new, what do you naturally do first?",
+    options:{
+      ar:["أضع خطة وأبني إطاراً منظماً","أبدأ بالتطبيق مباشرة","أشرحه لشخص آخر أو أتحدث عنه","أنتظر حتى الليلة الأخيرة","أراجعه مراراً في جدول منتظم","أبحث عن المعنى الكبير ورابطه بحياتي"],
+      fr:["Je construis un plan structuré","Je commence à pratiquer directement","Je l'explique à quelqu'un","J'attends la dernière minute","Je révise régulièrement selon un planning","Je cherche le sens global et le lien avec ma vie"],
+      en:["I build a structured framework","I start practising immediately","I explain it to someone","I wait until the last minute","I revise regularly on a schedule","I look for the big picture and its meaning"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+  {
+    id:"lq2",
+    ar:"ما الذي يُفقدك الاستمرارية في الدراسة؟",
+    fr:"Qu'est-ce qui te fait perdre ta régularité dans les études ?",
+    en:"What makes you lose consistency in studying?",
+    options:{
+      ar:["الفوضى وغياب الخطة","غياب التطبيق الفعلي","الدراسة بمفردي بدون نقاش","الروتين الممل بدون ضغط","تغيير الجدول أو انكسار العادة","الشعور بعدم المعنى"],
+      fr:["Le chaos et l'absence de plan","Pas de pratique réelle","Étudier seul sans discussion","La routine ennuyeuse sans pression","Changement de planning / rupture d'habitude","Se sentir sans sens"],
+      en:["Chaos and no plan","No real practice","Studying alone without discussion","Boring routine without pressure","Schedule changes / habit disruption","Feeling meaningless"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+  {
+    id:"lq3",
+    ar:"كيف تتذكر المعلومات بشكل أفضل؟",
+    fr:"Comment mémorises-tu le mieux ?",
+    en:"How do you remember information best?",
+    options:{
+      ar:["برسم خرائط ذهنية وتصنيفات","بالتطبيق والممارسة المتكررة","بشرحه بصوت عالٍ أو تعليم غيري","بحفظه تحت ضغط الوقت","بالتكرار المنتظم يومياً","بربطه بقصة أو صورة أو معنى شخصي"],
+      fr:["En faisant des cartes mentales et des catégories","En pratiquant et répétant","En l'expliquant à voix haute","En le mémorisant sous pression de temps","Par répétition quotidienne régulière","En le reliant à une histoire ou un sens personnel"],
+      en:["Mind maps and categorization","Practising and repeating","Explaining it aloud or teaching","Memorising under time pressure","Daily regular repetition","Linking it to a story or personal meaning"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+  {
+    id:"lq4",
+    ar:"ما نمط طاقتك خلال اليوم الدراسي؟",
+    fr:"Quel est ton schéma d'énergie pendant la journée d'étude ?",
+    en:"What's your energy pattern during a study day?",
+    options:{
+      ar:["مستقر ومتوازن — أخطط ثم أنفذ","دفقات قصيرة مكثفة ثم استراحات","مرتفع حين أتحدث مع الآخرين","يتصاعد نحو الموعد النهائي","ثابت ومنتظم كل يوم","متذبذب حسب الإلهام والمعنى"],
+      fr:["Stable et équilibré — je planifie puis j'exécute","Courtes rafales intenses puis pauses","Élevé quand je parle aux autres","Qui monte vers la deadline","Constant et régulier chaque jour","Variable selon l'inspiration et le sens"],
+      en:["Stable and balanced — plan then execute","Short intense bursts then breaks","High when talking with others","Builds towards a deadline","Consistent and regular every day","Variable depending on inspiration and meaning"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+  {
+    id:"lq5",
+    ar:"حين تفشل في مهمة أو امتحان، كيف تتعافى؟",
+    fr:"Quand tu échoues à une tâche ou un examen, comment tu te remets ?",
+    en:"When you fail a task or exam, how do you recover?",
+    options:{
+      ar:["أحلل ما حدث وأُعيد تنظيم خطتي","أتصرف مباشرة وأجرب مرة أخرى","أتحدث مع شخص وأعالج الأمر بصوت عالٍ","أُهملها وأركز على الاختبار القادم","أعود لروتيني المنتظم بثبات","أبحث عن درس أعمق أو مغزى في الفشل"],
+      fr:["J'analyse ce qui s'est passé et réorganise mon plan","J'agis directement et réessaie","Je parle à quelqu'un et traite ça à voix haute","Je laisse tomber et me concentre sur le prochain examen","Je retourne à ma routine régulière calmement","Je cherche la leçon profonde ou le sens dans l'échec"],
+      en:["Analyse what happened and reorganise my plan","Act immediately and try again","Talk to someone and process it aloud","Forget it and focus on the next exam","Return to my regular routine calmly","Look for a deeper lesson or meaning in the failure"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+  {
+    id:"lq6",
+    ar:"ما الذي يجعل العمل يبدو لك ذا معنى حقيقي؟",
+    fr:"Qu'est-ce qui rend un travail vraiment significatif pour toi ?",
+    en:"What makes work feel genuinely meaningful to you?",
+    options:{
+      ar:["حين أرى النظام والبناء خلفه","حين أرى نتائج ملموسة فورية","حين يؤثر في الآخرين ويُغيّر أفكارهم","حين يتحداني ويضغط على حدودي","حين يُبنى على الاتساق والالتزام","حين يرتبط بمعنى أكبر أو بصيرة عميقة"],
+      fr:["Quand je vois la structure et le système derrière","Quand je vois des résultats concrets immédiats","Quand ça impacte les autres et change leur vision","Quand ça me défie et pousse mes limites","Quand il se construit sur la constance et l'engagement","Quand il se connecte à un sens plus grand ou une vision profonde"],
+      en:["When I see the system and structure behind it","When I see immediate tangible results","When it impacts others and changes their thinking","When it challenges me and pushes my limits","When it's built on consistency and commitment","When it connects to a bigger meaning or deep insight"],
+    },
+    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
+  },
+];
+
+const LEARNER_TYPE_DATA = {
+  architect: {
+    ar:{ signature:"أنت تبني الأنظمة قبل أن تبني النتائج.",
+      learn:["تتعلم بالخرائط الذهنية والتصنيفات","تحتاج الإطار الكلي قبل التفاصيل","تُخطط بدقة ثم تُنفذ بانضباط"],
+      ruined:["الفوضى تُشلّه","التعليمات غير المنطقية تُرهقه","التغيير المفاجئ يُقلقه"],
+      coach:["أعطه الخطة الكاملة أولاً","اربط كل مهمة بالإطار العام","امنحه وقتاً للتخطيط"] },
+    fr:{ signature:"Tu construis les systèmes avant les résultats.",
+      learn:["Tu apprends par cartes mentales","Tu as besoin du cadre global avant les détails","Tu planifies précisément avant d'exécuter"],
+      ruined:["Le chaos le paralyse","Les instructions illogiques l'épuisent","Le changement soudain l'inquiète"],
+      coach:["Donne-lui le plan complet d'abord","Relie chaque tâche au cadre global","Accorde-lui du temps pour planifier"] },
+    en:{ signature:"You build systems before you build results.",
+      learn:["Learn through mind maps and frameworks","Need the big picture before details","Plan precisely then execute with discipline"],
+      ruined:["Chaos paralyses them","Illogical instructions drain them","Sudden changes cause anxiety"],
+      coach:["Give the full plan first","Connect each task to the overall framework","Allow planning time"] },
+  },
+  striker: {
+    ar:{ signature:"أنت تتعلم بالفعل — المشاريع هي مدرستك.",
+      learn:["تتعلم بالتطبيق المباشر","تحتاج نتائج سريعة لتبقى متحمساً","تُفضّل التجربة على النظرية"],
+      ruined:["الدراسة النظرية الطويلة تُملّه","غياب التطبيق يُفقده الدافع","الانتظار بدون إنجاز يُحبطه"],
+      coach:["حوّل كل مفهوم لمشروع صغير","امنحه تحديات أسبوعية قابلة للقياس","اجعل التعلم نشاطاً لا قراءة"] },
+    fr:{ signature:"Tu apprends par l'action — les projets sont ton école.",
+      learn:["Tu apprends par la pratique directe","Tu as besoin de résultats rapides pour rester motivé","Tu préfères l'expérience à la théorie"],
+      ruined:["La longue théorie l'ennuie","L'absence de pratique le démotive","Attendre sans accomplissement le décourage"],
+      coach:["Transforme chaque concept en mini-projet","Donne-lui des défis hebdomadaires mesurables","Rends l'apprentissage une activité, pas une lecture"] },
+    en:{ signature:"You learn by doing — projects are your classroom.",
+      learn:["Learn through direct practice","Need quick results to stay motivated","Prefer experience over theory"],
+      ruined:["Long theory bores them","Absence of practice demotivates","Waiting without accomplishment discourages"],
+      coach:["Turn each concept into a mini-project","Set measurable weekly challenges","Make learning an activity, not reading"] },
+  },
+  diplomat: {
+    ar:{ signature:"أنت تُعمّق فهمك حين تُعلّم وتُناقش.",
+      learn:["تتعلم بالشرح والتعليم","تزدهر في النقاش والتبادل","تحتاج جمهوراً ولو افتراضياً"],
+      ruined:["الدراسة المنعزلة تُضعفه","غياب ردود الفعل يُعيقه","العمل الصامت لفترات طويلة يُنهكه"],
+      coach:["شجّعه على تدريس مادة لزميل","انشئ مجموعات مراجعة","اطلب منه شرح ما تعلّمه بصوت عالٍ"] },
+    fr:{ signature:"Tu approfondir ta compréhension en enseignant et discutant.",
+      learn:["Tu apprends en expliquant et enseignant","Tu t'épanouis dans les discussions","Tu as besoin d'un public, même virtuel"],
+      ruined:["L'étude isolée l'affaiblit","L'absence de feedback le bloque","Le travail silencieux prolongé l'épuise"],
+      coach:["Encourage-le à enseigner un cours à un camarade","Crée des groupes de révision","Demande-lui d'expliquer ce qu'il a appris à voix haute"] },
+    en:{ signature:"You deepen understanding by teaching and discussing.",
+      learn:["Learn by explaining and teaching","Thrive in discussion and exchange","Need an audience, even virtual"],
+      ruined:["Isolated study weakens them","Absence of feedback blocks progress","Long silent work exhausts them"],
+      coach:["Encourage teaching a topic to a peer","Create study groups","Ask them to explain what they learned aloud"] },
+  },
+  sprinter: {
+    ar:{ signature:"أنت تُبدع تحت ضغط الوقت — المواعيد النهائية تُحرّرك.",
+      learn:["ذاكرتك تتفعّل بالضغط","تعمل بكفاءة عالية في الوقت الضيق","تحتاج تحديات حقيقية لتبقى يقظاً"],
+      ruined:["الجداول الممتدة تُرخي تركيزه","الأمان المريح يُخدّر دافعيته","الوقت الزائد يُشتته"],
+      coach:["ضع مواعيد وهمية قصيرة لكل مهمة","قسّم المادة لسباقات سريعة","استخدم تقنية البومودورو المكثفة"] },
+    fr:{ signature:"Tu crées sous la pression du temps — les deadlines te libèrent.",
+      learn:["Ta mémoire s'active sous pression","Tu travailles avec haute efficacité dans le temps serré","Tu as besoin de vrais défis pour rester alerte"],
+      ruined:["Les longs plannings relâchent sa concentration","Le confort sécurisé endort sa motivation","Le temps excédentaire le distrait"],
+      coach:["Fixe de fausses deadlines courtes pour chaque tâche","Découpe la matière en sprints rapides","Utilise la technique Pomodoro intensive"] },
+    en:{ signature:"You create under time pressure — deadlines liberate you.",
+      learn:["Memory activates under pressure","Work with high efficiency in tight time","Need real challenges to stay alert"],
+      ruined:["Extended schedules loosen focus","Comfortable safety numbs motivation","Excess time causes distraction"],
+      coach:["Set short fake deadlines for each task","Break material into quick sprints","Use intensive Pomodoro technique"] },
+  },
+  sentinel: {
+    ar:{ signature:"أنت تبني قوتك بالتكرار والانضباط — الروتين هو سلاحك.",
+      learn:["تتعلم بالتكرار المنتظم","العادات والروتين تُثبّت معارفك","الاتساق هو قوتك الخفية"],
+      ruined:["الفوضى وكسر الجدول يُزعزعانه","التغييرات المفاجئة تُصيبه بالقلق","المهام غير المحددة تُشوّشه"],
+      coach:["صمّم له جدولاً يومياً محدداً","اجعل المراجعة عادة يومية صغيرة","احترم إيقاعه ولا تكسر عاداته"] },
+    fr:{ signature:"Tu construis ta force par la répétition et la discipline — la routine est ton arme.",
+      learn:["Tu apprends par la répétition régulière","Les habitudes et routines solidifient tes connaissances","La constance est ta force cachée"],
+      ruined:["Le chaos et la rupture de planning le déstabilisent","Les changements soudains lui causent de l'anxiété","Les tâches non définies le confondent"],
+      coach:["Conçois-lui un planning quotidien précis","Fais de la révision une petite habitude quotidienne","Respecte son rythme et ne brise pas ses habitudes"] },
+    en:{ signature:"You build strength through repetition and discipline — routine is your weapon.",
+      learn:["Learn through regular repetition","Habits and routines solidify knowledge","Consistency is your hidden strength"],
+      ruined:["Chaos and schedule disruption destabilise them","Sudden changes cause anxiety","Undefined tasks cause confusion"],
+      coach:["Design a precise daily schedule","Make revision a small daily habit","Respect their rhythm and don't break habits"] },
+  },
+  visionary: {
+    ar:{ signature:"أنت تُحرَّك بالمعنى والرؤية — الإلهام هو وقودك.",
+      learn:["تتعلم حين ترى الصورة الكبيرة والمعنى","الإبداع والاستكشاف يُحرّكانك","تحتاج ربط المادة بهدف حياتي"],
+      ruined:["التلقين الأعمى يُميت شغفه","الجزئيات المُملّة المنفصلة تُيئسه","غياب الرؤية يُعطّل تقدمه"],
+      coach:["ابدأ دائماً بالسؤال: لماذا هذا مهم؟","اربط كل مادة بمستقبل مُحدد","شجّعه على إيجاد مشاريع إبداعية حقيقية"] },
+    fr:{ signature:"Tu es mu par le sens et la vision — l'inspiration est ton carburant.",
+      learn:["Tu apprends quand tu vois la grande image et le sens","La créativité et l'exploration te motivent","Tu as besoin de relier la matière à un but de vie"],
+      ruined:["L'apprentissage par cœur aveugle tue sa passion","Les détails ennuyeux et déconnectés le découragent","L'absence de vision bloque sa progression"],
+      coach:["Commence toujours par la question : pourquoi c'est important ?","Relie chaque matière à un futur spécifique","Encourage-le à trouver de vrais projets créatifs"] },
+    en:{ signature:"You're driven by meaning and vision — inspiration is your fuel.",
+      learn:["Learn when you see the big picture and meaning","Creativity and exploration motivate","Need to connect material to a life purpose"],
+      ruined:["Blind memorisation kills passion","Boring disconnected details discourage","Absence of vision blocks progress"],
+      coach:["Always start with: why does this matter?","Connect every subject to a specific future","Encourage finding real creative projects"] },
+  },
+};
+
+function computeLearnerType(learnerAnswers) {
+  const scores = { architect:0, striker:0, diplomat:0, sprinter:0, sentinel:0, visionary:0 };
+  LEARNER_QUESTIONS.forEach(q => {
+    const ans = learnerAnswers[q.id];
+    if (ans != null && q.scores[ans]) {
+      scores[q.scores[ans]] = (scores[q.scores[ans]] || 0) + 1;
+    }
+  });
+  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  return { primary: sorted[0]?.[0] || "architect", secondary: sorted[1]?.[0] || "striker", scores };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STEP: Journey Stage selection (after lang, before personality)
+// ─────────────────────────────────────────────────────────────────
+function StepJourney({ lang, journeyStage, setJourneyStage, onNext, onBack, t, dir }) {
+  const sel = (val) => setJourneyStage(val);
+  return (
+    <div className="card" dir={dir}>
+      <h2 style={{fontSize:20,fontWeight:800,marginBottom:6}}>{t.journeyTitle}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:22}}>{t.journeyDesc}</p>
+      {[
+        { val:"postbac", icon:"🎓", title:t.journeyPostBac, hint:t.journeyPostBacHint },
+        { val:"prebac",  icon:"📚", title:t.journeyPreBac,  hint:t.journeyPreBacHint  },
+      ].map(opt => (
+        <button key={opt.val} onClick={()=>sel(opt.val)} style={{
+          width:"100%", textAlign: dir==="rtl" ? "right" : "left",
+          display:"flex", gap:14, alignItems:"flex-start",
+          padding:"16px 18px", borderRadius:14, marginBottom:12,
+          border:`2px solid ${journeyStage===opt.val?"var(--accent)":"var(--border)"}`,
+          background: journeyStage===opt.val ? "rgba(232,161,36,0.09)" : "var(--surface2)",
+          color:"var(--text)", cursor:"pointer", fontFamily:"inherit", transition:"all 0.18s",
+        }}>
+          <span style={{fontSize:26,flexShrink:0}}>{opt.icon}</span>
+          <div>
+            <div style={{fontSize:15,fontWeight:700,marginBottom:3}}>{opt.title}</div>
+            <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{opt.hint}</div>
+          </div>
+        </button>
+      ))}
+      <div className="btn-row">
+        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STEP: Learner Type Test (6 questions, after personality)
+// ─────────────────────────────────────────────────────────────────
+function StepLearnerType({ lang, learnerAnswers, setLearnerAnswers, onNext, onBack, t, dir }) {
+  const answered = LEARNER_QUESTIONS.filter(q => learnerAnswers[q.id] != null).length;
+  const canProceed = answered >= 5;
+  const set = (qid, idx) => setLearnerAnswers(p => ({...p, [qid]: idx}));
+  return (
+    <div className="card" dir={dir}>
+      <h2 style={{fontSize:20,fontWeight:800,marginBottom:4}}>{t.learnerTitle}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.learnerDesc}</p>
+      {LEARNER_QUESTIONS.map((q, qi) => {
+        const qText = q[lang] || q.en;
+        const opts = q.options[lang] || q.options.en;
+        const sel  = learnerAnswers[q.id];
+        return (
+          <div key={q.id} style={{marginBottom:22}}>
+            <div style={{fontSize:14,fontWeight:700,marginBottom:10,lineHeight:1.5}}>
+              {qi+1}. {qText}
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:6}}>
+              {opts.map((opt,i) => (
+                <button key={i} onClick={()=>set(q.id,i)} style={{
+                  textAlign: dir==="rtl"?"right":"left",
+                  padding:"10px 14px", borderRadius:10, fontSize:13, lineHeight:1.45,
+                  border:`1.5px solid ${sel===i?"var(--accent)":"var(--border)"}`,
+                  background: sel===i ? "rgba(232,161,36,0.10)" : "var(--surface2)",
+                  color:"var(--text)", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s",
+                }}>
+                  {opt}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      <p style={{fontSize:12,color:"var(--muted)",marginBottom:12}}>
+        {answered}/6 {lang==="ar"?"أسئلة مُجابة":lang==="fr"?"réponses":"answered"}
+      </p>
+      <div className="btn-row">
+        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        <button className="btn btn-primary" onClick={onNext}
+          disabled={!canProceed} style={{opacity:canProceed?1:0.5}}>
+          {t.next} →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// STEP: Pre-Bac Inputs (strengths / interests / sliders / constraints)
+// Only shown when journeyStage === "prebac"
+// ─────────────────────────────────────────────────────────────────
+function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, dir }) {
+  const set = (field, val) => setPreBacData(p => ({...p, [field]: val}));
+  const toggleArr = (field, key) => setPreBacData(p => {
+    const cur = p[field] || [];
+    return {...p, [field]: cur.includes(key) ? cur.filter(x=>x!==key) : [...cur, key]};
+  });
+
+  const strengthKeys = Object.keys(t.preBacStrengthsOpts || {});
+  const interestKeys = Object.keys(t.preBacInterestsOpts || {});
+  const subjects = ["math","physchem","svt","french","english"];
+  const subjectLabels = { math:"Maths", physchem:"Physique-Chimie", svt:"SVT", french:"Français/Arabe", english:"Anglais" };
+
+  const selStr  = preBacData.strengths  || [];
+  const selInt  = preBacData.interests  || [];
+  const sliders = preBacData.sliders    || {};
+  const prestige = preBacData.prestige  || "med";
+  const mobility = preBacData.mobility  || "city";
+  const abroad   = preBacData.abroad    || false;
+  const privateBudget = preBacData.privateBudget || false;
+
+  const canProceed = selStr.length >= 2 && selInt.length >= 2;
+
+  const chipStyle = (sel) => ({
+    padding:"8px 14px", borderRadius:20, border:`1.5px solid ${sel?"var(--accent)":"var(--border)"}`,
+    background: sel?"rgba(232,161,36,0.1)":"var(--surface2)", color:"var(--text)",
+    cursor:"pointer", fontSize:12, fontFamily:"inherit", transition:"all 0.15s",
+    margin:"3px",
+  });
+
+  return (
+    <div className="card" dir={dir}>
+      <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>{t.journeyPreBac}</h2>
+      <p style={{color:"var(--muted)",fontSize:12,marginBottom:20}}>
+        {lang==="ar"?"اختر ما يعكس واقعك الآن":lang==="fr"?"Choisis ce qui reflète ta réalité maintenant":"Select what reflects your current reality"}
+      </p>
+
+      {/* Strengths */}
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.preBacStrengthsTitle}</div>
+        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.preBacStrengthsDesc} ({selStr.length}/3)</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+          {strengthKeys.map(k => {
+            const sel = selStr.includes(k);
+            const disabled = !sel && selStr.length >= 3;
+            return (
+              <button key={k} onClick={()=>!disabled&&toggleArr("strengths",k)}
+                style={{...chipStyle(sel), opacity: disabled?0.45:1, cursor: disabled?"not-allowed":"pointer"}}>
+                {(t.preBacStrengthsOpts||{})[k]||k}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Interests */}
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.preBacInterestsTitle}</div>
+        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.preBacInterestsDesc} ({selInt.length}/3)</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+          {interestKeys.map(k => {
+            const sel = selInt.includes(k);
+            const disabled = !sel && selInt.length >= 3;
+            return (
+              <button key={k} onClick={()=>!disabled&&toggleArr("interests",k)}
+                style={{...chipStyle(sel), opacity: disabled?0.45:1, cursor: disabled?"not-allowed":"pointer"}}>
+                {(t.preBacInterestsOpts||{})[k]||k}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Subject sliders */}
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{t.preBacSliderTitle}</div>
+        {subjects.map(s => (
+          <div key={s} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+            <span style={{fontSize:12,width:110,flexShrink:0,color:"var(--text)"}}>{subjectLabels[s]}</span>
+            <input type="range" min={1} max={5} step={1}
+              value={sliders[s]||3}
+              onChange={e=>set("sliders",{...sliders,[s]:Number(e.target.value)})}
+              style={{flex:1,accentColor:"var(--accent)"}}/>
+            <span style={{fontSize:13,fontWeight:700,color:"var(--accent)",width:20,textAlign:"center"}}>
+              {sliders[s]||3}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Constraints */}
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{t.preBacConstraints}</div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+          {["low","med","high"].map(p => (
+            <button key={p} onClick={()=>set("prestige",p)} style={chipStyle(prestige===p)}>
+              {(t["prestige_"+p]||p)}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
+          {["city","move","remote"].map(m => (
+            <button key={m} onClick={()=>set("mobility",m)} style={chipStyle(mobility===m)}>
+              {lang==="ar"
+                ? {city:"نفس المدينة",move:"مستعد للانتقال",remote:"عن بُعد"}[m]
+                : lang==="fr"
+                ? {city:"Même ville",move:"Prêt à déménager",remote:"À distance"}[m]
+                : {city:"Same city",move:"Ready to move",remote:"Remote OK"}[m]}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:10,marginTop:8,flexWrap:"wrap"}}>
+          <button onClick={()=>set("abroad",!abroad)} style={chipStyle(abroad)}>
+            {lang==="ar"?"مهتم بالخارج":lang==="fr"?"Intéressé par l'étranger":"Interested in abroad"}
+          </button>
+          <button onClick={()=>set("privateBudget",!privateBudget)} style={chipStyle(privateBudget)}>
+            {lang==="ar"?"ميزانية للخاص":lang==="fr"?"Budget école privée":"Private school budget"}
+          </button>
+        </div>
+      </div>
+
+      <div className="btn-row">
+        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
+        <button className="btn btn-primary" onClick={onNext}
+          disabled={!canProceed} style={{opacity:canProceed?1:0.5}}>
+          {t.next} →
+        </button>
+      </div>
+    </div>
+  );
 }
 
 
@@ -7881,7 +8641,7 @@ function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
           {archetype}
         </div>
         <div style={{fontSize:13, color:"var(--muted)", marginBottom:14}}>
-          {(massarTypeDesc && massarTypeDesc(archetype, t)?.label) || archetype}
+          {(typeof massarTypeDesc === "function" && massarTypeDesc(archetype, t)?.label) || archetype}
         </div>
         <div className={`confidence-badge ${confClass}`} style={{display:"inline-flex"}}>
           {lang==="ar"?"مستوى الثقة":lang==="fr"?"Niveau de confiance":"Confidence"}: {conf}%
@@ -8134,7 +8894,7 @@ function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
 // ─────────────────────────────────────────────────────────────────
 // RIGHT HOOK — PDF Offer
 // ─────────────────────────────────────────────────────────────────
-function RightHookPDF({ lang, dir, safeResults }) {
+function RightHookPDF({ lang, dir, safeResults, t }) {
   const c = rf(lang);
   const [email, setEmail]   = React.useState("");
   const [phone, setPhone]   = React.useState("");
@@ -8208,7 +8968,7 @@ function RightHookPDF({ lang, dir, safeResults }) {
 
       {/* Benefits list */}
       <div style={{background:"var(--surface2)", borderRadius:14, padding:"16px 14px", marginBottom:16}}>
-        {c.rfBenefits.map((b, i) => (
+        {(t?.pdfBenefits || c.rfBenefits || []).map((b, i) => (
           <div key={i} style={{
             display:"flex", gap:10, alignItems:"flex-start",
             paddingBottom:i<c.rfBenefits.length-1?10:0,
@@ -8334,8 +9094,609 @@ function RightHookPDF({ lang, dir, safeResults }) {
   );
 }
 
+
 // ─────────────────────────────────────────────────────────────────
-// RESULTS FLOW — orchestrator
+// Page 1/6 — Identity Mirror
+// ─────────────────────────────────────────────────────────────────
+function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
+  const [selCap, setSelCap] = React.useState(0);
+  const [copied, setCopied] = React.useState(false);
+  const { archetype, rarity, confidence, learnerType, learnerSecondary } = safeResults;
+  const lt  = LEARNER_TYPE_DATA[learnerType]  || LEARNER_TYPE_DATA.architect;
+  const lt2 = LEARNER_TYPE_DATA[learnerSecondary] || LEARNER_TYPE_DATA.striker;
+  const ltCopy  = lt[lang]  || lt.en;
+  const lt2Copy = lt2[lang] || lt2.en;
+  const topPath = (safeRanked[0] && t[CLUSTER_KEY_MAP[safeRanked[0].id]]) || "";
+  const rarityColors = { common:"#9ca3af", rare:"#22d3ee", epic:"#c084fc", legendary:"#fbbf24" };
+  const rc = rarityColors[rarity] || rarityColors.common;
+  const captions = (rf(lang).captionOpts)(archetype, topPath);
+
+  // Identity mirror blocks derived from traits + learner type
+  const traits = safeResults.traits || {};
+  const analytical = traits.analytical || 0.5;
+  const social = traits.social || 0.5;
+  const risk = traits.risk || 0.5;
+  const creativity = traits.creativity || 0.5;
+  const structure = traits.structure || 0.5;
+
+  const mirrors = {
+    ar:[
+      { icon:"⚡", key: t.underPressure||"تحت الضغط",
+        text: analytical > 0.6
+          ? "تتحول إلى آلة تحليل — تُبطئ، تُنظّم، تُقرر. ضغطك لا يُشلّك بل يُحدّد تفكيرك."
+          : social > 0.6
+          ? "تبحث عن دعم بشري — حديث قصير مع شخص موثوق يعيد توازنك بسرعة."
+          : "تعمل بشكل أفضل حين تحدد أولوية واحدة وتُنفّذها بالكامل قبل الانتقال." },
+      { icon:"🔋", key: t.consistencySecret||"المثابرة",
+        text: learnerType === "sentinel"
+          ? "الروتين هو وقودك. بمجرد كسر عادة واحدة، استعدها فوراً — لا تنتظر."
+          : learnerType === "sprinter"
+          ? "تحتاج مواعيد حقيقية لتبقى متحمساً. صنع ضغطاً اصطناعياً مفيداً لك."
+          : learnerType === "diplomat"
+          ? "تحتاج جمهوراً — مجموعة مراجعة أو شريك يُساعدك على الاستمرار."
+          : "ربط أهدافك بمعنى أعمق يُبقيك ثابتاً حين تتراجع الحماسة." },
+      { icon:"🎯", key: t.unfairAdvantage||"ميزتك",
+        text: creativity > 0.6
+          ? "تُرى ما لا يُرى — قدرتك على ربط أفكار بعيدة تُنتج حلولاً غير متوقعة."
+          : analytical > 0.6
+          ? "تُفكّك المشكلات — قدرتك على تشريح الأنظمة المعقدة ميزة نادرة."
+          : structure > 0.6
+          ? "الاتساق تحت الضغط — حين يتفكك الآخرون، أنت تُثبّت وتُنجز."
+          : "الذكاء الاجتماعي — قدرتك على بناء الثقة السريعة ميزة لا تُعلَّم." },
+      { icon:"🌑", key: t.blindSpot||"النقطة العمياء",
+        text: risk > 0.6
+          ? "الإثارة قد تُضيّع التخطيط. تأكد أن طاقتك تتحول لنتائج حقيقية لا مجرد مشاريع تبدأ."
+          : structure > 0.6
+          ? "الكمالية تُعيق الإنجاز. التقدم 80% في الوقت أفضل من الكمال المتأخر."
+          : social > 0.6
+          ? "الاعتماد على موافقة الآخرين قد يُبطئك. ثق بحكمك في القرارات الصغيرة."
+          : "الانتظار حتى 'الجاهزية الكاملة' يُفوّت الفرص. ابدأ بما لديك الآن." },
+    ],
+    fr:[
+      { icon:"⚡", key: t.underPressure||"Sous pression",
+        text: analytical > 0.6
+          ? "Tu te transformes en machine d'analyse — tu ralentis, tu organises, tu décides."
+          : social > 0.6
+          ? "Tu cherches un soutien humain — une courte conversation avec quelqu'un de confiance te rééquilibre."
+          : "Tu travailles mieux quand tu identifies une seule priorité et l'exécutes complètement." },
+      { icon:"🔋", key: t.consistencySecret||"La constance",
+        text: learnerType === "sentinel"
+          ? "La routine est ton carburant. Dès qu'une habitude se brise, récupère-la immédiatement."
+          : learnerType === "sprinter"
+          ? "Tu as besoin de vraies deadlines pour rester motivé. Créer une pression artificielle t'est utile."
+          : learnerType === "diplomat"
+          ? "Tu as besoin d'un public — un groupe de révision ou un partenaire t'aide à persévérer."
+          : "Relier tes objectifs à un sens plus profond te garde stable quand l'enthousiasme baisse." },
+      { icon:"🎯", key: t.unfairAdvantage||"Ton avantage",
+        text: creativity > 0.6
+          ? "Tu vois ce que les autres ne voient pas — relier des idées distantes crée des solutions inattendues."
+          : analytical > 0.6
+          ? "Tu décomposes les problèmes — analyser des systèmes complexes est un avantage rare."
+          : structure > 0.6
+          ? "La constance sous pression — quand les autres s'effondrent, tu stabilises et livres."
+          : "L'intelligence sociale — bâtir la confiance rapidement est un avantage qui ne s'enseigne pas." },
+      { icon:"🌑", key: t.blindSpot||"Point aveugle",
+        text: risk > 0.6
+          ? "L'excitation peut faire oublier la planification. Assure-toi que ton énergie se transforme en vrais résultats."
+          : structure > 0.6
+          ? "Le perfectionnisme bloque l'exécution. Un progrès à 80% dans le temps vaut mieux qu'un tardif parfait."
+          : social > 0.6
+          ? "Dépendre de l'approbation des autres peut te ralentir. Fais confiance à ton jugement."
+          : "Attendre d'être 'totalement prêt' fait rater des opportunités. Commence avec ce que tu as." },
+    ],
+    en:[
+      { icon:"⚡", key: t.underPressure||"Under pressure",
+        text: analytical > 0.6
+          ? "You become an analysis machine — you slow down, organise, decide. Pressure doesn't paralyse you, it focuses you."
+          : social > 0.6
+          ? "You seek human support — a short conversation with a trusted person quickly rebalances you."
+          : "You work best when you identify one priority and execute it completely before moving on." },
+      { icon:"🔋", key: t.consistencySecret||"Staying consistent",
+        text: learnerType === "sentinel"
+          ? "Routine is your fuel. The moment a habit breaks, recover it immediately — don't wait."
+          : learnerType === "sprinter"
+          ? "You need real deadlines to stay motivated. Creating artificial pressure is genuinely useful for you."
+          : learnerType === "diplomat"
+          ? "You need an audience — a study group or partner helps you stay consistent."
+          : "Connecting your goals to a deeper meaning keeps you stable when enthusiasm fades." },
+      { icon:"🎯", key: t.unfairAdvantage||"Your advantage",
+        text: creativity > 0.6
+          ? "You see what others miss — connecting distant ideas creates unexpected solutions."
+          : analytical > 0.6
+          ? "You decompose problems — breaking down complex systems is a rare advantage."
+          : structure > 0.6
+          ? "Consistency under pressure — when others collapse, you stabilise and deliver."
+          : "Social intelligence — building quick trust is an advantage that can't be taught." },
+      { icon:"🌑", key: t.blindSpot||"Blind spot",
+        text: risk > 0.6
+          ? "Excitement can overshadow planning. Make sure your energy converts to real results, not just started projects."
+          : structure > 0.6
+          ? "Perfectionism blocks execution. 80% progress on time beats late perfection."
+          : social > 0.6
+          ? "Depending on others' approval can slow you. Trust your judgment on small decisions."
+          : "Waiting for 'full readiness' misses opportunities. Start with what you have now." },
+    ],
+  };
+  const mirrorBlocks = (mirrors[lang] || mirrors.en);
+
+  const doCopy = () => {
+    try { navigator.clipboard.writeText(captions[selCap]).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}); }
+    catch { setCopied(true); setTimeout(()=>setCopied(false),2000); }
+  };
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
+        {t.identityMirrorTitle || "Identity Mirror"} — Page 1/6
+      </div>
+
+      {/* Archetype + learner type row */}
+      <div style={{background:`linear-gradient(135deg,rgba(${rarity==="legendary"?"232,161,36":rarity==="epic"?"168,85,247":rarity==="rare"?"34,211,238":"107,114,128"},0.1),var(--surface2))`,
+        border:`1.5px solid ${rc}40`,borderRadius:18,padding:"18px 16px",marginBottom:14,
+        display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={{textAlign:"center",flexShrink:0}}>
+          <div style={{fontSize:36}}>{rarity==="legendary"?"🌟":rarity==="epic"?"💎":rarity==="rare"?"⚡":"🔹"}</div>
+          <div style={{fontSize:18,fontWeight:900,color:"var(--text)"}}>{archetype}</div>
+          <div className={`confidence-badge ${confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low"}`}
+            style={{display:"inline-flex",marginTop:4,fontSize:11}}>
+            {confidence}%
+          </div>
+        </div>
+        <div style={{flex:1,minWidth:140}}>
+          <div style={{fontSize:11,color:"var(--muted)",marginBottom:2}}>
+            {t.learnerTitle||"Learner type"}: {(t.learnerTypeIcons||{})[learnerType]||""} {(t.learnerTypes||{})[learnerType]||learnerType}
+          </div>
+          <div style={{fontSize:12,color:"rgba(232,236,240,0.65)",lineHeight:1.4,marginBottom:4}}>
+            {ltCopy.signature}
+          </div>
+          {learnerSecondary && (
+            <div style={{fontSize:11,color:"var(--muted)"}}>
+              + {(t.learnerTypeIcons||{})[learnerSecondary]||""} {(t.learnerTypes||{})[learnerSecondary]||learnerSecondary}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Identity mirror blocks */}
+      <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
+        {mirrorBlocks.map((block,i) => (
+          <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",
+            borderRadius:14,padding:"14px 16px"}}>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+              <span style={{fontSize:18}}>{block.icon}</span>
+              <span style={{fontSize:12,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:0.5}}>
+                {block.key}
+              </span>
+            </div>
+            <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0}}>{block.text}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Credibility line */}
+      <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.5,marginBottom:16,
+        fontStyle:"italic",borderTop:"1px solid var(--border)",paddingTop:10}}>
+        {t.credibilityLine}
+      </p>
+
+      {/* Share captions */}
+      <div style={{background:"var(--surface2)",borderRadius:14,padding:14}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:10}}>
+          {lang==="ar"?"شارك نتيجتك":lang==="fr"?"Partage ton résultat":"Share your result"}
+        </div>
+        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+          {captions.map((cap,i)=>(
+            <button key={i} onClick={()=>setSelCap(i)} style={{
+              textAlign:dir==="rtl"?"right":"left",padding:"9px 12px",borderRadius:9,fontSize:12,lineHeight:1.45,
+              border:`1.5px solid ${selCap===i?"var(--accent)":"var(--border)"}`,
+              background:selCap===i?"rgba(232,161,36,0.1)":"var(--surface3)",
+              color:"var(--text)",cursor:"pointer",fontFamily:"inherit",
+            }}>{cap}</button>
+          ))}
+        </div>
+        <button className="btn btn-primary" onClick={doCopy} style={{width:"100%",fontSize:13,padding:"10px 18px"}}>
+          {copied?(lang==="ar"?"✓ تم النسخ":lang==="fr"?"✓ Copié":"✓ Copied"):(lang==="ar"?"نسخ النص":lang==="fr"?"Copier":"Copy caption")}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Page 2/6 — Prestige & Family Reality
+// ─────────────────────────────────────────────────────────────────
+function Page2Prestige({ lang, dir, safeResults, info, t }) {
+  const avg = safeResults.overallAvg || 0;
+  const routes = getPrestigeRoutes(info);
+  const isPostBac = safeResults.journeyStage !== "prebac";
+
+  function badge(school) {
+    const req = /[Mm]édecine|Medicine|طب/.test(school) ? 16 : /ENSA|ENSIAS|INPT|Prépa/.test(school) ? 15 : 12;
+    if (!isPostBac) return { label: lang==="ar"?"استكشاف":lang==="fr"?"À explorer":"To explore", color:"var(--accent2)", bg:"rgba(59,130,246,0.12)" };
+    if (avg >= req) return { label: lang==="ar"?"تنافسي":lang==="fr"?"Compétitif":"Competitive", color:"var(--accent3)", bg:"rgba(16,185,129,0.12)" };
+    if (avg >= req - 1.5) return { label: lang==="ar"?"قريب":lang==="fr"?"Presque":"Almost", color:"var(--accent)", bg:"rgba(232,161,36,0.12)" };
+    return { label: lang==="ar"?"لم يبلغ بعد":lang==="fr"?"Pas encore":"Not yet", color:"var(--muted)", bg:"rgba(107,114,128,0.1)" };
+  }
+
+  const fpField = (info||{}).fpField;
+  const familyTips = {
+    medicine: {
+      ar:["عرض المتطلبات الفعلية بأرقام واضحة","اقتراح بديل ملموس: تمريض أو هندسة طبية","الطلب بوقت للإثبات: 6 أشهر لرفع النقط"],
+      fr:["Présenter les prérequis réels avec des chiffres clairs","Proposer une alternative concrète : soins infirmiers ou génie biomédical","Demander du temps pour prouver : 6 mois pour améliorer les notes"],
+      en:["Present real requirements with clear numbers","Propose a concrete alternative: nursing or biomedical engineering","Ask for time to prove: 6 months to raise grades"],
+    },
+    engineering: {
+      ar:["مشاركة متطلبات المدارس الهندسية بالأرقام","اقتراح ENSA أو FST كبديل قوي","التركيز على الهندسة التطبيقية كمسار جيد"],
+      fr:["Partager les prérequis des écoles d'ingénieurs avec les chiffres","Proposer ENSA ou FST comme alternative solide","Mettre en avant l'ingénierie appliquée comme bon parcours"],
+      en:["Share engineering school requirements with numbers","Propose ENSA or FST as a solid alternative","Highlight applied engineering as a strong path"],
+    },
+    default: {
+      ar:["مشاركة الأرقام الحقيقية دون مشاعر","اقتراح بديل ملموس بقيمة عالية","طلب وقت للإثبات والتجربة"],
+      fr:["Partager les vrais chiffres sans émotions","Proposer une alternative concrète à haute valeur","Demander du temps pour prouver et expérimenter"],
+      en:["Share real numbers without emotion","Propose a concrete high-value alternative","Ask for time to prove and try"],
+    },
+  };
+  const fpTips = (familyTips[fpField] || familyTips.default)[lang] || familyTips.default.en;
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
+        {t.prestigePage2Title||"Prestige & Family"} — Page 2/6
+      </div>
+      {isPostBac && (
+        <div style={{background:"rgba(232,161,36,0.08)",border:"1px solid rgba(232,161,36,0.25)",
+          borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:13,display:"flex",gap:8,alignItems:"center"}}>
+          <span>📊</span>
+          <span>{lang==="ar"?`معدلك: ${avg.toFixed(1)}/20`:lang==="fr"?`Ta moyenne : ${avg.toFixed(1)}/20`:`Your avg: ${avg.toFixed(1)}/20`}</span>
+        </div>
+      )}
+      {routes.slice(0,4).map((school,i)=>{
+        const b = badge(school);
+        return (
+          <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",
+            borderRadius:14,padding:"14px 16px",marginBottom:10}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,flexWrap:"wrap",gap:6}}>
+              <div style={{fontWeight:700,fontSize:14}}>{school}</div>
+              <div style={{fontSize:11,fontWeight:700,color:b.color,background:b.bg,
+                padding:"3px 10px",borderRadius:20}}>{b.label}</div>
+            </div>
+            <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>
+              {(() => {
+                const isMed  = /[Mm]édecine|Medicine|طب/.test(school);
+                const isElit = /ENSA|ENSIAS|INPT|Prépa/.test(school);
+                if (lang==="ar") return isMed ? "معدل عالٍ جداً عادةً (≥16) + متطلبات موضوعية في SVT والفيزياء والكيمياء" : isElit ? "معدل مرتفع عادةً (≥15) + مستوى قوي في الرياضيات والفيزياء" : "معدل جيد (≥12) + ملف متوازن";
+                if (lang==="fr") return isMed ? "Moyenne très haute souvent requise (≥16) + SVT et Physique-Chimie solides" : isElit ? "Bonne moyenne requise (≥15) + niveau solide en Maths et Physique" : "Bonne moyenne (≥12) + dossier équilibré";
+                return isMed ? "Very high average typically needed (≥16) + strong SVT and Physics-Chemistry" : isElit ? "High average typically needed (≥15) + strong Maths and Physics" : "Solid average (≥12) + balanced profile";
+              })()}
+            </div>
+          </div>
+        );
+      })}
+      {safeResults.familyPressure && fpTips.length > 0 && (
+        <div style={{background:"rgba(245,158,11,0.07)",border:"1px solid rgba(245,158,11,0.25)",
+          borderRadius:14,padding:"14px 16px",marginTop:8}}>
+          <div style={{fontSize:13,fontWeight:700,marginBottom:10}}>
+            {lang==="ar"?"💬 نصائح لمحادثة الأسرة":lang==="fr"?"💬 Conseils pour la famille":"💬 Family conversation tips"}
+          </div>
+          {fpTips.map((tip,i)=>(
+            <div key={i} style={{display:"flex",gap:8,fontSize:12,color:"var(--text)",marginBottom:6}}>
+              <span style={{color:"var(--accent3)",flexShrink:0}}>→</span>
+              <span style={{lineHeight:1.5}}>{tip}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Page 3/6 — Future-Proof & Market 2030
+// ─────────────────────────────────────────────────────────────────
+function Page3Market({ lang, dir, safeResults, t }) {
+  const top3 = safeResults.topThree || [];
+  const hedge = {
+    ar: ["برمجة Python أو تحليل البيانات — مطلوب في معظم المجالات","التواصل الرقمي والمحتوى — ميزة في أي مسار"],
+    fr: ["Python ou analyse de données — demandé dans la plupart des domaines","Communication digitale — atout dans tout parcours"],
+    en: ["Python or data analysis — needed in most fields","Digital communication — advantage in any path"],
+  }[lang] || [];
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
+        {t.marketPage3Title||"Market 2030"} — Page 3/6
+      </div>
+      {top3.map((cluster,i)=>{
+        const name = t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
+        const futureScore = Math.round((FUTURE_INDEX[cluster.id]||0.65)*100);
+        const moroccoScore = Math.round((cluster.demandIndex||0.6)*100);
+        const globalScore = Math.round(Math.min(100,(cluster.scores?.market||0.6)*100));
+        const risks = [];
+        if (futureScore < 60) risks.push(lang==="ar"?"مخاطر التشغيل الآلي":lang==="fr"?"Risque d'automatisation":"Automation risk");
+        if (moroccoScore < 50) risks.push(lang==="ar"?"طلب منخفض في المغرب":lang==="fr"?"Faible demande au Maroc":"Low Morocco demand");
+        return (
+          <div key={cluster.id} style={{background:"var(--surface2)",border:"1px solid var(--border)",
+            borderRadius:14,padding:"16px",marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,flexWrap:"wrap"}}>
+              <span style={{fontSize:20}}>{cluster.icon||"🎯"}</span>
+              <span style={{fontWeight:700,fontSize:14,flex:1}}>{name}</span>
+              <div style={{display:"flex",alignItems:"center",gap:6,background:"rgba(59,130,246,0.1)",
+                padding:"4px 10px",borderRadius:20}}>
+                <span style={{fontSize:11,color:"var(--accent2)"}}>{t.futureProofScore||"Future"}</span>
+                <span style={{fontWeight:800,color:"var(--accent2)",fontSize:13}}>{futureScore}%</span>
+              </div>
+            </div>
+            {[
+              { label: t.moroccoDemandsLabel||"Morocco", val: moroccoScore, color:"var(--accent3)" },
+              { label: t.globalDemandsLabel||"Global",   val: globalScore,  color:"var(--accent2)" },
+            ].map(bar=>(
+              <div key={bar.label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                <span style={{fontSize:11,color:"var(--muted)",width:60,flexShrink:0}}>{bar.label}</span>
+                <div style={{flex:1,height:6,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${bar.val}%`,background:bar.color,borderRadius:3,transition:"width 0.8s ease"}}/>
+                </div>
+                <span style={{fontSize:11,fontWeight:700,color:bar.color,width:34}}>{bar.val}%</span>
+              </div>
+            ))}
+            {risks.length > 0 && (
+              <div style={{marginTop:8,display:"flex",gap:6,flexWrap:"wrap"}}>
+                {risks.map((r,ri)=>(
+                  <span key={ri} style={{fontSize:11,color:"var(--warn)",background:"rgba(245,158,11,0.1)",
+                    padding:"2px 8px",borderRadius:12,border:"1px solid rgba(245,158,11,0.25)"}}>⚠️ {r}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+      <div style={{background:"rgba(99,102,241,0.07)",border:"1px solid rgba(99,102,241,0.2)",
+        borderRadius:12,padding:"12px 14px",marginTop:4}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>
+          {t.hedgeSkillLabel||"Hedge skill"} 🛡️
+        </div>
+        {hedge.map((h,i)=>(
+          <div key={i} style={{fontSize:12,color:"var(--text)",lineHeight:1.5,marginBottom:4,
+            display:"flex",gap:6}}>
+            <span style={{color:"var(--accent2)",flexShrink:0}}>✦</span>{h}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Page 4/6 — Top 3 Directions
+// ─────────────────────────────────────────────────────────────────
+
+// Lightweight pathway tab renderer for Page 4/6 direction cards
+function MiniPathwayTabs({ cluster, t, lang }) {
+  const [activeTab, setActiveTab] = React.useState(null);
+  const tabDefs = [
+    { key:"university",   label: t.universityRoute  || (lang==="ar"?"المسار الجامعي":lang==="fr"?"Universitaire":"University") },
+    { key:"grandeEcole",  label: t.grandeEcoleRoute || (lang==="ar"?"المدارس العليا":lang==="fr"?"Grande École":"Grande École") },
+    { key:"practical",    label: t.practicalRoute   || (lang==="ar"?"التكوين المهني":lang==="fr"?"Voie pratique":"Practical") },
+  ].filter(tab => cluster.pathways?.[tab.key]?.schools?.length > 0);
+
+  if (tabDefs.length === 0) return null;
+  const active = activeTab || tabDefs[0]?.key;
+  const content = cluster.pathways?.[active];
+
+  return (
+    <div style={{marginTop:10}}>
+      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
+        {tabDefs.map(tab => (
+          <button key={tab.key} onClick={()=>setActiveTab(tab.key)}
+            className={`pathway-tab${active===tab.key?" active":""}`}
+            style={{fontSize:11}}>
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      {content && (
+        <div className="pathway-content" style={{fontSize:12}}>
+          <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:4}}>
+            {(content.schools||[]).slice(0,4).map((s,i)=>(
+              <span key={i} className="pathway-school">{s}</span>
+            ))}
+          </div>
+          {content.duration && (
+            <div style={{color:"var(--muted)",marginTop:4}}>
+              ⏱ {t.durationLabel||"Durée"}: {content.duration}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Page4Directions({ lang, dir, safeResults, t }) {
+  const { threeViews } = safeResults;
+  if (!threeViews) return null;
+  const c = rf(lang);
+  const cards = [
+    { key:"bestFit", label:c.fitLabel, cluster:threeViews.bestFit, icon:"💡",
+      accent:"var(--accent3)" },
+    { key:"balanced", label:c.balLabel, cluster:threeViews.balanced, icon:"⚖️",
+      accent:"var(--accent2)" },
+    { key:"ambitious", label:c.ambLabel, cluster:threeViews.ambitious, icon:"🚀",
+      accent:"var(--accent)" },
+  ].filter(x=>x.cluster);
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
+        {t.directionsPage4Title||"Directions"} — Page 4/6
+      </div>
+      <p style={{fontSize:13,color:"var(--muted)",marginBottom:16}}>{c.jab2Sub}</p>
+      {cards.map(({key,label,cluster,icon,accent})=>{
+        const name = t[CLUSTER_KEY_MAP[cluster.id]]||cluster.id;
+        const pct = Math.round((cluster.scores.final||0)*100);
+        const acad = Math.round((cluster.scores.academic||0)*100);
+        const trait = Math.round((cluster.scores.trait||0)*100);
+        const market = Math.round((cluster.scores.market||0)*100);
+        const prestige = Math.round((PRESTIGE_INDEX[cluster.id]||0.5)*100);
+        return (
+          <div key={key} style={{background:"var(--surface2)",border:`1.5px solid ${accent}`,
+            borderRadius:16,padding:"16px",marginBottom:12}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,flexWrap:"wrap"}}>
+              <span style={{fontSize:22}}>{icon}</span>
+              <div>
+                <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"var(--muted)"}}>{label}</div>
+                <div style={{fontSize:16,fontWeight:800,color:"var(--text)"}}>{name}</div>
+              </div>
+              <span style={{marginInlineStart:"auto",fontSize:13,fontWeight:800,color:accent,
+                background:`${accent}18`,padding:"4px 12px",borderRadius:20}}>{pct}%</span>
+            </div>
+            {[
+              { label:t.academic||lang==="ar"?"دراسي":"Académique", val:acad, color:"var(--accent2)" },
+              { label:t.personality||lang==="ar"?"شخصية":"Personnalité", val:trait, color:"var(--accent3)" },
+              { label:t.market||lang==="ar"?"سوق":"Marché", val:market, color:accent },
+              { label:"Prestige", val:prestige, color:"var(--accent)" },
+            ].map(bar=>(
+              <div key={bar.label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
+                <span style={{fontSize:11,color:"var(--muted)",width:65,flexShrink:0}}>{bar.label}</span>
+                <div style={{flex:1,height:5,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
+                  <div style={{height:"100%",width:`${bar.val}%`,background:bar.color,borderRadius:3}}/>
+                </div>
+                <span style={{fontSize:11,fontWeight:700,color:bar.color,width:30}}>{bar.val}%</span>
+              </div>
+            ))}
+            {cluster.eligibilityTag === "notEligiblePublic" && (
+              <div style={{marginTop:8,fontSize:11,color:"var(--warn)",background:"rgba(245,158,11,0.08)",
+                padding:"4px 10px",borderRadius:8,display:"inline-block"}}>
+                ⚠️ {lang==="ar"?"شروط القبول العام لم تُستوفَ":lang==="fr"?"Conditions d'accès public non remplies":"Public eligibility conditions not met"}
+              </div>
+            )}
+            {/* Pathway tabs — inline mini renderer */}
+            {cluster.pathways && <MiniPathwayTabs cluster={cluster} t={t} lang={lang}/>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Page 5/6 — Starter Plan
+// ─────────────────────────────────────────────────────────────────
+function Page5Plan({ lang, dir, safeResults, t, onGoToPDF }) {
+  const c = rf(lang);
+  const [done, setDone] = React.useState({});
+  const [priority, setPriority] = React.useState("stability");
+  const topCluster = safeResults.topCareer;
+  const lt = safeResults.learnerType || "architect";
+
+  const tasks = [];
+  (topCluster?.actionPlan||[]).slice(0,2).forEach(w=>{
+    (w.items||[]).slice(0,2).forEach(item=>{ if(tasks.length<5) tasks.push(typeof item==="string"?item:item.label||""); });
+  });
+  const genericTasks = {
+    ar:["ابحث عن 3 طلاب في نفس شعبتك وتبادل التجارب","راجع متطلبات القبول في مؤسسة تستهدفها","اقرأ أو شاهد 30 دقيقة عن المجال المقترح","ضع جدولاً أسبوعياً للمراجعة","تحدث مع شخص يعمل في المجال"],
+    fr:["Trouve 3 étudiants dans ta filière et échange","Vérifie les prérequis d'une école cible","Lis ou regarde 30 min sur le domaine proposé","Rédige un planning de révision hebdomadaire","Parle à quelqu'un qui travaille dans ce domaine"],
+    en:["Connect with 3 students in your track","Check admission requirements for one target school","Read or watch 30 min about the suggested field","Write a weekly revision plan","Talk to someone working in the field"],
+  }[lang]||[];
+  while(tasks.length<5) tasks.push(genericTasks[tasks.length]||"");
+
+  const quickWins = {
+    architect:{ ar:["رسم خريطة ذهنية لأهداف الأسبوع","قراءة ملخص الفصل الأول قبل الحصة"],
+      fr:["Dessine une carte mentale des objectifs de la semaine","Lis le résumé du premier chapitre avant le cours"],
+      en:["Draw a mind map of this week's goals","Read the chapter summary before class"] },
+    striker:{ ar:["حل 5 تمارين في مادة ضعيفة","إتمام مشروع صغير يُمكن عرضه"],
+      fr:["Résoudre 5 exercices dans une matière faible","Compléter un petit projet présentable"],
+      en:["Solve 5 exercises in a weak subject","Complete a small presentable project"] },
+    diplomat:{ ar:["شرح درس لزميل أو بصوت عالٍ","الانضمام لمجموعة مراجعة"],
+      fr:["Expliquer un cours à un camarade ou à voix haute","Rejoindre un groupe de révision"],
+      en:["Explain a lesson to a peer or aloud","Join a study group"] },
+    sprinter:{ ar:["تحديد موعد نهائي وهمي لمهمة اليوم","إنجاز 3 تمارين في 20 دقيقة"],
+      fr:["Fixer une fausse deadline pour la tâche du jour","Finir 3 exercices en 20 minutes"],
+      en:["Set a fake deadline for today's task","Finish 3 exercises in 20 minutes"] },
+    sentinel:{ ar:["مراجعة 10 دقائق عند نفس الوقت يومياً","تتبع عادة واحدة لمدة 7 أيام"],
+      fr:["Réviser 10 min à la même heure chaque jour","Suivre une habitude pendant 7 jours"],
+      en:["Review 10 min at the same time daily","Track one habit for 7 days"] },
+    visionary:{ ar:["البحث عن شخص يعمل في المجال المُقترح","قراءة ملهِمة واحدة عن المجال"],
+      fr:["Trouver quelqu'un qui travaille dans le domaine proposé","Lire quelque chose d'inspirant sur le domaine"],
+      en:["Find someone working in the suggested field","Read something inspiring about the field"] },
+  };
+  const wins = ((quickWins[lt]||quickWins.architect)[lang]||quickWins.architect.en).slice(0,2);
+
+  const risks = {
+    ar:["مقارنة نفسك بالآخرين بدلاً من التركيز على تقدمك","تأجيل الخطوة الأولى حتى 'الوقت المثالي'"],
+    fr:["Te comparer aux autres au lieu de te concentrer sur ta progression","Reporter la première étape jusqu'au 'moment parfait'"],
+    en:["Comparing yourself to others instead of focusing on your progress","Delaying the first step until the 'perfect time'"],
+  }[lang]||[];
+
+  return (
+    <div style={{animation:"fadeIn 0.4s ease"}}>
+      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
+        {t.planPage5Title||"Starter Plan"} — Page 5/6
+      </div>
+
+      {/* 7-day tasks */}
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>
+          {lang==="ar"?"✅ خطة 7 أيام":lang==="fr"?"✅ Plan 7 jours":"✅ 7-day plan"}
+        </div>
+        {tasks.slice(0,5).map((task,i)=>(
+          <div key={i} onClick={()=>setDone(d=>({...d,[i]:!d[i]}))}
+            style={{display:"flex",gap:10,padding:"12px 14px",marginBottom:8,
+              background:"var(--surface2)",border:`1.5px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
+              borderRadius:12,cursor:"pointer",opacity:done[i]?0.65:1,transition:"all 0.18s"}}>
+            <div style={{width:20,height:20,borderRadius:5,flexShrink:0,marginTop:2,
+              background:done[i]?"var(--accent3)":"var(--surface3)",
+              border:`2px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
+              display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff"}}>
+              {done[i]&&"✓"}
+            </div>
+            <span style={{fontSize:13,color:"var(--text)",lineHeight:1.55,flex:1,
+              textDecoration:done[i]?"line-through":"none"}}>{task}</span>
+            <span style={{fontSize:11,color:"var(--accent)",fontWeight:700,flexShrink:0}}>+10 XP</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Quick wins */}
+      <div style={{background:"rgba(16,185,129,0.07)",border:"1px solid rgba(16,185,129,0.2)",
+        borderRadius:12,padding:"12px 14px",marginBottom:12}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:8,color:"var(--accent3)"}}>
+          ⚡ {t.weakPoint2Win||"Your wins"}
+        </div>
+        {wins.map((w,i)=>(
+          <div key={i} style={{fontSize:12,color:"var(--text)",marginBottom:5,display:"flex",gap:6}}>
+            <span style={{color:"var(--accent3)"}}>→</span><span style={{lineHeight:1.5}}>{w}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Risk to avoid */}
+      <div style={{background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.2)",
+        borderRadius:12,padding:"12px 14px",marginBottom:16}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:8,color:"#f87171"}}>
+          ⛔ {t.riskAvoid||"Risk to avoid"}
+        </div>
+        {risks.slice(0,1).map((r,i)=>(
+          <div key={i} style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{r}</div>
+        ))}
+      </div>
+
+      {/* PDF teaser */}
+      <div style={{background:"linear-gradient(135deg,rgba(232,161,36,0.1),rgba(59,130,246,0.06))",
+        border:"1px solid rgba(232,161,36,0.3)",borderRadius:14,padding:"14px 16px",
+        display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
+        <p style={{fontSize:13,color:"var(--text)",margin:0,flex:1,lineHeight:1.5}}>
+          {c.jab4Upsell}
+        </p>
+        <button className="btn btn-primary" onClick={onGoToPDF} style={{flexShrink:0}}>
+          📄 PDF →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// RESULTS FLOW — 6-page orchestrator (Page 1/6 → 6/6)
 // ─────────────────────────────────────────────────────────────────
 function ResultsFlow({
   t, lang, dir, info,
@@ -8343,9 +9704,10 @@ function ResultsFlow({
   effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
   reality, setReality, restart, onBack,
   secondaryTop3, overallAvg,
+  journeyStage, preBacData, learnerAnswers,
 }) {
   const [rfStep, setRfStep] = React.useState(0);
-  const TOTAL = 5;
+  const TOTAL = 6;
 
   // Guard
   const safeRanked  = Array.isArray(rankedClusters) ? rankedClusters : [];
@@ -8375,6 +9737,7 @@ function ResultsFlow({
     return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
   })();
 
+  const ltResult    = computeLearnerType(learnerAnswers || {});
   const safeResults = {
     archetype:     computeMassarType(safeTraits, safeReality),
     topCareer:     safeRanked[0] || null,
@@ -8386,6 +9749,11 @@ function ResultsFlow({
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure:!!safeReality.familyPressure,
+    learnerType:   ltResult.primary,
+    learnerSecondary: ltResult.secondary,
+    learnerScores: ltResult.scores,
+    journeyStage:  journeyStage || "postbac",
+    preBacData:    preBacData || {},
   };
 
   const rfCopy = rf(lang);
@@ -8396,17 +9764,25 @@ function ResultsFlow({
   };
 
   const screens = [
-    <Jab1Identity key="j1" lang={lang} dir={dir} safeResults={safeResults} safeRanked={safeRanked} t={t} traits={safeTraits}/>,
-    <Jab2Directions key="j2" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
-    <Jab3Prestige key="j3" lang={lang} dir={dir} info={safeInfo} safeResults={safeResults}/>,
-    <Jab4Plan key="j4" lang={lang} dir={dir} safeResults={safeResults} onGoToPDF={() => setRfStep(4)}/>,
-    <RightHookPDF key="rh" lang={lang} dir={dir} safeResults={safeResults}/>,
+    // Page 1/6 — Identity Mirror
+    <Page1Identity key="p1" lang={lang} dir={dir} safeResults={safeResults} t={t} safeRanked={safeRanked}/>,
+    // Page 2/6 — Prestige & Family Reality
+    <Page2Prestige key="p2" lang={lang} dir={dir} safeResults={safeResults} info={safeInfo} t={t}/>,
+    // Page 3/6 — Future-Proof & Market
+    <Page3Market key="p3" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
+    // Page 4/6 — Top 3 Directions
+    <Page4Directions key="p4" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
+    // Page 5/6 — Starter Plan
+    <Page5Plan key="p5" lang={lang} dir={dir} safeResults={safeResults} t={t} onGoToPDF={()=>setRfStep(5)}/>,
+    // Page 6/6 — PDF Offer (Right Hook)
+    <RightHookPDF key="rh" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
   ];
 
   const stepLabels = [
     lang==="ar"?"الهوية":lang==="fr"?"Identité":"Identity",
-    lang==="ar"?"الاتجاهات":lang==="fr"?"Directions":"Directions",
     lang==="ar"?"المكانة":lang==="fr"?"Prestige":"Prestige",
+    lang==="ar"?"السوق":lang==="fr"?"Marché":"Market",
+    lang==="ar"?"الاتجاهات":lang==="fr"?"Directions":"Directions",
     lang==="ar"?"الخطة":lang==="fr"?"Plan":"Plan",
     lang==="ar"?"الملف":lang==="fr"?"PDF":"PDF",
   ];
@@ -8542,9 +9918,9 @@ function StepResults({
     topCareer:     safeTop,
     topThree:      top3,
     traits:        safeTraits,
-    confidence:    clampNum(safeConf),
+    confidence:    clamp(safeConf),
     rarity:        getRarity(safeConf),
-    overallAvg:    clampNum(overallAvgVal, 0, 20),
+    overallAvg:    clamp(overallAvgVal, 0, 20),
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure: !!safeReality.familyPressure,
@@ -8996,7 +10372,7 @@ const css = `
     flex-direction: column;
     align-items: center;
     /* Responsive padding — never wider than screen */
-    padding: clampNum(12px, 3vw, 22px) clampNum(12px, 4vw, 18px);
+    padding: clamp(12px, 3vw, 22px) clamp(12px, 4vw, 18px);
     padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom, 0px)));
     padding-top: max(12px, env(safe-area-inset-top, 0px));
     width: 100%;
@@ -9006,19 +10382,19 @@ const css = `
   }
   .header{text-align:center;margin-bottom:32px;padding-top:16px;width:100%;}
   .header h1{
-    font-size: clampNum(24px,6vw,48px);
+    font-size: clamp(24px,6vw,48px);
     background:linear-gradient(135deg,#e8a124,#f59e0b,#fbbf24);
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     letter-spacing:-1px;line-height:1.1;
     word-break:break-word;
   }
   [dir="rtl"] .header h1{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;letter-spacing:0;}
-  .header p{color:#9ca3af;margin-top:8px;font-size:clampNum(13px,3.5vw,15px);}
+  .header p{color:#9ca3af;margin-top:8px;font-size:clamp(13px,3.5vw,15px);}
 
   /* Fix 1: Card — no fixed max-width wider than viewport, responsive padding */
   .card{
     background:var(--surface);border:1px solid var(--border);border-radius:16px;
-    padding: clampNum(18px,4vw,28px);
+    padding: clamp(18px,4vw,28px);
     width:100%;max-width:720px;
     box-shadow:0 4px 24px rgba(0,0,0,0.4);
     box-sizing:border-box;
@@ -9066,7 +10442,7 @@ const css = `
   .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap;}
   .btn{
     padding:12px 24px;border-radius:10px;border:none;cursor:pointer;
-    font-size:clampNum(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
+    font-size:clamp(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
     min-height:48px;/* Fix 5: 48px tap target */
     display:inline-flex;align-items:center;justify-content:center;
     font-family:inherit;
@@ -9382,14 +10758,14 @@ const css = `
     border: 1px solid rgba(232,161,36,0.28);
   }
   .home-hero h1 {
-    font-size: clampNum(32px, 6vw, 64px);
+    font-size: clamp(32px, 6vw, 64px);
     font-weight: 900; line-height: 1.07; letter-spacing: -1.5px;
     margin-bottom: 20px;
     background: linear-gradient(135deg, #ffffff 25%, rgba(255,255,255,0.62));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   }
   .home-hero p {
-    font-size: clampNum(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
+    font-size: clamp(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
     line-height: 1.65; margin-bottom: 36px;
     max-width: 560px; margin-left: auto; margin-right: auto;
   }
@@ -9462,7 +10838,7 @@ const css = `
     color: #e8a124; margin-bottom: 12px;
   }
   .home-section-title {
-    text-align: center; font-size: clampNum(22px, 4vw, 36px);
+    text-align: center; font-size: clamp(22px, 4vw, 36px);
     font-weight: 800; color: #fff; margin-bottom: 44px; letter-spacing: -0.5px;
   }
   [dir="rtl"] .home-section-title { font-family: 'Tajawal', sans-serif; }
@@ -9555,6 +10931,48 @@ const css = `
   }
   .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
   .home-footer a:hover { color: #e8a124; }
+
+  /* ── Viral share card — shimmer + share panel ── */
+  @keyframes scShimmerSweep {
+    0%   { transform: translateX(-120%); }
+    100% { transform: translateX(220%); }
+  }
+  .sc-shimmer-wrap { position: relative; overflow: hidden; display: inline-flex; }
+  .sc-shimmer-ray {
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.38) 50%, transparent 75%);
+    animation: scShimmerSweep 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
+    pointer-events: none; border-radius: inherit; z-index: 5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sc-shimmer-ray { animation: none !important; display: none; }
+  }
+  /* Share panel */
+  .share-panel { display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 0 auto; }
+  .share-panel-row { display: flex; gap: 8px; }
+  .share-panel-btn {
+    flex: 1; min-height: 44px; border-radius: 10px; border: 1.5px solid var(--border);
+    background: var(--surface2); color: var(--text); cursor: pointer;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .share-panel-btn:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(59,130,246,0.07); }
+  .share-panel-btn:active { transform: scale(0.97); }
+  .share-panel-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .share-panel-btn.primary:hover { background: #f59e0b; }
+  .share-panel-seg { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); }
+  .share-panel-seg button {
+    flex: 1; padding: 8px 4px; border: none; background: var(--surface2);
+    color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 700;
+    font-family: inherit; transition: all 0.15s;
+  }
+  .share-panel-seg button.active { background: var(--accent); color: #000; }
+  .share-tooltip {
+    font-size: 11px; color: var(--muted); background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 7px 12px; text-align: center; line-height: 1.45;
+  }
 
   /* ── ResultsFlow — 5-screen journey ── */
   /* Screen fade transition */
@@ -9676,12 +11094,12 @@ const css = `
   }
 
   /* Fix 5: Arabic typography enhancement */
-  [dir="rtl"] .card { font-size: clampNum(13px, 3.8vw, 15px); line-height: 1.75; }
-  [dir="rtl"] .q-text { font-size: clampNum(14px, 4vw, 16px); line-height: 1.8; }
-  [dir="rtl"] .cluster-title { font-size: clampNum(14px, 4vw, 17px); }
+  [dir="rtl"] .card { font-size: clamp(13px, 3.8vw, 15px); line-height: 1.75; }
+  [dir="rtl"] .q-text { font-size: clamp(14px, 4vw, 16px); line-height: 1.8; }
+  [dir="rtl"] .cluster-title { font-size: clamp(14px, 4vw, 17px); }
   [dir="rtl"] .mark-label { letter-spacing: 0; font-size: 12px; }
   [dir="rtl"] .field label { letter-spacing: 0; }
-  [dir="rtl"] .btn { font-size: clampNum(13px, 3.8vw, 15px); }
+  [dir="rtl"] .btn { font-size: clamp(13px, 3.8vw, 15px); }
 
   /* Fix 1: Prevent any child from causing horizontal scroll */
   .app *, .home-root * { max-width: 100%; }
@@ -9861,7 +11279,7 @@ class AppErrorBoundary extends React.Component {
         textAlign:"center", boxSizing:"border-box",
       }}>
         <div style={{fontSize:48, marginBottom:4}}>⚠️</div>
-        <div style={{fontSize:clampNum(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
+        <div style={{fontSize:clamp(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
           {m.title}
         </div>
         <div style={{fontSize:14, color:"rgba(232,236,240,0.55)", maxWidth:360, lineHeight:1.6}}>
@@ -9893,18 +11311,26 @@ class AppErrorBoundary extends React.Component {
     );
   }
 }
+// (clamp is defined globally above — no duplicate needed here)
+
 export default function App() {
-  const [step,         setStep]         = useState(0);
-  const [lang,         setLang]         = useState("fr");
-  const [answers,      setAnswers]      = useState({});
-  const [info,         setInfo]         = useState(DEFAULT_INFO);
-  const [marks,        setMarks]        = useState({});
-  const [whatIfDeltas, setWhatIfDeltas] = useState({});
-  const [reality,      setReality]      = useState(DEFAULT_REALITY);
+  const [step,           setStep]           = useState(0);
+  const [lang,           setLang]           = useState("fr");
+  const [answers,        setAnswers]        = useState({});
+  const [info,           setInfo]           = useState(DEFAULT_INFO);
+  const [marks,          setMarks]          = useState({});
+  const [whatIfDeltas,   setWhatIfDeltas]   = useState({});
+  const [reality,        setReality]        = useState(DEFAULT_REALITY);
+  // Journey stage: "prebac" | "postbac"
+  const [journeyStage,   setJourneyStage]   = useState("postbac");
+  // Pre-Bac specific inputs
+  const [preBacData,     setPreBacData]     = useState({});
+  // Learner type answers
+  const [learnerAnswers, setLearnerAnswers] = useState({});
   // Goal 1: session banner
-  const [savedSession, setSavedSession] = useState(null);
+  const [savedSession,   setSavedSession]   = useState(null);
   // HOME PAGE 3D CSS — view state
-  const [view,         setView]         = useState("home");
+  const [view,           setView]           = useState("home");
 
   const t   = TRANSLATIONS[lang];
   const dir = t.dir;
@@ -10053,34 +11479,50 @@ export default function App() {
         {step === 0 && (
           <StepLang lang={lang} setLang={setLang} onNext={()=>setStep(1)} t={t} dir={dir}/>
         )}
+        {/* Journey stage selector */}
         {step === 1 && (
-          <StepPersonality lang={lang} answers={answers} setAnswers={setAnswers}
+          <StepJourney lang={lang} journeyStage={journeyStage} setJourneyStage={setJourneyStage}
             onNext={()=>setStep(2)} onBack={()=>setStep(0)} t={t} dir={dir}/>
         )}
         {step === 2 && (
-          <StepReality lang={lang} reality={reality} setReality={setReality}
+          <StepPersonality lang={lang} answers={answers} setAnswers={setAnswers}
             onNext={()=>setStep(3)} onBack={()=>setStep(1)} t={t} dir={dir}/>
         )}
-        {/* NEW INPUT: StepProfileBoost — 6 high-signal questions (spec §2) */}
+        {/* Learner Type test (all journeys) */}
         {step === 3 && (
-          <StepProfileBoost lang={lang} reality={reality} setReality={setReality}
+          <StepLearnerType lang={lang} learnerAnswers={learnerAnswers} setLearnerAnswers={setLearnerAnswers}
             onNext={()=>setStep(4)} onBack={()=>setStep(2)} t={t} dir={dir}/>
         )}
         {step === 4 && (
-          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
+          <StepReality lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(5)} onBack={()=>setStep(3)} t={t} dir={dir}/>
         )}
+        {/* NEW INPUT: StepProfileBoost */}
         {step === 5 && (
-          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
-            onNext={()=>setStep(6)} onBack={()=>setStep(4)} t={t} dir={dir}/>
+          <StepProfileBoost lang={lang} reality={reality} setReality={setReality}
+            onNext={()=>setStep(journeyStage==="prebac" ? 6 : 7)} onBack={()=>setStep(4)} t={t} dir={dir}/>
         )}
-        {step === 6 && (
+        {/* Pre-Bac inputs (only if prebac journey) */}
+        {step === 6 && journeyStage === "prebac" && (
+          <StepPreBacInputs lang={lang} preBacData={preBacData} setPreBacData={setPreBacData}
+            onNext={()=>setStep(10)} onBack={()=>setStep(5)} t={t} dir={dir}/>
+        )}
+        {/* Post-Bac path: info → marks → bac status */}
+        {step === 7 && journeyStage !== "prebac" && (
+          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
+            onNext={()=>setStep(8)} onBack={()=>setStep(5)} t={t} dir={dir}/>
+        )}
+        {step === 8 && journeyStage !== "prebac" && (
+          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
+            onNext={()=>setStep(9)} onBack={()=>setStep(7)} t={t} dir={dir}/>
+        )}
+        {step === 9 && journeyStage !== "prebac" && (
           <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
             reality={reality} setReality={setReality}
-            onNext={()=>setStep(7)} onBack={()=>setStep(5)} t={t} dir={dir}/>
+            onNext={()=>setStep(10)} onBack={()=>setStep(8)} t={t} dir={dir}/>
         )}
-        {step === 7 && (
-          // FIX: prevent white screen on results — ErrorBoundary catches any render throw
+        {step === 10 && (
+          // Results flow — both journeys converge here
           <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
             <ResultsFlow
               t={t} lang={lang} dir={dir} info={info}
@@ -10088,9 +11530,12 @@ export default function App() {
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
               narrative={narrative} reality={reality} setReality={setReality}
-              restart={restart} onBack={()=>setStep(6)}
+              restart={restart} onBack={()=>setStep(journeyStage==="prebac" ? 6 : 9)}
               secondaryTop3={secondaryTop3}
               overallAvg={overallAvgForRerank}
+              journeyStage={journeyStage}
+              preBacData={preBacData}
+              learnerAnswers={learnerAnswers}
             />
           </ResultsErrorBoundary>
         )}
