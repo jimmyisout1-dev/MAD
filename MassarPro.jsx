@@ -13,6 +13,7 @@
  * 10. SHARE: El M3allem canvas design — Moroccan tile bg, gold border, 3 stat bars
  * 11. IDENTITY: ARCHETYPE_MIRROR cold-reading blocks (8 archetypes × 6 fields)
  * 12. SAFETY: All .map() guarded, t?.key optional chaining, no duplicate functions
+ * 13. POLISH: mirrorBlocks fallback .fr chain; ltCopy.signature safe; RightHookPDF t prop
  */
 /*
  * BUILD SAFETY CHECKLIST (verified before every deploy)
@@ -9766,7 +9767,7 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
           : "Waiting for 'full readiness' misses opportunities. Start with what you have now." },
     ],
   };
-  const mirrorBlocks = (mirrors[lang] || mirrors.en);
+  const mirrorBlocks = mirrors[lang] || mirrors.fr || mirrors.en || [];
 
   const doCopy = () => {
     try { navigator.clipboard.writeText(captions[selCap]).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}); }
@@ -9796,7 +9797,7 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
             {t.learnerTitle||"Learner type"}: {(t.learnerTypeIcons||{})[learnerType]||""} {(t.learnerTypes||{})[learnerType]||learnerType}
           </div>
           <div style={{fontSize:12,color:"rgba(232,236,240,0.65)",lineHeight:1.4,marginBottom:4}}>
-            {ltCopy.signature}
+            {ltCopy?.signature || ltCopy?.label || ""}
           </div>
           {learnerSecondary && (
             <div style={{fontSize:11,color:"var(--muted)"}}>
@@ -9808,7 +9809,7 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
 
       {/* Identity mirror blocks */}
       <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
-        {mirrorBlocks.map((block,i) => (
+        {(mirrorBlocks||[]).map((block,i) => (
           <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",
             borderRadius:14,padding:"14px 16px"}}>
             <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
