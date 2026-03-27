@@ -1,5 +1,20 @@
 // MassarPro — self-contained single-file build
 /*
+ * CHANGELOG (latest patch)
+ * 1. BUILD FIX: Removed duplicate stray block after MOROCCAN_ARCHETYPES closing };
+ * 2. RUNTIME: usePrefersReducedMotion → useState+useEffect (no module-scope window)
+ * 3. RUNTIME: t=TRANSLATIONS[lang]||TRANSLATIONS.fr fallback; dir=t?.dir||"ltr"
+ * 4. RUNTIME: massarTypeDesc hardened with optional chaining + explicit lang param
+ * 5. RUNTIME: narrative guard fixed (step < 10, not step !== 7)
+ * 6. RUNTIME: canvas.getContext null guard; screens[] bounds-clamped
+ * 7. UX: DebugPanel added (press D×3 or ?debug=1 to activate)
+ * 8. UX: ClusterCard shows "Why this appeared" for non-obvious clusters
+ * 9. PRE-BAC: preferenceDial + publicEye gate wired (sports demoted when !publicEye)
+ * 10. SHARE: El M3allem canvas design — Moroccan tile bg, gold border, 3 stat bars
+ * 11. IDENTITY: ARCHETYPE_MIRROR cold-reading blocks (8 archetypes × 6 fields)
+ * 12. SAFETY: All .map() guarded, t?.key optional chaining, no duplicate functions
+ */
+/*
  * BUILD SAFETY CHECKLIST (verified before every deploy)
  * 1. No duplicate function/const declarations
  * 2. No undefined variables or unguarded destructuring
@@ -156,6 +171,9 @@ const TRANSLATIONS = {
     resultsStep: "نتائجك",
     // Info fields
     bacTrack: "الشعبة",
+    academic: "أكاديمي",
+    personality: "الشخصية",
+    market: "السوق",
     city: "مدينتك الحالية",
     mobility: "استعدادك للتنقل",
     mobilityOptions: ["نفس المدينة فقط", "مستعد للانتقال داخل المغرب", "أقبل التعلم عن بُعد"],
@@ -730,6 +748,9 @@ const TRANSLATIONS = {
     marksStep: "Vos notes",
     resultsStep: "Vos résultats",
     bacTrack: "Filière du Bac",
+    academic: "Académique",
+    personality: "Personnalité",
+    market: "Marché",
     city: "Votre ville actuelle",
     mobility: "Mobilité géographique",
     mobilityOptions: ["Ma ville uniquement", "Prêt à déménager au Maroc", "À distance OK"],
@@ -1290,6 +1311,9 @@ const TRANSLATIONS = {
     marksStep: "Your Grades",
     resultsStep: "Your Results",
     bacTrack: "Bac Track",
+    academic: "Academic",
+    personality: "Personality",
+    market: "Market",
     city: "Your Current City",
     mobility: "Willingness to Relocate",
     mobilityOptions: ["Same city only", "Willing to move within Morocco", "Remote learning OK"],
@@ -3347,9 +3371,14 @@ function runLogicSelfCheck() {
 }
 
 // Run self-check on localhost only (no import.meta)
-if (typeof window !== "undefined" && typeof window.location !== "undefined"
-    && window.location.hostname === "localhost") {
-  setTimeout(runLogicSelfCheck, 1400);
+// Deferred to next tick to avoid blocking module parse
+if (typeof globalThis !== "undefined") {
+  try {
+    if (typeof window !== "undefined" && typeof window.location !== "undefined"
+        && window.location.hostname === "localhost") {
+      setTimeout(runLogicSelfCheck, 1400);
+    }
+  } catch (_e) { /* skip in non-browser environments */ }
 }
 
 // src/massar/utils/storage.js
@@ -4133,8 +4162,37 @@ function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, ov
   );
 }
 
+
+// ─────────────────────────────────────────────────────────────────
+// Cluster appearance explanations — shown in ClusterCard for transparency
+// ─────────────────────────────────────────────────────────────────
+const CLUSTER_WHY_EXPLAIN = {
+  sports: {
+    ar: "ظهر هذا المسار بسبب ميولك نحو الأنشطة البدنية والتدريب. يشمل: علوم الحركة، التغذية الرياضية، إدارة الرياضة — وليس فقط التدريب الميداني.",
+    fr: "Cette filière est apparue car tu as montré un intérêt pour les activités physiques et le coaching. Elle couvre : kinésithérapie, nutrition sportive, management du sport — pas seulement l'entraînement.",
+    en: "This field appeared because of your interest in physical activities and coaching. It covers: sports science, nutrition, sport management — not just field coaching.",
+  },
+  creative_digital: {
+    ar: "اخترناه لأن ملفك يُظهر إبداعاً ورغبة في بناء أشياء. الاقتصاد الرقمي ينمو بسرعة في المغرب.",
+    fr: "Sélectionné car ton profil montre de la créativité et le désir de construire. L'économie digitale croît rapidement au Maroc.",
+    en: "Selected because your profile shows creativity and desire to build. Morocco's digital economy is growing rapidly.",
+  },
+  arts_media: {
+    ar: "إبداعك وتواصلك الاجتماعي يجعلانك مناسباً لصناعة الإعلام والتواصل الرقمي المتنامية.",
+    fr: "Ta créativité et ton social font de toi un bon candidat pour les médias et la communication digitale en croissance.",
+    en: "Your creativity and social skills fit the growing media and digital communications sector.",
+  },
+};
+
+function getClusterWhyExplanation(clusterId, lang) {
+  const why = CLUSTER_WHY_EXPLAIN[clusterId];
+  if (!why) return null;
+  return why[lang] || why.en || null;
+}
+
 function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
   if (!cluster || !t || !lang) return null;
+  const _whyLine = getClusterWhyExplanation(cluster.id, lang);
   // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
   const academicTier = getAcademicTier(overallAvg);
   const effectiveGoal = goal || "prestige";
@@ -4227,6 +4285,15 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
       {/* Goal 3: Medicine eligibility panel */}
       {cluster.id === "health" && (
         <MedicineEligibilityPanel cluster={cluster} t={t}/>
+      )}
+
+      {/* Why this appeared — transparency for non-obvious clusters */}
+      {_whyLine && (
+        <div style={{fontSize:11,color:"var(--accent2)",marginBottom:10,padding:"6px 10px",
+          background:"rgba(59,130,246,0.06)",borderRadius:8,lineHeight:1.5,
+          border:"1px solid rgba(59,130,246,0.15)"}}>
+          💡 {_whyLine}
+        </div>
       )}
 
       {/* Pathway tabs */}
@@ -5528,10 +5595,6 @@ const MOROCCAN_ARCHETYPES = {
     risk:{ ar:"التقليل من قيمة النفس يجعل الآخرين يستغلون المهارة.", fr:"Se sous-estimer amène les autres à exploiter ses compétences.", en:"Undervaluing yourself lets others exploit your skills." },
     bestEnv:{ ar:"ورشة أو مختبر مع استقلالية تامة في المنتج النهائي.", fr:"Atelier ou labo avec pleine autonomie sur le produit.", en:"Workshop or lab with full autonomy over the final product." },
     worstEnv:{ ar:"اجتماعات بلا قرار ومجموعات بلا هدف واضح.", fr:"Réunions sans décision et groupes sans but.", en:"Meetings without decisions and purposeless groups." },
-    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
-  },
-};
-
     opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
   },
 };
@@ -9011,7 +9074,7 @@ function rf(lang) { return RF_COPY[lang] || RF_COPY.fr || RF_COPY.en || {}; }
 
 // ── Progress bar ─────────────────────────────────────────────────
 function RFProgress({ step, total, lang, dir }) {
-  const c = rf(lang);
+  const c = rf(lang) || {};
   return (
     <div style={{
       display:"flex", alignItems:"center", gap:10,
@@ -9380,7 +9443,7 @@ function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
 // ─────────────────────────────────────────────────────────────────
 // RIGHT HOOK — PDF Offer
 // ─────────────────────────────────────────────────────────────────
-function RightHookPDF({ lang, dir, safeResults }) {
+function RightHookPDF({ lang, dir, safeResults, t }) {
   const c = rf(lang);
   const [email, setEmail]   = React.useState("");
   const [phone, setPhone]   = React.useState("");
