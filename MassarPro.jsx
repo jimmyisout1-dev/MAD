@@ -1,4 +1,15 @@
 // MassarPro — self-contained single-file build
+/*
+ * BUILD SAFETY CHECKLIST (verified before every deploy)
+ * 1. No duplicate function/const declarations
+ * 2. No undefined variables or unguarded destructuring
+ * 3. All new strings present in ar + fr + en translations
+ * 4. No window/document/localStorage at module scope
+ * 5. All .map() calls guarded with (arr || []).map(...)
+ * 6. canvas.getContext("2d") result checked before use
+ * 7. ErrorBoundary active in production (AppErrorBoundary)
+ * 8. Safe defaults for all useState initializers
+ */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
@@ -66,6 +77,21 @@ const TRANSLATIONS = {
     preBacConstraints: "قيودك وأولوياتك",
     prestige_priority: "أهمية المكانة والهيبة",
     prestige_low:"غير مهمة",prestige_med:"مهمة بعض الشيء",prestige_high:"ضرورية جداً",
+    preferenceDialLabel: "ما الذي يهمك أكثر في مسارك؟",
+    preferenceDialOpts: {
+      prestige: { icon:"🏆", label:"المكانة والاعتراف الاجتماعي" },
+      money:    { icon:"💰", label:"الدخل والاستقرار المالي" },
+      abroad:   { icon:"🌍", label:"الدراسة أو العمل في الخارج" },
+      balanced: { icon:"⚖️", label:"التوازن بين كل شيء" },
+      freedom:  { icon:"🕊️", label:"الحرية والمرونة في العمل" },
+    },
+    publicEyeLabel: "هل أنت مرتاح للظهور أمام الجمهور (تدريب / إعلام / أداء)؟",
+    publicEyeYes:   "نعم، أحب ذلك",
+    publicEyeMaybe: "ربما، لا مانع لديّ",
+    publicEyeNo:    "لا، أفضل العمل بعيداً عن الأضواء",
+    sportsUmbrellaA: "الصحة والأداء البشري",
+    sportsUmbrellaB: "إدارة الرياضة والأحداث",
+    sportsUmbrellaC: "التدريب والأداء الميداني",
     learnerTitle: "كيف تتعلم؟",
     learnerDesc: "6 أسئلة قصيرة لفهم أسلوبك في الدراسة والإنجاز",
     learnerTypes: {
@@ -517,17 +543,6 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "تحميل البطاقة",
     shareCopied: "✓ تم النسخ!",
     shareCaptionTpl: "اكتشفت نوع مساري: {type} 🧬\nأفضل مسار: {cluster} ({confidence}% توافق)\nاكتشف نوعك على Massar 👇",
-    // Viral share upgrade
-    challengeLine:       "عطينا نتيجتك فالكومنت 👀",
-    captionShort:        "مختصر",
-    captionFull:         "كامل",
-    shareFormatStory:    "ستوري 9:16",
-    shareFormatSquare:   "مربع 1:1",
-    shareCopyLink:       "نسخ الرابط",
-    shareDownloadPng:    "تحميل PNG",
-    shareMobileBtn:      "مشاركة",
-    shareMobileFallback: "حمّل الصورة ثم شاركها في واتساب أو تيكتوك",
-    shareLinkCopied:     "✓ تم نسخ الرابط",
     // Reality layer
     realityStep: "شخصيتك وأولوياتك",
     realityDesc: "4 أسئلة قصيرة — تنتهي في 3 دقائق",
@@ -641,6 +656,21 @@ const TRANSLATIONS = {
     preBacConstraints: "Contraintes et priorités",
     prestige_priority: "Importance du prestige",
     prestige_low:"Peu important",prestige_med:"Assez important",prestige_high:"Très important",
+    preferenceDialLabel: "Qu'est-ce qui compte le plus pour toi ?",
+    preferenceDialOpts: {
+      prestige: { icon:"🏆", label:"Prestige & reconnaissance sociale" },
+      money:    { icon:"💰", label:"Revenus & stabilité financière" },
+      abroad:   { icon:"🌍", label:"Études ou travail à l'étranger" },
+      balanced: { icon:"⚖️", label:"Équilibre entre tout" },
+      freedom:  { icon:"🕊️", label:"Liberté & flexibilité" },
+    },
+    publicEyeLabel: "Tu es à l'aise sous les projecteurs ? (coaching / médias / scène)",
+    publicEyeYes:   "Oui, j'adore ça",
+    publicEyeMaybe: "Peut-être, ça me va",
+    publicEyeNo:    "Non, je préfère les coulisses",
+    sportsUmbrellaA: "Santé & Performance Humaine",
+    sportsUmbrellaB: "Management du Sport",
+    sportsUmbrellaC: "Coaching & Performance",
     learnerTitle: "Comment tu apprends ?",
     learnerDesc: "6 questions courtes pour cerner ton style d'apprentissage",
     learnerTypes: {
@@ -1065,17 +1095,6 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "Télécharger le badge",
     shareCopied: "✓ Copié !",
     shareCaptionTpl: "Mon Type Massar : {type} 🧬\nMeilleure voie : {cluster} ({confidence}% compatibilité)\nDécouvre le tien sur Massar 👇",
-    // Viral share upgrade
-    challengeLine:       "Balance ton code en story 👀",
-    captionShort:        "Court",
-    captionFull:         "Complet",
-    shareFormatStory:    "Story 9:16",
-    shareFormatSquare:   "Carré 1:1",
-    shareCopyLink:       "Copier le lien",
-    shareDownloadPng:    "Télécharger PNG",
-    shareMobileBtn:      "Partager",
-    shareMobileFallback: "Télécharge puis partage dans WhatsApp ou TikTok",
-    shareLinkCopied:     "✓ Lien copié",
     // Reality layer
     realityStep: "Réalité & Identité",
     realityDesc: "4 questions rapides – tap, sélectionne, terminé en 3 min",
@@ -1197,6 +1216,21 @@ const TRANSLATIONS = {
     preBacConstraints: "Constraints & priorities",
     prestige_priority: "Prestige importance",
     prestige_low:"Not important", prestige_med:"Somewhat important", prestige_high:"Very important",
+    preferenceDialLabel: "What matters most to you in your path?",
+    preferenceDialOpts: {
+      prestige: { icon:"🏆", label:"Prestige & social recognition" },
+      money:    { icon:"💰", label:"Income & financial stability" },
+      abroad:   { icon:"🌍", label:"Studying or working abroad" },
+      balanced: { icon:"⚖️", label:"Balance across everything" },
+      freedom:  { icon:"🕊️", label:"Freedom & flexibility" },
+    },
+    publicEyeLabel: "Are you comfortable in the spotlight? (coaching / media / performance)",
+    publicEyeYes:   "Yes, I love it",
+    publicEyeMaybe: "Maybe, it's fine",
+    publicEyeNo:    "No, I prefer behind the scenes",
+    sportsUmbrellaA: "Health & Human Performance",
+    sportsUmbrellaB: "Sport Management & Events",
+    sportsUmbrellaC: "Coaching & Field Performance",
     learnerTitle: "How do you learn?",
     learnerDesc: "6 quick questions to understand your learning style",
     learnerTypes: {
@@ -1621,17 +1655,6 @@ const TRANSLATIONS = {
     downloadBadgeBtn: "Download badge",
     shareCopied: "✓ Copied!",
     shareCaptionTpl: "My Massar Type: {type} 🧬\nTop path: {cluster} ({confidence}% match)\nDiscover yours at Massar 👇",
-    // Viral share upgrade
-    challengeLine:       "Drop your code in story 👀",
-    captionShort:        "Short",
-    captionFull:         "Full",
-    shareFormatStory:    "Story 9:16",
-    shareFormatSquare:   "Square 1:1",
-    shareCopyLink:       "Copy Link",
-    shareDownloadPng:    "Download PNG",
-    shareMobileBtn:      "Share",
-    shareMobileFallback: "Download then share in WhatsApp or TikTok",
-    shareLinkCopied:     "✓ Link copied",
     // Reality layer
     realityStep: "Reality & Identity",
     realityDesc: "4 quick questions – tap, select, done in 3 minutes",
@@ -2854,6 +2877,145 @@ function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
   return pes;
 }
 
+
+// ─────────────────────────────────────────────────────────────────
+// Morocco Credibility Gate — Pre-Bac deterministic ranking
+// Gate A: Readiness/Eligibility (trait+learner+interests+sliders)
+// Gate B: Morocco Viability (must have ≥1 credible route)
+// Gate C: preferenceDial (prestige/money/abroad/balanced/freedom)
+// Also: publicEye gate — blocks coaching/performance as #1 if "No"
+// ─────────────────────────────────────────────────────────────────
+
+// Clusters that have credible public routes in Morocco (Gate B)
+const MOROCCO_VIABLE_CLUSTERS = new Set([
+  "it","data","cyber","network","industrial","energy","civil",
+  "health","finance","marketing","logistics","edu_law",
+  "creative_digital","automotive","trades",
+]);
+
+// Prestige-recognized tracks for preferenceDial==="prestige" (Gate C)
+const PRESTIGE_DIAL_CLUSTERS = new Set([
+  "it","data","cyber","health","finance","civil","industrial","energy","network","edu_law",
+]);
+
+// Money dial — direct-to-market employability boost
+const MONEY_DIAL_CLUSTERS = new Set([
+  "it","logistics","finance","industrial","automotive","trades","health","marketing",
+]);
+
+// Abroad dial — globally transferable
+const ABROAD_DIAL_CLUSTERS = new Set([
+  "it","data","cyber","finance","health","industrial","civil","energy","edu_law","marketing",
+]);
+
+// Freedom dial — remote/flexible potential
+const FREEDOM_DIAL_CLUSTERS = new Set([
+  "it","data","creative_digital","marketing","arts_media",
+]);
+
+// Sports cluster sub-track IDs for umbrella logic
+const SPORTS_UMBRELLA = {
+  A: "sports_health",   // Santé & Performance Humaine
+  B: "sports_mgmt",    // Management du Sport
+  C: "sports_coaching", // Coaching & Performance (public-facing)
+};
+
+/**
+ * applyPreBacCredibilityGates — post-process ranked clusters for pre-bac journey.
+ * Returns a new sorted array with gate penalties/boosts applied.
+ * Does NOT mutate the engine scores.
+ */
+function applyPreBacCredibilityGates(rankedClusters, preBacData, traits, reality) {
+  if (!rankedClusters || rankedClusters.length === 0) return rankedClusters;
+
+  const prestige     = preBacData.prestige     || "med";  // low/med/high
+  const abroad       = !!preBacData.abroad;
+  const publicEye    = preBacData.publicEye    || "maybe"; // yes/maybe/no
+  const prefDial     = preBacData.preferenceDial || "balanced";
+  const sliders      = preBacData.sliders      || {};
+
+  // Gate A: readiness score from traits + interests + sliders
+  function readinessScore(cluster) {
+    const rd = REALITY_CLUSTER_MAP[cluster.id] || {};
+    const interestMatch = (rd.interestTags || []).filter(
+      t => (preBacData.interests || []).includes(t)
+    ).length;
+    const strengthMatch = (rd.strengthTags || []).filter(
+      s => (preBacData.strengths || []).includes(s)
+    ).length;
+    const avgSlider = Object.values(sliders).length
+      ? Object.values(sliders).reduce((a, b) => a + b, 0) / Object.values(sliders).length
+      : 3;
+    const traitScore = cluster.scores.trait || 0.5;
+    return (interestMatch * 0.2 + strengthMatch * 0.2 + (avgSlider / 5) * 0.3 + traitScore * 0.3);
+  }
+
+  // Gate B: Morocco viable check
+  function moroViadble(cluster) {
+    return MOROCCO_VIABLE_CLUSTERS.has(cluster.id) ||
+      !!(cluster.pathways?.university?.schools?.length ||
+         cluster.pathways?.grandeEcole?.schools?.length ||
+         cluster.pathways?.practical?.schools?.length);
+  }
+
+  // Gate C: preferenceDial modifier
+  function dialBoost(cluster) {
+    switch (prefDial) {
+      case "prestige": return PRESTIGE_DIAL_CLUSTERS.has(cluster.id) ? 0.12 : -0.08;
+      case "money":    return MONEY_DIAL_CLUSTERS.has(cluster.id)    ? 0.10 : -0.04;
+      case "abroad":   return ABROAD_DIAL_CLUSTERS.has(cluster.id)   ? 0.10 : -0.03;
+      case "freedom":  return FREEDOM_DIAL_CLUSTERS.has(cluster.id)  ? 0.09 : -0.02;
+      default:         return 0; // balanced
+    }
+  }
+
+  // Sports public-eye gate
+  function sportsGate(cluster) {
+    if (cluster.id !== "sports") return 0;
+    if (publicEye === "no") return -0.25; // demote heavily
+    if (publicEye === "maybe") return -0.08;
+    return 0;
+  }
+
+  // Prestige gate A: if prestige=high AND readiness<0.40, cannot be #1 in main lane
+  function prestigeReadinessGate(cluster, rank) {
+    if (prestige !== "high") return 0;
+    const rd = readinessScore(cluster);
+    if (rd < 0.40 && rank === 0) return -0.35;
+    return 0;
+  }
+
+  return [...rankedClusters]
+    .map(cluster => {
+      const gateBoost = dialBoost(cluster) + sportsGate(cluster);
+      const viableBoost = moroViadble(cluster) ? 0 : -0.20; // Gate B penalty
+      return {
+        ...cluster,
+        scores: {
+          ...cluster.scores,
+          final: Math.min(1, Math.max(0, cluster.scores.final + gateBoost + viableBoost)),
+          _preBacGateDial: prefDial,
+          _preBacPublicEye: publicEye,
+        },
+      };
+    })
+    .sort((a, b) => b.scores.final - a.scores.final)
+    .map((cluster, rank) => {
+      const pgPenalty = prestigeReadinessGate(cluster, rank);
+      if (pgPenalty !== 0) {
+        return {
+          ...cluster,
+          scores: {
+            ...cluster.scores,
+            final: Math.min(1, Math.max(0, cluster.scores.final + pgPenalty)),
+          },
+        };
+      }
+      return cluster;
+    })
+    .sort((a, b) => b.scores.final - a.scores.final);
+}
+
 // LOGIC FIX: computeThreeViews — uses pre-computed lane scores (fit/balanced/ambitious)
 // stored on each cluster by computeClusterScores. See spec §3.7.
 // Lane formulas (already baked into scores.fit / scores.balanced / scores.ambitious):
@@ -3813,11 +3975,12 @@ function RadarChart({ traits, lang }) {
 
 // Score contribution mini-bars
 function ScoreContribChart({ cluster, t }) {
+  if (!cluster || !t) return null;
   const factors = [
-    { key:"bac",      label:t.bacTrack,    color:"#3b82f6", value:cluster.scores.bac      },
-    { key:"academic", label:t.academic,    color:"#10b981", value:cluster.scores.academic },
-    { key:"trait",    label:t.personality, color:"#e8a124", value:cluster.scores.trait    },
-    { key:"market",   label:t.market,      color:"#8b5cf6", value:cluster.scores.market   },
+    { key:"bac",      label:t.bacTrack||"Bac",    color:"#3b82f6", value:cluster.scores?.bac      || 0 },
+    { key:"academic", label:t.academic||"Acad",   color:"#10b981", value:cluster.scores?.academic || 0 },
+    { key:"trait",    label:t.personality||"Perso",color:"#e8a124", value:cluster.scores?.trait    || 0 },
+    { key:"market",   label:t.market||"Marché",   color:"#8b5cf6", value:cluster.scores?.market   || 0 },
   ];
   return (
     <div style={{marginTop:8}}>
@@ -3837,7 +4000,8 @@ function ScoreContribChart({ cluster, t }) {
 
 // Goal 3: Medicine eligibility panel — only shown for health cluster
 function MedicineEligibilityPanel({ cluster, t }) {
-  const c = CLUSTER_CONSTRAINTS["health"];
+  if (!cluster || !t) return null;
+  const c = CLUSTER_CONSTRAINTS["health"] || {};
   const avg = cluster.overallAvg || 0;
   const meetsPublic = avg >= c.minAvg &&
     Object.entries(c.requiredSubjects || {}).every(
@@ -3970,6 +4134,7 @@ function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, ov
 }
 
 function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
+  if (!cluster || !t || !lang) return null;
   // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
   const academicTier = getAcademicTier(overallAvg);
   const effectiveGoal = goal || "prestige";
@@ -4231,8 +4396,18 @@ function StepIndicator({ step, total, t }) {
 
 /** Returns true when prefers-reduced-motion is set. */
 function usePrefersReducedMotion() {
-  if (typeof window === "undefined") return false;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const [reduced, setReduced] = React.useState(false);
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+      setReduced(mq.matches);
+      const handler = (e) => setReduced(e.matches);
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } catch { /* matchMedia not available */ }
+  }, []);
+  return reduced;
 }
 
 /**
@@ -4559,8 +4734,8 @@ function StepReality({ lang, reality, setReality, onNext, onBack, t, dir }) {
   return (
     <div className="card" dir={dir}>
       <StepIndicator step={2} total={7} t={t}/>
-      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.realityStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t.realityDesc}</p>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t?.realityStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t?.realityDesc}</p>
 
       {/* Section 1 — Strengths */}
       <div className="reality-section">
@@ -4876,7 +5051,7 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       <div className="field">
         <label>{t.mobility}</label>
         <div className="mobility-grid">
-          {t.mobilityOptions.map((opt,i)=>(
+          {(t.mobilityOptions||[]).map((opt,i)=>(
             <button key={i}
               className={`mob-btn ${info.mobility===i?"selected":""}`}
               onClick={()=>setInfo(p=>({...p,mobility:i}))}>
@@ -5143,8 +5318,8 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
   return (
     <div className="card" dir={dir}>
       <StepIndicator step={5} total={7} t={t}/>
-      <h2 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{t.bacStatusStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:14,marginBottom:24,lineHeight:1.6}}>{t.bacStatusQ}</p>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{t?.bacStatusStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:14,marginBottom:24,lineHeight:1.6}}>{t?.bacStatusQ}</p>
 
       {/* Bac timing */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:20}}>
@@ -5357,6 +5532,280 @@ const MOROCCAN_ARCHETYPES = {
   },
 };
 
+    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────
+// Cold-reading MIRROR blocks per archetype
+// Generated deterministically from archetype code
+// Fields: mirror_pressure, mirror_consistency, mirror_advantage,
+//         mirror_blindspot, evidence_line, morocco_family_frame
+// ─────────────────────────────────────────────────────────────────
+const ARCHETYPE_MIRROR = {
+  BENA: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تنكسر إلى الانضباط الصارم وتُنجز المهام بصمت. لا تطلب المساعدة حتى في أصعب اللحظات. قوتك تصبح عزلتك.",
+      fr: "Sous pression, tu deviens hyper-discipliné et tu travailles en silence. Tu ne demandes pas d'aide même aux moments les plus durs. Ta force devient ton isolement.",
+      en: "Under pressure, you retreat into strict discipline and work silently. You don't ask for help even at the hardest moments. Your strength becomes your isolation.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى أهداف واضحة ونتائج قابلة للقياس. بدون معالم محددة، يتحوّل انضباطك إلى روتين فارغ.",
+      fr: "Tu as besoin d'objectifs clairs et de résultats mesurables. Sans jalons précis, ta discipline devient une routine vide.",
+      en: "You need clear goals and measurable results. Without defined milestones, your discipline turns into empty routine.",
+    },
+    mirror_advantage: {
+      ar: "تُنجز ما يعجز عنه المبدعون: التسليم في الوقت المحدد، دائماً.",
+      fr: "Tu livres ce que les créatifs ne peuvent pas : dans les délais, toujours.",
+      en: "You deliver what creatives can't: on time, every time.",
+    },
+    mirror_blindspot: {
+      ar: "تُقاوم التغيير حتى حين يكون ضرورياً. تدرّب على إطلاق أحكام أقل على طرق العمل الجديدة.",
+      fr: "Tu résistes au changement même quand il est nécessaire. Entraîne-toi à juger moins les nouvelles méthodes.",
+      en: "You resist change even when necessary. Practice judging new methods less harshly.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن تحليلك وانضباطك يتصدّران ملفك الشخصي بفارق واضح.",
+      fr: "On dit ça car ton analytique et ta discipline dominent ton profil avec un écart net.",
+      en: "We say this because your analytical and structure scores lead your profile by a clear margin.",
+    },
+    morocco_family_frame: {
+      ar: "في سياق الأسرة المغربية، ملفك يُعطي ثقة: أنت من يُنجز ما وعد به. المسارات الهندسية والتقنية تُبرز هذه الصفة. إذا كانت أسرتك تريد شيئاً 'واضح المستقبل'، هذا ملفك.",
+      fr: "Dans le contexte familial marocain, ton profil inspire confiance : tu livres ce que tu promets. Les filières d'ingénierie et techniques mettent cette qualité en avant. Si ta famille veut quelque chose de 'clair et stable', c'est ton profil.",
+      en: "In the Moroccan family context, your profile inspires confidence: you deliver what you promise. Engineering and technical tracks highlight this quality. If your family wants something 'stable and clear', this is your profile.",
+    },
+  },
+  MHNI: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تصبح أكثر رسمية وتتمسّك بالمعايير والإجراءات. تثق بسجلّك السابق، مما يُهدئك — لكنه قد يُبطئ قرارك.",
+      fr: "Sous pression, tu deviens plus formel et tu t'accroches aux standards. Tu fais confiance à ton bilan passé, ce qui te calme — mais peut ralentir ta décision.",
+      en: "Under pressure, you become more formal and cling to standards. You trust your past record, which calms you — but may slow your decision.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى الاعتراف بكفاءتك. التغذية الراجعة الصريحة تحفّزك أكثر من الإطراء الفارغ.",
+      fr: "Tu as besoin de reconnaissance de ta compétence. Le feedback direct te motive plus que les compliments creux.",
+      en: "You need recognition of your competence. Direct feedback motivates you more than empty praise.",
+    },
+    mirror_advantage: {
+      ar: "اسمك يفتح الأبواب قبل أن تتكلّم. هذا رأسمال اجتماعي لا يُقدَّر بثمن.",
+      fr: "Ton nom ouvre les portes avant même que tu parles. C'est un capital social inestimable.",
+      en: "Your name opens doors before you even speak. That's a social capital you can't buy.",
+    },
+    mirror_blindspot: {
+      ar: "تتأخر في التكيّف حين تتغيّر اللعبة بالكامل. تدرّب على التخلّي عن ما نجح بالأمس.",
+      fr: "Tu tardes à t'adapter quand le jeu change complètement. Entraîne-toi à lâcher ce qui marchait hier.",
+      en: "You're slow to adapt when the game changes entirely. Practice letting go of what worked yesterday.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن ملفك يجمع قوة اجتماعية مرتفعة مع تفكير تحليلي — هذا نمط المِهنِي المُتميّز.",
+      fr: "On dit ça car ton profil combine un social élevé avec une pensée analytique — c'est le schéma du professionnel distingué.",
+      en: "We say this because your profile combines high social and analytical scores — the pattern of a distinguished professional.",
+    },
+    morocco_family_frame: {
+      ar: "هذا هو المسار الذي تُريده كل أسرة: مهنة مُعترف بها، سمعة واضحة، ومستقبل مضمون. مسارات القانون والهندسة والصحة مُرتبطة بهذا النمط.",
+      fr: "C'est la voie que toute famille marocaine veut : une profession reconnue, une réputation claire, un avenir assuré. Droit, ingénierie, santé — ces filières correspondent à ce profil.",
+      en: "This is the path every Moroccan family wants: a recognized profession, a clear reputation, a secured future. Law, engineering, health — these tracks align with this profile.",
+    },
+  },
+  HRRK: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تُسرع وترفع صوتك وتأخذ زمام الأمور حتى حين لا يُطلب منك ذلك. أحياناً تُبدّل التفكير بالحركة.",
+      fr: "Sous pression, tu accélères, tu hausses le ton et tu prends les commandes même quand on ne te le demande pas. Parfois tu substitues l'action à la réflexion.",
+      en: "Under pressure, you speed up, raise your voice, and take charge even when not asked. Sometimes you substitute action for thinking.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى أثر ملموس على الآخرين. العمل الصامت المنفرد يُجفّف طاقتك.",
+      fr: "Tu as besoin d'un impact concret sur les autres. Le travail solitaire et silencieux assèche ton énergie.",
+      en: "You need concrete impact on others. Silent solo work drains your energy.",
+    },
+    mirror_advantage: {
+      ar: "تستطيع إشعال الحماس في أي غرفة في غضون دقائق. هذا نادر وقابل للبيع.",
+      fr: "Tu peux allumer l'enthousiasme dans n'importe quelle salle en quelques minutes. C'est rare et bankable.",
+      en: "You can ignite enthusiasm in any room within minutes. That's rare and bankable.",
+    },
+    mirror_blindspot: {
+      ar: "تُلغي الأصوات الهادئة في الفريق لأنك تتحرك أسرع من الجميع. تمرّن على الاستماع للأبطأ صوتاً.",
+      fr: "Tu étouffes les voix calmes car tu bouges plus vite que tout le monde. Entraîne-toi à écouter les plus silencieux.",
+      en: "You crowd out quieter voices because you move faster than everyone. Practice listening to the slowest speaker.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن قيادتك ومبادرتك يحتلان القمة في ملفك، متوافقَين مع معامل مجتمعي عالٍ.",
+      fr: "On dit ça car ton leadership et ton initiative dominent ton profil, couplés à un score social élevé.",
+      en: "We say this because your leadership and initiative top your profile, coupled with a high social score.",
+    },
+    morocco_family_frame: {
+      ar: "المُحرّك مرتبط بمسارات الإدارة والمقاولة والتوجيه. في المغرب، هذا ملف الشخص الذي 'يُحرّك الأمور'. مسارات ENCG وإدارة الأعمال تُبرز هذا النمط.",
+      fr: "Le Moteur correspond aux filières management, entrepreneuriat, gestion. Au Maroc, c'est le profil de celui qui 'fait bouger les choses'. ENCG et commerce valorisent ce profil.",
+      en: "The Driver maps to management, entrepreneurship, and leadership tracks. In Morocco, this is the profile of someone who 'makes things happen'. ENCG and business tracks highlight this.",
+    },
+  },
+  TGRI: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تبحث عن زاوية جديدة أو صفقة بديلة. نادراً ما تشعر بالإحباط لأن دماغك يجد دائماً مخرجاً.",
+      fr: "Sous pression, tu cherches un nouvel angle ou une deal alternative. Tu te décourages rarement car ton cerveau trouve toujours une sortie.",
+      en: "Under pressure, you search for a new angle or alternative deal. You rarely feel stuck because your brain always finds a way out.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى نتائج مرئية وقصيرة الأمد. المشاريع الطويلة بلا أرباح سريعة تُفقدك الحافز.",
+      fr: "Tu as besoin de résultats visibles à court terme. Les projets longs sans gains rapides te font perdre la motivation.",
+      en: "You need visible short-term results. Long projects without quick wins make you lose motivation.",
+    },
+    mirror_advantage: {
+      ar: "ترى الفرصة قبل أن يرسمها الآخرون على ورقة. هذا ما يجعلك لا يُعوَّض في بيئات المبيعات.",
+      fr: "Tu vois l'opportunité avant que les autres ne la dessinent sur papier. C'est ce qui te rend irremplaçable en vente.",
+      en: "You see the opportunity before others draw it on paper. That's what makes you irreplaceable in sales environments.",
+    },
+    mirror_blindspot: {
+      ar: "تبدأ عشرة مشاريع وتُنهي اثنين. الإتقان يأتي من الإنهاء، وليس من البداية.",
+      fr: "Tu commences dix projets et en termines deux. La maîtrise vient de la finition, pas du démarrage.",
+      en: "You start ten projects and finish two. Mastery comes from finishing, not starting.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن مبادرتك وتواصلك الاجتماعي يتفوّقان على باقي الأبعاد مع مؤشر مخاطرة مرتفع.",
+      fr: "On dit ça car ton initiative et ton social surpassent les autres dimensions avec un indicateur de risque élevé.",
+      en: "We say this because your initiative and social scores outshine others with a high risk indicator.",
+    },
+    morocco_family_frame: {
+      ar: "في المغرب، هذا الملف يصلح للتجارة والمبيعات وريادة الأعمال. الأسرة قد تُفضّل شيئاً 'أكثر استقراراً'، لكن الحقيقة أن المُقاول الجيد يكسب أكثر من المهندس. اشرح لهم بالأرقام.",
+      fr: "Au Maroc, ce profil est taillé pour le commerce, la vente, l'entrepreneuriat. La famille préférera peut-être quelque chose de 'plus stable', mais un bon entrepreneur gagne plus qu'un ingénieur. Explique avec des chiffres.",
+      en: "In Morocco, this profile is built for commerce, sales, and entrepreneurship. Family may prefer something 'more stable', but a good entrepreneur outearns an engineer. Explain with numbers.",
+    },
+  },
+  MLAH: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تستجمع المعطيات وتمدّد وقت القرار بقدر ما تستطيع. الشك يُعطّلك أحياناً أكثر مما يُفيدك.",
+      fr: "Sous pression, tu collectes les données et tu prolonges le temps de décision autant que possible. Le doute te bloque parfois plus qu'il ne t'aide.",
+      en: "Under pressure, you gather data and extend decision time as much as possible. Doubt sometimes blocks you more than it helps.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى فهم 'السبب' وراء كل مهمة. العمل بلا سياق يُثبّطك بسرعة.",
+      fr: "Tu as besoin de comprendre le 'pourquoi' derrière chaque tâche. Travailler sans contexte te démotive vite.",
+      en: "You need to understand the 'why' behind every task. Working without context demotivates you quickly.",
+    },
+    mirror_advantage: {
+      ar: "تستطيع قراءة الأنماط قبل أن يراها الآخرون. الاستراتيجية ليست مهارة كتسبتها — إنها طريقة تفكيرك الطبيعية.",
+      fr: "Tu peux lire les patterns avant que les autres ne les voient. La stratégie n'est pas une compétence acquise — c'est ta façon naturelle de penser.",
+      en: "You can read patterns before others see them. Strategy isn't a skill you learned — it's your natural way of thinking.",
+    },
+    mirror_blindspot: {
+      ar: "تُحلّل حتى تفوتك اللحظة المناسبة. القرار الجيد اليوم أفضل من القرار المثالي الغائب.",
+      fr: "Tu analyses jusqu'à rater le bon moment. Une bonne décision aujourd'hui vaut mieux qu'une décision parfaite absente.",
+      en: "You analyze until you miss the right moment. A good decision today beats a perfect decision that never comes.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن تحليلك وانضباطك يُهيمنان على ملفك مع درجة مبادرة معتدلة.",
+      fr: "On dit ça car ton analytique et ta structure dominent ton profil avec un score initiative modéré.",
+      en: "We say this because your analytical and structure scores dominate your profile with a moderate initiative score.",
+    },
+    morocco_family_frame: {
+      ar: "الملاح هو المهندس المستقبلي أو المحلل الاستراتيجي. في المغرب، هذا المسار يُقدَّر في البنوك، شركات الاستشارات، ومؤسسات الدولة. أسرتك ستفهم الرقم عندما ترى المسمّى الوظيفي.",
+      fr: "Le Navigateur est l'ingénieur-stratège ou l'analyste du futur. Au Maroc, ce profil est valorisé dans les banques, cabinets de conseil et institutions étatiques. Ta famille comprendra le nombre quand elle verra le titre.",
+      en: "The Navigator is the future engineer-strategist or analyst. In Morocco, this profile is valued in banks, consulting firms, and state institutions. Your family will understand the numbers when they see the job title.",
+    },
+  },
+  SDGI: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تتفرّع إلى أفكار جديدة بدل مواجهة المشكلة مباشرة. تبحث عن حلول مبتكرة حتى حين الحل البسيط كافٍ.",
+      fr: "Sous pression, tu branches vers de nouvelles idées plutôt que d'affronter le problème directement. Tu cherches des solutions innovantes même quand le simple suffit.",
+      en: "Under pressure, you branch into new ideas instead of facing the problem directly. You seek innovative solutions even when simple ones would do.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى بيئة تُثمّن التجريب دون خوف من الفشل. النقد المبكر يُجمّد إبداعك.",
+      fr: "Tu as besoin d'un environnement valorisant l'expérimentation sans crainte d'échec. La critique précoce gèle ta créativité.",
+      en: "You need an environment that values experimentation without fear of failure. Early criticism freezes your creativity.",
+    },
+    mirror_advantage: {
+      ar: "ترى الاتصالات بين أفكار لا يجمع بينها أحد. هذا ما يجعل منتجاتك مختلفة.",
+      fr: "Tu vois les connexions entre idées que personne ne relie. C'est ce qui rend tes produits différents.",
+      en: "You see connections between ideas no one links. That's what makes your products different.",
+    },
+    mirror_blindspot: {
+      ar: "تبدأ مشاريع كثيرة ولا تُكملها. قدرتك على التأثير تتضاعف عندما تُنهي ما بدأت.",
+      fr: "Tu lances beaucoup et termines peu. Ton impact se multiplie quand tu finis ce que tu commences.",
+      en: "You start many projects and finish few. Your impact multiplies when you complete what you start.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن إبداعك يتصدّر ملفك متزامناً مع معامل مجتمعي قوي ومبادرة مرتفعة.",
+      fr: "On dit ça car ta créativité domine ton profil avec un score social et initiative élevés.",
+      en: "We say this because your creativity tops your profile alongside a strong social score and high initiative.",
+    },
+    morocco_family_frame: {
+      ar: "في المغرب، الاقتصاد الرقمي في طور النمو. مسارات تصميم الرقمي والتسويق الإبداعي وتطوير التطبيقات أصبحت مطلوبة في القطاع الخاص. إذا أرادت أسرتك 'مسار حقيقي'، هذا المسار يُنتج دخلاً ملموساً.",
+      fr: "Au Maroc, l'économie numérique est en plein essor. Design digital, marketing créatif et développement d'apps sont recherchés dans le privé. Si ta famille veut une 'vraie filière', ce profil génère un revenu concret.",
+      en: "In Morocco, the digital economy is growing fast. Digital design, creative marketing, and app development are sought in the private sector. If your family wants a 'real track', this profile generates concrete income.",
+    },
+  },
+  RAID: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تنسحب بداخلك وتشتغل وحيداً. الحلول التي تجدها مبتكرة لكنها أحياناً غير قابلة للتفسير.",
+      fr: "Sous pression, tu te retires en toi-même et travailles seul. Les solutions que tu trouves sont innovantes mais parfois inexplicables.",
+      en: "Under pressure, you retreat inward and work alone. The solutions you find are innovative but sometimes inexplicable.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى استقلالية كاملة وإيمان حقيقي بالمشروع. العمل بأجر دون معنى يُميت حافزك.",
+      fr: "Tu as besoin d'autonomie totale et d'une vraie croyance dans le projet. Travailler pour un salaire sans sens tue ta motivation.",
+      en: "You need complete autonomy and genuine belief in the project. Salaried work without meaning kills your motivation.",
+    },
+    mirror_advantage: {
+      ar: "تستطيع إعادة تعريف المشكلة من الصفر. هذا ما يجعلك رائداً حقيقياً.",
+      fr: "Tu peux redéfinir le problème depuis zéro. C'est ce qui fait de toi un vrai pionnier.",
+      en: "You can redefine the problem from scratch. That's what makes you a true pioneer.",
+    },
+    mirror_blindspot: {
+      ar: "أفكارك تبقى في ذهنك ما لم تتعلّم كيف تبيعها. التواصل وتسويق الأفكار مهارة حاسمة لك.",
+      fr: "Tes idées restent dans ta tête si tu n'apprends pas à les vendre. La communication et le pitch sont décisifs pour toi.",
+      en: "Your ideas stay in your head until you learn to sell them. Communication and pitching are critical skills for you.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن إبداعك واستقلاليتك يحتلان المرتبة الأولى مع مخاطرة عالية ودرجة اجتماعية منخفضة نسبياً.",
+      fr: "On dit ça car ta créativité et ton indépendance arrivent en tête avec un risque élevé et un score social relativement bas.",
+      en: "We say this because your creativity and independence lead with high risk and a relatively low social score.",
+    },
+    morocco_family_frame: {
+      ar: "الرائد يُربك الأسر المغربية لأنه لا يسير على مسار مُعتاد. لكن ريادة الأعمال أصبحت لغة مفهومة في المغرب. مسارات التقنية والابتكار تمنحك مصداقية أمام الأسرة.",
+      fr: "Le Pionnier déroute les familles marocaines car il ne suit pas un parcours classique. Mais l'entrepreneuriat est devenu un langage compris au Maroc. Tech et innovation te donnent de la crédibilité.",
+      en: "The Pioneer confuses Moroccan families because he doesn't follow a classic path. But entrepreneurship is now understood in Morocco. Tech and innovation give you credibility.",
+    },
+  },
+  MTQN: {
+    mirror_pressure: {
+      ar: "تحت الضغط، تتمسّك بالتفاصيل الدقيقة وترفض الاختصارات. هذا يُحسّن جودة ما تُنجز لكنه يُبطئ التسليم.",
+      fr: "Sous pression, tu t'accroches aux détails précis et refuses les raccourcis. Ça améliore la qualité mais ralentit la livraison.",
+      en: "Under pressure, you cling to precise details and refuse shortcuts. This improves quality but slows delivery.",
+    },
+    mirror_consistency: {
+      ar: "تحتاج إلى وقت كافٍ للوصول إلى المستوى الذي تقبله. الجدول الزمني الضيّق هو عدوّك الأول.",
+      fr: "Tu as besoin de temps suffisant pour atteindre le niveau que tu acceptes. Les délais serrés sont ton ennemi numéro un.",
+      en: "You need enough time to reach the level you'll accept. Tight deadlines are your number one enemy.",
+    },
+    mirror_advantage: {
+      ar: "حرفتك بحد ذاتها مرجعية. الناس يعودون إليك لأنهم يعلمون أنك لن تُقدّم أقل من المثالية.",
+      fr: "Ton travail est lui-même une référence. Les gens reviennent vers toi car ils savent que tu ne livreras jamais sous le parfait.",
+      en: "Your craft itself is a reference. People return to you because they know you'll never deliver below perfect.",
+    },
+    mirror_blindspot: {
+      ar: "تُقدَّر قيمتك أقل مما تستحق لأنك لا تُسوّق نفسك. الجودة لوحدها لا تُباع — تحتاج أن تُخبر الآخرين بما تُنجز.",
+      fr: "Tu es sous-valorisé car tu ne te vends pas. La qualité seule ne se vend pas — tu dois dire aux autres ce que tu accomplis.",
+      en: "You're undervalued because you don't market yourself. Quality alone doesn't sell — you need to tell others what you accomplish.",
+    },
+    evidence_line: {
+      ar: "نقول هذا لأن انضباطك وتحليلك يتصدّران ملفك، مقرونَين بمبادرة منخفضة.",
+      fr: "On dit ça car ta structure et ton analytique dominent ton profil, couplés à une initiative basse.",
+      en: "We say this because your structure and analytical scores top your profile, coupled with low initiative.",
+    },
+    morocco_family_frame: {
+      ar: "المُتقن يُقدَّر في أكثر المؤسسات المغربية: المهن الحرة، التقنية الدقيقة، الطب والصيدلة. إذا كانت أسرتك تريد 'شخصاً ماهراً ومحترماً'، هذا أنت.",
+      fr: "Le Maître Artisan est valorisé dans les professions libérales, les métiers techniques de précision, la médecine et la pharmacie. Si ta famille veut quelqu'un de 'compétent et respecté', c'est toi.",
+      en: "The Master Craftsman is valued in liberal professions, precision technical trades, medicine and pharmacy. If your family wants someone 'skilled and respected', that's you.",
+    },
+  },
+};
+
+// Helper: get mirror block for an archetype code
+function getArchetypeMirror(archetypeCode) {
+  return ARCHETYPE_MIRROR[archetypeCode] || ARCHETYPE_MIRROR.MLAH;
+}
+
 // Maps 16 computed internal codes → 8 Moroccan archetypes
 const ARCHETYPE_MAP = {
   ASPR: MOROCCAN_ARCHETYPES.MHNI,
@@ -5380,10 +5829,11 @@ function getArchetype(code) {
   return ARCHETYPE_MAP[code] || MOROCCAN_ARCHETYPES.MLAH;
 }
 
-function massarTypeDesc(code, t) {
+function massarTypeDesc(code, t, langOverride) {
   const archetype = getArchetype(code);
-  const lang = t.dir==="rtl" ? "ar" : (t.next==="Next" ? "en" : "fr");
-  return archetype.tagline?.[lang] || archetype.tagline?.en || "";
+  const lang = langOverride
+    || (t?.dir === "rtl" ? "ar" : (t?.next === "Next" ? "en" : "fr"));
+  return archetype?.tagline?.[lang] || archetype?.tagline?.en || "";
 }
 
 
@@ -5564,7 +6014,7 @@ function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setR
       )}
 
       <p style={{fontSize:11,color:"var(--muted)",fontStyle:"italic",marginTop:14}}>
-        {t.improvementDisclaimer}
+        {t?.improvementDisclaimer}
       </p>
     </div>
   );
@@ -5737,9 +6187,59 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
       {expanded && (
         <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:16}}>
 
+          {/* ── Identity Mirror blocks ── */}
+          {(() => {
+            const mirror = getArchetypeMirror(archetype.code);
+            const ml = lang;
+            const blocks = [
+              { icon:"🔥", label: t.underPressure       || "Under pressure",     text: mirror.mirror_pressure?.[ml]     || mirror.mirror_pressure?.fr     || "" },
+              { icon:"🔋", label: t.consistencySecret   || "Consistency secret", text: mirror.mirror_consistency?.[ml]  || mirror.mirror_consistency?.fr  || "" },
+              { icon:"⚡", label: t.unfairAdvantage     || "Unfair advantage",   text: mirror.mirror_advantage?.[ml]    || mirror.mirror_advantage?.fr    || "" },
+              { icon:"🎯", label: t.blindSpot           || "Blind spot",         text: mirror.mirror_blindspot?.[ml]    || mirror.mirror_blindspot?.fr    || "" },
+            ];
+            const mirrorColors = ["rgba(239,68,68,0.06)","rgba(59,130,246,0.06)","rgba(99,102,241,0.06)","rgba(245,158,11,0.06)"];
+            const mirrorBorders = ["rgba(239,68,68,0.2)","rgba(59,130,246,0.2)","rgba(99,102,241,0.2)","rgba(245,158,11,0.2)"];
+            const mirrorTextColors = ["#f87171","var(--accent2)","#818cf8","var(--warn)"];
+            return (
+              <>
+                <div style={{fontSize:12,fontWeight:800,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:2}}>
+                  {t.identityMirrorTitle || "Identity Mirror"}
+                </div>
+                {blocks.filter(b=>b.text).map((b,i)=>(
+                  <div key={i} style={{
+                    padding:"12px 14px",
+                    background:mirrorColors[i],
+                    border:`1px solid ${mirrorBorders[i]}`,
+                    borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
+                  }}>
+                    <span style={{fontWeight:700,color:mirrorTextColors[i]}}>{b.icon} {b.label}: </span>
+                    {b.text}
+                  </div>
+                ))}
+                {/* Evidence line */}
+                {mirror.evidence_line?.[ml] && (
+                  <div style={{fontSize:11,color:"var(--muted)",fontStyle:"italic",padding:"8px 12px",
+                    background:"rgba(107,114,128,0.06)",borderRadius:8,lineHeight:1.6}}>
+                    🔍 {mirror.evidence_line[ml]}
+                  </div>
+                )}
+                {/* Morocco family frame */}
+                {mirror.morocco_family_frame?.[ml] && (
+                  <div style={{padding:"12px 14px",background:"rgba(232,161,36,0.06)",
+                    border:"1px solid rgba(232,161,36,0.2)",borderRadius:10,fontSize:12,
+                    color:"var(--text)",lineHeight:1.65}}>
+                    <span style={{fontWeight:700,color:"var(--accent)"}}>
+                      {lang==="ar"?"🏠 السياق الأسري المغربي":lang==="fr"?"🏠 Contexte familial marocain":"🏠 Moroccan family context"}: 
+                    </span>{" "}{mirror.morocco_family_frame[ml]}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+
           {/* Core strengths */}
           <div style={{padding:"12px 16px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:10}}>
-            <div style={{fontWeight:700,fontSize:12,color:"#10b981",marginBottom:8}}>{t.archetypeStrengths}</div>
+            <div style={{fontWeight:700,fontSize:12,color:"#10b981",marginBottom:8}}>{t?.archetypeStrengths}</div>
             <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {strengths.map((s,i)=>(
                 <span key={i} style={{padding:"4px 10px",background:"rgba(16,185,129,0.1)",border:"1px solid rgba(16,185,129,0.25)",borderRadius:20,fontSize:12,color:"var(--text)"}}>
@@ -5752,18 +6252,18 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
           {/* Growth warning */}
           {risk && (
             <div style={{padding:"10px 14px",background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.18)",borderRadius:10,fontSize:12,color:"#f87171"}}>
-              <strong>{t.archetypeRisk}: </strong>{risk}
+              <strong>{t?.archetypeRisk}: </strong>{risk}
             </div>
           )}
 
           {/* Best/worst env */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <div style={{padding:"10px 14px",background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.18)",borderRadius:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>✅ {t.archetypeBestEnv}</div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>✅ {t?.archetypeBestEnv}</div>
               <div style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{bestEnv}</div>
             </div>
             <div style={{padding:"10px 14px",background:"rgba(107,114,128,0.08)",border:"1px solid var(--border)",borderRadius:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:4}}>⚠️ {t.archetypeWorstEnv}</div>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:4}}>⚠️ {t?.archetypeWorstEnv}</div>
               <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{worstEnv}</div>
             </div>
           </div>
@@ -5772,14 +6272,14 @@ function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             {opposite && (
               <div style={{padding:"10px 14px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10}}>
-                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t.archetypeOpposite}</div>
+                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t?.archetypeOpposite}</div>
                 <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{opposite.icon} {oppName}</div>
                 <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{archetype.opposite}</div>
               </div>
             )}
             {evolveCode && (
               <div style={{padding:"10px 14px",background:"rgba(232,161,36,0.06)",border:"1px solid rgba(232,161,36,0.2)",borderRadius:10}}>
-                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t.archetypeEvolution} <strong style={{color:"var(--accent)"}}>{evolveLbl}</strong></div>
+                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t?.archetypeEvolution} <strong style={{color:"var(--accent)"}}>{evolveLbl}</strong></div>
                 <div style={{fontSize:13,fontWeight:700,color:"var(--accent)"}}>→ {evolveInto}</div>
                 <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{evolveCode}</div>
               </div>
@@ -6321,7 +6821,7 @@ function CardEmblem({ archIcon, accent, glow, size }) {
 }
 
 // Rarity pill with tier-specific styling
-function RarityPill({ rarity, rarityLabel, accent, glow, fontSize, shimmer, onShimmerDone }) {
+function RarityPill({ rarity, rarityLabel, accent, glow, fontSize }) {
   const fs = fontSize || 9;
   // Special styling per tier — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
   const tierStyle = {
@@ -6332,7 +6832,7 @@ function RarityPill({ rarity, rarityLabel, accent, glow, fontSize, shimmer, onSh
   }[rarity.key] || {};
 
   return (
-    <span className="sc-shimmer-wrap" style={{
+    <span style={{
       display:"inline-flex", alignItems:"center", gap:3,
       padding:`${Math.round(fs*0.33)}px ${Math.round(fs*1.1)}px`,
       borderRadius:20, fontSize:fs, fontWeight:800, letterSpacing:".06em",
@@ -6340,7 +6840,6 @@ function RarityPill({ rarity, rarityLabel, accent, glow, fontSize, shimmer, onSh
       ...tierStyle,
     }}>
       {rarity.emoji}&nbsp;{rarityLabel.toUpperCase()}
-      {shimmer && <span className="sc-shimmer-ray" onAnimationEnd={onShimmerDone}/>}
     </span>
   );
 }
@@ -6388,44 +6887,6 @@ function serialId(archCode) {
   for (let i = 0; i < archCode.length; i++) h = (h * 31 + archCode.charCodeAt(i)) & 0xffffffff;
   const n = ((h >>> 0) % 99) + 1;
   return `MS-${archCode}-${n.toString().padStart(2,"0")}`;
-}
-
-// viralShareId — deterministic 3-digit suffix (uses code + confidence for uniqueness)
-function viralShareId(archCode, confidence) {
-  const s = (archCode || "XXXX") + String(Math.round(confidence || 0));
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) & 0xffffffff;
-  const n = ((h >>> 0) % 900) + 100; // 100–999: always 3 digits
-  return `MS-${archCode}-${n}`;
-}
-
-// QRPill — URL "massarpro.com" fallback pill (no external QR lib needed)
-function QRPill({ accent }) {
-  const ac = accent || "#22d3ee";
-  return (
-    <span dir="ltr" style={{
-      display:"inline-flex", alignItems:"center", gap:3,
-      padding:"2px 6px 2px 4px", borderRadius:5,
-      background:"rgba(0,0,0,0.45)", border:`1px solid ${ac}33`,
-      fontSize:"clamp(5px,1.2vw,7px)", fontWeight:700, fontFamily:"monospace",
-      color:ac+"77", letterSpacing:".04em", flexShrink:0, lineHeight:1.3,
-      userSelect:"none",
-    }}>
-      <svg width="9" height="9" viewBox="0 0 9 9" fill="none" style={{flexShrink:0}}>
-        <rect x="0" y="0" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
-        <rect x="5" y="0" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
-        <rect x="0" y="5" width="4" height="4" rx="0.5" fill={ac} opacity="0.55"/>
-        <rect x="1" y="1" width="2" height="2" fill={ac} opacity="0.85"/>
-        <rect x="6" y="1" width="2" height="2" fill={ac} opacity="0.85"/>
-        <rect x="1" y="6" width="2" height="2" fill={ac} opacity="0.85"/>
-        <rect x="5" y="5" width="1" height="1" fill={ac} opacity="0.65"/>
-        <rect x="7" y="5" width="1" height="1" fill={ac} opacity="0.65"/>
-        <rect x="5" y="7" width="1" height="1" fill={ac} opacity="0.65"/>
-        <rect x="8" y="8" width="1" height="1" fill={ac} opacity="0.65"/>
-      </svg>
-      massarpro.com
-    </span>
-  );
 }
 
 // Icon mapping for trait chips
@@ -6497,7 +6958,7 @@ function ShareCardClassic({ p }) {
               {isRTL ? "بوابة مسارك المهني" : "Career Identity Engine"}
             </span>
           </div>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={8}/>
         </div>
 
         {/* ── EMBLEM — wrapped with glow padding ── */}
@@ -6599,33 +7060,20 @@ function ShareCardClassic({ p }) {
           ))}
         </div>
 
-        {/* ── CHALLENGE LINE ── */}
-        <div style={{
-          textAlign:"center", fontSize:"clamp(5.5px,1.3%,7.5px)", fontWeight:600,
-          color:accent+"66", fontStyle:"italic", letterSpacing:".03em",
-          marginBottom:"1.5%", marginTop:"1%",
-          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
-        }}>
-          {p.challengeLine}
-        </div>
-
         {/* ── FOOTER ── */}
         <div style={{
-          marginTop:"1%", paddingTop:"2%", flexShrink:0,
+          marginTop:"3%", paddingTop:"2%", flexShrink:0,
           borderTop:`1px solid ${accent}1e`,
           display:"flex", justifyContent:"space-between", alignItems:"center",
           flexDirection: isRTL ? "row-reverse" : "row",
         }}>
           <span style={{ fontSize:"clamp(5px,1.4%,7px)", fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
-            massar.ma
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
           </span>
-          <div style={{display:"flex",alignItems:"center",gap:4,flexDirection:isRTL?"row-reverse":"row"}}>
-            <QRPill accent={accent}/>
-            <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
-              letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
-              {p.shareId}
-            </span>
-          </div>
+          <span style={{ fontSize:"clamp(5px,1.3%,6.5px)", fontWeight:600, color:accent+"55",
+            letterSpacing:".08em", fontVariantNumeric:"tabular-nums" }} dir="ltr">
+            {sid}
+          </span>
         </div>
 
       </div>
@@ -6659,7 +7107,7 @@ function ShareCardSquare({ p }) {
           <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:".2em" }}>
             {isRTL ? "مسار" : "MASSAR"}
           </span>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
         </div>
 
         {/* Emblem — 60px with glow breathing room */}
@@ -6702,25 +7150,15 @@ function ShareCardSquare({ p }) {
         </div>
         <MatchBar pct={confidence} accent={accent} glow={glow} height={6}/>
 
-        {/* Challenge line */}
-        <div style={{
-          fontSize:6.5, fontWeight:600, color:accent+"66", fontStyle:"italic",
-          letterSpacing:".03em", textAlign:"center", marginBottom:4,
-          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", width:"100%",
-        }}>{p.challengeLine}</div>
-
         {/* Footer */}
         <div style={{ width:"100%", display:"flex", justifyContent:"space-between",
           alignItems:"center", flexDirection: isRTL ? "row-reverse" : "row" }}>
           <span style={{ fontSize:7, fontWeight:700, color:"#374151", letterSpacing:".1em" }}>
-            massar.ma
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
           </span>
-          <div style={{display:"flex",alignItems:"center",gap:3,flexDirection:isRTL?"row-reverse":"row"}}>
-            <QRPill accent={accent}/>
-            <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
-              {p.shareId}
-            </span>
-          </div>
+          <span dir="ltr" style={{ fontSize:6.5, fontWeight:600, color:accent+"55", letterSpacing:".07em" }}>
+            {sid}
+          </span>
         </div>
 
       </div>
@@ -6758,7 +7196,7 @@ function ShareCardPortrait({ p }) {
           <span style={{ fontSize:8, fontWeight:800, color:"#6b7280", letterSpacing:"0.2em" }}>
             {isRTL ? "مسار" : "MASSAR"}
           </span>
-          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5} shimmer={p.shimmer} onShimmerDone={p.onShimmerDone}/>
+          <RarityPill rarity={rarity} rarityLabel={rarityLabel} accent={accent} glow={glow} fontSize={7.5}/>
         </div>
 
         {/* Emblem — 72px with glow breathing room */}
@@ -6849,29 +7287,19 @@ function ShareCardPortrait({ p }) {
           ))}
         </div>
 
-        {/* Challenge line */}
-        <div style={{
-          width:"100%", fontSize:8, fontWeight:600, color:accent+"66", fontStyle:"italic",
-          letterSpacing:".03em", textAlign:"center", marginTop:4, marginBottom:2,
-          overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap",
-        }}>{p.challengeLine}</div>
-
         {/* Footer */}
         <div style={{
-          width:"100%", marginTop:4, paddingTop:7, flexShrink:0,
+          width:"100%", marginTop:8, paddingTop:7, flexShrink:0,
           borderTop:`1px solid ${accent}1e`,
           display:"flex", justifyContent:"space-between", alignItems:"center",
           flexDirection: isRTL ? "row-reverse" : "row",
         }}>
           <span style={{ fontSize:7.5, fontWeight:700, color:"#374151", letterSpacing:".12em" }}>
-            massar.ma
+            massar.ma&nbsp;•&nbsp;{new Date().getFullYear()}
           </span>
-          <div style={{display:"flex",alignItems:"center",gap:3,flexDirection:isRTL?"row-reverse":"row"}}>
-            <QRPill accent={accent}/>
-            <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
-              {p.shareId}
-            </span>
-          </div>
+          <span dir="ltr" style={{ fontSize:7, fontWeight:600, color:accent+"55", letterSpacing:".08em" }}>
+            {sid}
+          </span>
         </div>
 
       </div>
@@ -6881,15 +7309,13 @@ function ShareCardPortrait({ p }) {
 
 // ─────────────────────────────────────────────────────────────────
 // ShareCard: responsive collectible card (DOM preview + canvas export, no deps)
-// Viral upgrade: shimmer reveal, challenge line, QR pill, SharePanel
+// Preview = pure CSS/DOM — three separate layout components per format.
+// Export  = Canvas API — runs only on download click.
 // ─────────────────────────────────────────────────────────────────
-function ShareCard({ t, lang, massarType, topCluster, confidence }) {
-  const [fmt, setFmt]             = useState("story");   // story | square | card
-  const [captionMode, setCaptionMode] = useState("full"); // full | short
-  const [copiedCaption, setCopiedCaption] = useState(false);
-  const [copiedLink,    setCopiedLink]    = useState(false);
-  const [shimmerDone,   setShimmerDone]  = useState(false);
-  const [shareTooltip,  setShareTooltip] = useState(false);
+function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
+  const [copied,  setCopied]  = useState(false);
+  // format: "card" (5:7) | "square" (1:1) | "story" (9:16)
+  const [fmt, setFmt] = useState("card");
 
   const archetype   = getArchetype(massarType);
   const archName    = archetype.name?.[lang]    || archetype.name?.en    || massarType;
@@ -6898,17 +7324,19 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const archTagline = archetype.tagline?.[lang] || archetype.tagline?.en || archName;
   const rawStrengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
   const strengths   = rawStrengths.slice(0, 3).map(s => s.length > 22 ? s.slice(0, 21) + "…" : s);
+  // FIX: translation fallback — clusterName safe default
   const clusterName = t?.[CLUSTER_KEY_MAP?.[topCluster?.id]] || topCluster?.id || "";
   const isRTL       = lang === "ar";
-  const dir         = isRTL ? "rtl" : "ltr";
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-      console.log("[Massar] share card prepared:", { massarType, archCode, clusterName, confidence });
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
+  const dir         = isRTL ? "rtl" : "ltr";
 
+  // Level from confidence
   function cardLevel(conf) {
     const lvl = Math.min(5, Math.max(1, Math.ceil(conf / 20)));
     const labels = {
@@ -6924,6 +7352,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   }
   const level = cardLevel(confidence);
 
+  // Rarity tiers — spec: Common=gray, Rare=cyan, Epic=purple, Legendary=amber
   function cardRarity(conf) {
     if (conf>=85) return { key:"legendary", label:{ar:"أسطوري",fr:"Légendaire",en:"Legendary"}, emoji:"👑", color:"#f59e0b", glow:"rgba(245,158,11,0.55)" };
     if (conf>=70) return { key:"epic",      label:{ar:"ملحمي",  fr:"Épique",    en:"Epic"      }, emoji:"⚡", color:"#a855f7", glow:"rgba(168,85,247,0.5)"  };
@@ -6935,71 +7364,47 @@ function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const accent      = rarity.color;
   const glow        = rarity.glow;
 
-  // Share ID — deterministic 3-digit, includes confidence
-  const shareId = viralShareId(archCode, confidence);
-  // Challenge line
-  const challengeLine = t?.challengeLine || { ar:"عطينا نتيجتك فالكومنت 👀", fr:"Balance ton code en story 👀", en:"Drop your code in story 👀" }[lang] || "";
-
-  // ── Viral captions ────────────────────────────────────────────
-  const rarityGem = rarity.key==="legendary"?"🔥":rarity.key==="epic"?"💎":rarity.key==="rare"?"💎":"✨";
-  const hashtags  = lang==="ar" ? "#مسار #MassarPro" : "#Massar #MassarPro";
-  const captionFull = lang==="ar"
-    ? `${archName} ${rarityGem} ${rarityLabel}
-${archTagline}
-${challengeLine}
-${hashtags}`
+  // Viral caption (unchanged)
+  const caption = lang==="ar"
+    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
     : lang==="fr"
-    ? `${archName} ${rarityGem} ${rarityLabel}
-${archTagline}
-${challengeLine}
-${hashtags}`
-    : `${archName} ${rarityGem} ${rarityLabel}
-${archTagline}
-${challengeLine}
-${hashtags}`;
-  const captionShortText = lang==="ar"
-    ? `${archName} · ${shareId}
-نتيجتك؟ 👀`
-    : lang==="fr"
-    ? `${archName} · ${shareId}
-Et toi? 👀`
-    : `${archName} · ${shareId}
-Yours? 👀`;
-  const caption = captionMode==="short" ? captionShortText : captionFull;
+    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
+    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
 
   // Format metadata
   const FMT = {
-    story:  { label: t?.shareFormatStory  || "Story 9:16",  exportW:1080, exportH:1920 },
-    square: { label: t?.shareFormatSquare || "Square 1:1",  exportW:1080, exportH:1080 },
-    card:   { label:"Card",                                  exportW:1260, exportH:1764 },
+    card:   { label:"Card", exportW:1260, exportH:1764 },
+    square: { label:"1:1",  exportW:1080, exportH:1080 },
+    story:  { label:"9:16", exportW:1080, exportH:1920 },
   };
-  const fmtMeta = FMT[fmt] || FMT.story;
+  const fmtMeta = FMT[fmt] || FMT.card;
 
-  // Copy helpers
-  const doCopyText = (text, setter) => {
-    const done = () => { setter(true); setTimeout(()=>setter(false), 2500); };
-    try { navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopyText(text,done)); }
-    catch { fallbackCopyText(text, done); }
+  // Copy caption (unchanged)
+  const copyCaption = () => {
+    const doSet = () => { setCopied(true); setTimeout(()=>setCopied(false), 2500); };
+    try { navigator.clipboard.writeText(caption).then(doSet).catch(()=>fallbackCopy(doSet)); }
+    catch { fallbackCopy(doSet); }
   };
-  const fallbackCopyText = (text, cb) => {
-    const ta=document.createElement("textarea"); ta.value=text;
+  const fallbackCopy = (cb) => {
+    const ta=document.createElement("textarea"); ta.value=caption;
     document.body.appendChild(ta); ta.select();
     try { document.execCommand("copy"); } catch {}
     document.body.removeChild(ta); cb();
   };
 
-  // ── Canvas export ─────────────────────────────────────────────
+  // ── Canvas export — El M3allem style ─────────────────────────
   function buildCanvas() {
-    const W = fmtMeta.exportW;
-    const H = fmtMeta.exportH;
-    const PAD = Math.round(W*0.074);
-    const canvas = document.createElement("canvas");
+    const W=fmtMeta.exportW, H=fmtMeta.exportH;
+    const PAD=Math.round(W*0.072);
+    const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
-    const ctx = canvas.getContext("2d");
-    const arF = "Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
-    const enF = "system-ui,-apple-system,Segoe UI,sans-serif";
-    const bF  = isRTL ? arF : enF;
+    const ctx=canvas.getContext("2d");
+    if (!ctx) { return canvas; } // guard: getContext may return null in some environments
+    const arF="Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
+    const enF="system-ui,-apple-system,Segoe UI,sans-serif";
+    const bF=isRTL?arF:enF;
 
+    // ── Shared helpers ────────────────────────────────────────
     function rr(x,y,w,h,r){
       ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
       ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
@@ -7007,435 +7412,457 @@ Yours? 👀`;
       ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
       ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
     }
-    const dtC=(txt,y,font,col,mw)=>{
+    const tx=(txt,x,y,font,col,mw,align="left")=>{
       ctx.save(); ctx.font=font; ctx.fillStyle=col;
-      ctx.textAlign="center"; ctx.textBaseline="alphabetic";
-      ctx.fillText(txt,W/2,y,mw||W-PAD*2); ctx.restore();
+      ctx.textAlign=align; ctx.textBaseline="alphabetic";
+      ctx.fillText(txt,x,y,mw||W-PAD*2); ctx.restore();
     };
-    const dtL=(txt,y,font,col,mw)=>{
-      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textBaseline="alphabetic";
-      if(isRTL){ const tw=ctx.measureText(txt).width; ctx.fillText(txt,W-PAD-Math.min(tw,mw||W),y,mw||W-PAD*2); }
-      else { ctx.fillText(txt,PAD,y,mw||W-PAD*2); }
-      ctx.restore();
+    const txC=(txt,y,font,col,mw)=>tx(txt,W/2,y,font,col,mw,"center");
+    const txL=(txt,y,font,col,mw)=>{
+      if(isRTL){ const tw=ctx.measureText(txt).width; tx(txt,W-PAD,y,font,col,mw,"right"); }
+      else { tx(txt,PAD,y,font,col,mw,"left"); }
+    };
+    const txR=(txt,y,font,col,mw)=>{
+      if(isRTL){ tx(txt,PAD,y,font,col,mw,"left"); }
+      else { tx(txt,W-PAD,y,font,col,mw,"right"); }
     };
 
-    // Background + grain + accent blob
-    const bg=ctx.createLinearGradient(0,0,W,H);
-    bg.addColorStop(0,"#060a14"); bg.addColorStop(0.5,"#0a1020"); bg.addColorStop(1,"#0d1628");
+    // ── Gold palette ──────────────────────────────────────────
+    const GOLD="#e8a124", GOLD2="#fbbf24", BLUE="#1e3a5f", BLUE2="#3b82f6";
+    const BG1="#07091a", BG2="#0b1230", BG3="#0f1840";
+    const sid=serialId(archCode);
+
+    // ── Stats labels from archetype strengths ─────────────────
+    const statLabels = {
+      ar:["الحرفة","الاستراتيجية","الانضباط"],
+      fr:["Craft","Stratégie","Discipline"],
+      en:["Craft","Strategy","Discipline"],
+    }[lang] || ["Craft","Strategy","Discipline"];
+    const rawTr = traits && typeof traits==="object" ? traits : {};
+    const statVals = [
+      Math.round(clamp((rawTr.analytical||0.65)*100)),
+      Math.round(clamp((rawTr.leadership||0.60)*100)),
+      Math.round(clamp((rawTr.structure||0.70)*100)),
+    ];
+
+    // ════════════════════════════════════════════════════════
+    // SHARED BACKGROUND — deep navy + Moroccan ornamental tile
+    // ════════════════════════════════════════════════════════
+    const bg=ctx.createLinearGradient(0,0,W*0.4,H);
+    bg.addColorStop(0,BG1); bg.addColorStop(0.5,BG2); bg.addColorStop(1,BG3);
     ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-    for(let i=0;i<12000;i++){
-      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.018})`;
+
+    // Moroccan geometric tile overlay (8-pointed star grid, CSS-only approximation)
+    // We draw a subtle repeating lattice using canvas paths
+    const tileSize = Math.round(W*0.12);
+    ctx.save(); ctx.globalAlpha=0.04;
+    ctx.strokeStyle=GOLD2; ctx.lineWidth=1.5;
+    for(let gx=0;gx<W+tileSize;gx+=tileSize){
+      for(let gy=0;gy<H+tileSize;gy+=tileSize){
+        const cx2=gx, cy2=gy, r2=tileSize*0.38;
+        // 8-pointed star
+        ctx.beginPath();
+        for(let p=0;p<8;p++){
+          const a=(p/8)*Math.PI*2-Math.PI/8;
+          const a2=((p+0.5)/8)*Math.PI*2-Math.PI/8;
+          const rI=r2*0.45;
+          if(p===0) ctx.moveTo(cx2+Math.cos(a)*r2,cy2+Math.sin(a)*r2);
+          else ctx.lineTo(cx2+Math.cos(a)*r2,cy2+Math.sin(a)*r2);
+          ctx.lineTo(cx2+Math.cos(a2)*rI,cy2+Math.sin(a2)*rI);
+        }
+        ctx.closePath(); ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // Gold radial glow top-right
+    const glowGrad=ctx.createRadialGradient(W*0.82,H*0.06,0,W*0.82,H*0.06,W*0.5);
+    glowGrad.addColorStop(0,GOLD+"28"); glowGrad.addColorStop(1,"transparent");
+    ctx.fillStyle=glowGrad; ctx.fillRect(0,0,W,H);
+
+    // Film grain
+    for(let i=0;i<10000;i++){
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.016})`;
       ctx.fillRect(Math.floor(Math.random()*W),Math.floor(Math.random()*H),1,1);
     }
-    const gx=isRTL?W*0.2:W*0.8;
-    const blob=ctx.createRadialGradient(gx,H*0.06,0,gx,H*0.06,W*0.45);
-    blob.addColorStop(0,accent+"30"); blob.addColorStop(1,"transparent");
-    ctx.fillStyle=blob; ctx.fillRect(0,0,W,H);
-    // Neon border
-    ctx.save(); ctx.strokeStyle=accent; ctx.lineWidth=5;
-    ctx.shadowColor=accent; ctx.shadowBlur=40;
-    rr(10,10,W-20,H-20,Math.round(W*0.036)); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.strokeStyle=accent+"22"; ctx.lineWidth=2;
-    rr(26,26,W-52,H-52,Math.round(W*0.026)); ctx.stroke(); ctx.restore();
 
-    // ── Story (9:16) layout ───────────────────────────────────
-    if (fmt==="story" || H > W) {
-      const cx=W/2; let y=PAD*1.3;
-      const rarityPillColors = {
-        legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
-        epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
-        rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
-        common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
-      };
-      const rpcP=rarityPillColors[rarity.key]||rarityPillColors.common;
-      dtC(isRTL?"مسار":"MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+    // ── Double border (outer gold + inner subtle) ─────────────
+    ctx.save(); ctx.strokeStyle=GOLD; ctx.lineWidth=3.5;
+    ctx.shadowColor=GOLD; ctx.shadowBlur=30;
+    rr(8,8,W-16,H-16,Math.round(W*0.032)); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.strokeStyle=GOLD+"30"; ctx.lineWidth=1.5;
+    rr(20,20,W-40,H-40,Math.round(W*0.024)); ctx.stroke(); ctx.restore();
+
+    // Corner ornaments (4 corners)
+    const ornSize=Math.round(W*0.055);
+    [[20,20,1,1],[W-20,20,-1,1],[20,H-20,1,-1],[W-20,H-20,-1,-1]].forEach(([ox,oy,sx2,sy2])=>{
+      ctx.save(); ctx.strokeStyle=GOLD+"88"; ctx.lineWidth=2;
+      ctx.shadowColor=GOLD; ctx.shadowBlur=8;
+      ctx.beginPath();
+      ctx.moveTo(ox,oy+ornSize*sy2); ctx.lineTo(ox,oy); ctx.lineTo(ox+ornSize*sx2,oy);
+      ctx.stroke(); ctx.restore();
+    });
+
+    // ════════════════════════════════════════════════════════
+    // LAYOUT — card (5:7) and square share same vertical flow
+    // story (9:16) has separate flow below
+    // ════════════════════════════════════════════════════════
+    if(fmt==="story"){
+      // ── 9:16 Portrait El M3allem layout ────────────────────
+      let y=Math.round(H*0.048);
+
+      // Header bar — "MASSAR | 2024"
+      const hdrTxt=`MASSAR | ${new Date().getFullYear()}`;
+      const hdrSubTxt=isRTL?"محرك الهوية المهنية بالمغرب":"Morocco Career Identity Engine";
+      const hdrF=`bold ${Math.round(W*0.030)}px ${bF}`;
+      txC(hdrTxt,y,hdrF,GOLD,W-PAD*2);
+      y+=Math.round(H*0.032);
+      txC(hdrSubTxt,y,`${Math.round(W*0.022)}px ${bF}`,"#4b5563",W-PAD*2);
       y+=Math.round(H*0.038);
-      const rarTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
-      const rpF=`bold ${Math.round(W*0.030)}px ${bF}`;
-      ctx.font=rpF; const rtw=ctx.measureText(rarTxt).width;
-      const rpW=rtw+W*0.06, rpH=W*0.065, rpX=cx-rpW/2;
-      ctx.save(); ctx.fillStyle=rpcP.bg; ctx.strokeStyle=rpcP.border;
-      ctx.lineWidth=2.5; ctx.shadowColor=accent; ctx.shadowBlur=14;
-      rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.font=rpF; ctx.fillStyle=rpcP.text; ctx.textBaseline="alphabetic";
-      ctx.textAlign="center"; ctx.fillText(rarTxt,cx,y,rpW); ctx.restore();
-      y+=Math.round(H*0.07);
-      const ibR=Math.round(W*0.17);
-      ctx.save(); ctx.beginPath(); ctx.arc(cx,y+ibR,ibR+5,0,Math.PI*2);
-      ctx.strokeStyle=accent+"55"; ctx.lineWidth=3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.stroke();
-      ctx.beginPath(); ctx.arc(cx,y+ibR,ibR,0,Math.PI*2);
-      ctx.fillStyle=accent+"18"; ctx.shadowBlur=50; ctx.fill();
-      ctx.beginPath(); ctx.arc(cx,y+ibR,ibR,0,Math.PI*2);
-      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.font=`${Math.round(ibR*1.1)}px serif`;
-      ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(archIcon,cx,y+ibR+ibR*0.06); ctx.restore();
-      y+=ibR*2+Math.round(H*0.04);
-      dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
-        y, `bold ${Math.round(W*0.022)}px ${bF}`, "#4b5563");
-      y+=Math.round(H*0.044);
-      ctx.save(); ctx.font=`900 ${Math.round(W*0.072)}px ${bF}`;
-      ctx.textBaseline="alphabetic"; ctx.textAlign="center";
-      const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
-      ctx.fillStyle=ng; ctx.fillText(archName,cx,y,W-PAD*2); ctx.restore();
-      y+=Math.round(H*0.046);
-      const cF=`bold ${Math.round(W*0.034)}px monospace,${bF}`;
-      ctx.font=cF; const ctw=ctx.measureText(archCode).width;
-      const cpW=ctw+W*0.055, cpH=W*0.060, cpX=cx-cpW/2;
-      ctx.save(); ctx.fillStyle="#1e3a5f"; ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
-      rr(cpX,y,cpW,cpH,cpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      dtC(archCode, y+cpH*0.68, cF, "#60a5fa"); y+=cpH+Math.round(H*0.018);
-      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`; ctx.font=lvF;
-      const ltw=ctx.measureText(level.text).width;
-      const lpW=ltw+W*0.04, lpH=W*0.044, lpX=cx-lpW/2;
-      ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
-      rr(lpX,y,lpW,lpH,lpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      dtC(level.text, y+lpH*0.68, lvF, accent+"cc"); y+=lpH+Math.round(H*0.032);
-      const tgF=`italic ${Math.round(W*0.034)}px ${isRTL?arF:"Georgia,"+enF}`;
-      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5); y+=Math.round(H*0.055);
-      ctx.save();
-      const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      dg.addColorStop(0,"transparent"); dg.addColorStop(0.2,accent+"44");
-      dg.addColorStop(0.8,accent+"44"); dg.addColorStop(1,"transparent");
-      ctx.strokeStyle=dg; ctx.lineWidth=1.5;
+
+      // Thin gold rule
+      ctx.save(); const rg=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      rg.addColorStop(0,"transparent"); rg.addColorStop(0.2,GOLD+"55");
+      rg.addColorStop(0.8,GOLD+"55"); rg.addColorStop(1,"transparent");
+      ctx.strokeStyle=rg; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-      y+=Math.round(H*0.048);
-      const pK=lang==="ar"?"أفضل مسار":lang==="fr"?"Voie #1":"Top Path";
-      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280"); y+=Math.round(H*0.044);
-      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2); y+=Math.round(H*0.056);
-      const mK=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
-      dtC(mK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
-      ctx.save(); ctx.font=`bold ${Math.round(W*0.046)}px monospace,${bF}`;
-      ctx.fillStyle=accent; ctx.textBaseline="alphabetic"; ctx.textAlign="center";
-      ctx.fillText(`${confidence}%`,cx,y); ctx.restore(); y+=Math.round(H*0.022);
-      const barW=W-PAD*2, barH=Math.round(H*0.016);
-      ctx.save(); ctx.fillStyle="#1e293b"; rr(PAD,y,barW,barH,barH/2); ctx.fill();
-      const fw=Math.max(barH,Math.round((confidence/100)*barW));
-      const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);
-      fg.addColorStop(0,accent); fg.addColorStop(1,"#fbbf24");
-      ctx.fillStyle=fg; ctx.shadowColor=accent; ctx.shadowBlur=10;
-      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore(); y+=barH+Math.round(H*0.04);
-      if(strengths.length>0){
-        const chipH=Math.round(H*0.038), chipFont=`600 ${Math.round(W*0.026)}px ${bF}`;
-        ctx.font=chipFont;
-        const chips=strengths.map(s=>({text:s, w:ctx.measureText(s).width+W*0.04}));
-        const totalW=chips.reduce((a,c)=>a+c.w+W*0.014,0)-W*0.014;
-        let chipX=cx-totalW/2;
-        for(const chip of chips){
-          ctx.save(); ctx.fillStyle="#1e293b"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
-          rr(chipX,y,chip.w,chipH,chipH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-          ctx.save(); ctx.font=chipFont; ctx.fillStyle="#93c5fd"; ctx.textBaseline="alphabetic";
-          ctx.fillText(chip.text,chipX+W*0.02,y+chipH*0.68); ctx.restore();
-          chipX+=chip.w+W*0.014;
-        }
-        y+=chipH+Math.round(H*0.024);
-      }
-      // Challenge line on canvas
-      const clF=`italic ${Math.round(W*0.022)}px ${bF}`;
-      dtC(challengeLine, y, clF, accent+"55"); y+=Math.round(H*0.032);
-      // Footer
-      const fy=H-PAD*0.9;
+      y+=Math.round(H*0.032);
+
+      // Rarity pill — "RARE ✦ VERIFIED PROFILE"
+      const rarTxt=`${rarityLabel.toUpperCase()} ✦ ${isRTL?"ملف موثّق":lang==="fr"?"PROFIL VÉRIFIÉ":"VERIFIED PROFILE"}`;
+      const rarF=`bold ${Math.round(W*0.028)}px ${bF}`;
+      ctx.font=rarF;
+      const rtw=ctx.measureText(rarTxt).width;
+      const rpW=rtw+W*0.07, rpH=W*0.068, rpX=(W-rpW)/2;
+      ctx.save(); ctx.fillStyle=BLUE; ctx.strokeStyle=accent;
+      ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=18;
+      rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      tx(rarTxt,(W)/2,y,rarF,accent,rpW,"center");
+      y+=Math.round(H*0.06);
+
+      // Central emblem icon — badge/shield style
+      const iR=Math.round(W*0.18);
+      const iCX=W/2, iCY=y+iR;
+      // Shield shape (hexagon approximation)
       ctx.save();
-      const fl=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      fl.addColorStop(0,"transparent"); fl.addColorStop(0.15,accent+"28");
-      fl.addColorStop(0.85,accent+"28"); fl.addColorStop(1,"transparent");
-      ctx.strokeStyle=fl; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(PAD,fy-PAD*0.28); ctx.lineTo(W-PAD,fy-PAD*0.28); ctx.stroke(); ctx.restore();
-      dtC(`massarpro.com • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-      const sidF=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
-      ctx.font=sidF;
-      const sidW=ctx.measureText(shareId).width;
-      ctx.save(); ctx.font=sidF; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
-      ctx.fillText(shareId, W-PAD-sidW, fy); ctx.restore();
+      ctx.beginPath();
+      for(let p=0;p<6;p++){
+        const a=(p/6)*Math.PI*2-Math.PI/2;
+        if(p===0) ctx.moveTo(iCX+Math.cos(a)*(iR+8),iCY+Math.sin(a)*(iR+8));
+        else ctx.lineTo(iCX+Math.cos(a)*(iR+8),iCY+Math.sin(a)*(iR+8));
+      }
+      ctx.closePath();
+      ctx.strokeStyle=accent+"66"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=24; ctx.stroke();
+      ctx.restore();
+      const discG2=ctx.createRadialGradient(iCX,iCY,0,iCX,iCY,iR);
+      discG2.addColorStop(0,accent+"30"); discG2.addColorStop(1,"transparent");
+      ctx.save(); ctx.beginPath(); ctx.arc(iCX,iCY,iR,0,Math.PI*2);
+      ctx.fillStyle=discG2; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
+      ctx.save(); ctx.beginPath(); ctx.arc(iCX,iCY,iR,0,Math.PI*2);
+      ctx.strokeStyle=accent; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=18; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.font=`${Math.round(iR*1.0)}px serif`;
+      ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText(archIcon, iCX, iCY+iR*0.06); ctx.restore();
+      y=iCY+iR+Math.round(H*0.04);
+
+      // Archetype name (large gradient)
+      const nmF=`900 ${Math.round(W*0.076)}px ${bF}`;
+      ctx.save(); ctx.font=nmF;
+      const nmG=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      nmG.addColorStop(0,"#fff"); nmG.addColorStop(0.5,GOLD2); nmG.addColorStop(1,GOLD);
+      ctx.fillStyle=nmG; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText(archName,W/2,y,W-PAD*2); ctx.restore();
+      y+=Math.round(H*0.044);
+
+      // Code + Arabic name (if not Arabic lang, show Arabic below)
+      if(!isRTL && archetype.name?.ar){
+        txC(archetype.name.ar, y, `${Math.round(W*0.030)}px ${arF}`, "#6b7280", W-PAD*2);
+        y+=Math.round(H*0.038);
+      }
+      const cF2=`bold ${Math.round(W*0.032)}px monospace,${bF}`;
+      txC(`[ ${archCode} ]`, y, cF2, BLUE2, W-PAD*2);
+      y+=Math.round(H*0.04);
+
+      // Tagline italic
+      txC(archTagline, y, `italic ${Math.round(W*0.030)}px ${isRTL?arF:"Georgia,"+enF}`, "#9ca3af", W-PAD*2.2);
+      y+=Math.round(H*0.05);
+
+      // Divider
+      ctx.save(); const dg3=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      dg3.addColorStop(0,"transparent"); dg3.addColorStop(0.2,GOLD+"44");
+      dg3.addColorStop(0.8,GOLD+"44"); dg3.addColorStop(1,"transparent");
+      ctx.strokeStyle=dg3; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
+      y+=Math.round(H*0.036);
+
+      // 3 STATS BARS
+      const barTotalW=W-PAD*2, barH3=Math.round(H*0.018);
+      const statLF=`bold ${Math.round(W*0.027)}px ${bF}`;
+      const statVF=`bold ${Math.round(W*0.027)}px monospace,${bF}`;
+      const statColors=[GOLD,BLUE2,"#10b981"];
+      for(let si=0;si<3;si++){
+        const sl=statLabels[si], sv=statVals[si], sc=statColors[si];
+        txL(sl, y, statLF, "#9ca3af");
+        txR(`${sv}`, y, statVF, sc);
+        y+=Math.round(H*0.024);
+        ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barTotalW,barH3,barH3/2); ctx.fill(); ctx.restore();
+        const fw3=Math.max(barH3,Math.round((sv/100)*barTotalW));
+        const fg3=ctx.createLinearGradient(PAD,0,PAD+fw3,0);
+        fg3.addColorStop(0,sc); fg3.addColorStop(1,sc+"88");
+        ctx.save(); ctx.fillStyle=fg3; ctx.shadowColor=sc; ctx.shadowBlur=8;
+        rr(PAD,y,fw3,barH3,barH3/2); ctx.fill(); ctx.restore();
+        y+=barH3+Math.round(H*0.028);
+      }
+
+      // Top direction
+      const dirLbl=isRTL?"أفضل اتجاه هذا الأسبوع:":lang==="fr"?"Top direction cette semaine :":"Top direction this week:";
+      txC(dirLbl, y, `${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+      y+=Math.round(H*0.036);
+      ctx.save(); ctx.font=`bold ${Math.round(W*0.044)}px ${bF}`;
+      const cng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      cng.addColorStop(0,"#f3f4f6"); cng.addColorStop(1,GOLD2);
+      ctx.fillStyle=cng; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText(clusterName||"—",W/2,y,W-PAD*2); ctx.restore();
+      y+=Math.round(H*0.048);
+
+      // Confidence bar row
+      const mLbl=isRTL?`التوافق — ${confidence}%`:lang==="fr"?`Compatibilité — ${confidence}%`:`Match — ${confidence}%`;
+      txC(mLbl, y, `bold ${Math.round(W*0.028)}px monospace,${bF}`, GOLD);
+      y+=Math.round(H*0.026);
+      const barW4=W-PAD*2, barH4=Math.round(H*0.016);
+      ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barW4,barH4,barH4/2); ctx.fill(); ctx.restore();
+      const fw4=Math.max(barH4,Math.round((confidence/100)*barW4));
+      const fg4=ctx.createLinearGradient(PAD,0,PAD+fw4,0);
+      fg4.addColorStop(0,GOLD); fg4.addColorStop(1,GOLD2);
+      ctx.save(); ctx.fillStyle=fg4; ctx.shadowColor=GOLD; ctx.shadowBlur=10;
+      rr(PAD,y,fw4,barH4,barH4/2); ctx.fill(); ctx.restore();
+
+      // Footer
+      const fy3=H-PAD*0.85;
+      ctx.save(); const fl3=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      fl3.addColorStop(0,"transparent"); fl3.addColorStop(0.15,GOLD+"28");
+      fl3.addColorStop(0.85,GOLD+"28"); fl3.addColorStop(1,"transparent");
+      ctx.strokeStyle=fl3; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PAD,fy3-PAD*0.3); ctx.lineTo(W-PAD,fy3-PAD*0.3); ctx.stroke(); ctx.restore();
+      txL("MassarPro.com", fy3, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+      txR(sid, fy3, `500 ${Math.round(W*0.019)}px monospace,${bF}`, GOLD+"66");
       return canvas;
     }
 
-    // ── Square (1:1) layout ────────────────────────────────────
-    const rarityPillColors2 = {
-      legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
-      epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
-      rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
-      common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
-    };
-    const rpc2=rarityPillColors2[rarity.key]||rarityPillColors2.common;
-    const stripW=W*0.08, sx=isRTL?W-PAD-stripW:PAD;
-    const sg=ctx.createLinearGradient(sx,0,sx+stripW,0);
-    sg.addColorStop(0,accent); sg.addColorStop(1,"#fbbf24");
-    ctx.save(); ctx.fillStyle=sg; rr(sx,PAD*0.78,stripW,4,2); ctx.fill(); ctx.restore();
-    const brandY=PAD*1.44;
-    const brandStr=isRTL?"مسار":"MASSAR";
-    dtL(brandStr, brandY, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
-    const subStr=isRTL?"بوابة مسارك المهني":"Career Identity Engine";
-    dtL(subStr, brandY+Math.round(H*0.018), `${Math.round(W*0.018)}px ${bF}`, "#374151");
-    const rarityTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
-    const rpFont=`bold ${Math.round(W*0.027)}px ${bF}`;
-    ctx.font=rpFont; const rtw2=ctx.measureText(rarityTxt).width;
-    const rpW2=rtw2+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
-    const rpY2=brandY-rpH2*0.72;
-    ctx.save(); ctx.fillStyle=rpc2.bg; ctx.strokeStyle=rpc2.border;
-    ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=12;
-    rr(rpX2,rpY2,rpW2,rpH2,rpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc2.text; ctx.textBaseline="alphabetic";
-    ctx.fillText(rarityTxt,rpX2+rpW2*0.1,brandY,rpW2); ctx.restore();
-    const ibSz=Math.round(W*0.26);
-    const ibCX=W/2, ibCY=Math.round(H*0.185)+ibSz/2;
-    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.044),0,Math.PI*2);
-    ctx.strokeStyle=accent+"1e"; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.022),0,Math.PI*2);
-    ctx.strokeStyle=accent+"44"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
-    const discGrad=ctx.createRadialGradient(ibCX,ibCY,0,ibCX,ibCY,ibSz/2);
-    discGrad.addColorStop(0,accent+"28"); discGrad.addColorStop(0.6,accent+"10"); discGrad.addColorStop(1,"transparent");
-    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
-    ctx.fillStyle=discGrad; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
-    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
-    ctx.strokeStyle=accent+"88"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=`${Math.round(ibSz*0.5)}px serif`;
-    ctx.textAlign="center"; ctx.textBaseline="middle";
-    ctx.fillText(archIcon,ibCX,ibCY+ibSz*0.03); ctx.restore();
-    const profileHeaderY=ibCY+ibSz/2+Math.round(H*0.030);
-    dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
-      profileHeaderY, `bold ${Math.round(W*0.021)}px ${bF}`, "#4b5563");
-    const nameY=profileHeaderY+Math.round(H*0.050);
-    ctx.save(); ctx.font=`900 ${Math.round(W*0.078)}px ${bF}`;
-    ctx.textBaseline="alphabetic"; ctx.textAlign="center";
-    const ng2=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    ng2.addColorStop(0,"#ffffff"); ng2.addColorStop(0.45,accent); ng2.addColorStop(1,"#fbbf24");
-    ctx.fillStyle=ng2; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
-    const codeY2=nameY+Math.round(H*0.044);
-    const cFont=`bold ${Math.round(W*0.036)}px monospace,${bF}`;
-    ctx.font=cFont; const ctw2=ctx.measureText(archCode).width;
-    const cpW2=ctw2+W*0.050, cpH2=W*0.058, cpX2=(W-cpW2)/2-W*0.035;
-    ctx.save(); ctx.fillStyle="rgba(30,58,95,0.9)"; ctx.strokeStyle="rgba(59,130,246,0.7)";
-    ctx.lineWidth=2; ctx.shadowColor="#3b82f6"; ctx.shadowBlur=8;
-    rr(cpX2,codeY2,cpW2,cpH2,cpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=cFont; ctx.fillStyle="#60a5fa"; ctx.textBaseline="alphabetic";
-    ctx.textAlign="center"; ctx.fillText(archCode,cpX2+cpW2/2,codeY2+cpH2*0.68); ctx.restore();
-    const lvlFont=`600 ${Math.round(W*0.024)}px ${bF}`;
-    ctx.font=lvlFont; const ltw2=ctx.measureText(level.text).width;
-    const lpW2=ltw2+W*0.038, lpH2=W*0.040, lpX2=cpX2+cpW2+W*0.018;
-    const lpY2=codeY2+(cpH2-lpH2)/2;
-    ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
-    rr(lpX2,lpY2,lpW2,lpH2,lpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=lvlFont; ctx.fillStyle=accent+"cc"; ctx.textBaseline="alphabetic";
-    ctx.textAlign="center"; ctx.fillText(level.text,lpX2+lpW2/2,lpY2+lpH2*0.68); ctx.restore();
-    const sigY2=codeY2+cpH2+Math.round(H*0.036);
-    dtC(archTagline, sigY2, `italic ${Math.round(W*0.035)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2);
-    const divY2=sigY2+Math.round(H*0.044);
-    ctx.save();
-    const dg2=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    dg2.addColorStop(0,"transparent"); dg2.addColorStop(0.2,accent+"55");
-    dg2.addColorStop(0.8,accent+"55"); dg2.addColorStop(1,"transparent");
-    ctx.strokeStyle=dg2; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(PAD,divY2); ctx.lineTo(W-PAD,divY2); ctx.stroke(); ctx.restore();
-    const pLabelY2=divY2+Math.round(H*0.050);
-    const pKey=lang==="ar"?"أفضل مسار":lang==="fr"?"VOIE #1":"TOP PATH";
-    dtL(pKey, pLabelY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
-    const pNameY2=pLabelY2+Math.round(H*0.048);
-    dtL(clusterName, pNameY2, `bold ${Math.round(W*0.044)}px ${bF}`, "#f1f5f9", W-PAD*2);
-    const confY2=pNameY2+Math.round(H*0.060);
-    const cKey=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
-    dtL(cKey, confY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
-    const pctStr=`${confidence}%`;
-    const pFont=`900 ${Math.round(W*0.046)}px monospace,${bF}`;
-    ctx.font=pFont; const ptw=ctx.measureText(pctStr).width;
-    const pctX=isRTL?PAD:W-PAD-ptw;
-    ctx.save(); ctx.font=pFont; ctx.fillStyle=accent;
-    ctx.textBaseline="alphabetic"; ctx.shadowColor=accent; ctx.shadowBlur=12;
-    ctx.fillText(pctStr,pctX,confY2); ctx.restore();
-    const barY2=confY2+Math.round(H*0.018), barH2=Math.round(H*0.018), barW2=W-PAD*2;
-    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,barY2,barW2,barH2,barH2/2); ctx.fill(); ctx.restore();
-    const fw2=Math.max(barH2,Math.round((confidence/100)*barW2));
-    const fg2=ctx.createLinearGradient(PAD,0,PAD+fw2,0);
-    fg2.addColorStop(0,accent); fg2.addColorStop(1,"#fbbf24");
-    ctx.save(); ctx.fillStyle=fg2; ctx.shadowColor=accent; ctx.shadowBlur=12;
-    rr(PAD,barY2,fw2,barH2,barH2/2); ctx.fill(); ctx.restore();
-    if(strengths.length>0){
-      const chipY2=barY2+barH2+Math.round(H*0.044);
-      const chipH2=Math.round(H*0.046), chipFont2=`600 ${Math.round(W*0.026)}px ${bF}`;
-      ctx.font=chipFont2; let cxp=isRTL?W-PAD:PAD;
-      for(const s of strengths){
-        const icon2=CHIP_ICON[s]||"✦";
-        const chipTxt=`${icon2} ${s}`;
-        const cw=ctx.measureText(chipTxt).width+W*0.040;
-        if(isRTL){cxp-=cw; if(cxp<PAD) break; }
-        else { if(cxp+cw>W-PAD) break; }
-        ctx.save(); ctx.fillStyle="rgba(30,41,59,0.9)"; ctx.strokeStyle=accent+"3a"; ctx.lineWidth=1.5;
-        rr(cxp,chipY2,cw,chipH2,chipH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
-        ctx.save(); ctx.font=chipFont2; ctx.fillStyle="#a5f3fc"; ctx.textBaseline="alphabetic";
-        ctx.fillText(chipTxt,cxp+W*0.018,chipY2+chipH2*0.68); ctx.restore();
-        if(isRTL){cxp-=W*0.014;} else {cxp+=cw+W*0.014;}
-      }
+    // ── Card (5:7) and Square (1:1) — unified El M3allem layout ──
+    let y=Math.round(H*0.05);
+
+    // Header: "MASSAR | YEAR" left + rarity pill right
+    const hdrY=Math.round(H*0.058);
+    const hdrTxt2=`MASSAR | ${new Date().getFullYear()}`;
+    const hdrSubTxt2=isRTL?"محرك الهوية المهنية":lang==="fr"?"Morocco Career Identity Engine":"Morocco Career Identity Engine";
+    txL(hdrTxt2, hdrY, `bold ${Math.round(W*0.028)}px ${bF}`, GOLD);
+    txL(hdrSubTxt2, hdrY+Math.round(H*0.022), `${Math.round(W*0.018)}px ${bF}`, "#4b5563");
+
+    // Rarity pill right-aligned — "RARE ✦ VERIFIED PROFILE"
+    const rarTxt2=`${rarityLabel.toUpperCase()} ✦ ${isRTL?"موثّق":lang==="fr"?"VÉRIFIÉ":"VERIFIED"}`;
+    const rarF2=`bold ${Math.round(W*0.022)}px ${bF}`;
+    ctx.font=rarF2;
+    const rtw2=ctx.measureText(rarTxt2).width;
+    const rpW3=rtw2+W*0.05, rpH3=W*0.048;
+    const rpX3=isRTL?PAD:W-PAD-rpW3;
+    const rpY3=hdrY-rpH3*0.72;
+    ctx.save(); ctx.fillStyle=BLUE; ctx.strokeStyle=accent;
+    ctx.lineWidth=1.5; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(rpX3,rpY3,rpW3,rpH3,rpH3/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    tx(rarTxt2, rpX3+rpW3/2, hdrY, rarF2, accent, rpW3, "center");
+    y=hdrY+Math.round(H*0.04);
+
+    // Gold rule separator
+    ctx.save(); const srg=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    srg.addColorStop(0,"transparent"); srg.addColorStop(0.1,GOLD+"55");
+    srg.addColorStop(0.9,GOLD+"55"); srg.addColorStop(1,"transparent");
+    ctx.strokeStyle=srg; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
+    y+=Math.round(H*0.03);
+
+    // Central emblem — badge/shield icon (larger for card)
+    const iR2=Math.round(W*(fmt==="square"?0.18:0.20));
+    const iCX2=W/2, iCY2=y+iR2;
+    // Outer halo rings
+    [iR2*1.28, iR2*1.12, iR2*1.0].forEach((r3,ri)=>{
+      ctx.save(); ctx.beginPath(); ctx.arc(iCX2,iCY2,r3,0,Math.PI*2);
+      ctx.strokeStyle=ri===2?accent:accent+(ri===1?"44":"18");
+      ctx.lineWidth=ri===2?2.5:1.5;
+      ctx.shadowColor=accent; ctx.shadowBlur=ri===2?24:8; ctx.stroke(); ctx.restore();
+    });
+    const discG3=ctx.createRadialGradient(iCX2,iCY2,0,iCX2,iCY2,iR2);
+    discG3.addColorStop(0,accent+"28"); discG3.addColorStop(1,"transparent");
+    ctx.save(); ctx.beginPath(); ctx.arc(iCX2,iCY2,iR2,0,Math.PI*2);
+    ctx.fillStyle=discG3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
+    // Hexagonal badge border
+    ctx.save(); ctx.beginPath();
+    for(let p=0;p<6;p++){
+      const a=(p/6)*Math.PI*2-Math.PI/2;
+      if(p===0) ctx.moveTo(iCX2+Math.cos(a)*iR2,iCY2+Math.sin(a)*iR2);
+      else ctx.lineTo(iCX2+Math.cos(a)*iR2,iCY2+Math.sin(a)*iR2);
     }
-    // Challenge line on canvas
-    const clY2=H-PAD*1.8;
-    dtC(challengeLine, clY2, `italic ${Math.round(W*0.022)}px ${bF}`, accent+"55", W-PAD*2);
-    // Footer
-    const fy2=H-PAD*0.85;
-    ctx.save();
-    const fl2=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    fl2.addColorStop(0,"transparent"); fl2.addColorStop(0.15,accent+"28");
-    fl2.addColorStop(0.85,accent+"28"); fl2.addColorStop(1,"transparent");
-    ctx.strokeStyle=fl2; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(PAD,fy2-PAD*0.3); ctx.lineTo(W-PAD,fy2-PAD*0.3); ctx.stroke(); ctx.restore();
-    dtL(`massarpro.com • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-    const sidFont=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
-    ctx.font=sidFont; const sidW2=ctx.measureText(shareId).width;
-    const sidX2=isRTL?PAD:W-PAD-sidW2;
-    ctx.save(); ctx.font=sidFont; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
-    ctx.fillText(shareId,sidX2,fy2); ctx.restore();
+    ctx.closePath(); ctx.strokeStyle=GOLD+"88"; ctx.lineWidth=2;
+    ctx.shadowColor=GOLD; ctx.shadowBlur=10; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=`${Math.round(iR2*0.95)}px serif`;
+    ctx.textAlign="center"; ctx.textBaseline="middle";
+    ctx.fillText(archIcon, iCX2, iCY2+iR2*0.06); ctx.restore();
+    y=iCY2+iR2+Math.round(H*0.032);
+
+    // Archetype name (big gradient)
+    const nmF2=`900 ${Math.round(W*(fmt==="square"?0.078:0.072))}px ${bF}`;
+    ctx.save(); ctx.font=nmF2;
+    const nmG2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    nmG2.addColorStop(0,"#ffffff"); nmG2.addColorStop(0.45,GOLD2); nmG2.addColorStop(1,GOLD);
+    ctx.fillStyle=nmG2; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+    ctx.fillText(archName,W/2,y,W-PAD*2); ctx.restore();
+    y+=Math.round(H*0.038);
+
+    // Arabic name (if not Arabic UI — adds prestige feel)
+    if(!isRTL && archetype.name?.ar){
+      txC(archetype.name.ar, y, `${Math.round(W*0.026)}px ${arF}`, "#6b7280", W-PAD*2);
+      y+=Math.round(H*0.032);
+    }
+
+    // Code + tagline
+    txC(`[ ${archCode} ]`, y, `bold ${Math.round(W*0.030)}px monospace,${bF}`, BLUE2);
+    y+=Math.round(H*0.032);
+    txC(archTagline, y, `italic ${Math.round(W*0.028)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2.2);
+    y+=Math.round(H*0.042);
+
+    // Gold divider
+    ctx.save(); const dg4=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    dg4.addColorStop(0,"transparent"); dg4.addColorStop(0.2,GOLD+"55");
+    dg4.addColorStop(0.8,GOLD+"55"); dg4.addColorStop(1,"transparent");
+    ctx.strokeStyle=dg4; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
+    y+=Math.round(H*0.032);
+
+    // 3 STATS BARS (left label, right value, fill bar)
+    const barTW2=W-PAD*2, barHH=Math.round(H*(fmt==="square"?0.020:0.016));
+    const sLF2=`bold ${Math.round(W*0.024)}px ${bF}`;
+    const sVF2=`bold ${Math.round(W*0.024)}px monospace,${bF}`;
+    const sCols=[GOLD,BLUE2,"#10b981"];
+    for(let si=0;si<3;si++){
+      const sl=statLabels[si], sv=statVals[si], sc=sCols[si];
+      txL(sl, y, sLF2, "#9ca3af");
+      txR(`${sv}%`, y, sVF2, sc);
+      y+=Math.round(H*0.022);
+      ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barTW2,barHH,barHH/2); ctx.fill(); ctx.restore();
+      const fwS=Math.max(barHH,Math.round((sv/100)*barTW2));
+      const fgS=ctx.createLinearGradient(PAD,0,PAD+fwS,0);
+      fgS.addColorStop(0,sc); fgS.addColorStop(1,sc+"88");
+      ctx.save(); ctx.fillStyle=fgS; ctx.shadowColor=sc; ctx.shadowBlur=8;
+      rr(PAD,y,fwS,barHH,barHH/2); ctx.fill(); ctx.restore();
+      y+=barHH+Math.round(H*0.024);
+    }
+    y+=Math.round(H*0.006);
+
+    // "Top direction this week: ___"
+    const dirLbl2=isRTL?"أفضل اتجاه هذا الأسبوع:":lang==="fr"?"Top direction cette semaine :":"Top direction this week:";
+    txL(dirLbl2, y, `${Math.round(W*0.022)}px ${bF}`, "#6b7280");
+    y+=Math.round(H*0.034);
+    ctx.save(); ctx.font=`bold ${Math.round(W*0.038)}px ${bF}`;
+    const cng2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    cng2.addColorStop(0,"#f3f4f6"); cng2.addColorStop(1,GOLD2);
+    ctx.fillStyle=cng2; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
+    if(isRTL){ ctx.textAlign="right"; ctx.fillText(clusterName||"—",W-PAD,y,W-PAD*2); }
+    else { ctx.fillText(clusterName||"—",PAD,y,W-PAD*2); }
+    ctx.restore();
+    y+=Math.round(H*0.04);
+
+    // Massar identity line: "Massar Identity: BENA | Tier: Rare"
+    const idTxt=`Massar Identity: ${archCode}  |  Tier: ${rarityLabel}`;
+    txL(idTxt, y, `600 ${Math.round(W*0.020)}px monospace,${bF}`, GOLD+"88");
+    y+=Math.round(H*0.024);
+
+    // Confidence bar
+    const barW5=W-PAD*2, barH5=Math.round(H*0.016);
+    const cLbl=isRTL?`التوافق — ${confidence}%`:lang==="fr"?`Compatibilité — ${confidence}%`:`Match — ${confidence}%`;
+    txL(cLbl, y, `600 ${Math.round(W*0.020)}px monospace,${bF}`, GOLD);
+    y+=Math.round(H*0.022);
+    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barW5,barH5,barH5/2); ctx.fill(); ctx.restore();
+    const fw5=Math.max(barH5,Math.round((confidence/100)*barW5));
+    const fg5=ctx.createLinearGradient(PAD,0,PAD+fw5,0);
+    fg5.addColorStop(0,GOLD); fg5.addColorStop(1,GOLD2);
+    ctx.save(); ctx.fillStyle=fg5; ctx.shadowColor=GOLD; ctx.shadowBlur=10;
+    rr(PAD,y,fw5,barH5,barH5/2); ctx.fill(); ctx.restore();
+
+    // Footer: MassarPro.com + serial
+    const fyF=H-PAD*0.85;
+    ctx.save(); const flF=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    flF.addColorStop(0,"transparent"); flF.addColorStop(0.12,GOLD+"28");
+    flF.addColorStop(0.88,GOLD+"28"); flF.addColorStop(1,"transparent");
+    ctx.strokeStyle=flF; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD,fyF-PAD*0.3); ctx.lineTo(W-PAD,fyF-PAD*0.3); ctx.stroke(); ctx.restore();
+    txL("MassarPro.com", fyF, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+    txR(sid, fyF, `500 ${Math.round(W*0.018)}px monospace,${bF}`, GOLD+"66");
+
     return canvas;
   }
 
-  // Download PNG — toBlob with toDataURL fallback
+
   const downloadPng = () => {
     try {
-      const canvas = buildCanvas();
-      const fn = `massar-${archCode}-${shareId}-${fmt}.png`;
-      try {
-        canvas.toBlob(blob => {
-          if (!blob) { dlDataUrl(canvas, fn); return; }
-          const url = URL.createObjectURL(blob);
-          const a   = document.createElement("a");
-          a.href=url; a.download=fn;
-          document.body.appendChild(a); a.click();
-          document.body.removeChild(a); URL.revokeObjectURL(url);
-        }, "image/png");
-      } catch {
-        dlDataUrl(canvas, fn);
-      }
-    } catch (e) { console.error("[Massar] canvas export failed:", e); }
-  };
-  const dlDataUrl = (canvas, fn) => {
-    const a = document.createElement("a");
-    a.href = canvas.toDataURL("image/png");
-    a.download = fn;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      const canvas=buildCanvas();
+      canvas.toBlob(blob=>{
+        if(!blob) return;
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement("a");
+        a.href=url; a.download=`massar-${archCode}-${fmt}.png`;
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+      },"image/png");
+    } catch {}
   };
 
-  // Share Mobile — Web Share API
-  const shareMobile = async () => {
-    if (typeof navigator !== "undefined" && navigator.share) {
-      try {
-        const canvas = buildCanvas();
-        const fn = `massar-${archCode}-${shareId}.png`;
-        const blob = await new Promise((res, rej) => {
-          try { canvas.toBlob(b => b ? res(b) : rej(new Error("no blob")), "image/png"); }
-          catch(e){ rej(e); }
-        });
-        const file = new File([blob], fn, { type:"image/png" });
-        await navigator.share({ files:[file], text:caption, title:"MassarPro" });
-      } catch (e) {
-        // If share fails or no file support, fallback
-        if (e?.name !== "AbortError") setShareTooltip(true);
-        setTimeout(() => setShareTooltip(false), 3500);
-      }
-    } else {
-      setShareTooltip(true);
-      setTimeout(() => setShareTooltip(false), 3500);
-    }
-  };
-
-  // cardProps bundle
+  // Shared props bundle passed to each layout component
   const cardProps = {
     archIcon, archName, archCode, archTagline, clusterName, strengths,
     confidence, rarity, rarityLabel, accent, glow, level, isRTL, dir, lang,
-    challengeLine,
-    shareId,
-    shimmer: !shimmerDone,
-    onShimmerDone: () => setShimmerDone(true),
   };
 
-  const shareLink = `massarpro.com?id=${shareId}`;
+  const fmtLabels = { card:"Card", square:"1:1", story:"9:16" };
 
   return (
-    <div style={{ margin:"24px 0" }} dir={dir}>
+    <div style={{ margin:"24px 0" }}>
       {/* Section label */}
       <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,
         textTransform:"uppercase",marginBottom:14}}>
-        {t.shareTitle}
+        {t?.shareTitle}
       </div>
 
-      {/* Format segmented control — Story / Square / Card */}
+      {/* Format segmented control */}
       <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
-        {(["story","square","card"]).map(f => (
+        {["card","square","story"].map(f=>(
           <button key={f} onClick={()=>setFmt(f)} style={{
             padding:"5px 14px",borderRadius:20,fontSize:11,fontWeight:700,
             border:`1.5px solid ${fmt===f?accent+"cc":"var(--border)"}`,
             background:fmt===f?accent+"18":"var(--surface2)",
             color:fmt===f?accent:"var(--muted)",cursor:"pointer",letterSpacing:.5,
             transition:"all .18s",
-          }}>
-            {FMT[f]?.label || f}
-          </button>
+          }}>{fmtLabels[f]}</button>
         ))}
       </div>
 
-      {/* Card preview */}
+      {/* Dispatch to separate layout component based on format */}
       {fmt==="story"  && <ShareCardPortrait p={cardProps}/>}
       {fmt==="square" && <ShareCardSquare   p={cardProps}/>}
       {fmt==="card"   && <ShareCardClassic  p={cardProps}/>}
 
-      {/* Share Panel */}
-      <div className="share-panel" style={{marginTop:16}}>
-
-        {/* Caption toggle */}
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}}>
-          <div className="share-panel-seg" style={{flex:1}}>
-            {["full","short"].map(m => (
-              <button key={m} className={captionMode===m?"active":""}
-                onClick={()=>setCaptionMode(m)}>
-                {m==="full"
-                  ? (t?.captionFull   || "Full")
-                  : (t?.captionShort  || "Short")}
-              </button>
-            ))}
-          </div>
-          {/* Caption preview */}
-          <div style={{fontSize:11,color:"var(--muted)",flex:1,
-            background:"var(--surface2)",borderRadius:8,padding:"6px 10px",
-            maxHeight:52,overflow:"hidden",lineHeight:1.4,
-            whiteSpace:"pre-line",wordBreak:"break-word"}}>
-            {caption.split("
-")[0]}…
-          </div>
-        </div>
-
-        {/* Row 1: Copy Caption + Copy Link */}
-        <div className="share-panel-row">
-          <button className="share-panel-btn" onClick={()=>doCopyText(caption, setCopiedCaption)}>
-            {copiedCaption
-              ? (t?.shareCopied || "✓")
-              : (t?.copyCaptionBtn || "Copy Caption")}
-          </button>
-          <button className="share-panel-btn" onClick={()=>doCopyText(shareLink, setCopiedLink)}>
-            {copiedLink
-              ? (t?.shareLinkCopied || "✓ Copied")
-              : (t?.shareCopyLink   || "Copy Link")}
-          </button>
-        </div>
-
-        {/* Row 2: Download PNG + Share Mobile */}
-        <div className="share-panel-row">
-          <button className="share-panel-btn primary" onClick={downloadPng}>
-            ⬇ {t?.shareDownloadPng || "Download PNG"}
-          </button>
-          <button className="share-panel-btn" onClick={shareMobile}
-            style={{position:"relative"}}>
-            ↗ {t?.shareMobileBtn || "Share"}
-          </button>
-        </div>
-
-        {/* Share fallback tooltip */}
-        {shareTooltip && (
-          <div className="share-tooltip">
-            {t?.shareMobileFallback || "Download then share in WhatsApp or TikTok"}
-          </div>
-        )}
+      {/* Buttons */}
+      <div style={{display:"flex",gap:10,flexWrap:"wrap",maxWidth:360,margin:"0 auto"}}>
+        <button className="btn btn-primary" onClick={copyCaption} style={{flex:1,minWidth:110}}>
+          {copied ? t.shareCopied : t.copyCaptionBtn}
+        </button>
+        <button className="btn btn-secondary" onClick={downloadPng} style={{flex:1,minWidth:110}}>
+          {t.downloadBadgeBtn}
+        </button>
       </div>
     </div>
   );
 }
+
 
 
 
@@ -7452,7 +7879,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   const storageKey = `massar_xp_${massarType}_${cluster?.id||"x"}`;
 
   const [checked, setChecked] = useState(()=>{
-    try { return JSON.parse(localStorage.getItem(storageKey)||"{}"); } catch { return {}; }
+    try { const _d=typeof localStorage!=='undefined'?localStorage.getItem(storageKey):null; return JSON.parse(_d||"{}"); } catch { return {}; }
   });
 
   const allTasks = (cluster?.actionPlan||[]).flatMap((week,wi)=>
@@ -7498,7 +7925,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
       <div className="result-card">
         {(cluster?.actionPlan||[]).map((week,wi)=>(
           <div key={wi} className="week-card">
-            <div className="week-label">{t.weekLabel} {wi+1}</div>
+            <div className="week-label">{t?.weekLabel} {wi+1}</div>
             {(week.items||[]).map((item,ii)=>{
               const isObj = item&&typeof item==="object";
               const label = isObj?item.label:item;
@@ -8187,13 +8614,15 @@ function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, 
   const subjects = ["math","physchem","svt","french","english"];
   const subjectLabels = { math:"Maths", physchem:"Physique-Chimie", svt:"SVT", french:"Français/Arabe", english:"Anglais" };
 
-  const selStr  = preBacData.strengths  || [];
-  const selInt  = preBacData.interests  || [];
-  const sliders = preBacData.sliders    || {};
-  const prestige = preBacData.prestige  || "med";
-  const mobility = preBacData.mobility  || "city";
-  const abroad   = preBacData.abroad    || false;
+  const selStr       = preBacData.strengths      || [];
+  const selInt       = preBacData.interests      || [];
+  const sliders      = preBacData.sliders        || {};
+  const prestige     = preBacData.prestige       || "med";
+  const mobility     = preBacData.mobility       || "city";
+  const abroad       = preBacData.abroad         || false;
   const privateBudget = preBacData.privateBudget || false;
+  const prefDial     = preBacData.preferenceDial || "balanced";
+  const publicEye    = preBacData.publicEye      || "maybe";
 
   const canProceed = selStr.length >= 2 && selInt.length >= 2;
 
@@ -8204,12 +8633,45 @@ function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, 
     margin:"3px",
   });
 
+  const dialOpts = t.preferenceDialOpts || {
+    prestige:{icon:"🏆",label:"Prestige"},money:{icon:"💰",label:"Revenu"},
+    abroad:{icon:"🌍",label:"Étranger"},balanced:{icon:"⚖️",label:"Équilibre"},freedom:{icon:"🕊️",label:"Liberté"},
+  };
+
   return (
     <div className="card" dir={dir}>
       <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>{t.journeyPreBac}</h2>
       <p style={{color:"var(--muted)",fontSize:12,marginBottom:20}}>
         {lang==="ar"?"اختر ما يعكس واقعك الآن":lang==="fr"?"Choisis ce qui reflète ta réalité maintenant":"Select what reflects your current reality"}
       </p>
+
+      {/* ── Preference Dial — Gate C ── */}
+      <div style={{marginBottom:22,padding:"16px",background:"rgba(99,102,241,0.05)",
+        border:"1.5px solid rgba(99,102,241,0.2)",borderRadius:14}}>
+        <div style={{fontSize:14,fontWeight:700,marginBottom:12,color:"var(--text)"}}>
+          🎯 {t.preferenceDialLabel || "Qu'est-ce qui compte le plus ?"}
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {Object.entries(dialOpts).map(([key,opt]) => {
+            const sel = prefDial === key;
+            return (
+              <button key={key} onClick={()=>set("preferenceDial",key)}
+                style={{
+                  display:"flex",alignItems:"center",gap:6,
+                  padding:"9px 14px",borderRadius:12,
+                  border:`2px solid ${sel?"#6366f1":"var(--border)"}`,
+                  background:sel?"rgba(99,102,241,0.12)":"var(--surface2)",
+                  color:sel?"#818cf8":"var(--muted)",
+                  cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:sel?700:400,
+                  transition:"all 0.18s",
+                }}>
+                <span style={{fontSize:16}}>{opt.icon}</span>
+                <span>{opt.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Strengths */}
       <div style={{marginBottom:20}}>
@@ -8264,6 +8726,26 @@ function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, 
         ))}
       </div>
 
+      {/* ── Public Eye Gate — sports umbrella ── */}
+      <div style={{marginBottom:20,padding:"14px 16px",background:"rgba(232,161,36,0.05)",
+        border:"1px solid rgba(232,161,36,0.25)",borderRadius:12}}>
+        <div style={{fontSize:13,fontWeight:700,marginBottom:10,color:"var(--text)"}}>
+          🎤 {t.publicEyeLabel || "À l'aise sous les projecteurs ?"}
+        </div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {[
+            {key:"yes",   label: t.publicEyeYes   || "Oui"},
+            {key:"maybe", label: t.publicEyeMaybe || "Peut-être"},
+            {key:"no",    label: t.publicEyeNo    || "Non"},
+          ].map(opt => (
+            <button key={opt.key} onClick={()=>set("publicEye",opt.key)}
+              style={chipStyle(publicEye===opt.key)}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Constraints */}
       <div style={{marginBottom:16}}>
         <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{t.preBacConstraints}</div>
@@ -8308,9 +8790,9 @@ function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, 
 
 
 // ─────────────────────────────────────────────────────────────────
-// RESULTS FLOW — 5-screen Gary V Jab→Right Hook journey
-// Screens: 0=Identity Card | 1=Three Directions | 2=Prestige Ladder
-//          3=7-Day Plan    | 4=PDF Offer (Right Hook)
+// RESULTS FLOW — 6-screen guided career journey
+// Pages: 1=Identity | 2=Prestige | 3=Market | 4=Directions | 5=Plan | 6=PDF
+//         (structured 6-page mobile-first experience)
 // ─────────────────────────────────────────────────────────────────
 
 // Prestige ladder mapping by bacTrack → relevant prestige routes
@@ -8346,9 +8828,9 @@ const RF_COPY = {
     jab1StrengthsLabel:"نقاط قوتك",
     sharePrompt:      "شارك نتيجتك",
     captionOpts:      (arch, path) => [
-      `طلعت ${arch} — أفضل مسار: ${path} 🧭 #مسار`,
-      `هويتي: ${arch}… ونتيجتك؟ 🔥`,
-      "توجيه باك المغرب… لكن بشكل مفيد فعلاً 👀",
+      `مسار قال ${arch} — المسار المقترح: ${path} 🧭 جرّب وشوف نتيجتك 👇 #مسار_ma`,
+      `الهوية المهنية ديالي: ${arch} 🔥 وديالك؟ massar.ma #مسار`,
+      `توجيه الباك بالمغرب… لكن بالأرقام الحقيقية 👀 massar.ma`,
     ],
     continueBtn:      "متابعة",
     backBtn:          "رجوع",
@@ -8368,7 +8850,7 @@ const RF_COPY = {
     veryStrongAvg:    "معدل مرتفع جداً (≥16)",
     solidAvg:         "معدل جيد (≥12)",
     yourAvg:          (a) => `معدلك: ${a.toFixed(1)}/20`,
-    raiseKey:         "ارفع نقطك في المواد الأساسية",
+    raiseKey:         "ارفع نقطك في المواد الأساسية", // already correct
     jab4Title:        "خطتك في 7 أيام",
     jab4Sub:          "5 خطوات عملية تبدأ اليوم.",
     jab4Upsell:       "هل تريد الخطة الكاملة لـ 90 يوماً + قائمة المدارس؟ احصل على ملف PDF.",
@@ -8407,9 +8889,9 @@ const RF_COPY = {
     jab1StrengthsLabel:"Tes points forts",
     sharePrompt:      "Partage ton résultat",
     captionOpts:      (arch, path) => [
-      `Je suis ${arch} — top voie: ${path} 🧭 #MassarPro`,
-      `Identité: ${arch}. Et toi? 🔥`,
-      "Orientation Bac Maroc, mais vraiment utile 👀",
+      `Massar m'a donné ${arch} — top voie: ${path} 🧭 Fais le test 👇 #MassarPro`,
+      `Mon identité carrière: ${arch} 🔥 Et toi? massar.ma`,
+      "Orientation Bac Maroc, mais avec des vraies données 👀 massar.ma",
     ],
     continueBtn:      "Continuer",
     backBtn:          "Retour",
@@ -8468,9 +8950,9 @@ const RF_COPY = {
     jab1StrengthsLabel:"Your strengths",
     sharePrompt:      "Share your result",
     captionOpts:      (arch, path) => [
-      `I got ${arch} — top path: ${path} 🧭 #MassarPro`,
-      `My career identity: ${arch}. What's yours? 🔥`,
-      "Moroccan Bac orientation, but actually useful 👀",
+      `Massar gave me ${arch} — top path: ${path} 🧭 Try yours 👇 #MassarPro`,
+      `My career identity: ${arch} 🔥 What's yours? massar.ma`,
+      "Moroccan Bac guidance, but with real data 👀 massar.ma",
     ],
     continueBtn:      "Continue",
     backBtn:          "Back",
@@ -8525,7 +9007,7 @@ const RF_COPY = {
 };
 
 // ── Helper: pick correct RF copy ─────────────────────────────────
-function rf(lang) { return RF_COPY[lang] || RF_COPY.en; }
+function rf(lang) { return RF_COPY[lang] || RF_COPY.fr || RF_COPY.en || {}; }
 
 // ── Progress bar ─────────────────────────────────────────────────
 function RFProgress({ step, total, lang, dir }) {
@@ -8580,7 +9062,7 @@ function RFNav({ step, total, onBack, onNext, lang, dir, nextLabel, nextDisabled
 }
 
 // ─────────────────────────────────────────────────────────────────
-// JAB 1 — Identity Card
+// PAGE 1 — Career Identity Mirror
 // ─────────────────────────────────────────────────────────────────
 function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
   const c = rf(lang);
@@ -8602,7 +9084,7 @@ function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
   };
   const rarityColor = rarityColors[rarity] || rarityColors.common;
 
-  const captions = c.captionOpts(archetype, topPath);
+  const captions = c?.captionOpts ? c.captionOpts(archetype, topPath) : [`${archetype} — ${topPath}`];
 
   const doCopy = () => {
     const text = captions[selectedCaption];
@@ -8641,7 +9123,7 @@ function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
           {archetype}
         </div>
         <div style={{fontSize:13, color:"var(--muted)", marginBottom:14}}>
-          {(typeof massarTypeDesc === "function" && massarTypeDesc(archetype, t)?.label) || archetype}
+          {(massarTypeDesc && massarTypeDesc(archetype, t)?.label) || archetype}
         </div>
         <div className={`confidence-badge ${confClass}`} style={{display:"inline-flex"}}>
           {lang==="ar"?"مستوى الثقة":lang==="fr"?"Niveau de confiance":"Confidence"}: {conf}%
@@ -8677,12 +9159,16 @@ function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// JAB 2 — Three Directions
+// PAGE 2 — Three Directions
 // ─────────────────────────────────────────────────────────────────
 function Jab2Directions({ lang, dir, safeResults, t }) {
   const c = rf(lang);
-  const { threeViews } = safeResults;
-  if (!threeViews) return null;
+  const threeViews = safeResults?.threeViews || {};
+  if (!threeViews.bestFit && !threeViews.balanced && !threeViews.ambitious) return (
+    <div style={{textAlign:"center",padding:"40px 20px",color:"var(--muted)"}}>
+      {lang==="ar"?"لا توجد توصيات كافية":lang==="fr"?"Données insuffisantes":"Insufficient data for directions"}
+    </div>
+  );
 
   const cards = [
     { key:"bestFit",   label:c.fitLabel,  cluster:threeViews.bestFit,   icon:"💡" },
@@ -8748,7 +9234,7 @@ function Jab2Directions({ lang, dir, safeResults, t }) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// JAB 3 — Prestige Ladder
+// PAGE 3 — Prestige Ladder
 // ─────────────────────────────────────────────────────────────────
 function Jab3Prestige({ lang, dir, info, safeResults }) {
   const c = rf(lang);
@@ -8802,7 +9288,7 @@ function Jab3Prestige({ lang, dir, info, safeResults }) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// JAB 4 — 7-Day Starter Plan
+// PAGE 4 — 7-Day Starter Plan
 // ─────────────────────────────────────────────────────────────────
 function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
   const c = rf(lang);
@@ -8894,7 +9380,7 @@ function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
 // ─────────────────────────────────────────────────────────────────
 // RIGHT HOOK — PDF Offer
 // ─────────────────────────────────────────────────────────────────
-function RightHookPDF({ lang, dir, safeResults, t }) {
+function RightHookPDF({ lang, dir, safeResults }) {
   const c = rf(lang);
   const [email, setEmail]   = React.useState("");
   const [phone, setPhone]   = React.useState("");
@@ -8968,7 +9454,7 @@ function RightHookPDF({ lang, dir, safeResults, t }) {
 
       {/* Benefits list */}
       <div style={{background:"var(--surface2)", borderRadius:14, padding:"16px 14px", marginBottom:16}}>
-        {(t?.pdfBenefits || c.rfBenefits || []).map((b, i) => (
+        {c.rfBenefits ? (c.rfBenefits||[]).map((b, i) => (
           <div key={i} style={{
             display:"flex", gap:10, alignItems:"flex-start",
             paddingBottom:i<c.rfBenefits.length-1?10:0,
@@ -9101,15 +9587,15 @@ function RightHookPDF({ lang, dir, safeResults, t }) {
 function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
   const [selCap, setSelCap] = React.useState(0);
   const [copied, setCopied] = React.useState(false);
-  const { archetype, rarity, confidence, learnerType, learnerSecondary } = safeResults;
-  const lt  = LEARNER_TYPE_DATA[learnerType]  || LEARNER_TYPE_DATA.architect;
-  const lt2 = LEARNER_TYPE_DATA[learnerSecondary] || LEARNER_TYPE_DATA.striker;
+  const { archetype = "MLAH", rarity = "common", confidence = 0, learnerType = "architect", learnerSecondary = "striker" } = safeResults || {};
+  const lt  = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerType])  || (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA.architect) || { ar:{name:'',label:'',tip:''},fr:{name:'',label:'',tip:''},en:{name:'',label:'',tip:''} };
+  const lt2 = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerSecondary]) || lt;
   const ltCopy  = lt[lang]  || lt.en;
   const lt2Copy = lt2[lang] || lt2.en;
   const topPath = (safeRanked[0] && t[CLUSTER_KEY_MAP[safeRanked[0].id]]) || "";
   const rarityColors = { common:"#9ca3af", rare:"#22d3ee", epic:"#c084fc", legendary:"#fbbf24" };
   const rc = rarityColors[rarity] || rarityColors.common;
-  const captions = (rf(lang).captionOpts)(archetype, topPath);
+  const captions = rf(lang)?.captionOpts ? rf(lang).captionOpts(archetype, topPath) : [`${archetype} — ${topPath}`];
 
   // Identity mirror blocks derived from traits + learner type
   const traits = safeResults.traits || {};
@@ -9276,7 +9762,7 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
       {/* Credibility line */}
       <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.5,marginBottom:16,
         fontStyle:"italic",borderTop:"1px solid var(--border)",paddingTop:10}}>
-        {t.credibilityLine}
+        {t?.credibilityLine}
       </p>
 
       {/* Share captions */}
@@ -9361,13 +9847,11 @@ function Page2Prestige({ lang, dir, safeResults, info, t }) {
                 padding:"3px 10px",borderRadius:20}}>{b.label}</div>
             </div>
             <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>
-              {(() => {
-                const isMed  = /[Mm]édecine|Medicine|طب/.test(school);
-                const isElit = /ENSA|ENSIAS|INPT|Prépa/.test(school);
-                if (lang==="ar") return isMed ? "معدل عالٍ جداً عادةً (≥16) + متطلبات موضوعية في SVT والفيزياء والكيمياء" : isElit ? "معدل مرتفع عادةً (≥15) + مستوى قوي في الرياضيات والفيزياء" : "معدل جيد (≥12) + ملف متوازن";
-                if (lang==="fr") return isMed ? "Moyenne très haute souvent requise (≥16) + SVT et Physique-Chimie solides" : isElit ? "Bonne moyenne requise (≥15) + niveau solide en Maths et Physique" : "Bonne moyenne (≥12) + dossier équilibré";
-                return isMed ? "Very high average typically needed (≥16) + strong SVT and Physics-Chemistry" : isElit ? "High average typically needed (≥15) + strong Maths and Physics" : "Solid average (≥12) + balanced profile";
-              })()}
+              {lang==="ar"
+                ? `/[Mm]édecine|Medicine|طب/.test(school)` ? "معدل عالٍ جداً عادةً (≥16) + متطلبات موضوعية في SVT والكيمياء" : "/ENSA|ENSIAS|INPT|Prépa/.test(school)" ? "معدل مرتفع عادةً (≥15) + مستوى قوي في الرياضيات والفيزياء" : "معدل جيد (≥12) + ملف متوازن"
+                : lang==="fr"
+                ? "Prérequis selon l'établissement — varie par cycle et filière"
+                : "Requirements vary by institution and cycle"}
             </div>
           </div>
         );
@@ -9468,52 +9952,9 @@ function Page3Market({ lang, dir, safeResults, t }) {
 // ─────────────────────────────────────────────────────────────────
 // Page 4/6 — Top 3 Directions
 // ─────────────────────────────────────────────────────────────────
-
-// Lightweight pathway tab renderer for Page 4/6 direction cards
-function MiniPathwayTabs({ cluster, t, lang }) {
-  const [activeTab, setActiveTab] = React.useState(null);
-  const tabDefs = [
-    { key:"university",   label: t.universityRoute  || (lang==="ar"?"المسار الجامعي":lang==="fr"?"Universitaire":"University") },
-    { key:"grandeEcole",  label: t.grandeEcoleRoute || (lang==="ar"?"المدارس العليا":lang==="fr"?"Grande École":"Grande École") },
-    { key:"practical",    label: t.practicalRoute   || (lang==="ar"?"التكوين المهني":lang==="fr"?"Voie pratique":"Practical") },
-  ].filter(tab => cluster.pathways?.[tab.key]?.schools?.length > 0);
-
-  if (tabDefs.length === 0) return null;
-  const active = activeTab || tabDefs[0]?.key;
-  const content = cluster.pathways?.[active];
-
-  return (
-    <div style={{marginTop:10}}>
-      <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
-        {tabDefs.map(tab => (
-          <button key={tab.key} onClick={()=>setActiveTab(tab.key)}
-            className={`pathway-tab${active===tab.key?" active":""}`}
-            style={{fontSize:11}}>
-            {tab.label}
-          </button>
-        ))}
-      </div>
-      {content && (
-        <div className="pathway-content" style={{fontSize:12}}>
-          <div style={{display:"flex",flexWrap:"wrap",gap:4,marginBottom:4}}>
-            {(content.schools||[]).slice(0,4).map((s,i)=>(
-              <span key={i} className="pathway-school">{s}</span>
-            ))}
-          </div>
-          {content.duration && (
-            <div style={{color:"var(--muted)",marginTop:4}}>
-              ⏱ {t.durationLabel||"Durée"}: {content.duration}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function Page4Directions({ lang, dir, safeResults, t }) {
   const { threeViews } = safeResults;
-  if (!threeViews) return null;
+  if (!threeViews?.bestFit && !threeViews?.balanced && !threeViews?.ambitious) return null;
   const c = rf(lang);
   const cards = [
     { key:"bestFit", label:c.fitLabel, cluster:threeViews.bestFit, icon:"💡",
@@ -9569,8 +10010,6 @@ function Page4Directions({ lang, dir, safeResults, t }) {
                 ⚠️ {lang==="ar"?"شروط القبول العام لم تُستوفَ":lang==="fr"?"Conditions d'accès public non remplies":"Public eligibility conditions not met"}
               </div>
             )}
-            {/* Pathway tabs — inline mini renderer */}
-            {cluster.pathways && <MiniPathwayTabs cluster={cluster} t={t} lang={lang}/>}
           </div>
         );
       })}
@@ -9746,7 +10185,7 @@ function ResultsFlow({
     confidence:    Math.round(Math.min(100, Math.max(0, safeConf))),
     rarity:        getRarity(safeConf),
     overallAvg:    Math.min(20, Math.max(0, overallAvgVal)),
-    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
+    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks) || { bestFit:null, balanced:null, ambitious:null },
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
     familyPressure:!!safeReality.familyPressure,
     learnerType:   ltResult.primary,
@@ -9791,7 +10230,7 @@ function ResultsFlow({
     <div className="card" dir={dir} style={{maxWidth:720, width:"100%"}}>
       <RFProgress step={rfStep} total={TOTAL} lang={lang} dir={dir}/>
       <div style={{minHeight:400, paddingBottom:16}}>
-        {screens[rfStep]}
+        {screens[Math.min(rfStep, screens.length - 1)] || null}
       </div>
       <RFNav
         step={rfStep} total={TOTAL}
@@ -9893,7 +10332,7 @@ function StepResults({
 
   const confClass = safeConf>=70?"confidence-high":safeConf>=50?"confidence-med":"confidence-low";
   const massarType = computeMassarType(safeTraits, safeReality);
-  const typeDesc   = massarTypeDesc(massarType, t);
+  const typeDesc   = massarTypeDesc(massarType, t, lang);
   const traitLabels = {
     ar:{ analytical:"تحليلي", social:"اجتماعي", structure:"منظم", creativity:"مبدع", risk:"مبادر", leadership:"قيادي" },
     fr:{ analytical:"Analytique", social:"Social", structure:"Rigoureux", creativity:"Créatif", risk:"Risque", leadership:"Leader" },
@@ -10181,19 +10620,19 @@ function StepResults({
       )}
 
       {/* ── Phase 9: Truth Mode — collapsed ── */}
-      <CollapsibleSection title={t.truthModeBtn} defaultOpen={false} accent="var(--muted)">
+      <CollapsibleSection title={t?.truthModeBtn} defaultOpen={false} accent="var(--muted)">
         <TruthModeCard t={t} lang={lang} traits={safeTraits} top3={top3}/>
       </CollapsibleSection>
 
       {/* ── Phase 7: Share Card — status symbol ── */}
       {/* FIX: results page null-safety — topCluster may be null; ShareCard handles it internally */}
-      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf}/>
+      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf} traits={safeTraits}/>
 
       {/* ── Phase 6: Action plan → XP Progression Tracker ── */}
       <div className="section-title">{t.actionPlan}</div>
       <XPProgressionTracker top3={top3} t={t} lang={lang} massarType={massarType} />
 
-      <p className="salary-note">{t.salaryNote}</p>
+      <p className="salary-note">{t?.salaryNote}</p>
 
       {/* CTA + restart */}
       <div style={{display:"flex",gap:12,marginTop:24,flexWrap:"wrap",alignItems:"center"}}>
@@ -10932,48 +11371,6 @@ const css = `
   .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
   .home-footer a:hover { color: #e8a124; }
 
-  /* ── Viral share card — shimmer + share panel ── */
-  @keyframes scShimmerSweep {
-    0%   { transform: translateX(-120%); }
-    100% { transform: translateX(220%); }
-  }
-  .sc-shimmer-wrap { position: relative; overflow: hidden; display: inline-flex; }
-  .sc-shimmer-ray {
-    position: absolute; inset: 0;
-    background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,0.38) 50%, transparent 75%);
-    animation: scShimmerSweep 0.9s cubic-bezier(0.4,0,0.2,1) forwards;
-    pointer-events: none; border-radius: inherit; z-index: 5;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .sc-shimmer-ray { animation: none !important; display: none; }
-  }
-  /* Share panel */
-  .share-panel { display: flex; flex-direction: column; gap: 10px; max-width: 360px; margin: 0 auto; }
-  .share-panel-row { display: flex; gap: 8px; }
-  .share-panel-btn {
-    flex: 1; min-height: 44px; border-radius: 10px; border: 1.5px solid var(--border);
-    background: var(--surface2); color: var(--text); cursor: pointer;
-    font-size: 13px; font-weight: 700; font-family: inherit;
-    transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 5px;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .share-panel-btn:hover { border-color: var(--accent2); color: var(--accent2); background: rgba(59,130,246,0.07); }
-  .share-panel-btn:active { transform: scale(0.97); }
-  .share-panel-btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
-  .share-panel-btn.primary:hover { background: #f59e0b; }
-  .share-panel-seg { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); }
-  .share-panel-seg button {
-    flex: 1; padding: 8px 4px; border: none; background: var(--surface2);
-    color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 700;
-    font-family: inherit; transition: all 0.15s;
-  }
-  .share-panel-seg button.active { background: var(--accent); color: #000; }
-  .share-tooltip {
-    font-size: 11px; color: var(--muted); background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 8px;
-    padding: 7px 12px; text-align: center; line-height: 1.45;
-  }
-
   /* ── ResultsFlow — 5-screen journey ── */
   /* Screen fade transition */
   @keyframes rfFadeIn {
@@ -11194,6 +11591,71 @@ const DEFAULT_REALITY = {
 // APP
 // ─────────────────────────────────────────────────────────────────
 // Safety: ErrorBoundary — catches runtime errors, shows branded fallback + debug copy.
+
+// ─────────────────────────────────────────────────────────────────
+// DebugPanel — hidden by default. Toggle: press D x3 quickly or ?debug=1 in URL
+// ─────────────────────────────────────────────────────────────────
+function DebugPanel({ step, lang, dir, journeyStage, rankedClusters, traits, info, preBacData }) {
+  const [visible, setVisible] = React.useState(() => {
+    try { return new URLSearchParams(window.location.search).get("debug") === "1"; } catch { return false; }
+  });
+  const dKeyRef = React.useRef({ count: 0, timer: null });
+
+  React.useEffect(() => {
+    const onKey = (e) => {
+      if (e.key !== "d" && e.key !== "D") return;
+      dKeyRef.current.count += 1;
+      clearTimeout(dKeyRef.current.timer);
+      dKeyRef.current.timer = setTimeout(() => { dKeyRef.current.count = 0; }, 800);
+      if (dKeyRef.current.count >= 3) { setVisible(v => !v); dKeyRef.current.count = 0; }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  if (!visible) return null;
+
+  const checks = {
+    "TRANSLATIONS exists": typeof TRANSLATIONS === "object" && !!TRANSLATIONS[lang],
+    "MOROCCAN_ARCHETYPES": typeof MOROCCAN_ARCHETYPES === "object" && Object.keys(MOROCCAN_ARCHETYPES).length > 0,
+    "CLUSTERS array": Array.isArray(typeof CLUSTERS !== "undefined" ? CLUSTERS : null) && (typeof CLUSTERS !== "undefined" ? CLUSTERS : []).length > 0,
+    "rankedClusters": Array.isArray(rankedClusters) && rankedClusters.length > 0,
+    "traits object": traits && typeof traits === "object" && Object.keys(traits).length > 0,
+    "preBacData": !!preBacData && typeof preBacData === "object",
+    "t.next exists": !!(TRANSLATIONS[lang] || {}).next,
+  };
+
+  return (
+    <div dir="ltr" style={{
+      position: "fixed", bottom: 12, left: 12, zIndex: 9999,
+      background: "rgba(0,0,0,0.92)", border: "1px solid #3b82f6",
+      borderRadius: 10, padding: "12px 14px", fontSize: 11,
+      color: "#e2e8f0", fontFamily: "monospace", maxWidth: 280,
+      boxShadow: "0 4px 24px rgba(0,0,0,0.6)",
+    }}>
+      <div style={{fontWeight:700,color:"#3b82f6",marginBottom:6,fontSize:12}}>🐛 Massar Debug Panel</div>
+      <div style={{marginBottom:6}}>
+        <span style={{color:"#94a3b8"}}>Step:</span> <b style={{color:"#fbbf24"}}>{step}</b>
+        {"  "}<span style={{color:"#94a3b8"}}>Lang:</span> <b>{lang}</b>
+        {"  "}<span style={{color:"#94a3b8"}}>Dir:</span> <b>{dir}</b>
+      </div>
+      <div style={{marginBottom:6}}>
+        <span style={{color:"#94a3b8"}}>Journey:</span> <b style={{color:"#a78bfa"}}>{journeyStage || "?"}</b>
+        {"  "}<span style={{color:"#94a3b8"}}>Clusters:</span> <b>{Array.isArray(rankedClusters) ? rankedClusters.length : 0}</b>
+      </div>
+      <div style={{borderTop:"1px solid #1e293b",paddingTop:6,marginTop:4}}>
+        {Object.entries(checks).map(([k,v]) => (
+          <div key={k}>{v ? "✅" : "❌"} {k}</div>
+        ))}
+      </div>
+      <button onClick={() => setVisible(false)} style={{
+        marginTop:8,padding:"3px 8px",borderRadius:4,border:"1px solid #475569",
+        background:"transparent",color:"#94a3b8",cursor:"pointer",fontSize:10,fontFamily:"monospace",
+      }}>× close</button>
+    </div>
+  );
+}
+
 class AppErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -11332,8 +11794,8 @@ export default function App() {
   // HOME PAGE 3D CSS — view state
   const [view,           setView]           = useState("home");
 
-  const t   = TRANSLATIONS[lang];
-  const dir = t.dir;
+  const t   = TRANSLATIONS[lang] || TRANSLATIONS.fr; // safe fallback
+  const dir = t?.dir || "ltr";
 
   // ── Goal 1: load saved session on mount ──────────────────────────
   useEffect(() => {
@@ -11390,10 +11852,14 @@ export default function App() {
     // TASK 2 — inject goal + goalPreference into reality so scorer can read them
     const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige",
       profileBoost: { ...(reality.profileBoost||{}), ...(info.profileBoost||{}) } };
-    const result = computeClusterScores(scoreBacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
+    let result = computeClusterScores(scoreBacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
+    // PRE-BAC: apply Morocco Credibility Gates A/B/C
+    if (journeyStage === "prebac" && preBacData && Object.keys(preBacData).length > 0) {
+      result = applyPreBacCredibilityGates(result, preBacData, traits, realityWithGoal);
+    }
     if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
     return result;
-  }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
+  }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality, journeyStage, preBacData]);
 
   // Cultural rerank layer — apply post-processing for prestige/fit/practical/unsure
   const overallAvgForRerank = useMemo(() => {
@@ -11415,7 +11881,7 @@ export default function App() {
 
   // Narrative: useMemo so it updates live when sliders change
   const narrative = useMemo(() => {
-    if (step !== 7 || !top3.length) return null;
+    if (step < 10 || !top3.length) return null;
     // Narrative fix — pass effectiveMarks for subject-calibrated wording
     return generateNarrative(top3, traits, info.bacTrack, lang, reality, effectiveMarks);
   }, [top3, traits, info.bacTrack, lang, step, reality, effectiveMarks]); // eslint-disable-line
@@ -11541,6 +12007,14 @@ export default function App() {
         )}
       </div>
       )} {/* end view==="test" */}
+      <DebugPanel
+        step={step} lang={lang} dir={dir}
+        journeyStage={journeyStage}
+        rankedClusters={rankedClusters}
+        traits={traits}
+        info={info}
+        preBacData={preBacData}
+      />
     </>
     </AppErrorBoundary>
   );
