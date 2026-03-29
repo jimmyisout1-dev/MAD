@@ -1,19 +1,17 @@
 // MassarPro — self-contained single-file build
 /*
- * CHANGELOG (latest patch)
- * 1. BUILD FIX: Removed duplicate stray block after MOROCCAN_ARCHETYPES closing };
- * 2. RUNTIME: usePrefersReducedMotion → useState+useEffect (no module-scope window)
- * 3. RUNTIME: t=TRANSLATIONS[lang]||TRANSLATIONS.fr fallback; dir=t?.dir||"ltr"
- * 4. RUNTIME: massarTypeDesc hardened with optional chaining + explicit lang param
- * 5. RUNTIME: narrative guard fixed (step < 10, not step !== 7)
- * 6. RUNTIME: canvas.getContext null guard; screens[] bounds-clamped
- * 7. UX: DebugPanel added (press D×3 or ?debug=1 to activate)
- * 8. UX: ClusterCard shows "Why this appeared" for non-obvious clusters
- * 9. PRE-BAC: preferenceDial + publicEye gate wired (sports demoted when !publicEye)
- * 10. SHARE: El M3allem canvas design — Moroccan tile bg, gold border, 3 stat bars
- * 11. IDENTITY: ARCHETYPE_MIRROR cold-reading blocks (8 archetypes × 6 fields)
- * 12. SAFETY: All .map() guarded, t?.key optional chaining, no duplicate functions
- * 13. POLISH: mirrorBlocks fallback .fr chain; ltCopy.signature safe; RightHookPDF t prop
+ * CHANGELOG (latest patch — God Mode: archetypes v2 + blank-page fix)
+ * ROOT CAUSE: getRarity() called but not defined (replaced by computeRarity)
+ * 1. FIX: getRarity(safeConf) → computeRarity(safeConf) in safeResults
+ * 2. FIX: Added getRarity alias = computeRarity for safety
+ * 3. FIX: massarTypeDesc simplified (no longer crashes on empty traits)
+ * 4. FIX: ArchetypeCard arch null-safety (falls back to ARCHETYPES_V2_BY_ID.mzan)
+ * 5. FIX: arch.signatureMove[lang] → arch.signatureMove?.[lang] (optional chain)
+ * 6. FEAT: 12 archetypes v2 (ARCHETYPES_V2) inline — no external imports
+ * 7. FEAT: pickArchetypeV2, computeRarity, makeSerialId, computeDeterministicStats
+ * 8. FEAT: ArchetypeCard rebuilt — cold reading, mirror blocks, hook question
+ * 9. FEAT: Page1Identity uses archV2 cold reading (_crData/_mrData/_hqData)
+ * 10. FEAT: ShareCard caption uses archV2.shareCaption from data contract
  */
 /*
  * BUILD SAFETY CHECKLIST (verified before every deploy)
@@ -153,6 +151,11 @@ const TRANSLATIONS = {
     ],
 
         backHome: "العودة للرئيسية",
+    revealCard: "اكتشف بطاقتك",
+    downloadStory: "تحميل Story 9:16",
+    downloadSquare: "تحميل Square 1:1",
+    downloadCard: "تحميل Card 5:7",
+    copyCaption: "نسخ النص",
         // Arabic rewrite
     appTitle: "مسار | دليلك المهني بالمغرب",
     appSubtitle: "اكتشف مسارك الدراسي والمهني المناسب لك",
@@ -733,6 +736,11 @@ const TRANSLATIONS = {
     ],
 
         backHome: "← Accueil",
+    revealCard: "Révèle ta carte",
+    downloadStory: "Télécharger Story 9:16",
+    downloadSquare: "Télécharger Carré 1:1",
+    downloadCard: "Télécharger Carte 5:7",
+    copyCaption: "Copier le texte",
         appTitle: "Massar | Guide Carrière Maroc",
     appSubtitle: "Découvrez votre voie professionnelle idéale au Maroc",
     next: "Suivant",
@@ -1296,6 +1304,11 @@ const TRANSLATIONS = {
     ],
 
         backHome: "← Home",
+    revealCard: "Reveal my card",
+    downloadStory: "Download Story 9:16",
+    downloadSquare: "Download Square 1:1",
+    downloadCard: "Download Card 5:7",
+    copyCaption: "Copy caption",
         appTitle: "Massar | Morocco Career Guide",
     appSubtitle: "Discover your ideal career path in Morocco",
     next: "Next",
@@ -5475,880 +5488,375 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
 }
 
 // ─────────────────────────────────────────────────────────────────
-// computeMassarType — deterministic 4-letter code from traits + reality
-// Dims: A/C  S/I  P/O  R/K
 // ─────────────────────────────────────────────────────────────────
+// ARCHETYPE SYSTEM v2 — 12 archetypes from data contract
+// pickArchetype, computeRarity, makeSerialId, computeDeterministicStats
+// All wording preserved exactly from the TXT data contract.
+// ─────────────────────────────────────────────────────────────────
+
+const ARCHETYPES_V2 = [
+  { id:"mllm",  code:"MS-MLLM",  rarity:"RARE",   icon:"🧠",  titleLatin:"EL MO3ALLIM", titleAr:"المعلّم",    titleFr:"Le Prof",        titleEn:"The Teacher",
+    viralLine:{ ar:"كنشرحها ببساطة… وكتدخل للراس. 🧠✨", fr:"J'explique simple… et ça rentre direct. 🧠✨", en:"I make it click—fast. 🧠✨" },
+    signatureMove:{ ar:"كنحوّل المعقّد لخطوات ساهلة.", fr:"Je transforme le compliqué en étapes claires.", en:"I turn complexity into clear steps." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتشرح للناس حتى بلا ما تحس… وكتحس براسك مسؤول على الفهم ديالهم.", truth:"الحقيقة: كتحتاج حدّ يطلب منك \"طبقها دابا\" باش ما تبقاش غير فالكلام." }, fr:{ looks:"Ça se voit: Tu expliques naturellement… même quand personne te demande.", truth:"La vérité: Il te faut un \"passe à l'action maintenant\" pour ne pas rester dans la théorie." }, en:{ looks:"Looks like: You naturally teach—without trying.", truth:"Truth: You need a 'do it now' push so you don't stay in theory." } },
+    mirror:{ ar:{ pressure:"تحت الضغط كتولي هادئ وكتختار الكلمات بدقّة. كتفكر فالحل قبل ما تهضر.", consistency:"باش تبقى ثابت، خاصك شريك/جمهور صغير. إلى كنت بوحدك كتطوّل فالشرح بلا تنفيذ.", advantage:"ميزتك: كتفهم الناس بسرعة وكتوصل الفكرة بالطريقة اللي كتخليها تستقر.", blindSpot:"نقطة عمياء: كتشرح بزاف وكتأخر التجربة. الحل: طبّق خطوة واحدة مباشرة بعد أي شرح." }, fr:{ pressure:"Sous pression, tu restes calme et précis. Tu cherches la clarté, pas le bruit.", consistency:"Pour tenir, il te faut un binôme ou un petit public. Seul, tu expliques… sans exécuter.", advantage:"Tu lis comment l'autre pense, puis tu simplifies jusqu'à l'évidence.", blindSpot:"Trop d'explications, pas assez de pratique. Règle: une mini-action après chaque session." }, en:{ pressure:"Under pressure, you go calm and precise. You chase clarity, not noise.", consistency:"You need a buddy/small audience. Alone, you may explain… but delay execution.", advantage:"You read how people think, then simplify until it clicks.", blindSpot:"Explaining > doing. Rule: one micro-action after every study block." } },
+    hookQuestion:{ ar:"واش كتشرح مزيان… ولكن كتأجل التطبيق؟ شنو أول حاجة تقدر تطبقها اليوم؟", fr:"Tu expliques bien… mais tu exécutes quand exactement ? C'est quoi ton premier pas aujourd'hui ?", en:"You explain well—but when do you execute? What's your first step today?" },
+    shareCaption:{ ar:"طلع ليا «المعلّم» 🧠✨ كنحوّل أي فكرة لشي مفهوم… شنو طلع ليك؟ 👀 #مسار #MassarPro", fr:"J'ai eu «Le Prof» 🧠✨ Je rends le compliqué simple… t'as eu quoi toi ? 👀 #MassarPro", en:"I got \"The Teacher\" 🧠✨ What did you get? 👀 #MassarPro" },
+    statsProfile:{ stat1Label:{ar:"الفهم",fr:"Clarté",en:"Clarity"}, stat2Label:{ar:"التأثير",fr:"Impact",en:"Impact"}, stat3Label:{ar:"الانضباط",fr:"Discipline",en:"Discipline"} } },
+  { id:"mhni",  code:"MS-MHNI",  rarity:"RARE",   icon:"🏛️", titleLatin:"EL MOHTARIF", titleAr:"المحترف",    titleFr:"Le Pro",         titleEn:"The Professional",
+    viralLine:{ ar:"كنخدمها بالنّظام… والنتيجة كتقول كلشي. ✅", fr:"Je bosse carré… et le résultat parle. ✅", en:"Clean work. Loud results. ✅" },
+    signatureMove:{ ar:"الجودة قبل السرعة.", fr:"Qualité avant vitesse.", en:"Quality over speed." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتكره العشوائية وكتحترم اللي خدام بنظام.", truth:"الحقيقة: كتقدر تخسر فرص زوينة غير حيث كتسنى \"الوقت المناسب\"." }, fr:{ looks:"Ça se voit: Tu respectes le travail structuré, fiable.", truth:"La vérité: Tu peux rater des chances en attendant le \"moment parfait\"." }, en:{ looks:"Looks like: You value structure and reliability.", truth:"Truth: You may miss chances waiting for perfect timing." } },
+    mirror:{ ar:{ pressure:"تحت الضغط كتختار المسار المضمون وكتقلل المخاطرة.", consistency:"خاصك روتين واضح + معيار \"شنو كافي\".", advantage:"الانضباط ديالك كيخلق ثقة قبل ما تبان النتائج.", blindSpot:"كتخاف تجرب جديد باش ما تهبطش الجودة. الحل: جرّب صغير وسريع فمساحة آمنة." }, fr:{ pressure:"Sous pression, tu sécurises: solide > flashy.", consistency:"Routine claire + seuil \"c'est suffisant\".", advantage:"Ta discipline inspire confiance.", blindSpot:"Tu testes peu. Fix: mini-test rapide, sans risque." }, en:{ pressure:"Safe solid move > flashy.", consistency:"Routine + \"good enough\" threshold.", advantage:"Discipline builds trust early.", blindSpot:"Low experimentation. Fix: small safe tests." } },
+    hookQuestion:{ ar:"واش الكمال كيعطلك؟ شنو \"نسخة 70%\" تقدر تطلقها هاد السيمانة؟", fr:"Le perfectionnisme te bloque ? C'est quoi ta version \"70%\" que tu peux sortir cette semaine ?", en:"What's your 70% version you can ship this week?" },
+    shareCaption:{ ar:"طلع ليا «المحترف» ✅ الخدمة عندي معيار… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Pro» ✅ Chez moi c'est carré… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Professional\" ✅ What did you get? 👀 #MassarPro" },
+    statsProfile:{ stat1Label:{ar:"الجودة",fr:"Qualité",en:"Quality"}, stat2Label:{ar:"الثبات",fr:"Constance",en:"Consistency"}, stat3Label:{ar:"المرونة",fr:"Adaptation",en:"Adaptation"} } },
+  { id:"hrrk",  code:"MS-HRRK",  rarity:"COMMON", icon:"⚡",  titleLatin:"EL MOHARRIK",titleAr:"المحرّك",    titleFr:"Le Booster",     titleEn:"The Spark",
+    viralLine:{ ar:"كنشعل البداية… وكنجرّي حتى كيتحركو الناس. ⚡", fr:"J'allume le départ… et je tire tout le monde. ⚡", en:"I spark momentum. ⚡" },
+    signatureMove:{ ar:"كنبدأ قبل ما تكمل الخطة.", fr:"Je lance avant la perfection.", en:"I start before it's perfect." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتقدر تشعل الحماس فثانية… وكتكره الروتين.", truth:"الحقيقة: إلا ما بانش تقدم سريع، كتطيح الطاقة." }, fr:{ looks:"Ça se voit: Tu crées l'énergie vite… routine = non.", truth:"La vérité: Sans progrès visible, ta motivation chute." }, en:{ looks:"Looks like: You create momentum fast.", truth:"Truth: No progress = energy drops." } },
+    mirror:{ ar:{ pressure:"كتقلب على أول ضربة كتفرق وكتخدم بسرعة.", consistency:"تحدّي صغير يومي + قياس بسيط للتقدم.", advantage:"كتقدر تحرّك فريق وتفتح طريق.", blindSpot:"كتسخّن وتبرد. الحل: نقاط ثابتة + مكافأة صغيرة." }, fr:{ pressure:"Premier move qui change tout, puis tu fonces.", consistency:"Micro-défi + tracking (streak).", advantage:"Tu relances l'énergie d'un groupe.", blindSpot:"Up/down. Fix: petites victoires mesurables." }, en:{ pressure:"First game-changing move then sprint.", consistency:"Micro-challenges + tracking.", advantage:"You energize teams.", blindSpot:"Drops fast. Fix: measurable micro-wins." } },
+    hookQuestion:{ ar:"شنو اللي كيشعل فيك الحماس فعلاً؟ وشنو اللي كيطفّيه بسرعة؟", fr:"Qu'est-ce qui t'allume… et qu'est-ce qui te coupe net ?", en:"What fuels you—and what kills your momentum?" },
+    shareCaption:{ ar:"طلع ليا «المحرّك» ⚡ كنبدأ قبل الكلام… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Booster» ⚡ J'allume le game… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Spark\" ⚡ What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"السرعة",fr:"Vitesse",en:"Speed"}, stat2Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat3Label:{ar:"الثبات",fr:"Stabilité",en:"Stability"} } },
+  { id:"bnaa",  code:"MS-BNAA",  rarity:"RARE",   icon:"🧱",  titleLatin:"EL BANNAA",  titleAr:"البنّاء",    titleFr:"Le Bâtisseur",   titleEn:"The Builder",
+    viralLine:{ ar:"كنركّبها قطعة بقطعة… وكنخرجها قوية. 🧱", fr:"Pièce par pièce… solide à la fin. 🧱", en:"Brick by brick. 🧱" },
+    signatureMove:{ ar:"كنمشي خطوة بخطوة بلا ضجيج.", fr:"Step-by-step, sans blabla.", en:"Quiet execution, steady progress." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتخدم فصمت وتفاجئ بالنتيجة.", truth:"الحقيقة: التفاصيل كتقدر تعطلّك." }, fr:{ looks:"Ça se voit: Tu bosses en silence, résultat solide.", truth:"La vérité: Les détails peuvent te ralentir." }, en:{ looks:"Looks like: Quiet worker, strong finish.", truth:"Truth: Details can slow you down." } },
+    mirror:{ ar:{ pressure:"كتقسم المشكل لصغار وكتحلّهم وحدة بوحدة.", consistency:"Checklist قصيرة + مراجعة أسبوعية.", advantage:"كتخلق نظام وسط الفوضى وكتحافظ على الجودة.", blindSpot:"كتطوّل فالتحسين. الحل: V1 بوقت محدد." }, fr:{ pressure:"Tu découpes et tu avances morceau par morceau.", consistency:"Checklist courte + revue hebdo.", advantage:"Tu structures sans perdre la qualité.", blindSpot:"Trop polir. Fix: deadline V1." }, en:{ pressure:"Break it down, solve stepwise.", consistency:"Short checklist + weekly review.", advantage:"Structure + quality.", blindSpot:"Over-polish. Fix: V1 deadline." } },
+    hookQuestion:{ ar:"شنو \"نسخة أولى\" تقدر تكمّلها فـ48 ساعة؟", fr:"C'est quoi ta V1 que tu peux finir en 48h ?", en:"What's a V1 you can finish in 48 hours?" },
+    shareCaption:{ ar:"طلع ليا «البنّاء» 🧱 كنربح بالثبات… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Bâtisseur» 🧱 Résultat solide… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Builder\" 🧱 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"التنفيذ",fr:"Exécution",en:"Execution"}, stat2Label:{ar:"الدقة",fr:"Précision",en:"Precision"}, stat3Label:{ar:"الصبر",fr:"Endurance",en:"Endurance"} } },
+  { id:"nazl",  code:"MS-NAZL",  rarity:"COMMON", icon:"🧭",  titleLatin:"EL MALLAH",  titleAr:"الملاّح",    titleFr:"Le Navigateur",  titleEn:"The Navigator",
+    viralLine:{ ar:"كنقرا الطريق قبل ما نبدا… وكنوصل بلا ما نضيع. 🧭", fr:"Je lis la route avant… j'arrive sans me perdre. 🧭", en:"Plan first. Win after. 🧭" },
+    signatureMove:{ ar:"كنربط بين الخيارات ونختار الأقل مخاطرة.", fr:"Je connecte les options et je sécurise le chemin.", en:"I connect options and reduce risk." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتفكر فالعواقب قبل ما تدير أي خطوة.", truth:"الحقيقة: البداية كتكون أصعب عليك من الطريق." }, fr:{ looks:"Ça se voit: Tu penses aux conséquences avant d'agir.", truth:"La vérité: Démarrer te coûte plus que continuer." }, en:{ looks:"Looks like: You foresee outcomes.", truth:"Truth: Starting is the hard part." } },
+    mirror:{ ar:{ pressure:"كتخرج بخطة B/C بلا فوضى.", consistency:"خطة A/B/C كتخليك ما تحسّش بالحصار.", advantage:"كتسبق المشاكل وتتجنب الغلط.", blindSpot:"كتأخر البداية. الحل: أصغر خطوة بلا مخاطرة." }, fr:{ pressure:"Plan B/C sans panique.", consistency:"A/B/C te garde en mouvement.", advantage:"Tu évites les pièges tôt.", blindSpot:"Tu retardes le départ. Fix: micro-action." }, en:{ pressure:"Backup plans.", consistency:"A/B/C keeps you moving.", advantage:"Avoids pitfalls.", blindSpot:"Delays start. Fix micro-step." } },
+    hookQuestion:{ ar:"شنو أصغر خطوة بلا مخاطرة تقدر تديرها اليوم؟", fr:"C'est quoi le plus petit pas sans risque aujourd'hui ?", en:"What's the smallest zero-risk step today?" },
+    shareCaption:{ ar:"طلع ليا «الملاّح» 🧭 كنمشي بالخطة… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Navigateur» 🧭 Plan clair… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Navigator\" 🧭 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"التخطيط",fr:"Plan",en:"Planning"}, stat2Label:{ar:"الحكمة",fr:"Prudence",en:"Prudence"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
+  { id:"qaid",  code:"MS-QAID",  rarity:"EPIC",   icon:"👑",  titleLatin:"EL QAID",    titleAr:"القائد",     titleFr:"Le Leader",      titleEn:"The Leader",
+    viralLine:{ ar:"كنخلّي الناس يتفاهمو… وكنخرج النتيجة من الجماعة. 👑", fr:"Je cadre le groupe… et on sort le résultat. 👑", en:"I lead with clarity. 👑" },
+    signatureMove:{ ar:"كنقود بالوضوح وبحسم الأولويات.", fr:"Je mène par la clarté et les priorités.", en:"I turn chaos into priorities." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: الناس كتتبعك حيث كتجيب الوضوح وسط الفوضى.", truth:"الحقيقة: كتشدّ بزاف بوحدك وكتتقل." }, fr:{ looks:"Ça se voit: On te suit parce que tu clarifies tout.", truth:"La vérité: Tu portes trop seul." }, en:{ looks:"Looks like: People follow your clarity.", truth:"Truth: You carry too much alone." } },
+    mirror:{ ar:{ pressure:"كتفرز المهم من اللي يقدر يتسنى.", consistency:"التزام قدّام الناس كيخليك ثابت.", advantage:"كتجمع الناس بلا \"منصب\".", blindSpot:"ما كتفوّضش. الحل: تفويض واحد فالأسبوع." }, fr:{ pressure:"Important vs secondaire, vite.", consistency:"Engagement public = stabilité.", advantage:"Tu mobilises sans titre.", blindSpot:"Délègue peu. Fix: 1 délégation / semaine." }, en:{ pressure:"Prioritize fast.", consistency:"Public commitment works.", advantage:"Mobilize without title.", blindSpot:"Low delegation." } },
+    hookQuestion:{ ar:"شنو مهمة وحدة تقدر تفوّضها هاد السيمانة؟", fr:"C'est quoi UNE chose que tu peux déléguer cette semaine ?", en:"What's one thing you can delegate this week?" },
+    shareCaption:{ ar:"طلع ليا «القائد» 👑 كنقود بالوضوح… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Leader» 👑 Je mène par la clarté… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Leader\" 👑 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"القيادة",fr:"Leadership",en:"Leadership"}, stat2Label:{ar:"التأثير",fr:"Influence",en:"Influence"}, stat3Label:{ar:"التنظيم",fr:"Organisation",en:"Organization"} } },
+  { id:"mqni",  code:"MS-MQNI",  rarity:"RARE",   icon:"🎯",  titleLatin:"EL MOQNI3",  titleAr:"المقنِع",    titleFr:"Le Persuasif",   titleEn:"The Persuader",
+    viralLine:{ ar:"كنقنع بلا صياح… بالكلام اللي فبلاصتو. 🎯", fr:"Je convaincs sans forcer… timing parfait. 🎯", en:"Quiet persuasion. Big impact. 🎯" },
+    signatureMove:{ ar:"الحُجّة + التوقيت = نتيجتي.", fr:"Argument + timing = impact.", en:"Argument + timing = impact." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتقدر تبدّل رأي الناس بجملة وحدة.", truth:"الحقيقة: خاصك القياس باش تبقى ثابت." }, fr:{ looks:"Ça se voit: Une phrase bien placée et tu retournes la salle.", truth:"La vérité: Il te faut des chiffres pour rester stable." }, en:{ looks:"Looks like: You can flip a room with one line.", truth:"Truth: You need metrics to stay grounded." } },
+    mirror:{ ar:{ pressure:"كتقلب على \"الجملة الحاسمة\".", consistency:"هدف اجتماعي (عرض/نقاش) كيخليك شاعل.", advantage:"كتجيب الدعم بسرعة.", blindSpot:"كتتهرب من القياس. الحل: KPI واحد/أسبوع." }, fr:{ pressure:"La phrase décisive.", consistency:"Objectif social régulier.", advantage:"Support rapide.", blindSpot:"Mesure faible. Fix KPI hebdo." }, en:{ pressure:"Decisive line.", consistency:"Social targets.", advantage:"Fast support.", blindSpot:"Track a KPI." } },
+    hookQuestion:{ ar:"شنو رقم واحد غادي تراقبو هاد الشهر؟", fr:"C'est quoi LE chiffre que tu suis ce mois-ci ?", en:"What's the one metric you'll track this month?" },
+    shareCaption:{ ar:"طلع ليا «المقنِع» 🎯 كنقنع بالهدوء… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Persuasif» 🎯 Timing + كلام فبلاصتو… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Persuader\" 🎯 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"الإقناع",fr:"Persuasion",en:"Persuasion"}, stat2Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat3Label:{ar:"القياس",fr:"Mesure",en:"Tracking"} } },
+  { id:"mbd3",  code:"MS-MBD3",  rarity:"RARE",   icon:"🎨",  titleLatin:"EL MOBDI3",  titleAr:"المبدع",     titleFr:"L'Artiste",      titleEn:"The Creator",
+    viralLine:{ ar:"كنشوف اللي ما كيتشافش… وكنقلبو لحاجة كتخدم. 🎨", fr:"Je vois l'angle que personne capte… et je le rends utile. 🎨", en:"I see patterns others miss. 🎨" },
+    signatureMove:{ ar:"إبداع عملي، ماشي غير أفكار.", fr:"Créatif, mais concret.", en:"Creative, but practical." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتولد الأفكار وكتشوف الربط.", truth:"الحقيقة: خاصك إطار بسيط باش تنفذ." }, fr:{ looks:"Ça se voit: Idées et connexions rares.", truth:"La vérité: Il te faut un cadre simple." }, en:{ looks:"Looks like: Rare connections.", truth:"Truth: Need structure to execute." } },
+    mirror:{ ar:{ pressure:"كتبدّل الزاوية بدل الصدام.", consistency:"فصل \"الإبداع\" عن \"التنفيذ\".", advantage:"حلول جديدة كتجيك بسرعة.", blindSpot:"الروتين كيطفيك. الحل: إطار صغير ثابت." }, fr:{ pressure:"Tu changes d'angle.", consistency:"Création ≠ exécution.", advantage:"Idées neuves.", blindSpot:"Routine = baisse. Fix cadre minimal." }, en:{ pressure:"Change angle.", consistency:"Create vs execute.", advantage:"Novel ideas.", blindSpot:"Routine kills you." } },
+    hookQuestion:{ ar:"شنو فكرة وحدة غادي تحوّلها لواقع فـ7 أيام؟", fr:"Quelle UNE idée tu rends réelle en 7 jours ?", en:"Which ONE idea becomes real in 7 days?" },
+    shareCaption:{ ar:"طلع ليا «المبدع» 🎨 كنبدّل الزاوية وكنلقى الحل… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Artiste» 🎨 Je change l'angle… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Creator\" 🎨 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"الإبداع",fr:"Créa",en:"Creativity"}, stat2Label:{ar:"التنفيذ",fr:"Exécution",en:"Execution"}, stat3Label:{ar:"الأصالة",fr:"Originalité",en:"Originality"} } },
+  { id:"7aris", code:"MS-7ARIS", rarity:"COMMON", icon:"🛡️", titleLatin:"EL 7ARIS",   titleAr:"الحارس",     titleFr:"Le Gardien",     titleEn:"The Sentinel",
+    viralLine:{ ar:"كنحافظ على الوتيرة… وكنربح بالاستمرار. 🛡️", fr:"Je garde le rythme… je gagne au long terme. 🛡️", en:"Consistency wins. 🛡️" },
+    signatureMove:{ ar:"الاستمرار هو السلاح ديالي.", fr:"La constance, c'est mon arme.", en:"Consistency is my weapon." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتربح بالاستمرار.", truth:"الحقيقة: المفاجآت كتقلقك حتى كتعاود توازن." }, fr:{ looks:"Ça se voit: Tu gagnes à la constance.", truth:"La vérité: L'imprévu te dérègle." }, en:{ looks:"Looks like: You outlast hype.", truth:"Truth: Chaos disrupts you." } },
+    mirror:{ ar:{ pressure:"كتشدّ فالطريقة المضمونة.", consistency:"روتين صغير + مكافأة أسبوعية.", advantage:"كتسبق اللي كيعولو على الحماس.", blindSpot:"العشوائية كتضرك. الحل: خطة احتياطية." }, fr:{ pressure:"Méthode sûre.", consistency:"mini-rituel + reward.", advantage:"Long terme.", blindSpot:"imprévu. Fix plan B." }, en:{ pressure:"Safe method.", consistency:"mini-ritual + reward.", advantage:"long-term win.", blindSpot:"chaos. Fix backup plan." } },
+    hookQuestion:{ ar:"شنو روتين صغير تقدر تحافظ عليه حتى فأسوأ أسبوع؟", fr:"C'est quoi ton mini-rituel même dans ta pire semaine ?", en:"What's your tiny routine even on bad weeks?" },
+    shareCaption:{ ar:"طلع ليا «الحارس» 🛡️ كنربح بالاستمرار… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Gardien» 🛡️ Constance > hype… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Sentinel\" 🛡️ What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"الثبات",fr:"Constance",en:"Consistency"}, stat2Label:{ar:"الانضباط",fr:"Discipline",en:"Discipline"}, stat3Label:{ar:"التحمل",fr:"Endurance",en:"Endurance"} } },
+  { id:"m7lll", code:"MS-M7LLL", rarity:"COMMON", icon:"🔍",  titleLatin:"EL MO7ALLIL",titleAr:"المحلّل",    titleFr:"L'Analyste",     titleEn:"The Analyst",
+    viralLine:{ ar:"كنحلّلها فصمت… وكنخرج بقرار صائب. 🔍", fr:"Je calcule en silence… décision propre. 🔍", en:"Silent analysis. Sharp decision. 🔍" },
+    signatureMove:{ ar:"كنحوّل الضباب لخطة واضحة.", fr:"Je clarifie le flou.", en:"I turn fog into plan." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتلقا الغلط قبل ما يبان.", truth:"الحقيقة: بلا موعد نهائي كتغرق فالتفكير." }, fr:{ looks:"Ça se voit: Tu vois l'erreur avant les autres.", truth:"La vérité: Sans deadline, tu sur-analyses." }, en:{ looks:"Looks like: You catch mistakes early.", truth:"Truth: No deadline = overthinking." } },
+    mirror:{ ar:{ pressure:"كتقيس الاحتمالات وكتتفادى القرار المتسرع.", consistency:"deadlines قصيرة كتخرجك من الدوامة.", advantage:"كتزيد الجودة وكتنقص الغلط.", blindSpot:"كتطلب كمال. الحل: قرر بـ80%." }, fr:{ pressure:"Tu gardes le contrôle.", consistency:"deadlines courtes.", advantage:"qualité ↑ erreurs ↓", blindSpot:"perfection. Fix 80%." }, en:{ pressure:"controlled.", consistency:"short deadlines.", advantage:"quality upgrade.", blindSpot:"perfectionism." } },
+    hookQuestion:{ ar:"إمتى غادي تحسم قرار واحد نهائي؟", fr:"Tu tranches QUAND sur une décision ?", en:"When will you decide?" },
+    shareCaption:{ ar:"طلع ليا «المحلّل» 🔍 كنقرا التفاصيل اللي كتفلت… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Analyste» 🔍 Je capte les détails… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Analyst\" 🔍 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"التحليل",fr:"Analyse",en:"Analysis"}, stat2Label:{ar:"الدقة",fr:"Précision",en:"Precision"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
+  { id:"rayd",  code:"MS-RAYD",  rarity:"EPIC",   icon:"🚀",  titleLatin:"EL RAYED",   titleAr:"الرائد",     titleFr:"Le Pionnier",    titleEn:"The Pioneer",
+    viralLine:{ ar:"كنجرّب قبل ما يطلبو مني… وكنبني طريق جديد. 🚀", fr:"Je teste avant tout le monde… je trace la route. 🚀", en:"I move first. 🚀" },
+    signatureMove:{ ar:"كنغامر بحساب، ماشي بتهور.", fr:"Risque… mais calculé.", en:"Calculated risk." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: كتزهق من العادي وكتقلب على الجديد.", truth:"الحقيقة: بلا مشروع حيّ كتتشتت." }, fr:{ looks:"Ça se voit: Le normal t'ennuie.", truth:"La vérité: Sans projet vivant, dispersion." }, en:{ looks:"Looks like: You chase novelty.", truth:"Truth: No live project = scattered focus." } },
+    mirror:{ ar:{ pressure:"كتتعلم بسرعة وكتقلب على طريق خارج القاعدة.", consistency:"مشروع واحد حيّ 30 يوم.", advantage:"كتسبق التغيير وتستغل الفرص.", blindSpot:"الملل السريع. الحل: تنويع داخل نفس الهدف." }, fr:{ pressure:"voie hors cadre.", consistency:"un projet 30 jours.", advantage:"avance tôt.", blindSpot:"ennui. Fix variation interne." }, en:{ pressure:"out-of-box path.", consistency:"one project 30 days.", advantage:"early mover.", blindSpot:"boredom." } },
+    hookQuestion:{ ar:"شنو المشروع الواحد اللي غادي تركز عليه 30 يوم؟", fr:"C'est quoi LE projet que tu portes 30 jours ?", en:"What ONE project will you commit to for 30 days?" },
+    shareCaption:{ ar:"طلع ليا «الرائد» 🚀 كنمشي قدّام وكنتعلم فالطريق… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Pionnier» 🚀 J'avance avant tout le monde… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Pioneer\" 🚀 What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat2Label:{ar:"الابتكار",fr:"Innovation",en:"Innovation"}, stat3Label:{ar:"التركيز",fr:"Focus",en:"Focus"} } },
+  { id:"mzan",  code:"MS-MZAN",  rarity:"RARE",   icon:"⚖️",  titleLatin:"EL MIZAN",   titleAr:"المُتوازن",  titleFr:"L'Équilibré",    titleEn:"The Balancer",
+    viralLine:{ ar:"كنوازن بين العقل والقلب… بلا ما نضيع. ⚖️", fr:"Je garde l'équilibre… cerveau + cœur. ⚖️", en:"Balance is my superpower. ⚖️" },
+    signatureMove:{ ar:"كنختار اللي كيعيشني مزيان اليوم وغدا.", fr:"Je choisis ce qui tient aujourd'hui ET demain.", en:"I choose what works now and later." },
+    coldReading:{ ar:{ looks:"ظاهر عليك: ما كتتباعش بسهولة بالكلام الكبير… كتقلب على المعنى.", truth:"الحقيقة: كتمشي فالوسط حتى كتضيع الاختيار. خاصك تحسم." }, fr:{ looks:"Ça se voit: Tu n'achètes pas le hype. Tu veux du sens.", truth:"La vérité: À force d'équilibrer, tu peux retarder le choix." }, en:{ looks:"Looks like: You don't buy hype—you want meaning.", truth:"Truth: Over-balancing can delay decisions." } },
+    mirror:{ ar:{ pressure:"كتولي واقعي وكتقلب على حلّ \"يخدم\" بدل الصراع.", consistency:"باش تبقى ثابت: حدّد 2 أولويات فقط (مثلاً: النقاط + مهارة).", advantage:"كتقدر تجمع بين الدراسة والحياة بلا ما تحترق.", blindSpot:"كتتجنب الحسم. الحل: قرار واحد + تجربة أسبوع." }, fr:{ pressure:"Tu restes lucide, tu cherches une solution qui marche.", consistency:"2 priorités max (notes + skill).", advantage:"Tu avances sans te cramer.", blindSpot:"Tu évites de trancher. Fix: 1 choix + 1 semaine test." }, en:{ pressure:"You stay realistic and practical.", consistency:"2 priorities max.", advantage:"You progress without burnout.", blindSpot:"Decision avoidance. Fix: one choice + one-week test." } },
+    hookQuestion:{ ar:"واش كتوازن بزاف حتى كتأخر القرار؟ شنو اختيار واحد غادي تجربو أسبوع واحد؟", fr:"Tu veux trop équilibrer ? Quel choix tu testes 1 semaine pour trancher ?", en:"Are you delaying decisions? What will you test for one week?" },
+    shareCaption:{ ar:"طلع ليا «المتوازن» ⚖️ كنقلب على اللي يخدم اليوم وغدا… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Équilibré» ⚖️ Je veux du solide, pas du hype… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Balancer\" ⚖️ What did you get? 👀" },
+    statsProfile:{ stat1Label:{ar:"التوازن",fr:"Équilibre",en:"Balance"}, stat2Label:{ar:"الواقعية",fr:"Réalisme",en:"Practicality"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
+];
+
+// Fast lookup by id
+const ARCHETYPES_V2_BY_ID = Object.fromEntries(ARCHETYPES_V2.map(a => [a.id, a]));
+
+// ── computeRarity (deterministic, threshold-based) ─────────────────
+function computeRarity(confidence) {
+  const c = Math.round(Number(confidence) || 0);
+  if (c >= 80) return "EPIC";
+  if (c >= 60) return "RARE";
+  return "COMMON";
+}
+
+// ── makeSerialId (deterministic, no randomness) ────────────────────
+function makeSerialId(archetypeCode, seed) {
+  const s = Math.abs(Math.round(seed || 0)) % 999;
+  return `${archetypeCode}-${String(s).padStart(3, "0")}`;
+}
+
+// ── computeDeterministicStats ──────────────────────────────────────
+// stat1 = (structure + analytical) / 2 × 100
+// stat2 = (leadership + social) / 2 × 100
+// stat3 = (risk + creativity) / 2 × 100
+function computeDeterministicStats(traits) {
+  const tr = (traits && typeof traits === "object") ? traits : {};
+  const s = (x, y) => Math.min(100, Math.max(0, Math.round(((Number(tr[x]) || 0.5) + (Number(tr[y]) || 0.5)) / 2 * 100)));
+  return { stat1: s("structure","analytical"), stat2: s("leadership","social"), stat3: s("risk","creativity") };
+}
+
+// ── pickArchetypeV2 — deterministic trait→archetype (no gender, no sports push) ──
+function pickArchetypeV2(profile) {
+  const { traits={}, learnerType="", strengths=[], confidence=0 } = profile || {};
+  const tr = {
+    analytical: Number(traits.analytical  || 0),
+    social:     Number(traits.social      || 0),
+    structure:  Number(traits.structure   || 0),
+    creativity: Number(traits.creativity  || 0),
+    risk:       Number(traits.risk        || 0),
+    leadership: Number(traits.leadership  || 0),
+  };
+  const entries = Object.entries(tr).sort((a, b) => b[1] - a[1]);
+  const [topTrait, topVal] = entries[0] || ["structure", 0.5];
+  const isMixed = entries.length > 1 && Math.abs(entries[0][1] - entries[1][1]) < 0.06;
+  const hasTeaching = (strengths||[]).some(s => ["teaching","s_writing","s_speaking","s_learning"].includes(s));
+  const isMomentum  = learnerType === "striker" || learnerType === "sprinter";
+  const isPlanner   = learnerType === "sentinel" || learnerType === "architect";
+  const needsRoutine= tr.structure < 0.4 && tr.risk < 0.4;
+  const getById     = id => ARCHETYPES_V2_BY_ID[id] || ARCHETYPES_V2_BY_ID["mzan"];
+  if (hasTeaching && tr.social >= 0.45) return getById("mllm");
+  if (isMomentum && tr.risk >= 0.4)     return getById("hrrk");
+  if (isPlanner && tr.analytical < 0.5) return getById("nazl");
+  if (needsRoutine)                      return getById("7aris");
+  if (isMixed && topVal < 0.55)          return getById("mzan");
+  switch (topTrait) {
+    case "leadership": return getById("qaid");
+    case "analytical": return tr.structure >= 0.5 ? getById("m7lll") : getById("nazl");
+    case "structure":  return confidence >= 55 ? getById("mhni") : getById("bnaa");
+    case "creativity": return getById("mbd3");
+    case "social":     return confidence >= 55 ? getById("mqni") : getById("mllm");
+    case "risk":       return tr.creativity >= 0.5 ? getById("rayd") : getById("hrrk");
+    default:           return getById("mzan");
+  }
+}
+
+// ── computeMassarType kept for backward compat (returns old 4-letter code)
+// Now also returns the new archetype id via pickArchetypeV2
 function computeMassarType(traits, reality) {
-  // FIX: results page null-safety — guard traits object being undefined/incomplete
   const safeTr = traits && typeof traits === "object" ? traits : {};
   const ps = reality?.preferredStyle || "";
-  // Dim 1: A(nalytical) vs C(reative)
   const d1 = (safeTr.analytical || 0) >= (safeTr.creativity || 0) ? "A" : "C";
-  // Dim 2: S(ocial) vs I(ndependent)
   const d2 = (safeTr.social || 0) >= 0.5 ? "S" : "I";
-  // Dim 3: P(ractical) vs O(theoretical)
   const practicalBias = ps === "handson" ? 0.15 : ps === "academic" ? -0.15 : 0;
   const practicalScore = ((safeTr.structure || 0) + (1 - (safeTr.creativity || 0))) / 2 + practicalBias;
   const d3 = practicalScore >= 0.5 ? "P" : "O";
-  // Dim 4: R(isk-taker) vs K(stable)
   const d4 = (safeTr.risk || 0) >= 0.5 ? "R" : "K";
   return d1 + d2 + d3 + d4;
 }
 
-// ── Moroccan Archetype System ─────────────────────────────────────
-// 8 identity archetypes — Modern Moroccan, brandable, confident.
-
-const ARCH_SVG = {
-  BENA:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="5" height="7" rx="1"/><rect x="9.5" y="10" width="5" height="11" rx="1"/><rect x="16" y="6" width="5" height="15" rx="1"/><line x1="2" y1="21" x2="22" y2="21"/></svg>`,
-  MHNI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9C4.5 20 1 17 1 12V7z"/><path d="M9 12l2 2 4-4"/></svg>`,
-  HRRK:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h8l-1 8 9-12h-8z"/></svg>`,
-  TGRI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H9M17 7v8"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="7" r="2"/></svg>`,
-  MLAH:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="12"/><line x1="12" y1="12" x2="17.5" y2="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
-  SDGI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="4" height="4" rx="0.5"/><rect x="10" y="3" width="4" height="4" rx="0.5"/><rect x="17" y="3" width="4" height="4" rx="0.5"/><rect x="3" y="10" width="4" height="4" rx="0.5"/><rect x="10" y="10" width="4" height="4" rx="0.5"/><rect x="17" y="17" width="4" height="4" rx="0.5"/><rect x="3" y="17" width="4" height="4" rx="0.5"/><rect x="17" y="10" width="4" height="4" rx="0.5"/></svg>`,
-  RAID:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0 4 4 4 9a4 4 0 01-8 0c0-5 4-9 4-9z"/><path d="M8 17l-2 4M16 17l2 4M10 21h4"/></svg>`,
-  MTQN:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>`,
-};
-
-const MOROCCAN_ARCHETYPES = {
-  BENA:{
-    code:"BENA", svgKey:"BENA", icon:"🏗️",
-    name:{ ar:"البنّاء", fr:"Le Bâtisseur", en:"The Builder" },
-    tagline:{ ar:"يُنجز ما يعد به الآخرون فقط.", fr:"Il livre ce que d'autres promettent.", en:"Delivers what others only promise." },
-    description:{ ar:"دقة وانضباط في كل ما يبدأ به — إنجازاته تتكلم عنه.", fr:"Précision et discipline dans tout ce qu'il entreprend.", en:"Precision and discipline in everything he starts." },
-    strengths:{ ar:["موثوقية عالية","انضباط متواصل","تنفيذ دقيق"], fr:["Haute fiabilité","Discipline constante","Exécution précise"], en:["High reliability","Consistent discipline","Precise execution"] },
-    risk:{ ar:"مقاومة التغيير تُضيّع فرصاً جديدة.", fr:"La résistance au changement fait rater des opportunités.", en:"Resistance to change misses new opportunities." },
-    bestEnv:{ ar:"بيئة منظمة بأهداف واضحة ومعايير ثابتة.", fr:"Environnement structuré avec objectifs clairs.", en:"Structured environment with clear goals." },
-    worstEnv:{ ar:"الفوضى وتغيير الأولويات باستمرار.", fr:"Chaos et priorités changeantes.", en:"Chaos and constantly shifting priorities." },
-    opposite:"RAID", evolvesTrait:"creativity", evolvesInto:"SDGI",
-  },
-  MHNI:{
-    code:"MHNI", svgKey:"MHNI", icon:"🏛️",
-    name:{ ar:"المِهْنِي", fr:"Le Professionnel", en:"The Professional" },
-    tagline:{ ar:"اسمه ضمانة وتوقيعه معيار.", fr:"Son nom est garantie, sa signature un standard.", en:"His name is trust, his work the standard." },
-    description:{ ar:"موثوق ومتقن يرفع من قيمة عمله في كل مشروع يُنجزه.", fr:"Fiable et maîtrisé, il rehausse la valeur de son travail.", en:"Reliable and masterful, raises the bar in every project." },
-    strengths:{ ar:["موثوقية لا تُضاهى","تحليل ميداني دقيق","شبكة مهنية قوية"], fr:["Fiabilité incomparable","Analyse terrain précise","Fort réseau professionnel"], en:["Unmatched reliability","Precise field analysis","Strong professional network"] },
-    risk:{ ar:"الاستناد إلى المكانة قد يُبطئ التكيف مع المتغيرات.", fr:"S'appuyer sur la réputation peut ralentir l'adaptation.", en:"Leaning on reputation may slow adaptation to change." },
-    bestEnv:{ ar:"مؤسسات راسخة تُقدّر الجودة والخبرة المتراكمة.", fr:"Institutions établies valorisant qualité et expertise.", en:"Established institutions valuing quality and expertise." },
-    worstEnv:{ ar:"بيئات تجريبية سريعة بلا منهجية واضحة.", fr:"Environnements expérimentaux rapides sans méthode.", en:"Fast experimental environments without methodology." },
-    opposite:"RAID", evolvesTrait:"risk", evolvesInto:"HRRK",
-  },
-  HRRK:{
-    code:"HRRK", svgKey:"HRRK", icon:"⚡",
-    name:{ ar:"المُحرّك", fr:"Le Moteur", en:"The Driver" },
-    tagline:{ ar:"يُشعل الطاقة ويقود إلى الأمام.", fr:"Il allume l'énergie et mène vers l'avant.", en:"Ignites energy and drives forward." },
-    description:{ ar:"قائد طبيعي يدفع المجموعات لأبعد مما تتوقع من نفسها.", fr:"Leader naturel poussant les équipes au-delà de leurs attentes.", en:"Natural leader who pushes teams beyond their expectations." },
-    strengths:{ ar:["قيادة إلهامية","طاقة تنظيمية عالية","حسم وسرعة"], fr:["Leadership inspirant","Haute énergie organisationnelle","Décision rapide"], en:["Inspiring leadership","High organisational energy","Quick decisiveness"] },
-    risk:{ ar:"الطاقة بلا بنية تُبدد النتائج وتُشتت الفريق.", fr:"L'énergie sans structure disperse les résultats.", en:"Energy without structure dissipates results." },
-    bestEnv:{ ar:"مشاريع جماعية ومبادرات تحتاج قيادة ميدانية.", fr:"Projets collectifs nécessitant un leadership de terrain.", en:"Collective projects needing hands-on leadership." },
-    worstEnv:{ ar:"عمل فردي صامت بلا أثر مباشر على الآخرين.", fr:"Travail solo silencieux sans impact sur autrui.", en:"Silent solo work with no impact on others." },
-    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
-  },
-  TGRI:{
-    code:"TGRI", svgKey:"TGRI", icon:"🔀",
-    name:{ ar:"التاجر الذكي", fr:"Le Négociant Malin", en:"The Sharp Dealer" },
-    tagline:{ ar:"يرى الفرصة قبل أن يراها غيره.", fr:"Il voit l'opportunité avant les autres.", en:"Sees the opportunity before anyone else." },
-    description:{ ar:"يُحوّل الأفكار والعلاقات إلى قيمة حقيقية قابلة للقياس.", fr:"Transforme idées et relations en valeur réelle et mesurable.", en:"Turns ideas and relationships into real measurable value." },
-    strengths:{ ar:["حدس تجاري حاد","شبكة علاقات واسعة","مفاوض طبيعي"], fr:["Flair commercial aigu","Large réseau","Négociateur naturel"], en:["Sharp commercial instinct","Wide network","Natural negotiator"] },
-    risk:{ ar:"القفز بين الفرص دون إتمام يُشتت الطاقة والتركيز.", fr:"Sauter entre opportunités sans finaliser disperse l'énergie.", en:"Jumping between opportunities without finishing dissipates energy." },
-    bestEnv:{ ar:"بيئة تجارية ديناميكية مع استقلالية واسعة النطاق.", fr:"Environnement commercial dynamique avec large autonomie.", en:"Dynamic business environment with wide autonomy." },
-    worstEnv:{ ar:"بيروقراطية صارمة وعمل متكرر بلا معنى.", fr:"Bureaucratie rigide et travail répétitif.", en:"Rigid bureaucracy and repetitive work." },
-    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
-  },
-  MLAH:{
-    code:"MLAH", svgKey:"MLAH", icon:"🧭",
-    name:{ ar:"الملاح", fr:"Le Navigateur", en:"The Navigator" },
-    tagline:{ ar:"يتحرك بخطة حيث يضيع الآخرون.", fr:"Il avance avec plan là où les autres se perdent.", en:"Moves with a plan where others get lost." },
-    description:{ ar:"محلل استراتيجي يرسم الطريق بدقة ويُخطط بعيد المدى.", fr:"Analyste stratégique qui trace la route et planifie à long terme.", en:"Strategic analyst who maps the route and plans long-term." },
-    strengths:{ ar:["تفكير استراتيجي عميق","تحليل دقيق","رؤية بعيدة المدى"], fr:["Pensée stratégique profonde","Analyse précise","Vision long terme"], en:["Deep strategic thinking","Precise analysis","Long-term vision"] },
-    risk:{ ar:"الإفراط في التحليل يُعطّل قرار التنفيذ في اللحظة المناسبة.", fr:"L'analyse excessive bloque l'exécution au bon moment.", en:"Over-analysis blocks timely execution." },
-    bestEnv:{ ar:"بيئة بحثية أو استراتيجية مع وقت كافٍ للتفكير.", fr:"Environnement recherche ou stratégie avec temps de réflexion.", en:"Research or strategy environment with thinking time." },
-    worstEnv:{ ar:"قرارات سريعة بلا معطيات أو تحليل كافٍ.", fr:"Décisions rapides sans données suffisantes.", en:"Quick decisions without sufficient data." },
-    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
-  },
-  SDGI:{
-    code:"SDGI", svgKey:"SDGI", icon:"🌐",
-    name:{ ar:"الصانع الرقمي", fr:"Le Fabricant Digital", en:"The Digital Maker" },
-    tagline:{ ar:"يصنع ما لم يُتخيَّل بعد.", fr:"Il fabrique ce qui n'a pas encore été imaginé.", en:"Builds what hasn't been imagined yet." },
-    description:{ ar:"مُبدع تقني يجمع الأفكار والأدوات الرقمية في منتجات حقيقية.", fr:"Créatif technique combinant idées et outils numériques en produits réels.", en:"Technical creative combining ideas and digital tools into real products." },
-    strengths:{ ar:["إبداع تقني متميز","بناء شبكات رقمية","ابتكار ملموس"], fr:["Créativité technique distincte","Construction réseaux numériques","Innovation concrète"], en:["Distinctive technical creativity","Digital network building","Concrete innovation"] },
-    risk:{ ar:"كثرة المشاريع غير المكتملة تُبدد الطاقة والأثر.", fr:"Trop de projets non finalisés dissipent l'énergie.", en:"Too many unfinished projects dissipate energy and impact." },
-    bestEnv:{ ar:"فرق رقمية متنوعة بثقافة تجريبية وإبداعية.", fr:"Équipes numériques diverses avec culture expérimentale et créative.", en:"Diverse digital teams with experimental and creative culture." },
-    worstEnv:{ ar:"هياكل جامدة تُعاقب على التجريب والخطأ.", fr:"Structures rigides qui punissent l'expérimentation.", en:"Rigid structures that punish experimentation." },
-    opposite:"BENA", evolvesTrait:"structure", evolvesInto:"BENA",
-  },
-  RAID:{
-    code:"RAID", svgKey:"RAID", icon:"🚀",
-    name:{ ar:"الرائد", fr:"Le Pionnier", en:"The Pioneer" },
-    tagline:{ ar:"يسير في طرق لم يشقّها أحد.", fr:"Il marche sur des chemins que personne n'a tracés.", en:"Walks paths no one has traced yet." },
-    description:{ ar:"مُبتكر مستقل يُعيد تعريف ما اعتقد الناس أنه مسلّمة ثابتة.", fr:"Innovateur indépendant redéfinissant ce que les gens croyaient inévitable.", en:"Independent innovator who redefines what people thought inevitable." },
-    strengths:{ ar:["إبداع نظري جريء","استقلالية فكرية عميقة","حدس حاد"], fr:["Créativité théorique audacieuse","Indépendance intellectuelle","Intuition aiguë"], en:["Bold theoretical creativity","Deep intellectual independence","Sharp intuition"] },
-    risk:{ ar:"الأفكار تبقى في الذهن إن لم تُطوّر مهارة التواصل والتنفيذ.", fr:"Les idées restent en tête sans compétences en communication.", en:"Ideas stay in your head without communication and execution skills." },
-    bestEnv:{ ar:"بيئة ريادية تُقدّر الأصالة والاستقلالية الفكرية.", fr:"Environnement entrepreneurial valorisant originalité et autonomie.", en:"Entrepreneurial environment valuing originality and autonomy." },
-    worstEnv:{ ar:"بيروقراطية وعمل متكرر بلا معنى أو أثر.", fr:"Bureaucratie et travail répétitif sans sens.", en:"Bureaucracy and repetitive meaningless work." },
-    opposite:"BENA", evolvesTrait:"social", evolvesInto:"SDGI",
-  },
-  MTQN:{
-    code:"MTQN", svgKey:"MTQN", icon:"⚙️",
-    name:{ ar:"المُتقن", fr:"Le Maître Artisan", en:"The Master Craftsman" },
-    tagline:{ ar:"حرفته علامته وإتقانه هويته.", fr:"Son métier est sa marque, sa maîtrise son identité.", en:"Craft is his mark, mastery is his identity." },
-    description:{ ar:"يصقل مهاراته بصبر واستمرار حتى تصبح حرفة لا تُضاهى.", fr:"Affine patiemment ses compétences jusqu'à une maîtrise incomparable.", en:"Patiently refines skills until they become unmatched mastery." },
-    strengths:{ ar:["إتقان تقني عالٍ","صبر وتركيز عميق","جودة لا تُساوم"], fr:["Haute maîtrise technique","Patience et concentration","Qualité sans compromis"], en:["High technical mastery","Patience and deep focus","Uncompromising quality"] },
-    risk:{ ar:"التقليل من قيمة النفس يجعل الآخرين يستغلون المهارة.", fr:"Se sous-estimer amène les autres à exploiter ses compétences.", en:"Undervaluing yourself lets others exploit your skills." },
-    bestEnv:{ ar:"ورشة أو مختبر مع استقلالية تامة في المنتج النهائي.", fr:"Atelier ou labo avec pleine autonomie sur le produit.", en:"Workshop or lab with full autonomy over the final product." },
-    worstEnv:{ ar:"اجتماعات بلا قرار ومجموعات بلا هدف واضح.", fr:"Réunions sans décision et groupes sans but.", en:"Meetings without decisions and purposeless groups." },
-    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────
-// Cold-reading MIRROR blocks per archetype
-// Generated deterministically from archetype code
-// Fields: mirror_pressure, mirror_consistency, mirror_advantage,
-//         mirror_blindspot, evidence_line, morocco_family_frame
-// ─────────────────────────────────────────────────────────────────
-const ARCHETYPE_MIRROR = {
-  BENA: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تنكسر إلى الانضباط الصارم وتُنجز المهام بصمت. لا تطلب المساعدة حتى في أصعب اللحظات. قوتك تصبح عزلتك.",
-      fr: "Sous pression, tu deviens hyper-discipliné et tu travailles en silence. Tu ne demandes pas d'aide même aux moments les plus durs. Ta force devient ton isolement.",
-      en: "Under pressure, you retreat into strict discipline and work silently. You don't ask for help even at the hardest moments. Your strength becomes your isolation.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى أهداف واضحة ونتائج قابلة للقياس. بدون معالم محددة، يتحوّل انضباطك إلى روتين فارغ.",
-      fr: "Tu as besoin d'objectifs clairs et de résultats mesurables. Sans jalons précis, ta discipline devient une routine vide.",
-      en: "You need clear goals and measurable results. Without defined milestones, your discipline turns into empty routine.",
-    },
-    mirror_advantage: {
-      ar: "تُنجز ما يعجز عنه المبدعون: التسليم في الوقت المحدد، دائماً.",
-      fr: "Tu livres ce que les créatifs ne peuvent pas : dans les délais, toujours.",
-      en: "You deliver what creatives can't: on time, every time.",
-    },
-    mirror_blindspot: {
-      ar: "تُقاوم التغيير حتى حين يكون ضرورياً. تدرّب على إطلاق أحكام أقل على طرق العمل الجديدة.",
-      fr: "Tu résistes au changement même quand il est nécessaire. Entraîne-toi à juger moins les nouvelles méthodes.",
-      en: "You resist change even when necessary. Practice judging new methods less harshly.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن تحليلك وانضباطك يتصدّران ملفك الشخصي بفارق واضح.",
-      fr: "On dit ça car ton analytique et ta discipline dominent ton profil avec un écart net.",
-      en: "We say this because your analytical and structure scores lead your profile by a clear margin.",
-    },
-    morocco_family_frame: {
-      ar: "في سياق الأسرة المغربية، ملفك يُعطي ثقة: أنت من يُنجز ما وعد به. المسارات الهندسية والتقنية تُبرز هذه الصفة. إذا كانت أسرتك تريد شيئاً 'واضح المستقبل'، هذا ملفك.",
-      fr: "Dans le contexte familial marocain, ton profil inspire confiance : tu livres ce que tu promets. Les filières d'ingénierie et techniques mettent cette qualité en avant. Si ta famille veut quelque chose de 'clair et stable', c'est ton profil.",
-      en: "In the Moroccan family context, your profile inspires confidence: you deliver what you promise. Engineering and technical tracks highlight this quality. If your family wants something 'stable and clear', this is your profile.",
-    },
-  },
-  MHNI: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تصبح أكثر رسمية وتتمسّك بالمعايير والإجراءات. تثق بسجلّك السابق، مما يُهدئك — لكنه قد يُبطئ قرارك.",
-      fr: "Sous pression, tu deviens plus formel et tu t'accroches aux standards. Tu fais confiance à ton bilan passé, ce qui te calme — mais peut ralentir ta décision.",
-      en: "Under pressure, you become more formal and cling to standards. You trust your past record, which calms you — but may slow your decision.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى الاعتراف بكفاءتك. التغذية الراجعة الصريحة تحفّزك أكثر من الإطراء الفارغ.",
-      fr: "Tu as besoin de reconnaissance de ta compétence. Le feedback direct te motive plus que les compliments creux.",
-      en: "You need recognition of your competence. Direct feedback motivates you more than empty praise.",
-    },
-    mirror_advantage: {
-      ar: "اسمك يفتح الأبواب قبل أن تتكلّم. هذا رأسمال اجتماعي لا يُقدَّر بثمن.",
-      fr: "Ton nom ouvre les portes avant même que tu parles. C'est un capital social inestimable.",
-      en: "Your name opens doors before you even speak. That's a social capital you can't buy.",
-    },
-    mirror_blindspot: {
-      ar: "تتأخر في التكيّف حين تتغيّر اللعبة بالكامل. تدرّب على التخلّي عن ما نجح بالأمس.",
-      fr: "Tu tardes à t'adapter quand le jeu change complètement. Entraîne-toi à lâcher ce qui marchait hier.",
-      en: "You're slow to adapt when the game changes entirely. Practice letting go of what worked yesterday.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن ملفك يجمع قوة اجتماعية مرتفعة مع تفكير تحليلي — هذا نمط المِهنِي المُتميّز.",
-      fr: "On dit ça car ton profil combine un social élevé avec une pensée analytique — c'est le schéma du professionnel distingué.",
-      en: "We say this because your profile combines high social and analytical scores — the pattern of a distinguished professional.",
-    },
-    morocco_family_frame: {
-      ar: "هذا هو المسار الذي تُريده كل أسرة: مهنة مُعترف بها، سمعة واضحة، ومستقبل مضمون. مسارات القانون والهندسة والصحة مُرتبطة بهذا النمط.",
-      fr: "C'est la voie que toute famille marocaine veut : une profession reconnue, une réputation claire, un avenir assuré. Droit, ingénierie, santé — ces filières correspondent à ce profil.",
-      en: "This is the path every Moroccan family wants: a recognized profession, a clear reputation, a secured future. Law, engineering, health — these tracks align with this profile.",
-    },
-  },
-  HRRK: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تُسرع وترفع صوتك وتأخذ زمام الأمور حتى حين لا يُطلب منك ذلك. أحياناً تُبدّل التفكير بالحركة.",
-      fr: "Sous pression, tu accélères, tu hausses le ton et tu prends les commandes même quand on ne te le demande pas. Parfois tu substitues l'action à la réflexion.",
-      en: "Under pressure, you speed up, raise your voice, and take charge even when not asked. Sometimes you substitute action for thinking.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى أثر ملموس على الآخرين. العمل الصامت المنفرد يُجفّف طاقتك.",
-      fr: "Tu as besoin d'un impact concret sur les autres. Le travail solitaire et silencieux assèche ton énergie.",
-      en: "You need concrete impact on others. Silent solo work drains your energy.",
-    },
-    mirror_advantage: {
-      ar: "تستطيع إشعال الحماس في أي غرفة في غضون دقائق. هذا نادر وقابل للبيع.",
-      fr: "Tu peux allumer l'enthousiasme dans n'importe quelle salle en quelques minutes. C'est rare et bankable.",
-      en: "You can ignite enthusiasm in any room within minutes. That's rare and bankable.",
-    },
-    mirror_blindspot: {
-      ar: "تُلغي الأصوات الهادئة في الفريق لأنك تتحرك أسرع من الجميع. تمرّن على الاستماع للأبطأ صوتاً.",
-      fr: "Tu étouffes les voix calmes car tu bouges plus vite que tout le monde. Entraîne-toi à écouter les plus silencieux.",
-      en: "You crowd out quieter voices because you move faster than everyone. Practice listening to the slowest speaker.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن قيادتك ومبادرتك يحتلان القمة في ملفك، متوافقَين مع معامل مجتمعي عالٍ.",
-      fr: "On dit ça car ton leadership et ton initiative dominent ton profil, couplés à un score social élevé.",
-      en: "We say this because your leadership and initiative top your profile, coupled with a high social score.",
-    },
-    morocco_family_frame: {
-      ar: "المُحرّك مرتبط بمسارات الإدارة والمقاولة والتوجيه. في المغرب، هذا ملف الشخص الذي 'يُحرّك الأمور'. مسارات ENCG وإدارة الأعمال تُبرز هذا النمط.",
-      fr: "Le Moteur correspond aux filières management, entrepreneuriat, gestion. Au Maroc, c'est le profil de celui qui 'fait bouger les choses'. ENCG et commerce valorisent ce profil.",
-      en: "The Driver maps to management, entrepreneurship, and leadership tracks. In Morocco, this is the profile of someone who 'makes things happen'. ENCG and business tracks highlight this.",
-    },
-  },
-  TGRI: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تبحث عن زاوية جديدة أو صفقة بديلة. نادراً ما تشعر بالإحباط لأن دماغك يجد دائماً مخرجاً.",
-      fr: "Sous pression, tu cherches un nouvel angle ou une deal alternative. Tu te décourages rarement car ton cerveau trouve toujours une sortie.",
-      en: "Under pressure, you search for a new angle or alternative deal. You rarely feel stuck because your brain always finds a way out.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى نتائج مرئية وقصيرة الأمد. المشاريع الطويلة بلا أرباح سريعة تُفقدك الحافز.",
-      fr: "Tu as besoin de résultats visibles à court terme. Les projets longs sans gains rapides te font perdre la motivation.",
-      en: "You need visible short-term results. Long projects without quick wins make you lose motivation.",
-    },
-    mirror_advantage: {
-      ar: "ترى الفرصة قبل أن يرسمها الآخرون على ورقة. هذا ما يجعلك لا يُعوَّض في بيئات المبيعات.",
-      fr: "Tu vois l'opportunité avant que les autres ne la dessinent sur papier. C'est ce qui te rend irremplaçable en vente.",
-      en: "You see the opportunity before others draw it on paper. That's what makes you irreplaceable in sales environments.",
-    },
-    mirror_blindspot: {
-      ar: "تبدأ عشرة مشاريع وتُنهي اثنين. الإتقان يأتي من الإنهاء، وليس من البداية.",
-      fr: "Tu commences dix projets et en termines deux. La maîtrise vient de la finition, pas du démarrage.",
-      en: "You start ten projects and finish two. Mastery comes from finishing, not starting.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن مبادرتك وتواصلك الاجتماعي يتفوّقان على باقي الأبعاد مع مؤشر مخاطرة مرتفع.",
-      fr: "On dit ça car ton initiative et ton social surpassent les autres dimensions avec un indicateur de risque élevé.",
-      en: "We say this because your initiative and social scores outshine others with a high risk indicator.",
-    },
-    morocco_family_frame: {
-      ar: "في المغرب، هذا الملف يصلح للتجارة والمبيعات وريادة الأعمال. الأسرة قد تُفضّل شيئاً 'أكثر استقراراً'، لكن الحقيقة أن المُقاول الجيد يكسب أكثر من المهندس. اشرح لهم بالأرقام.",
-      fr: "Au Maroc, ce profil est taillé pour le commerce, la vente, l'entrepreneuriat. La famille préférera peut-être quelque chose de 'plus stable', mais un bon entrepreneur gagne plus qu'un ingénieur. Explique avec des chiffres.",
-      en: "In Morocco, this profile is built for commerce, sales, and entrepreneurship. Family may prefer something 'more stable', but a good entrepreneur outearns an engineer. Explain with numbers.",
-    },
-  },
-  MLAH: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تستجمع المعطيات وتمدّد وقت القرار بقدر ما تستطيع. الشك يُعطّلك أحياناً أكثر مما يُفيدك.",
-      fr: "Sous pression, tu collectes les données et tu prolonges le temps de décision autant que possible. Le doute te bloque parfois plus qu'il ne t'aide.",
-      en: "Under pressure, you gather data and extend decision time as much as possible. Doubt sometimes blocks you more than it helps.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى فهم 'السبب' وراء كل مهمة. العمل بلا سياق يُثبّطك بسرعة.",
-      fr: "Tu as besoin de comprendre le 'pourquoi' derrière chaque tâche. Travailler sans contexte te démotive vite.",
-      en: "You need to understand the 'why' behind every task. Working without context demotivates you quickly.",
-    },
-    mirror_advantage: {
-      ar: "تستطيع قراءة الأنماط قبل أن يراها الآخرون. الاستراتيجية ليست مهارة كتسبتها — إنها طريقة تفكيرك الطبيعية.",
-      fr: "Tu peux lire les patterns avant que les autres ne les voient. La stratégie n'est pas une compétence acquise — c'est ta façon naturelle de penser.",
-      en: "You can read patterns before others see them. Strategy isn't a skill you learned — it's your natural way of thinking.",
-    },
-    mirror_blindspot: {
-      ar: "تُحلّل حتى تفوتك اللحظة المناسبة. القرار الجيد اليوم أفضل من القرار المثالي الغائب.",
-      fr: "Tu analyses jusqu'à rater le bon moment. Une bonne décision aujourd'hui vaut mieux qu'une décision parfaite absente.",
-      en: "You analyze until you miss the right moment. A good decision today beats a perfect decision that never comes.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن تحليلك وانضباطك يُهيمنان على ملفك مع درجة مبادرة معتدلة.",
-      fr: "On dit ça car ton analytique et ta structure dominent ton profil avec un score initiative modéré.",
-      en: "We say this because your analytical and structure scores dominate your profile with a moderate initiative score.",
-    },
-    morocco_family_frame: {
-      ar: "الملاح هو المهندس المستقبلي أو المحلل الاستراتيجي. في المغرب، هذا المسار يُقدَّر في البنوك، شركات الاستشارات، ومؤسسات الدولة. أسرتك ستفهم الرقم عندما ترى المسمّى الوظيفي.",
-      fr: "Le Navigateur est l'ingénieur-stratège ou l'analyste du futur. Au Maroc, ce profil est valorisé dans les banques, cabinets de conseil et institutions étatiques. Ta famille comprendra le nombre quand elle verra le titre.",
-      en: "The Navigator is the future engineer-strategist or analyst. In Morocco, this profile is valued in banks, consulting firms, and state institutions. Your family will understand the numbers when they see the job title.",
-    },
-  },
-  SDGI: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تتفرّع إلى أفكار جديدة بدل مواجهة المشكلة مباشرة. تبحث عن حلول مبتكرة حتى حين الحل البسيط كافٍ.",
-      fr: "Sous pression, tu branches vers de nouvelles idées plutôt que d'affronter le problème directement. Tu cherches des solutions innovantes même quand le simple suffit.",
-      en: "Under pressure, you branch into new ideas instead of facing the problem directly. You seek innovative solutions even when simple ones would do.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى بيئة تُثمّن التجريب دون خوف من الفشل. النقد المبكر يُجمّد إبداعك.",
-      fr: "Tu as besoin d'un environnement valorisant l'expérimentation sans crainte d'échec. La critique précoce gèle ta créativité.",
-      en: "You need an environment that values experimentation without fear of failure. Early criticism freezes your creativity.",
-    },
-    mirror_advantage: {
-      ar: "ترى الاتصالات بين أفكار لا يجمع بينها أحد. هذا ما يجعل منتجاتك مختلفة.",
-      fr: "Tu vois les connexions entre idées que personne ne relie. C'est ce qui rend tes produits différents.",
-      en: "You see connections between ideas no one links. That's what makes your products different.",
-    },
-    mirror_blindspot: {
-      ar: "تبدأ مشاريع كثيرة ولا تُكملها. قدرتك على التأثير تتضاعف عندما تُنهي ما بدأت.",
-      fr: "Tu lances beaucoup et termines peu. Ton impact se multiplie quand tu finis ce que tu commences.",
-      en: "You start many projects and finish few. Your impact multiplies when you complete what you start.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن إبداعك يتصدّر ملفك متزامناً مع معامل مجتمعي قوي ومبادرة مرتفعة.",
-      fr: "On dit ça car ta créativité domine ton profil avec un score social et initiative élevés.",
-      en: "We say this because your creativity tops your profile alongside a strong social score and high initiative.",
-    },
-    morocco_family_frame: {
-      ar: "في المغرب، الاقتصاد الرقمي في طور النمو. مسارات تصميم الرقمي والتسويق الإبداعي وتطوير التطبيقات أصبحت مطلوبة في القطاع الخاص. إذا أرادت أسرتك 'مسار حقيقي'، هذا المسار يُنتج دخلاً ملموساً.",
-      fr: "Au Maroc, l'économie numérique est en plein essor. Design digital, marketing créatif et développement d'apps sont recherchés dans le privé. Si ta famille veut une 'vraie filière', ce profil génère un revenu concret.",
-      en: "In Morocco, the digital economy is growing fast. Digital design, creative marketing, and app development are sought in the private sector. If your family wants a 'real track', this profile generates concrete income.",
-    },
-  },
-  RAID: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تنسحب بداخلك وتشتغل وحيداً. الحلول التي تجدها مبتكرة لكنها أحياناً غير قابلة للتفسير.",
-      fr: "Sous pression, tu te retires en toi-même et travailles seul. Les solutions que tu trouves sont innovantes mais parfois inexplicables.",
-      en: "Under pressure, you retreat inward and work alone. The solutions you find are innovative but sometimes inexplicable.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى استقلالية كاملة وإيمان حقيقي بالمشروع. العمل بأجر دون معنى يُميت حافزك.",
-      fr: "Tu as besoin d'autonomie totale et d'une vraie croyance dans le projet. Travailler pour un salaire sans sens tue ta motivation.",
-      en: "You need complete autonomy and genuine belief in the project. Salaried work without meaning kills your motivation.",
-    },
-    mirror_advantage: {
-      ar: "تستطيع إعادة تعريف المشكلة من الصفر. هذا ما يجعلك رائداً حقيقياً.",
-      fr: "Tu peux redéfinir le problème depuis zéro. C'est ce qui fait de toi un vrai pionnier.",
-      en: "You can redefine the problem from scratch. That's what makes you a true pioneer.",
-    },
-    mirror_blindspot: {
-      ar: "أفكارك تبقى في ذهنك ما لم تتعلّم كيف تبيعها. التواصل وتسويق الأفكار مهارة حاسمة لك.",
-      fr: "Tes idées restent dans ta tête si tu n'apprends pas à les vendre. La communication et le pitch sont décisifs pour toi.",
-      en: "Your ideas stay in your head until you learn to sell them. Communication and pitching are critical skills for you.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن إبداعك واستقلاليتك يحتلان المرتبة الأولى مع مخاطرة عالية ودرجة اجتماعية منخفضة نسبياً.",
-      fr: "On dit ça car ta créativité et ton indépendance arrivent en tête avec un risque élevé et un score social relativement bas.",
-      en: "We say this because your creativity and independence lead with high risk and a relatively low social score.",
-    },
-    morocco_family_frame: {
-      ar: "الرائد يُربك الأسر المغربية لأنه لا يسير على مسار مُعتاد. لكن ريادة الأعمال أصبحت لغة مفهومة في المغرب. مسارات التقنية والابتكار تمنحك مصداقية أمام الأسرة.",
-      fr: "Le Pionnier déroute les familles marocaines car il ne suit pas un parcours classique. Mais l'entrepreneuriat est devenu un langage compris au Maroc. Tech et innovation te donnent de la crédibilité.",
-      en: "The Pioneer confuses Moroccan families because he doesn't follow a classic path. But entrepreneurship is now understood in Morocco. Tech and innovation give you credibility.",
-    },
-  },
-  MTQN: {
-    mirror_pressure: {
-      ar: "تحت الضغط، تتمسّك بالتفاصيل الدقيقة وترفض الاختصارات. هذا يُحسّن جودة ما تُنجز لكنه يُبطئ التسليم.",
-      fr: "Sous pression, tu t'accroches aux détails précis et refuses les raccourcis. Ça améliore la qualité mais ralentit la livraison.",
-      en: "Under pressure, you cling to precise details and refuse shortcuts. This improves quality but slows delivery.",
-    },
-    mirror_consistency: {
-      ar: "تحتاج إلى وقت كافٍ للوصول إلى المستوى الذي تقبله. الجدول الزمني الضيّق هو عدوّك الأول.",
-      fr: "Tu as besoin de temps suffisant pour atteindre le niveau que tu acceptes. Les délais serrés sont ton ennemi numéro un.",
-      en: "You need enough time to reach the level you'll accept. Tight deadlines are your number one enemy.",
-    },
-    mirror_advantage: {
-      ar: "حرفتك بحد ذاتها مرجعية. الناس يعودون إليك لأنهم يعلمون أنك لن تُقدّم أقل من المثالية.",
-      fr: "Ton travail est lui-même une référence. Les gens reviennent vers toi car ils savent que tu ne livreras jamais sous le parfait.",
-      en: "Your craft itself is a reference. People return to you because they know you'll never deliver below perfect.",
-    },
-    mirror_blindspot: {
-      ar: "تُقدَّر قيمتك أقل مما تستحق لأنك لا تُسوّق نفسك. الجودة لوحدها لا تُباع — تحتاج أن تُخبر الآخرين بما تُنجز.",
-      fr: "Tu es sous-valorisé car tu ne te vends pas. La qualité seule ne se vend pas — tu dois dire aux autres ce que tu accomplis.",
-      en: "You're undervalued because you don't market yourself. Quality alone doesn't sell — you need to tell others what you accomplish.",
-    },
-    evidence_line: {
-      ar: "نقول هذا لأن انضباطك وتحليلك يتصدّران ملفك، مقرونَين بمبادرة منخفضة.",
-      fr: "On dit ça car ta structure et ton analytique dominent ton profil, couplés à une initiative basse.",
-      en: "We say this because your structure and analytical scores top your profile, coupled with low initiative.",
-    },
-    morocco_family_frame: {
-      ar: "المُتقن يُقدَّر في أكثر المؤسسات المغربية: المهن الحرة، التقنية الدقيقة، الطب والصيدلة. إذا كانت أسرتك تريد 'شخصاً ماهراً ومحترماً'، هذا أنت.",
-      fr: "Le Maître Artisan est valorisé dans les professions libérales, les métiers techniques de précision, la médecine et la pharmacie. Si ta famille veut quelqu'un de 'compétent et respecté', c'est toi.",
-      en: "The Master Craftsman is valued in liberal professions, precision technical trades, medicine and pharmacy. If your family wants someone 'skilled and respected', that's you.",
-    },
-  },
-};
-
-// Helper: get mirror block for an archetype code
-function getArchetypeMirror(archetypeCode) {
-  return ARCHETYPE_MIRROR[archetypeCode] || ARCHETYPE_MIRROR.MLAH;
-}
-
-// Maps 16 computed internal codes → 8 Moroccan archetypes
-const ARCHETYPE_MAP = {
-  ASPR: MOROCCAN_ARCHETYPES.MHNI,
-  ASPK: MOROCCAN_ARCHETYPES.BENA,
-  AOPR: MOROCCAN_ARCHETYPES.MLAH,
-  AOPK: MOROCCAN_ARCHETYPES.MLAH,
-  ISPR: MOROCCAN_ARCHETYPES.MTQN,
-  ISPK: MOROCCAN_ARCHETYPES.MTQN,
-  IOPR: MOROCCAN_ARCHETYPES.RAID,
-  IOPK: MOROCCAN_ARCHETYPES.RAID,
-  CSPR: MOROCCAN_ARCHETYPES.SDGI,
-  CSPK: MOROCCAN_ARCHETYPES.SDGI,
-  COPR: MOROCCAN_ARCHETYPES.HRRK,
-  COPK: MOROCCAN_ARCHETYPES.TGRI,
-  ASOR: MOROCCAN_ARCHETYPES.HRRK,
-  ASOK: MOROCCAN_ARCHETYPES.MHNI,
-  CSOR: MOROCCAN_ARCHETYPES.HRRK,
-};
-
-function getArchetype(code) {
-  return ARCHETYPE_MAP[code] || MOROCCAN_ARCHETYPES.MLAH;
-}
-
 function massarTypeDesc(code, t, langOverride) {
-  const archetype = getArchetype(code);
-  const lang = langOverride
-    || (t?.dir === "rtl" ? "ar" : (t?.next === "Next" ? "en" : "fr"));
-  return archetype?.tagline?.[lang] || archetype?.tagline?.en || "";
+  const lang = langOverride || (t?.dir === "rtl" ? "ar" : (t?.next === "Next" ? "en" : "fr"));
+  // code is the old 4-letter internal type — return a simple tagline
+  return lang === "ar" ? "اكتشف هويتك المهنية" : lang === "fr" ? "Découvre ton identité pro" : "Discover your career identity";
 }
 
+// ── ArchetypeCard (new) — full cold reading + mirror blocks ─────────────────
+function ArchetypeCard({ massarType, t, lang, traits, top3, confidence, archV2 }) {
+  const [expanded, setExpanded] = useState(false);
 
-// ─────────────────────────────────────────────────────────────────
-// ImproveModeCard — shown when bacStatus==="before"
-// ─────────────────────────────────────────────────────────────────
-function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setReality }) {
-  const MAX_SN = 5;
-  const snKeys = ["sn_math","sn_physics","sn_biology","sn_writing","sn_speaking","sn_fixing","sn_mechanics","sn_cooking","sn_design","sn_video","sn_sport_team","sn_sport_indiv","sn_coaching","sn_gaming"];
-  const styleOpts = [
-    { val:"handson", label:t.preferredStyleOptions?.handson||"Hands-on" },
-    { val:"academic", label:t.preferredStyleOptions?.academic||"Academic" },
-    { val:"mixed",   label:t.preferredStyleOptions?.mixed||"Mixed" },
-  ];
+  // Use v2 archetype if provided, else derive from traits
+  const arch = archV2 || pickArchetypeV2({ traits: (traits && typeof traits === 'object') ? traits : {}, confidence: Number(confidence)||0 }) || ARCHETYPES_V2_BY_ID.mzan;
+  const safeTr = (traits && typeof traits === "object") ? traits : {};
 
-  const toggleSN = (k) => {
-    setReality(prev => {
-      const arr = prev.strengthsNow || [];
-      if (arr.includes(k)) return {...prev, strengthsNow: arr.filter(x=>x!==k)};
-      if (arr.length >= MAX_SN) return prev;
-      return {...prev, strengthsNow:[...arr, k]};
-    });
-  };
-  const setStyle = (v) => setReality(prev=>({...prev, preferredStyle:v}));
+  const rarityLabel = { COMMON:{ ar:"عادي", fr:"Commun", en:"Common" }, RARE:{ ar:"نادر", fr:"Rare", en:"Rare" }, EPIC:{ ar:"ملحمي", fr:"Épique", en:"Epic" } };
+  const rarityGlow  = { COMMON:"#3b82f6", RARE:"#f59e0b", EPIC:"#a855f7" };
+  const rarity      = computeRarity(confidence);
+  const rarColor    = rarityGlow[rarity] || "#3b82f6";
+  const rarLabel    = rarityLabel[rarity]?.[lang] || rarityLabel[rarity]?.en || rarity;
 
-  const sn      = reality.strengthsNow   || [];
-  const style   = reality.preferredStyle || "";
-  // FIX: results page null-safety — guard rankedClusters being undefined/empty
-  const safeRanked = Array.isArray(rankedClusters) ? rankedClusters : [];
-  const top3    = safeRanked.slice(0,3);
+  const title = lang === "ar" ? arch.titleAr : lang === "fr" ? arch.titleFr : arch.titleEn;
+  const vl    = arch.viralLine?.[lang] || arch.viralLine?.en || "";
+  const cr    = arch.coldReading?.[lang] || arch.coldReading?.en || {};
+  const mr    = arch.mirror?.[lang] || arch.mirror?.en || {};
+  const hq    = arch.hookQuestion?.[lang] || arch.hookQuestion?.en || "";
 
-  // ── Upgrade targets (deterministic) ──────────────────────────────
-  // 1. Distance to health threshold
-  const healthConstraint = { minAvg:16, bioMin:14, chemMin:13 };
-  const subjVals = Object.values(marks).map(Number).filter(v=>!isNaN(v)&&v>0);
-  const avg = subjVals.length ? subjVals.reduce((a,b)=>a+b,0)/subjVals.length : 0;
-  const bio  = Number(marks.biology)  || 0;
-  const chem = Number(marks.chemistry)|| 0;
+  // Deterministic stat seed for serialId
+  const statSeed = Math.round((safeTr.analytical || 0.5) * 100 + (safeTr.social || 0.5) * 10);
+  const sid = makeSerialId(arch.code, statSeed);
 
-  const healthGapAvg  = Math.max(0, healthConstraint.minAvg  - avg).toFixed(1);
-  const healthGapBio  = Math.max(0, healthConstraint.bioMin  - bio).toFixed(1);
-  const healthGapChem = Math.max(0, healthConstraint.chemMin - chem).toFixed(1);
-  const isCloseToHealth = avg >= 13 && avg < healthConstraint.minAvg;
+  const mirrorBlocks = [
+    { icon:"⚡", label: t?.underPressure      || (lang==="ar"?"تحت الضغط":lang==="fr"?"Sous pression":"Under pressure"),     text: mr.pressure   },
+    { icon:"🔋", label: t?.consistencySecret  || (lang==="ar"?"للمثابرة":lang==="fr"?"Constance":"Consistency"),            text: mr.consistency },
+    { icon:"🎯", label: t?.unfairAdvantage    || (lang==="ar"?"ميزتك":lang==="fr"?"Avantage":"Your advantage"),             text: mr.advantage   },
+    { icon:"🌑", label: t?.blindSpot          || (lang==="ar"?"نقطة عمياء":lang==="fr"?"Point aveugle":"Blind spot"),        text: mr.blindSpot   },
+  ].filter(b => b.text);
 
-  // 2. Key subjects to improve for top cluster
-  const topCluster = top3[0];
-  const keySubjs = topCluster
-    ? Object.entries(topCluster.subjectWeights||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s])=>s)
-    : [];
-
-  // 3. Style-based suggestion
-  const styleTip = {
-    handson: {
-      ar:"مهاراتك التطبيقية ستفيدك في المهن التقنية والحرفية. OFPPT وبرامج التكوين المهني هي الطريق الأقصر.",
-      fr:"Tes compétences pratiques te donnent un avantage dans les métiers techniques. OFPPT et les BTS techniques sont la voie la plus directe.",
-      en:"Your hands-on strengths give you an edge in technical trades. OFPPT and BTS technical programs are your fastest track.",
-    },
-    academic:{
-      ar:"استمر في بناء أساسك الأكاديمي. التحضير للمباريات (classes prépa) يفتح أفقاً أوسع.",
-      fr:"Continue à renforcer ta base académique. Les classes prépa ouvrent des portes considérables.",
-      en:"Keep building your academic base. Prépa classes open significant doors in Morocco.",
-    },
-    mixed:{
-      ar:"ملفك المختلط يؤهلك لمسارات ENCG أو BTS تقني — توازن بين النظرية والتطبيق.",
-      fr:"Ton profil mixte te positionne bien pour ENCG ou un BTS technique — équilibre théorie-pratique.",
-      en:"Your mixed profile is well-suited for ENCG or a technical BTS — the balance of theory and practice.",
-    },
-  };
-  const styleLang = lang;
-  const tipText = style ? (styleTip[style]?.[styleLang]||styleTip[style]?.en||"") : "";
-
-  // 4. Cluster unlock message
-  // FIX: results page null-safety — safeRanked[2] may be undefined
-  const nearCluster = safeRanked.find((c,i)=>i>=3 && safeRanked[2] && c.scores.final > safeRanked[2].scores.final*0.85);
+  // Compute fit meters from traits + top3
+  const identityFitPct = clamp(Math.round(((safeTr.analytical||0.5)+(safeTr.creativity||0.5)+(safeTr.risk||0.5)+(safeTr.leadership||0.5))/4 * 100));
+  const academicFitPct = clamp(Math.round(((top3||[])[0]?.scores?.academic ?? 0.5) * 100));
+  const marketFitPct   = clamp(Math.round(((top3||[])[0]?.scores?.market   ?? 0.7) * 100));
 
   return (
     <div style={{
-      background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.25)",
-      borderRadius:14,padding:"22px 24px",margin:"24px 0",
+      background:`linear-gradient(135deg,${rarColor}15,rgba(30,41,59,0.6))`,
+      border:`2px solid ${rarColor}60`,
+      borderRadius:20, padding:"24px 20px", marginBottom:20,
+      boxShadow:`0 0 40px ${rarColor}20`,
+      animation:"fadeIn 0.5s ease",
     }}>
-      <h3 style={{fontSize:16,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>{t.improveModeTitle}</h3>
-
-      {/* Section: strengthsNow */}
-      <div style={{marginTop:16}}>
-        <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{t.strengthsNowLabel}</div>
-        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.strengthsNowDesc} ({sn.length}/{MAX_SN})</div>
-        <div className="chip-grid">
-          {snKeys.map(k=>{
-            const sel = sn.includes(k);
-            const maxed = !sel && sn.length >= MAX_SN;
-            return (
-              <button key={k}
-                className={`chip-btn${sel?" selected":""}${maxed?" maxed":""}`}
-                onClick={()=>!maxed&&toggleSN(k)}>
-                {t.strengthsNowOptions?.[k]||k}
-              </button>
-            );
-          })}
+      {/* Header row */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:8}}>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"var(--muted)"}}>
+          {t?.archetypeTitle || "IDENTITÉ"}
         </div>
-      </div>
-
-      {/* Section: preferredStyle */}
-      <div style={{marginTop:16}}>
-        <div style={{fontSize:14,fontWeight:600,marginBottom:8}}>{t.preferredStyleLabel}</div>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {styleOpts.map(o=>(
-            <button key={o.val}
-              className={`chip-btn${style===o.val?" selected":""}`}
-              onClick={()=>setStyle(o.val)}>
-              {o.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Outputs */}
-      {(style || sn.length > 0) && (
-        <div style={{marginTop:20,display:"flex",flexDirection:"column",gap:14}}>
-
-          {/* Distance to health (only if applicable) */}
-          {isCloseToHealth && (avg < healthConstraint.minAvg) && (
-            <div style={{padding:"12px 16px",background:"rgba(239,68,68,0.08)",
-              border:"1px solid rgba(239,68,68,0.2)",borderRadius:10}}>
-              <div style={{fontSize:13,fontWeight:600,color:"#f87171",marginBottom:6}}>⚕️ Distance to Medicine Threshold</div>
-              <div style={{fontSize:13,color:"var(--muted)"}}>
-                {(t.improveDistanceHealth || "")
-                  .replace("{avg}", healthGapAvg)
-                  .replace("{bio}", healthGapBio)
-                  .replace("{chem}", healthGapChem)}
-              </div>
-            </div>
-          )}
-
-          {/* Style tip */}
-          {tipText && (
-            <div style={{padding:"12px 16px",background:"var(--surface2)",borderRadius:10,
-              fontSize:13,color:"var(--text)",lineHeight:1.6}}>
-              💡 {tipText}
-            </div>
-          )}
-
-          {/* Upgrade targets for top cluster */}
-          {keySubjs.length > 0 && (
-            <div>
-              <div style={{fontSize:13,fontWeight:600,color:"var(--text)",marginBottom:8}}>
-                {t.improveTargetLabel}: {t[CLUSTER_KEY_MAP[topCluster?.id]]||""}
-              </div>
-              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-                {keySubjs.map(s=>{
-                  const cur = Number(marks[s])||0;
-                  const target = Math.min(20, cur+2);
-                  return (
-                    <div key={s} style={{
-                      background:"var(--surface2)",border:"1px solid var(--border)",
-                      borderRadius:10,padding:"10px 14px",fontSize:12,
-                    }}>
-                      <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>
-                        {SUBJECT_LABELS[s]?.[lang]||s}
-                      </div>
-                      <div style={{color:"var(--muted)"}}>
-                        {cur.toFixed(1)} → <span style={{color:"#10b981",fontWeight:700}}>{target.toFixed(1)}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Near-unlock cluster */}
-          {nearCluster && (
-            <div style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>
-              {(t.improveClusterUp || "").replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
-            </div>
-          )}
-
-        </div>
-      )}
-
-      <p style={{fontSize:11,color:"var(--muted)",fontStyle:"italic",marginTop:14}}>
-        {t?.improvementDisclaimer}
-      </p>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// getRarity — unified rarity tier from overall alignment %
-// FIX: unified with ShareCard spec — Common, Rare, Epic, Legendary
-function getRarity(confidence) {
-  if (confidence >= 85) return "legendary";
-  if (confidence >= 70) return "epic";
-  if (confidence >= 55) return "rare";
-  return "common";
-}
-
-// ─────────────────────────────────────────────────────────────────
-// ArchetypeCard — Phase 1: Hero Identity Section
-// ─────────────────────────────────────────────────────────────────
-function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence }) {
-  const archetype = getArchetype(massarType);
-  const [expanded, setExpanded] = useState(false);
-
-  const name   = archetype.name?.[lang] || archetype.name?.en || massarType;
-  const opposite = MOROCCAN_ARCHETYPES[archetype.opposite];
-  const oppName  = opposite?.name?.[lang] || opposite?.name?.en || archetype.opposite;
-  const evolveTrait = archetype.evolvesTrait || "";
-  const evolveCode  = archetype.evolvesInto || "";
-  const evolveInto  = MOROCCAN_ARCHETYPES[evolveCode]?.name?.[lang] || evolveCode;
-
-  const strengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
-  const risk      = archetype.risk?.[lang]      || archetype.risk?.en      || "";
-  const bestEnv   = archetype.bestEnv?.[lang]   || archetype.bestEnv?.en   || "";
-  const worstEnv  = archetype.worstEnv?.[lang]  || archetype.worstEnv?.en  || "";
-
-  const rarity = getRarity(confidence);
-  // FIX: unified rarity labels — Common, Rare, Epic, Legendary
-  const rarityLabels = {
-    common:    { ar:"عادي",    fr:"Commun",    en:"Common"    },
-    rare:      { ar:"نادر",    fr:"Rare",      en:"Rare"      },
-    epic:      { ar:"ملحمي",   fr:"Épique",    en:"Epic"      },
-    legendary: { ar:"أسطوري", fr:"Légendaire", en:"Legendary" },
-  };
-  const rarityIcons = { common:"◇", rare:"◆", epic:"★", legendary:"👑" };
-  const rarityLabel = rarityLabels[rarity]?.[lang] || rarityLabels[rarity]?.en || rarity;
-
-  // Compute 3 meter scores
-  // FIX: clamp numeric UI values
-  const safeTrA = traits && typeof traits === "object" ? traits : {};
-  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
-    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
-  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
-    top3[0]?.scores?.academic ?? 0.5)) * 100));
-  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
-    top3[0]?.scores?.market ?? 0.7)) * 100));
-
-  // Phase 4: Alignment story — weakest dimension
-  const dims = [
-    { key:"identity", pct:identityFitPct, sentences:{
-      ar:"هذا المجال لا يتوافق تلقائياً مع شخصيتك.",
-      fr:"Ce domaine ne correspond pas naturellement à ta personnalité.",
-      en:"This domain doesn't naturally match your personality.",
-    }},
-    { key:"academic", pct:academicFitPct, sentences:{
-      ar:"إمكاناتك تتجاوز مستواك الأكاديمي الحالي.",
-      fr:"Ton potentiel dépasse ton niveau académique actuel.",
-      en:"Your potential exceeds your current academic level.",
-    }},
-    { key:"market", pct:marketFitPct, sentences:{
-      ar:"الطلب على هذا التخصص أقل استقراراً في سوق العمل.",
-      fr:"La demande est plus instable dans ce secteur.",
-      en:"Market demand is less stable in this sector.",
-    }},
-  ];
-  const weakest = dims.reduce((a,b)=>a.pct<b.pct?a:b);
-
-  const traitLabelMap = {
-    analytical:{ ar:"التحليل", fr:"Analytique", en:"Analytical" },
-    creativity:{ ar:"الإبداع", fr:"Créativité", en:"Creativity" },
-    risk:{ ar:"المبادرة", fr:"Initiative", en:"Initiative" },
-    leadership:{ ar:"القيادة", fr:"Leadership", en:"Leadership" },
-    social:{ ar:"التواصل", fr:"Social", en:"Social" },
-    structure:{ ar:"التنظيم", fr:"Organisation", en:"Organisation" },
-  };
-  const evolveLbl = traitLabelMap[evolveTrait]?.[lang] || evolveTrait;
-
-  return (
-    <div className={`rarity-${rarity}`} style={{
-      background:"linear-gradient(135deg,rgba(232,161,36,0.08),rgba(59,130,246,0.05))",
-      border:"2px solid",
-      borderRadius:20,padding:"28px 28px 22px",marginBottom:20,
-    }}>
-      {/* Rarity badge + type label */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
-        <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase"}}>
-          {t?.archetypeTitle || "Identity"}
-        </div>
-        <span className={`rarity-badge rarity-badge-${rarity}`}>
-          {rarityIcons[rarity]} {rarityLabel}
-        </span>
-      </div>
-
-      {/* Hero identity row */}
-      <div style={{display:"flex",alignItems:"center",gap:18,marginBottom:16,flexWrap:"wrap"}}>
-        <div className="archetype-icon-wrap" style={{
-          width:72,height:72,borderRadius:18,
-          background:"rgba(232,161,36,0.1)",border:"1.5px solid rgba(232,161,36,0.3)",
-          fontSize:36,flexShrink:0,
+        <div style={{
+          fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",
+          color:rarColor, background:`${rarColor}18`,
+          border:`1px solid ${rarColor}50`, borderRadius:20, padding:"3px 12px",
+          boxShadow:`0 0 12px ${rarColor}30`,
         }}>
-          <span className="icon-inner">{archetype.icon}</span>
-        </div>
-        <div style={{flex:1,minWidth:160}}>
-          <div style={{
-            fontSize:32,fontWeight:900,lineHeight:1.1,
-            background:"linear-gradient(135deg,#fbbf24,#e8a124)",
-            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
-            marginBottom:4,
-          }}>{name}</div>
-          <div style={{fontSize:14,fontWeight:800,color:"var(--accent2)",letterSpacing:3}}>{archetype.code}</div>
-        </div>
-        {/* FIX: Arabic-first UX — dir="ltr" prevents % rendering before number in RTL */}
-        <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
-          borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
-          <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
-            {clamp(confidence)}%
-          </div>
-          <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
+          {rarLabel} ✦ {arch.code}
         </div>
       </div>
 
-      {/* Tagline */}
-      <div style={{fontSize:13,color:"var(--muted)",marginBottom:20,fontStyle:"italic",lineHeight:1.6,
-        padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:10,borderLeft:"3px solid rgba(232,161,36,0.4)"}}>
-        {typeDesc}
+      {/* Icon + title */}
+      <div style={{textAlign:"center",marginBottom:18}}>
+        <div style={{
+          fontSize:52, marginBottom:8,
+          filter:`drop-shadow(0 0 16px ${rarColor}80)`,
+          animation:"archetypeGlow 4s ease-in-out infinite",
+        }}>{arch.icon}</div>
+        <div style={{
+          fontSize:32, fontWeight:900, letterSpacing:-0.5,
+          background:`linear-gradient(135deg,#fff,${rarColor},#fbbf24)`,
+          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
+          marginBottom:4,
+        }}>{arch.titleLatin}</div>
+        <div style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{title}</div>
+        <div style={{
+          display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:2,
+          color:rarColor,opacity:0.7,fontFamily:"monospace",
+        }}>{arch.code}</div>
       </div>
 
-      {/* 3 Fit Meters */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:8}}>
+      {/* Viral line */}
+      <div style={{
+        textAlign:"center",fontSize:14,color:"var(--muted)",
+        fontStyle:"italic",lineHeight:1.6,marginBottom:16,
+        padding:"10px 14px",background:"rgba(255,255,255,0.03)",
+        borderRadius:10,borderLeft:`3px solid ${rarColor}50`,
+      }}>{vl}</div>
+
+      {/* 3 fit meters */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
         {[
-          { label:t?.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
-          { label:t?.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
-          { label:t?.marketFit||"Market",   pct:marketFitPct, color:"#10b981" },
-        ].map(m=>(
+          { label:t?.identityFit||"Identité", pct:identityFitPct, color:rarColor },
+          { label:t?.academicFit||"Académique", pct:academicFitPct, color:"var(--accent2)" },
+          { label:t?.marketFit||"Marché", pct:marketFitPct, color:"#10b981" },
+        ].map(m => (
           <div key={m.label} style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
             <div style={{fontSize:10,color:"var(--muted)",marginBottom:6,fontWeight:600}}>{m.label}</div>
-            {/* FIX: Arabic-first UX — bar direction forced LTR */}
             <div dir="ltr" style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
               <div style={{height:"100%",width:`${m.pct}%`,background:m.color,borderRadius:2,animation:"barGrow 1s ease both"}}/>
             </div>
-            {/* FIX: Arabic-first UX — percentage always LTR */}
             <div style={{fontSize:15,fontWeight:800,color:m.color}} dir="ltr">{m.pct}%</div>
           </div>
         ))}
       </div>
 
-      {/* Phase 4: Alignment story sentence */}
-      {weakest.pct < 70 && (
-        <div style={{fontSize:12,color:"var(--warn)",marginBottom:16,padding:"8px 12px",
-          background:"rgba(245,158,11,0.06)",borderRadius:8,border:"1px solid rgba(245,158,11,0.2)"}}>
-          ⚡ {weakest.sentences[lang] || weakest.sentences.en}
-        </div>
-      )}
+      {/* Confidence + serial */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:6}}>
+        <span className={`confidence-badge ${confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low"}`}>
+          {t?.confidenceLabel||"Alignement"}: <span dir="ltr">{clamp(confidence)}%</span>
+        </span>
+        <span style={{fontSize:10,fontFamily:"monospace",color:"var(--muted)",letterSpacing:1}}>{sid}</span>
+      </div>
 
       {/* Expand toggle */}
-      <button onClick={()=>setExpanded(e=>!e)}
-        style={{background:"none",border:"none",cursor:"pointer",color:"var(--accent2)",
-          fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:4,marginBottom:expanded?16:0}}>
-        {expanded ? "▲" : "▼"} {expanded ? (lang==="ar"?"إخفاء التفاصيل":lang==="fr"?"Réduire":"Hide details") : (lang==="ar"?"عرض التفاصيل الكاملة":lang==="fr"?"Voir les détails":"Show full archetype")}
+      <button onClick={() => setExpanded(e => !e)} style={{
+        background:"none",border:"none",cursor:"pointer",color:rarColor,
+        fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:4,
+        marginBottom: expanded ? 16 : 0,
+      }}>
+        {expanded ? "▲" : "▼"}{" "}
+        {expanded
+          ? (lang==="ar"?"إخفاء التفاصيل":lang==="fr"?"Réduire":"Hide details")
+          : (lang==="ar"?"اكتشف هويتك كاملة":lang==="fr"?"Voir le profil complet":"See full identity")}
       </button>
 
       {expanded && (
-        <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:16}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:4}}>
 
-          {/* ── Identity Mirror blocks ── */}
-          {(() => {
-            const mirror = getArchetypeMirror(archetype.code);
-            const ml = lang;
-            const blocks = [
-              { icon:"🔥", label: t.underPressure       || "Under pressure",     text: mirror.mirror_pressure?.[ml]     || mirror.mirror_pressure?.fr     || "" },
-              { icon:"🔋", label: t.consistencySecret   || "Consistency secret", text: mirror.mirror_consistency?.[ml]  || mirror.mirror_consistency?.fr  || "" },
-              { icon:"⚡", label: t.unfairAdvantage     || "Unfair advantage",   text: mirror.mirror_advantage?.[ml]    || mirror.mirror_advantage?.fr    || "" },
-              { icon:"🎯", label: t.blindSpot           || "Blind spot",         text: mirror.mirror_blindspot?.[ml]    || mirror.mirror_blindspot?.fr    || "" },
-            ];
-            const mirrorColors = ["rgba(239,68,68,0.06)","rgba(59,130,246,0.06)","rgba(99,102,241,0.06)","rgba(245,158,11,0.06)"];
-            const mirrorBorders = ["rgba(239,68,68,0.2)","rgba(59,130,246,0.2)","rgba(99,102,241,0.2)","rgba(245,158,11,0.2)"];
-            const mirrorTextColors = ["#f87171","var(--accent2)","#818cf8","var(--warn)"];
-            return (
-              <>
-                <div style={{fontSize:12,fontWeight:800,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:2}}>
-                  {t.identityMirrorTitle || "Identity Mirror"}
-                </div>
-                {blocks.filter(b=>b.text).map((b,i)=>(
-                  <div key={i} style={{
-                    padding:"12px 14px",
-                    background:mirrorColors[i],
-                    border:`1px solid ${mirrorBorders[i]}`,
-                    borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
-                  }}>
-                    <span style={{fontWeight:700,color:mirrorTextColors[i]}}>{b.icon} {b.label}: </span>
-                    {b.text}
-                  </div>
-                ))}
-                {/* Evidence line */}
-                {mirror.evidence_line?.[ml] && (
-                  <div style={{fontSize:11,color:"var(--muted)",fontStyle:"italic",padding:"8px 12px",
-                    background:"rgba(107,114,128,0.06)",borderRadius:8,lineHeight:1.6}}>
-                    🔍 {mirror.evidence_line[ml]}
-                  </div>
-                )}
-                {/* Morocco family frame */}
-                {mirror.morocco_family_frame?.[ml] && (
-                  <div style={{padding:"12px 14px",background:"rgba(232,161,36,0.06)",
-                    border:"1px solid rgba(232,161,36,0.2)",borderRadius:10,fontSize:12,
-                    color:"var(--text)",lineHeight:1.65}}>
-                    <span style={{fontWeight:700,color:"var(--accent)"}}>
-                      {lang==="ar"?"🏠 السياق الأسري المغربي":lang==="fr"?"🏠 Contexte familial marocain":"🏠 Moroccan family context"}: 
-                    </span>{" "}{mirror.morocco_family_frame[ml]}
-                  </div>
-                )}
-              </>
-            );
-          })()}
-
-          {/* Core strengths */}
-          <div style={{padding:"12px 16px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:10}}>
-            <div style={{fontWeight:700,fontSize:12,color:"#10b981",marginBottom:8}}>{t?.archetypeStrengths}</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
-              {strengths.map((s,i)=>(
-                <span key={i} style={{padding:"4px 10px",background:"rgba(16,185,129,0.1)",border:"1px solid rgba(16,185,129,0.25)",borderRadius:20,fontSize:12,color:"var(--text)"}}>
-                  {s}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Growth warning */}
-          {risk && (
-            <div style={{padding:"10px 14px",background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.18)",borderRadius:10,fontSize:12,color:"#f87171"}}>
-              <strong>{t?.archetypeRisk}: </strong>{risk}
+          {/* Cold Reading */}
+          {(cr.looks || cr.truth) && (
+            <div style={{background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:12,padding:"14px 16px"}}>
+              <div style={{fontSize:11,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>
+                {lang==="ar"?"🔍 القراءة الباردة":lang==="fr"?"🔍 Cold Reading":"🔍 Cold Reading"}
+              </div>
+              {cr.looks && (
+                <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,marginBottom:8}}>{cr.looks}</p>
+              )}
+              {cr.truth && (
+                <p style={{fontSize:13,color:rarColor,lineHeight:1.7,fontWeight:600,margin:0}}>{cr.truth}</p>
+              )}
             </div>
           )}
 
-          {/* Best/worst env */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            <div style={{padding:"10px 14px",background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.18)",borderRadius:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>✅ {t?.archetypeBestEnv}</div>
-              <div style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{bestEnv}</div>
+          {/* Identity Mirror blocks */}
+          {mirrorBlocks.length > 0 && (
+            <div>
+              <div style={{fontSize:11,fontWeight:800,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>
+                {t?.identityMirrorTitle || (lang==="ar"?"مرآة هويتك":lang==="fr"?"Miroir Identité":"Identity Mirror")}
+              </div>
+              {mirrorBlocks.map((b, i) => (
+                <div key={i} style={{
+                  background:"var(--surface2)",border:"1px solid var(--border)",
+                  borderRadius:12,padding:"12px 14px",marginBottom:8,
+                }}>
+                  <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+                    <span style={{fontSize:16}}>{b.icon}</span>
+                    <span style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:0.5}}>{b.label}</span>
+                  </div>
+                  <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0}}>{b.text}</p>
+                </div>
+              ))}
             </div>
-            <div style={{padding:"10px 14px",background:"rgba(107,114,128,0.08)",border:"1px solid var(--border)",borderRadius:10}}>
-              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:4}}>⚠️ {t?.archetypeWorstEnv}</div>
-              <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{worstEnv}</div>
-            </div>
-          </div>
+          )}
 
-          {/* Opposite + Evolution */}
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {opposite && (
-              <div style={{padding:"10px 14px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10}}>
-                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t?.archetypeOpposite}</div>
-                <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{opposite.icon} {oppName}</div>
-                <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{archetype.opposite}</div>
+          {/* Hook question */}
+          {hq && (
+            <div style={{
+              background:`${rarColor}08`,border:`1px solid ${rarColor}30`,
+              borderRadius:12,padding:"14px 16px",
+            }}>
+              <div style={{fontSize:11,fontWeight:800,color:rarColor,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>
+                {lang==="ar"?"❓ سؤال للتأمل":lang==="fr"?"❓ Question clé":"❓ Hook question"}
               </div>
-            )}
-            {evolveCode && (
-              <div style={{padding:"10px 14px",background:"rgba(232,161,36,0.06)",border:"1px solid rgba(232,161,36,0.2)",borderRadius:10}}>
-                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t?.archetypeEvolution} <strong style={{color:"var(--accent)"}}>{evolveLbl}</strong></div>
-                <div style={{fontSize:13,fontWeight:700,color:"var(--accent)"}}>→ {evolveInto}</div>
-                <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{evolveCode}</div>
-              </div>
-            )}
-          </div>
+              <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,margin:0,fontWeight:600}}>{hq}</p>
+            </div>
+          )}
+
+          {/* Signature move */}
+          {arch.signatureMove?.[lang] && (
+            <div style={{textAlign:"center",padding:"10px",color:"var(--muted)",fontSize:12,fontStyle:"italic"}}>
+              ✦ {arch.signatureMove?.[lang] || ''}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -7428,12 +6936,15 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
   const accent      = rarity.color;
   const glow        = rarity.glow;
 
-  // Viral caption (unchanged)
-  const caption = lang==="ar"
-    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
+  // Viral caption — use archV2 shareCaption from data contract if available
+  const archV2sc = pickArchetypeV2({ traits, confidence });
+  const caption = archV2sc?.shareCaption?.[lang]
+    ? archV2sc.shareCaption[lang] + (clusterName ? `\n${lang==="ar"?"أفضل مسار":lang==="fr"?"Top voie":"Top path"}: ${clusterName} (${confidence}%)\n🔗 massarpro.com` : "")
+    : lang==="ar"
+    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massarpro.com`
     : lang==="fr"
-    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
-    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
+    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massarpro.com`
+    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massarpro.com`;
 
   // Format metadata
   const FMT = {
@@ -9518,12 +9029,12 @@ function RightHookPDF({ lang, dir, safeResults, t }) {
 
       {/* Benefits list */}
       <div style={{background:"var(--surface2)", borderRadius:14, padding:"16px 14px", marginBottom:16}}>
-        {c.rfBenefits ? (c.rfBenefits||[]).map((b, i) => (
+        {(c.rfBenefits||[]).map((b, i) => (
           <div key={i} style={{
             display:"flex", gap:10, alignItems:"flex-start",
-            paddingBottom:i<c.rfBenefits.length-1?10:0,
-            marginBottom:i<c.rfBenefits.length-1?10:0,
-            borderBottom:i<c.rfBenefits.length-1?"1px solid var(--border)":"none",
+            paddingBottom:i<(c.rfBenefits||[]).length-1?10:0,
+            marginBottom:i<(c.rfBenefits||[]).length-1?10:0,
+            borderBottom:i<(c.rfBenefits||[]).length-1?"1px solid var(--border)":"none",
           }}>
             <span style={{color:"var(--accent3)", fontSize:14, flexShrink:0, marginTop:2}}>✓</span>
             <span style={{fontSize:13, color:"var(--text)", lineHeight:1.5}}>{b}</span>
@@ -9533,7 +9044,7 @@ function RightHookPDF({ lang, dir, safeResults, t }) {
 
       {/* 3 teaser cards */}
       <div style={{display:"flex", flexDirection:"column", gap:10, marginBottom:20}}>
-        {c.teaserCards.map((card, i) => (
+        {(c.teaserCards||[]).map((card, i) => (
           <div key={i} style={{
             background:"var(--surface2)", border:"1px solid var(--border)",
             borderRadius:14, padding:"14px 16px",
@@ -9651,7 +9162,9 @@ function RightHookPDF({ lang, dir, safeResults, t }) {
 function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
   const [selCap, setSelCap] = React.useState(0);
   const [copied, setCopied] = React.useState(false);
-  const { archetype = "MLAH", rarity = "common", confidence = 0, learnerType = "architect", learnerSecondary = "striker" } = safeResults || {};
+  const { archetype = "MLAH", rarity = "common", confidence = 0, learnerType = "architect", learnerSecondary = "striker", archV2: archV2Res } = safeResults || {};
+  // Use v2 archetype for cold reading if available
+  const archV2 = archV2Res || pickArchetypeV2({ traits: safeResults?.traits||{}, confidence });
   const lt  = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerType])  || (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA.architect) || { ar:{name:'',label:'',tip:''},fr:{name:'',label:'',tip:''},en:{name:'',label:'',tip:''} };
   const lt2 = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerSecondary]) || lt;
   const ltCopy  = lt[lang]  || lt.en;
@@ -9661,113 +9174,17 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
   const rc = rarityColors[rarity] || rarityColors.common;
   const captions = rf(lang)?.captionOpts ? rf(lang).captionOpts(archetype, topPath) : [`${archetype} — ${topPath}`];
 
-  // Identity mirror blocks derived from traits + learner type
-  const traits = safeResults.traits || {};
-  const analytical = traits.analytical || 0.5;
-  const social = traits.social || 0.5;
-  const risk = traits.risk || 0.5;
-  const creativity = traits.creativity || 0.5;
-  const structure = traits.structure || 0.5;
-
-  const mirrors = {
-    ar:[
-      { icon:"⚡", key: t.underPressure||"تحت الضغط",
-        text: analytical > 0.6
-          ? "تتحول إلى آلة تحليل — تُبطئ، تُنظّم، تُقرر. ضغطك لا يُشلّك بل يُحدّد تفكيرك."
-          : social > 0.6
-          ? "تبحث عن دعم بشري — حديث قصير مع شخص موثوق يعيد توازنك بسرعة."
-          : "تعمل بشكل أفضل حين تحدد أولوية واحدة وتُنفّذها بالكامل قبل الانتقال." },
-      { icon:"🔋", key: t.consistencySecret||"المثابرة",
-        text: learnerType === "sentinel"
-          ? "الروتين هو وقودك. بمجرد كسر عادة واحدة، استعدها فوراً — لا تنتظر."
-          : learnerType === "sprinter"
-          ? "تحتاج مواعيد حقيقية لتبقى متحمساً. صنع ضغطاً اصطناعياً مفيداً لك."
-          : learnerType === "diplomat"
-          ? "تحتاج جمهوراً — مجموعة مراجعة أو شريك يُساعدك على الاستمرار."
-          : "ربط أهدافك بمعنى أعمق يُبقيك ثابتاً حين تتراجع الحماسة." },
-      { icon:"🎯", key: t.unfairAdvantage||"ميزتك",
-        text: creativity > 0.6
-          ? "تُرى ما لا يُرى — قدرتك على ربط أفكار بعيدة تُنتج حلولاً غير متوقعة."
-          : analytical > 0.6
-          ? "تُفكّك المشكلات — قدرتك على تشريح الأنظمة المعقدة ميزة نادرة."
-          : structure > 0.6
-          ? "الاتساق تحت الضغط — حين يتفكك الآخرون، أنت تُثبّت وتُنجز."
-          : "الذكاء الاجتماعي — قدرتك على بناء الثقة السريعة ميزة لا تُعلَّم." },
-      { icon:"🌑", key: t.blindSpot||"النقطة العمياء",
-        text: risk > 0.6
-          ? "الإثارة قد تُضيّع التخطيط. تأكد أن طاقتك تتحول لنتائج حقيقية لا مجرد مشاريع تبدأ."
-          : structure > 0.6
-          ? "الكمالية تُعيق الإنجاز. التقدم 80% في الوقت أفضل من الكمال المتأخر."
-          : social > 0.6
-          ? "الاعتماد على موافقة الآخرين قد يُبطئك. ثق بحكمك في القرارات الصغيرة."
-          : "الانتظار حتى 'الجاهزية الكاملة' يُفوّت الفرص. ابدأ بما لديك الآن." },
-    ],
-    fr:[
-      { icon:"⚡", key: t.underPressure||"Sous pression",
-        text: analytical > 0.6
-          ? "Tu te transformes en machine d'analyse — tu ralentis, tu organises, tu décides."
-          : social > 0.6
-          ? "Tu cherches un soutien humain — une courte conversation avec quelqu'un de confiance te rééquilibre."
-          : "Tu travailles mieux quand tu identifies une seule priorité et l'exécutes complètement." },
-      { icon:"🔋", key: t.consistencySecret||"La constance",
-        text: learnerType === "sentinel"
-          ? "La routine est ton carburant. Dès qu'une habitude se brise, récupère-la immédiatement."
-          : learnerType === "sprinter"
-          ? "Tu as besoin de vraies deadlines pour rester motivé. Créer une pression artificielle t'est utile."
-          : learnerType === "diplomat"
-          ? "Tu as besoin d'un public — un groupe de révision ou un partenaire t'aide à persévérer."
-          : "Relier tes objectifs à un sens plus profond te garde stable quand l'enthousiasme baisse." },
-      { icon:"🎯", key: t.unfairAdvantage||"Ton avantage",
-        text: creativity > 0.6
-          ? "Tu vois ce que les autres ne voient pas — relier des idées distantes crée des solutions inattendues."
-          : analytical > 0.6
-          ? "Tu décomposes les problèmes — analyser des systèmes complexes est un avantage rare."
-          : structure > 0.6
-          ? "La constance sous pression — quand les autres s'effondrent, tu stabilises et livres."
-          : "L'intelligence sociale — bâtir la confiance rapidement est un avantage qui ne s'enseigne pas." },
-      { icon:"🌑", key: t.blindSpot||"Point aveugle",
-        text: risk > 0.6
-          ? "L'excitation peut faire oublier la planification. Assure-toi que ton énergie se transforme en vrais résultats."
-          : structure > 0.6
-          ? "Le perfectionnisme bloque l'exécution. Un progrès à 80% dans le temps vaut mieux qu'un tardif parfait."
-          : social > 0.6
-          ? "Dépendre de l'approbation des autres peut te ralentir. Fais confiance à ton jugement."
-          : "Attendre d'être 'totalement prêt' fait rater des opportunités. Commence avec ce que tu as." },
-    ],
-    en:[
-      { icon:"⚡", key: t.underPressure||"Under pressure",
-        text: analytical > 0.6
-          ? "You become an analysis machine — you slow down, organise, decide. Pressure doesn't paralyse you, it focuses you."
-          : social > 0.6
-          ? "You seek human support — a short conversation with a trusted person quickly rebalances you."
-          : "You work best when you identify one priority and execute it completely before moving on." },
-      { icon:"🔋", key: t.consistencySecret||"Staying consistent",
-        text: learnerType === "sentinel"
-          ? "Routine is your fuel. The moment a habit breaks, recover it immediately — don't wait."
-          : learnerType === "sprinter"
-          ? "You need real deadlines to stay motivated. Creating artificial pressure is genuinely useful for you."
-          : learnerType === "diplomat"
-          ? "You need an audience — a study group or partner helps you stay consistent."
-          : "Connecting your goals to a deeper meaning keeps you stable when enthusiasm fades." },
-      { icon:"🎯", key: t.unfairAdvantage||"Your advantage",
-        text: creativity > 0.6
-          ? "You see what others miss — connecting distant ideas creates unexpected solutions."
-          : analytical > 0.6
-          ? "You decompose problems — breaking down complex systems is a rare advantage."
-          : structure > 0.6
-          ? "Consistency under pressure — when others collapse, you stabilise and deliver."
-          : "Social intelligence — building quick trust is an advantage that can't be taught." },
-      { icon:"🌑", key: t.blindSpot||"Blind spot",
-        text: risk > 0.6
-          ? "Excitement can overshadow planning. Make sure your energy converts to real results, not just started projects."
-          : structure > 0.6
-          ? "Perfectionism blocks execution. 80% progress on time beats late perfection."
-          : social > 0.6
-          ? "Depending on others' approval can slow you. Trust your judgment on small decisions."
-          : "Waiting for 'full readiness' misses opportunities. Start with what you have now." },
-    ],
-  };
-  const mirrorBlocks = mirrors[lang] || mirrors.fr || mirrors.en || [];
+  // Identity mirror — use archV2 cold reading from data contract
+  const _crData = archV2?.coldReading?.[lang] || archV2?.coldReading?.fr || {};
+  const _mrData = archV2?.mirror?.[lang] || archV2?.mirror?.fr || {};
+  const _hqData = archV2?.hookQuestion?.[lang] || archV2?.hookQuestion?.fr || "";
+  // Deterministic mirror blocks from archV2
+  const mirrorBlocks = [
+    { icon:"⚡", key: t?.underPressure     || (lang==="ar"?"تحت الضغط":lang==="fr"?"Sous pression":"Under pressure"),    text: _mrData.pressure    },
+    { icon:"🔋", key: t?.consistencySecret || (lang==="ar"?"للمثابرة":lang==="fr"?"Constance":"Consistency"),           text: _mrData.consistency  },
+    { icon:"🎯", key: t?.unfairAdvantage   || (lang==="ar"?"ميزتك":lang==="fr"?"Avantage":"Your advantage"),            text: _mrData.advantage    },
+    { icon:"🌑", key: t?.blindSpot        || (lang==="ar"?"نقطة عمياء":lang==="fr"?"Point aveugle":"Blind spot"),       text: _mrData.blindSpot    },
+  ].filter(b => b.text);
 
   const doCopy = () => {
     try { navigator.clipboard.writeText(captions[selCap]).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}); }
@@ -9807,6 +9224,19 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
         </div>
       </div>
 
+      {/* Cold Reading block */}
+      {(_crData.looks || _crData.truth) && (
+        <div style={{background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",
+          borderRadius:12,padding:"14px 16px",marginBottom:14}}>
+          <div style={{fontSize:10,fontWeight:800,color:"#6366f1",letterSpacing:1.5,
+            textTransform:"uppercase",marginBottom:10}}>
+            {lang==="ar"?"🔍 القراءة الباردة":lang==="fr"?"🔍 Cold Reading":"🔍 Cold Reading"}
+          </div>
+          {_crData.looks && <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,marginBottom:8}}>{_crData.looks}</p>}
+          {_crData.truth && <p style={{fontSize:13,color:"var(--accent2)",lineHeight:1.7,fontWeight:600,margin:0}}>{_crData.truth}</p>}
+        </div>
+      )}
+
       {/* Identity mirror blocks */}
       <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
         {(mirrorBlocks||[]).map((block,i) => (
@@ -9822,6 +9252,18 @@ function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
           </div>
         ))}
       </div>
+
+      {/* Hook Question */}
+      {_hqData && (
+        <div style={{background:"rgba(232,161,36,0.06)",border:"1px solid rgba(232,161,36,0.2)",
+          borderRadius:12,padding:"12px 14px",marginBottom:12}}>
+          <div style={{fontSize:10,fontWeight:800,color:"var(--accent)",letterSpacing:1.5,
+            textTransform:"uppercase",marginBottom:6}}>
+            {lang==="ar"?"❓ سؤال للتأمل":lang==="fr"?"❓ Question clé":"❓ Key question"}
+          </div>
+          <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0,fontWeight:600}}>{_hqData}</p>
+        </div>
+      )}
 
       {/* Credibility line */}
       <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.5,marginBottom:16,
@@ -10247,7 +9689,7 @@ function ResultsFlow({
     topThree:      safeRanked.slice(0,3),
     traits:        safeTraits,
     confidence:    Math.round(Math.min(100, Math.max(0, safeConf))),
-    rarity:        getRarity(safeConf),
+    rarity:        computeRarity(safeConf),
     overallAvg:    Math.min(20, Math.max(0, overallAvgVal)),
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks) || { bestFit:null, balanced:null, ambitious:null },
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
@@ -10418,11 +9860,12 @@ function StepResults({
 
   const safeResults = {
     archetype:     computeMassarType(safeTraits, safeReality),
+    archV2:        pickArchetypeV2({ traits:safeTraits, learnerType:computeLearnerType(learnerAnswers||{}).primary, strengths:Array.isArray(safeReality.strengths)?safeReality.strengths:[], confidence:clamp(safeConf) }),
     topCareer:     safeTop,
     topThree:      top3,
     traits:        safeTraits,
     confidence:    clamp(safeConf),
-    rarity:        getRarity(safeConf),
+    rarity:        computeRarity(clamp(safeConf)),
     overallAvg:    clamp(overallAvgVal, 0, 20),
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
@@ -10453,7 +9896,7 @@ function StepResults({
       )}
 
       {/* ── Phase 1: Archetype Hero Identity ── */}
-      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf}/>
+      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf} archV2={pickArchetypeV2({traits:safeTraits,confidence:safeConf,learnerType:computeLearnerType(learnerAnswers||{}).primary,strengths:Array.isArray(safeReality?.strengths)?safeReality.strengths:[]})}/>
 
       {/* ── Phase 2: Abilities System ── */}
       <AbilitiesSection traits={safeTraits} lang={lang}/>
@@ -10760,7 +10203,7 @@ const css = `
   /* ── Phase 10: Micro animations ── */
   @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
   @keyframes barGrow{from{width:0;}to{width:var(--bar-w,100%);}}
-  @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
+  @keyframes archetypeGlow{0%,100%{filter:drop-shadow(0 0 12px currentColor);}50%{filter:drop-shadow(0 0 28px currentColor);}}  @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
   @keyframes scGlowLegendary{
     0%,100%{box-shadow:0 0 0 1.5px rgba(245,158,11,0.7),0 0 0 3px rgba(245,158,11,0.15),0 0 28px rgba(245,158,11,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
     50%{box-shadow:0 0 0 1.5px rgba(245,158,11,1),0 0 0 4px rgba(245,158,11,0.25),0 0 48px rgba(245,158,11,0.6),0 0 80px rgba(245,158,11,0.3),0 16px 56px rgba(0,0,0,0.8);}
