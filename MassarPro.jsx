@@ -1,27 +1,4 @@
 // MassarPro — self-contained single-file build
-/*
- * CHANGELOG — Arabic Copy Upgrade + Archetype Reveal + Viral Captions
- * ROOT CAUSE FIX: getRarity undefined → computeRarity alias added
- * 1. Arabic cold-reading formula: 4-line (observation/evidence/cost/protocol) per block
- * 2. Archetype reveal moment: 3 drop-lines (علاش/القوة/الترقية) under archetype header
- * 3. Morocco Reality Anchor box: "فين كتربح فالمغرب؟" on Page 1/6 (Arabic only)
- * 4. Viral share captions: 3 options (short/medium/savage-clean) in Arabic
- * 5. captionOpts AR upgraded with proper Moroccan tone + hashtags
- * 6. mirror blocks: deep 4-line cold reading per block (pressure/consistency/advantage/blindSpot)
- * 7. No vulgar slang, no Gary V references, no broken JSX
- * 8. All features preserved, build-safe, single file
- */
-/*
- * BUILD SAFETY CHECKLIST (verified before every deploy)
- * 1. No duplicate function/const declarations
- * 2. No undefined variables or unguarded destructuring
- * 3. All new strings present in ar + fr + en translations
- * 4. No window/document/localStorage at module scope
- * 5. All .map() calls guarded with (arr || []).map(...)
- * 6. canvas.getContext("2d") result checked before use
- * 7. ErrorBoundary active in production (AppErrorBoundary)
- * 8. Safe defaults for all useState initializers
- */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
@@ -38,157 +15,24 @@ const TRANSLATIONS = {
   ar: {
     dir: "rtl",
     // App shell
-    // HOME PAGE 3D CSS — translations
-    homeHero: "اختر مسارك بثقة… وبالأرقام",
-    homeHeroSub: "مسار يقرأ شخصيتك ويحلّل نقطك حسب شعبتك (باك 1/باك 2)، ثم يمنحك 3 توصيات واضحة: الأنسب لك، الخيار المتوازن، والأكثر طموحاً — مع أسباب مقنعة وخطة عمل.",
-    homeCTA: "ابدأ مجاناً",
-    homeSecondaryCTA: "شاهد مثالاً للنتيجة",
-    homeMicroTrust: "بدون وعود كاذبة. نعرض الأهلية والبدائل بوضوح: عمومي/خصوصي.",
-    homeParentLine: "مناسب للطالب… ومقنع للأسرة.",
-    homeValueBullets: ["مواد دقيقة حسب الشعبة — بلا تخمين","3 زوايا: الأنسب • المتوازن • الطموح","أهلية واقعية: ماذا يمكنك فعلاً؟","خطة 30 يوماً بخطوات قابلة للتنفيذ","نتيجة قابلة للمشاركة + وصف جاهز"],
-    homeTrustChips: ["مُفسَّر","واقعي","مناسب للهاتف","مهيّأ للمغرب"],
-    homeNotSure: "إن كنت متردداً، فهذا طبيعي. سنقدّم لك 3 مسارات قوية لتجربتها هذا الشهر. النتيجة بوصلة… وليست حكماً.",
-    homeFamilyNote: "نعرف الضغط العائلي. لذلك نعرض «مساراً طموحاً» يمكن شرحه للأسرة، مع شروطه وخطة الوصول إليه.",
-    homeShareCTA: "شارك نتيجتك — ودعها تتكلم عنك.",
-    homeHowItWorks: "كيف يعمل مسار؟",
-    homeStep1Title: "اختبار الشخصية",
-    homeStep1Desc: "8–12 دقيقة — أسئلة ذكية ومباشرة تكشف ميولك الحقيقية.",
-    homeStep2Title: "أدخل نقطك",
-    homeStep2Desc: "0 إلى 20 — حسب شعبتك فقط، بلا تخمين.",
-    homeStep3Title: "خطة الطريق",
-    homeStep3Desc: "توصيات + تبرير + خطة عمل — في ثلاث زوايا: الأنسب، المتوازن، الطموح.",
-    homeTrust1: "باك 1 / باك 2",
-    homeTrust2: "عمومي / خصوصي",
-    homeTrust3: "أهلية واقعية — لا وعود فارغة",
-    homeFooterBy: "مسار — بوصلتك المهنية بالمغرب",
-    homeFooterContact: "contact@massar.ma",
-    homeBackToTest: "متابعة الاختبار",
-    // Journey stage + learner type — new translations
-    journeyTitle: "أين أنت الآن؟",
-    journeyDesc: "سيساعدنا هذا في تخصيص التوصيات لوضعك الحالي.",
-    journeyPreBac: "قبل الباكالوريا (أنا لا أزال أدرس)",
-    journeyPostBac: "بعد الباكالوريا (لديّ نتائج نهائية)",
-    journeyPreBacHint: "سنقترح مسارات بناءً على شخصيتك وميولك وتوقعاتك",
-    journeyPostBacHint: "سنحلّل نقطك الفعلية ونوفر توصيات دقيقة",
-    preBacStrengthsTitle: "ما الذي تُتقنه فعلاً الآن؟",
-    preBacStrengthsDesc: "اختر 3 نقاط قوة تشعر أنها حقيقية لديك",
-    preBacStrengthsOpts: {
-      teaching:"الشرح والتعليم", solving:"حل المشكلات", designing:"التصميم والإبداع",
-      negotiating:"الإقناع والتفاوض", organizing:"التنظيم والقيادة",
-      building:"الصنع والتركيب اليدوي", sports:"الانضباط الرياضي",
-      writing:"الكتابة والتواصل", tech:"الفضول التقني",
-    },
-    preBacInterestsTitle: "ما الذي تستمتع به أكثر؟",
-    preBacInterestsDesc: "اختر 3 اهتمامات تصف شغفك",
-    preBacInterestsOpts: {
-      competition:"المنافسة", helping:"مساعدة الناس", building2:"بناء الأشياء",
-      creativity:"الإبداع", business:"الأعمال والمال", technology:"التكنولوجيا",
-      languages:"اللغات والسفر", outdoors:"الطبيعة والخارج", handson:"العمل اليدوي",
-    },
-    preBacSliderTitle: "تقدير ذاتي للمواد (1 = ضعيف / 5 = قوي)",
-    preBacConstraints: "قيودك وأولوياتك",
-    prestige_priority: "أهمية المكانة والهيبة",
-    prestige_low:"غير مهمة",prestige_med:"مهمة بعض الشيء",prestige_high:"ضرورية جداً",
-    preferenceDialLabel: "ما الذي يهمك أكثر في مسارك؟",
-    preferenceDialOpts: {
-      prestige: { icon:"🏆", label:"المكانة والاعتراف الاجتماعي" },
-      money:    { icon:"💰", label:"الدخل والاستقرار المالي" },
-      abroad:   { icon:"🌍", label:"الدراسة أو العمل في الخارج" },
-      balanced: { icon:"⚖️", label:"التوازن بين كل شيء" },
-      freedom:  { icon:"🕊️", label:"الحرية والمرونة في العمل" },
-    },
-    publicEyeLabel: "هل أنت مرتاح للظهور أمام الجمهور (تدريب / إعلام / أداء)؟",
-    publicEyeYes:   "نعم، أحب ذلك",
-    publicEyeMaybe: "ربما، لا مانع لديّ",
-    publicEyeNo:    "لا، أفضل العمل بعيداً عن الأضواء",
-    sportsUmbrellaA: "الصحة والأداء البشري",
-    sportsUmbrellaB: "إدارة الرياضة والأحداث",
-    sportsUmbrellaC: "التدريب والأداء الميداني",
-    learnerTitle: "كيف تتعلم؟",
-    learnerDesc: "6 أسئلة قصيرة لفهم أسلوبك في الدراسة والإنجاز",
-    learnerTypes: {
-      architect:"البنّاء الذهني", striker:"المُنْجِز", diplomat:"المُقنِع",
-      sprinter:"عدّاء اللحظة الأخيرة", sentinel:"الحارس", visionary:"المُبتكِر",
-    },
-    learnerTypeIcons: {
-      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
-    },
-    // Results pages
-    // Archetype reveal moment
-    archetypeRevealWhy:   "علاش طلع لك هاد النوع؟",
-    archetypeRevealStr:   "القوة ديالك هاد الشهر",
-    archetypeRevealNext:  "الترقية الجاية — تبان كاملة فملف PDF",
-    // Morocco Reality Anchor
-    moroccoAnchorTitle:   "فين كتربح فالمغرب؟",
-    moroccoAnchorSchool:  "فالثانوية أو الجامعة: كتفرق لأن كتفكر قبل ما تبدأ — مش بعد ما تضيع الوقت.",
-    moroccoAnchorFamily:  "فالبيت والمجتمع: كتعرف كيفاش تشرح اختياراتك بالأرقام — مش بالكلام الفارغ.",
-    // Share section
-    sharePromptAr:        "شارك نتيجتك",
-    shareCaptionShortLbl: "قصير",
-    shareCaptionMedLbl:   "متوسط",
-    shareCaptionSavageLbl:"جريء",
-    resultsPage: "الصفحة",
-    resultsOf: "من",
-    identityMirrorTitle: "مرآة هويتك المهنية",
-    underPressure: "كيف تفكر تحت الضغط",
-    consistencySecret: "ما تحتاجه للمثابرة",
-    unfairAdvantage: "ميزتك غير المتوقعة",
-    blindSpot: "نقطة عمياء تحتاج وعياً",
-    credibilityLine: "إن لم تشعر بالتوافق التام، هذا طبيعي — العوامل التشخيصية تقترب من الواقع، لا تُحدّده.",
-    prestigePage2Title: "المكانة وواقع الأسرة في المغرب",
-    marketPage3Title: "مسارك في سوق 2030",
-    directionsPage4Title: "توصياتك المفصّلة",
-    planPage5Title: "خطة الانطلاق",
-    pdfPage6Title: "ملف المدرّب الشخصي الكامل",
-    futureProofScore: "مؤشر المستقبل",
-    moroccoDemandsLabel: "الطلب في المغرب",
-    globalDemandsLabel: "الطلب العالمي",
-    hedgeSkillLabel: "مهارة التحوّط الموصى بها",
-    weakPoint2Win: "قوّتك هذا الأسبوع",
-    riskAvoid: "خطر تجنّبه",
-    prioritySelector: "اضبط عرض النتائج حسب أولويتك",
-    previewLocked: "محتوى حصري في ملف PDF",
-    pdfBenefits: [
-      "قائمة مدارس مخصصة لمدينتك وتنقّلك وميزانيتك (6–12 مؤسسة)",
-      "خطة المكانة A/B/C مع جدول زمني (نخبة / قوية / مباشرة للسوق)",
-      "استراتيجية رفع النقط: المواد الأهم + الخطوات الواقعية",
-      "نص المحادثة العائلية كاملاً (عربي + فرنسي) مع ردود الاعتراضات",
-      "مصفوفة القرار الكاملة + مقارنة السيناريوهات",
-      "خارطة طريق 90 يوماً (الأسابيع 2–12) + موارد مختارة",
-      "دليل المنح والرسوم (عام / خاص)",
-      "أسلوب الفوز حسب نمط تعلّمك — كتيّب كامل",
-      "المصائد الشخصية التي تجنّبها",
-      "دليل المسار الدولي (اختياري)",
-    ],
-
-        backHome: "العودة للرئيسية",
-    revealCard: "اكتشف بطاقتك",
-    downloadStory: "تحميل Story 9:16",
-    downloadSquare: "تحميل Square 1:1",
-    downloadCard: "تحميل Card 5:7",
-    copyCaption: "نسخ النص",
-        // Arabic rewrite
-    appTitle: "مسار | دليلك المهني بالمغرب",
-    appSubtitle: "اكتشف مسارك الدراسي والمهني المناسب لك",
-    next: "متابعة",
-    back: "رجوع",
-    start: "ابدأ الاختبار",
-    finish: "اعرض نتائجي",
+    appTitle: "مسار | دليلك المهني المغربي",
+    appSubtitle: "اكتشف مسارك المهني المثالي في المغرب",
+    next: "التالي",
+    back: "السابق",
+    start: "ابدأ الآن",
+    finish: "احصل على نتائجي",
     step: "الخطوة",
     of: "من",
     // Steps
-    langStep: "اختر لغة التطبيق",
-    langDesc: "سيُعرض التطبيق كاملاً باللغة التي تختارها",
+    langStep: "اختر لغتك",
+    langDesc: "سيتم عرض التطبيق بالكامل بالغة المختارة",
     personalityStep: "اختبار الشخصية",
-    personalityDesc: "أجب بصدق — لا توجد إجابات خاطئة",
-    infoStep: "شعبتك ومعلوماتك",
-    marksStep: "أدخل نقطك",
+    personalityDesc: "أجب بصدق – لا توجد إجابات خاطئة",
+    infoStep: "معلوماتك الدراسية",
+    marksStep: "درجاتك",
     resultsStep: "نتائجك",
     // Info fields
-    bacTrack: "الشعبة",
-    academic: "أكاديمي",
-    personality: "الشخصية",
-    market: "السوق",
+    bacTrack: "شعبة الباكالوريا",
     city: "مدينتك الحالية",
     mobility: "استعدادك للتنقل",
     mobilityOptions: ["نفس المدينة فقط", "مستعد للانتقال داخل المغرب", "أقبل التعلم عن بُعد"],
@@ -198,22 +42,10 @@ const TRANSLATIONS = {
     yes: "نعم",
     no: "لا",
     // Marks
-    marks: "نقطك (من 20)",
-    examModeLabel: "نوع النقط التي ستُدخلها",
+    marks: "درجاتك /20",
+    examModeLabel: "نوع النقط المدخلة",
     examModeWatani: "نقط الامتحان الوطني فقط",
-    examModeFull: "الباكالوريا كاملة (جهوي + وطني + مراقبة مستمرة)",
-    // TASK 1 — examTiming: pre-Bac vs post-Bac determines which subject list to show
-    examTimingLabel: "متى تُجري هذا التقييم؟",
-    examTimingPre: "قبل نتائج الباكالوريا (لا يزال بإمكاني التحسين)",
-    examTimingPost: "بعد الباكالوريا (نتائج نهائية رسمية)",
-    examTimingHint: "يحدد هذا قائمة المواد الدقيقة المعروضة",
-    // TASK 2 — goalPreference: prestige / balanced / practical (replaces goalMode selector)
-    goalPreferenceLabel: "أي أسلوب يناسبك الآن؟",
-    goalPreferenceOptions: {
-      prestige:   { icon:"🏆", label:"المكانة والمدارس الكبرى (مسار مسابقاتي)" },
-      balanced:   { icon:"⚖️", label:"متوازن — أفضل خيار يناسبني مع الحفاظ على المكانة" },
-      practical:  { icon:"🔧", label:"دخل سريع / مسار تطبيقي (OFPPT أو BTS)" },
-    },
+    examModeFull: "باك كامل (جهوي + وطني + مراقبة مستمرة)",
     marksSectionWatani: "الامتحان الوطني (الوطني)",
     marksSectionRegional: "الامتحان الجهوي (الجهوي)",
     marksSectionContinuous: "المراقبة المستمرة (اختياري)",
@@ -222,23 +54,23 @@ const TRANSLATIONS = {
     continuousAverage: "معدل المراقبة المستمرة",
     overallAverage: "المعدل العام",
     // What-if sliders (Goal 2)
-    whatIf: "ماذا لو؟ — تعديل النقط",
+    whatIf: "ماذا لو؟ – تعديل الدرجات",
     adjustedAverage: "المعدل بعد التعديل",
-    sliderHint: "↑ عدّل النقط لإعادة حساب التوصيات فوراً",
+    sliderHint: "↑ تغيير الدرجات لإعادة حساب التوصيات فوراً",
     sliderChangeSummary: "التغييرات",
-    sliderNoChange: "لم تُجرَ أي تعديلات حتى الآن",
+    sliderNoChange: "لم تُجرَ أي تعديلات بعد",
     // Results
     traitRadar: "ملف شخصيتك",
-    topCareers: "أبرز المسارات المناسبة لك",
+    topCareers: "أفضل المسارات المهنية",
     pathways: "المسارات التعليمية",
-    actionPlan: "خطة 30 يوماً",
+    actionPlan: "خطة العمل – 30 يوماً",
     fallback: "مسار بديل",
-    fallbackDesc: "خيار آخر بقيمة مساوية",
-    fallbackBody: "OFPPT والتكوين التطبيقي ليسا خياراً ثانوياً — بل مدخل مباشر لسوق الشغل بكفاءات تقنية مطلوبة.",
+    fallbackDesc: "مسار احتياطي ذو قيمة متساوية",
+    fallbackBody: "OFPPT والتكوين المهني ليسا مساراً ثانوياً — بل بوابةً مباشرة لسوق العمل بمهارات تقنية مرتفعة الطلب.",
     explainability: "لماذا هذه التوصية؟",
     // Confidence / signals
     confidenceLabel: "مستوى الثقة",
-    mixedSignals: "📊 تباين في الملف — المعطيات الدراسية وعوامل الهوية تشير إلى مجالات مختلفة. راجع المسارات مع الأخذ بالسياق الكامل.",
+    mixedSignals: "📊 تباين في الملف – العوامل الأكاديمية وعوامل الهوية تشير إلى مجالات مختلفة. راجع المسارات مع الأخذ بالسياق الكامل.",
     // Pathways
     universityRoute: "المسار الجامعي",
     grandeEcoleRoute: "المدارس العليا",
@@ -247,14 +79,14 @@ const TRANSLATIONS = {
     pathwayMissing: "تفاصيل قريباً",
     // Eligibility
     privateOnly: "مدارس خاصة فقط",
-    notEligiblePublic: "تنافسية عالية (التعليم العام)",
+    notEligiblePublic: "تنافسية عالية (عام)",
     // Medicine eligibility note (Goal 3)
-    eligibilityTitle: "شروط القبول – الطب العام",
+    eligibilityTitle: "شرط القبول – الطب العام",
     eligibilityThresholdLabel: "العتبة الرسمية للقبول العام",
-    eligibilityThresholdValue: "المعدل ≥ 16/20 · علوم الحياة والأرض ≥ 14 · الفيزياء والكيمياء ≥ 13",
+    eligibilityThresholdValue: "المعدل ≥ 16/20 · علم الأحياء ≥ 14 · الكيمياء ≥ 13",
     eligibilityYourAvg: "معدلك الحالي",
-    eligibilityMeetsPublic: "✅ مستوفٍ لشروط القبول العام",
-    eligibilityFailsPublic: "❌ لا تتوفر شروط الطب العام حالياً",
+    eligibilityMeetsPublic: "✅ مؤهل للمسار العام",
+    eligibilityFailsPublic: "❌ لا يفي بشروط الطب العام الحكومي",
     eligibilityPrivateNote: "الطب الخاص متاح برسوم عالية (UIR، UIC…). تحقق من المنح المتاحة.",
     eligibilityAlternativesLabel: "مسارات قريبة بشروط أخف:",
     eligibilityAlternatives: [
@@ -266,90 +98,23 @@ const TRANSLATIONS = {
     ],
     // Narrative fix / Guardrails — ambitious tab "How to unlock"
     ambitiousUnlockTitle: "🔓 كيف تبلغ هذا المسار؟",
-    ambitiousUnlockMed:   "لفتح مسار الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة والأرض ≥ 14 والفيزياء والكيمياء ≥ 13.",
-    ambitiousUnlockGen:   "ارفع معدلك إلى {avg}+ وحسّن نقطك في المواد الأساسية لتعزيز فرصك.",
+    ambitiousUnlockMed:   "لفتح الطب العام: ارفع معدلك إلى 16+ وعلوم الحياة ≥ 14 والكيمياء ≥ 13.",
+    ambitiousUnlockGen:   "ارفع معدلك العام إلى {avg}+ وحسّن المواد الأساسية لزيادة حظوظك.",
     // Feature 1: Exam timing
     examTimingStep: "توقيت التقييم",
     examTimingQuestion: "هل أجريت هذا التقييم قبل أم بعد امتحان الباكالوريا؟",
     examTimingBefore: "قبل نتائج الباكالوريا",
     examTimingAfter: "بعد نتائج الباكالوريا",
     examTimingDesc: "يؤثر هذا على طريقة عرض التوصيات وخطط التحسين",
-    whatIfDisabled: "النقط نهائية — لا يمكن تعديلها بعد إعلان النتائج.",
-    improvementTitle: "💡 كيف تُحسِّن فرصك قبل الباكالوريا؟",
+    whatIfDisabled: "الدرجات نهائية – لا يمكن تعديلها بعد إعلان النتائج.",
+    improvementTitle: "💡 كيف تحسّن حظوظك قبل الباكالوريا؟",
     improvementSubjectHint: "المواد الأهم لمسارك:",
     improvementUnlock: "رفع درجة +2 يفتح لك:",
     improvementTip1: "ركّز على المسائل المتكررة في مواضيع الامتحانات السابقة",
     improvementTip2: "التحضير لمسابقات القبول يبدأ 6 أشهر مسبقاً",
     improvementTip3: "انضم لمجموعات مراجعة عبر واتساب أو تليغرام مع طلاب من نفس الشعبة",
     improvementTip4: "استخدم منصات مجانية: خان أكاديمي عربي، إدراك، مرحبا",
-    improvementDisclaimer: "هذه توقعات تربوية. لا يمكن ضمان القبول في أي مؤسسة.",
-    // SUBJECTS FIX: examLevel + trackField selectors
-    examLevelLabel: "المستوى الدراسي",
-    examLevelBac1: "الباكالوريا الأولى (الجهوي)",
-    examLevelBac2: "الباكالوريا الثانية (الوطني)",
-    trackFieldLabel: "مسار الدراسة الرسمي",
-    trackFields: {
-      SE:  "العلوم التجريبية",
-      SM:  "العلوم الرياضية",
-      ST:  "العلوم والتكنولوجيا",
-      ECO: "العلوم الاقتصادية",
-      LSH: "الآداب والعلوم الإنسانية",
-      AA:  "الفنون التطبيقية",
-      EO:  "التعليم الأصيل",
-      BP:  "الباكالوريا المهنية",
-    },
-    smOptionLabel: "الخيار (لمسار العلوم الرياضية)",
-    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
-    examYearLabel: "السنة الدراسية",
-    examYearBac1: "الباكالوريا الأولى (الجهوي)",
-    examYearBac2: "الباكالوريا الثانية (الوطني)",
-    bac1FieldLabel: "شعبة الباكالوريا الأولى",
-    bac1Fields: {
-      SE:"العلوم التجريبية", SM:"العلوم الرياضية", ST:"العلوم والتكنولوجيا",
-      ECO:"العلوم الاقتصادية", LSH:"الآداب والعلوم الإنسانية",
-      AA:"الفنون التطبيقية", EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
-    },
-    bac2TrackLabel: "مسار الباكالوريا الثانية",
-    bac2Tracks: {
-      SVT:"علوم الحياة والأرض", PC:"العلوم الفيزيائية",
-      SMA:"العلوم الرياضية – خيار أ", SMB:"العلوم الرياضية – خيار ب",
-      ST:"العلوم والتكنولوجيا", ECO:"العلوم الاقتصادية",
-      LSH:"الآداب والعلوم الإنسانية", AA:"الفنون التطبيقية",
-      EO:"التعليم الأصيل", BP:"الباكالوريا المهنية",
-    },
-    smOptionA: "الخيار أ (علوم الحياة والأرض)",
-    smOptionB: "الخيار ب (علوم المهندس)",
-    eoOptionLabel: "التخصص (التعليم الأصيل)",
-    eoOptionArabic: "الأدب العربي",
-    eoOptionSharia: "الشريعة الإسلامية",
-    bpExtrasLabel: "مواد إضافية (الباكالوريا المهنية)",
-    // NEW INPUT: Profile Boost step translations
-    profileBoostStep: "🚀 دقّق توصياتك",
-    profileBoostDesc: "6 أسئلة سريعة — تجعل التوصيات أدق وأقرب إليك",
-    pb_prestige: "مدى أهمية الهيبة والسمعة لك ولعائلتك",
-    pb_prestige0: "ليس مهماً — النتائج والعمل هما الأساس",
-    pb_prestige1: "مهم بعض الشيء",
-    pb_prestige2: "مهم جداً — الهيبة خط أحمر",
-    pb_money: "مدى أهمية الاستقرار المالي الآن",
-    pb_money0: "ليست الأولوية الآن",
-    pb_money1: "مهمة لكنها ليست الوحيدة",
-    pb_money2: "ضرورية جداً",
-    pb_handsOn: "تفضّل العمل اليدوي الحقيقي على العمل المكتبي؟",
-    pb_handsOn0: "لا — أفضل الفكر والتحليل",
-    pb_handsOn1: "مزيج من الاثنين",
-    pb_handsOn2: "نعم — العمل الميداني أكثر إمتاعاً لي",
-    pb_risk: "هل أنت مرتاح للمسارات غير المضمونة (ريادة / إبداع / ابتكار)؟",
-    pb_risk0: "لا — أفضل طريقاً مضموناً",
-    pb_risk1: "نوعاً ما — إذا كان هناك خطة بديلة",
-    pb_risk2: "نعم — المجهول لا يخيفني",
-    pb_intl: "هل تريد مساراً قابلاً للعمل خارج المغرب؟",
-    pb_intl0: "لا، أعمل في المغرب",
-    pb_intl1: "ربما في المستقبل",
-    pb_intl2: "نعم، الخارج ضمن خطتي",
-    pb_focus: "هل تستطيع الدراسة 2 إلى 4 ساعات يومياً بجدية؟",
-    pb_focus0: "صعب علي باستمرار",
-    pb_focus1: "نعم لكن مع صعوبة أحياناً",
-    pb_focus2: "نعم دائماً، الانضباط قوتي",
+    improvementDisclaimer: "هذه توقعات تعليمية. لا يمكن ضمان القبول بأي مدرسة.",
     // Feature 2: Study abroad
     studyAbroadLabel: "هل تفكر في الدراسة في الخارج؟",
     studyAbroadRegionLabel: "المنطقة المفضلة",
@@ -373,20 +138,20 @@ const TRANSLATIONS = {
     },
     practicalFastTrack: "⚡ خيار سريع الدخول — مثالي إذا كنت تفضّل العمل قبل الجامعة",
     // Goal mode input (Cultural rerank layer)
-    goalModeLabel: "ما الأهم لك الآن؟",
+    goalModeLabel: "شنو الأهم دابا بالنسبة ليك؟",
     goalModeOptions: {
       prestige:  { icon:"🏆", label:"أفضل مدرسة / المسار الأرفع مستوى" },
       fit:       { icon:"🎯", label:"الأنسب لشخصيتي" },
       practical: { icon:"🔧", label:"دخل سريع / مهارة ملموسة" },
-      unsure:    { icon:"🤷", label:"لست متأكداً — أرني الخيارين" },
+      unsure:    { icon:"🤷", label:"مش عارف — أريني الاثنين" },
     },
     prestigeAdjacentTitle: "إذا كانت العائلة تريد مساراً أكثر هيبة",
     prestigeAdjacentDesc: "بناءً على ملفك الشخصي، هذه مسارات مجاورة بمستوى أكاديمي أعلى:",
     bridgeOptionLabel: "خيار جسر",
-    bestFitTab: "أفضل توافق",
+    bestFitTab: "الأنسب لك",
     prestigeTrackTab: "المسار الأرفع",
-    familyPressureLabel: "هل تواجه ضغطاً من الأسرة نحو تخصص معين؟",
-    familyPressureTitle: "💬 ضغط الأسرة — كلام واضح",
+    familyPressureLabel: "هل تواجه ضغطاً عائلياً نحو تخصص معين؟",
+    familyPressureTitle: "💬 كلمة صريحة بشأن الضغط العائلي",
     familyPressureText: "من الطبيعي أن تحمل عائلتك آمالاً كبيرة. لكن مسيرة مهنية موفقة تبنى على مزيج من الميول الحقيقية، والواقع الأكاديمي، وظروف سوق الشغل.",
     familyPressureAltsTitle: "مسارات مجاورة ذات قيمة عالية:",
     familyPressureAlts: {
@@ -395,17 +160,17 @@ const TRANSLATIONS = {
       law: ["إدارة الشركات (ENCG)", "محاسبة ومالية", "الوظيفة العمومية"],
     },
     // Misc
-    why: "السبب",
-    score: "النقطة",
+    why: "لماذا؟",
+    score: "النتيجة",
     personality: "الشخصية",
-    academic: "الجانب الدراسي",
-    market: "سوق الشغل",
-    constraints: "الشروط",
+    academic: "أكاديمي",
+    market: "السوق",
+    constraints: "القيود",
     salaryNote: "* الأرقام تقديرية وتعتمد على الخبرة والشركة والمنطقة",
     salary: "الراتب المتوقع (تقديري)",
     weekLabel: "الأسبوع",
     // Session (Goal 1)
-    resume: "متابعة من حيث توقفت",
+    resume: "استأنف من حيث توقفت",
     resumeSaved: "لديك جلسة سابقة محفوظة",
     resumeDesc: "جلسة محفوظة في متناول يدك – هل تريد الاستمرار من حيث توقفت؟",
     restart: "بدء من جديد",
@@ -541,8 +306,8 @@ const TRANSLATIONS = {
     },
     // Truth Mode
     truthModeBtn: "🔍 وضع الحقيقة",
-    truthModeTitle: "🔍 كلام واضح عن ملفك",
-    truthModeDesc: "نظرة موضوعية على مسارك — بدون مبالغة ولا تهويل. فقط معطيات.",
+    truthModeTitle: "🔍 تحليل واقعي لملفك",
+    truthModeDesc: "تحليل موضوعي — لا مبالغة، لا ترهيب. فقط معطيات.",
     burnoutRisk: "خطر الإرهاق المهني",
     stressRisk: "خطر الضغط",
     incomeVolatility: "تقلب الدخل",
@@ -571,21 +336,21 @@ const TRANSLATIONS = {
       A:"تحليلي", C:"مبدع", S:"اجتماعي", I:"مستقل", P:"عملي", O:"نظري", R:"مجازف", K:"مستقر",
     },
     massarTypeDesc: "رمز مكون من 4 أحرف مشتق من شخصيتك وتفضيلاتك",
-    shareTitle: "📤 شارك نتيجتك",
+    shareTitle: "📤 شارك مسارك",
     copyCaptionBtn: "نسخ النص",
     downloadBadgeBtn: "تحميل البطاقة",
     shareCopied: "✓ تم النسخ!",
     shareCaptionTpl: "اكتشفت نوع مساري: {type} 🧬\nأفضل مسار: {cluster} ({confidence}% توافق)\nاكتشف نوعك على Massar 👇",
     // Reality layer
-    realityStep: "شخصيتك وأولوياتك",
-    realityDesc: "4 أسئلة قصيرة — تنتهي في 3 دقائق",
-    realityStrengthsTitle: "ما الذي تتقنه فعلاً؟",
+    realityStep: "حياتك وهويتك",
+    realityDesc: "4 أسئلة سريعة – تختار وتنتهي في 3 دقائق",
+    realityStrengthsTitle: "ما الذي تُتقنه فعلاً الآن؟",
     realityStrengthsDesc: "اختر حتى 5 مهارات تشعر أنك قوي فيها",
     realityInterestsTitle: "ما الذي تستمتع به بشكل طبيعي؟",
     realityInterestsDesc: "اختر حتى 5 أنشطة تشدّك",
     realityIdentityTitle: "كيف تصف نفسك؟",
-    realityPriorityTitle: "ما أهم شيء بالنسبة إليك الآن؟",
-    realityMaxHint: "(اختر 5 كحد أقصى)",
+    realityPriorityTitle: "ما الأهم بالنسبة إليك الآن؟",
+    realityMaxHint: "(اختر حتى 5)",
     realityStrengths: {
       s_math:"حل مسائل الرياضيات", s_writing:"الكتابة والتعبير", s_speaking:"الإلقاء والخطابة",
       s_mechanical:"إصلاح الأشياء الميكانيكية", s_tools:"استخدام الأدوات اليدوية",
@@ -638,121 +403,7 @@ const TRANSLATIONS = {
 
   fr: {
     dir: "ltr",
-    // HOME PAGE 3D CSS — translations
-    homeHero: "Choisis ta voie. Avec du concret.",
-    homeHeroSub: "Massar croise ta personnalité + tes notes (matières exactes Bac 1/Bac 2) pour te proposer 3 parcours : Fit, Équilibré, Ambitieux — avec le «pourquoi», l'éligibilité (public/privé) et un plan d'action.",
-    homeCTA: "Commencer gratuitement",
-    homeSecondaryCTA: "Voir un exemple",
-    homeMicroTrust: "Zéro promesse bidon. Des règles claires, des alternatives réelles.",
-    homeParentLine: "Clair pour toi — convaincant pour tes parents.",
-    homeValueBullets: ["Matières exactes selon ta filière","3 vues : Fit • Équilibré • Ambitieux","Éligibilité claire : public/privé, seuils, options","Plan 30 jours (actions concrètes)","Résultat partageable + caption prête"],
-    homeTrustChips: ["Explicable","Réaliste","Mobile-first","Pensé pour le Maroc"],
-    homeNotSure: "Si tu hésites, c'est normal. On te donne 3 directions solides à tester ce mois-ci. Le résultat est une boussole — pas une étiquette.",
-    homeFamilyNote: "On connaît la pression. On te donne un «parcours ambitieux» défendable devant tes parents, avec les conditions et le plan pour y arriver.",
-    homeShareCTA: "Partage ton profil — et fais parler le résultat.",
-    homeHowItWorks: "Comment ça marche ?",
-    homeStep1Title: "Test de personnalité",
-    homeStep1Desc: "8–12 min — questions utiles, directes, sans détour.",
-    homeStep2Title: "Saisis tes notes",
-    homeStep2Desc: "/20, selon ta filière exacte — zéro approximation.",
-    homeStep3Title: "Ta roadmap",
-    homeStep3Desc: "Parcours + raisons + actions — en 3 perspectives : Fit, Équilibré, Ambitieux.",
-    homeTrust1: "Bac 1 / Bac 2",
-    homeTrust2: "Public / privé",
-    homeTrust3: "Éligibilité réelle — pas de fausses promesses",
-    homeFooterBy: "Massar — ta boussole carrière au Maroc",
-    homeFooterContact: "contact@massar.ma",
-    homeBackToTest: "Reprendre le test",
-    // Journey stage + learner type
-    journeyTitle: "Où en es-tu maintenant ?",
-    journeyDesc: "Cela nous aide à personnaliser les recommandations.",
-    journeyPreBac: "Avant le Bac (je suis encore en cours d'études)",
-    journeyPostBac: "Après le Bac (j'ai mes résultats définitifs)",
-    journeyPreBacHint: "On te propose des orientations selon ta personnalité et tes intérêts",
-    journeyPostBacHint: "On analyse tes vraies notes pour des recommandations précises",
-    preBacStrengthsTitle: "Qu'est-ce que tu maîtrises vraiment ?",
-    preBacStrengthsDesc: "Choisis 3 points forts qui te semblent vrais",
-    preBacStrengthsOpts: {
-      teaching:"Expliquer/enseigner", solving:"Résoudre des problèmes", designing:"Créer/designer",
-      negotiating:"Persuader/négocier", organizing:"Organiser/diriger",
-      building:"Construire/réparer", sports:"Discipline sportive",
-      writing:"Écrire/communiquer", tech:"Curiosité tech",
-    },
-    preBacInterestsTitle: "Qu'est-ce qui te passionne le plus ?",
-    preBacInterestsDesc: "Choisis 3 intérêts qui décrivent ta passion",
-    preBacInterestsOpts: {
-      competition:"La compétition", helping:"Aider les gens", building2:"Construire des choses",
-      creativity:"La créativité", business:"Business / argent", technology:"Technologie",
-      languages:"Langues / voyages", outdoors:"Dehors / nature", handson:"Travail manuel",
-    },
-    preBacSliderTitle: "Auto-évaluation par matière (1 = faible / 5 = fort)",
-    preBacConstraints: "Contraintes et priorités",
-    prestige_priority: "Importance du prestige",
-    prestige_low:"Peu important",prestige_med:"Assez important",prestige_high:"Très important",
-    preferenceDialLabel: "Qu'est-ce qui compte le plus pour toi ?",
-    preferenceDialOpts: {
-      prestige: { icon:"🏆", label:"Prestige & reconnaissance sociale" },
-      money:    { icon:"💰", label:"Revenus & stabilité financière" },
-      abroad:   { icon:"🌍", label:"Études ou travail à l'étranger" },
-      balanced: { icon:"⚖️", label:"Équilibre entre tout" },
-      freedom:  { icon:"🕊️", label:"Liberté & flexibilité" },
-    },
-    publicEyeLabel: "Tu es à l'aise sous les projecteurs ? (coaching / médias / scène)",
-    publicEyeYes:   "Oui, j'adore ça",
-    publicEyeMaybe: "Peut-être, ça me va",
-    publicEyeNo:    "Non, je préfère les coulisses",
-    sportsUmbrellaA: "Santé & Performance Humaine",
-    sportsUmbrellaB: "Management du Sport",
-    sportsUmbrellaC: "Coaching & Performance",
-    learnerTitle: "Comment tu apprends ?",
-    learnerDesc: "6 questions courtes pour cerner ton style d'apprentissage",
-    learnerTypes: {
-      architect:"L'Architecte", striker:"L'Exécutant", diplomat:"Le Diplomate",
-      sprinter:"Le Sprinter", sentinel:"La Sentinelle", visionary:"Le Visionnaire",
-    },
-    learnerTypeIcons: {
-      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
-    },
-    resultsPage: "Page", resultsOf: "sur",
-    identityMirrorTitle: "Miroir de ton identité professionnelle",
-    underPressure: "Comment tu penses sous pression",
-    consistencySecret: "Ce dont tu as besoin pour rester constant",
-    unfairAdvantage: "Ton avantage inattendu",
-    blindSpot: "Point aveugle à conscientiser",
-    credibilityLine: "Si ça ne semble pas totalement juste, c'est normal — c'est une approximation, pas une vérité absolue.",
-    prestigePage2Title: "Prestige & Réalité familiale (Maroc)",
-    marketPage3Title: "Ton marché en 2030",
-    directionsPage4Title: "Tes recommandations détaillées",
-    planPage5Title: "Ton plan de démarrage",
-    pdfPage6Title: "Dossier Coach Personnel Complet",
-    futureProofScore: "Score futur",
-    moroccoDemandsLabel: "Demande au Maroc",
-    globalDemandsLabel: "Demande mondiale",
-    hedgeSkillLabel: "Compétence tampon recommandée",
-    weakPoint2Win: "Ta victoire cette semaine",
-    riskAvoid: "Risque à éviter",
-    prioritySelector: "Ajuste selon ta priorité",
-    previewLocked: "Contenu réservé au PDF",
-    pdfBenefits: [
-      "Shortlist d'écoles pour ta ville, mobilité & budget (6–12 établissements)",
-      "Plan Prestige A/B/C avec timeline (élite / solide / direct-marché)",
-      "Stratégie de révision : matières clés + étapes réalistes",
-      "Script famille complet (arabe + français) + réponses aux objections",
-      "Matrice de décision complète + comparaison de scénarios",
-      "Roadmap 90 jours (semaines 2–12) + ressources sélectionnées",
-      "Guide des bourses et frais (public / privé)",
-      "Comment gagner selon ton style d'apprentissage — playbook complet",
-      "Pièges personnalisés à éviter",
-      "Guide de la voie internationale (optionnel)",
-    ],
-
-        backHome: "← Accueil",
-    revealCard: "Révèle ta carte",
-    downloadStory: "Télécharger Story 9:16",
-    downloadSquare: "Télécharger Carré 1:1",
-    downloadCard: "Télécharger Carte 5:7",
-    copyCaption: "Copier le texte",
-        appTitle: "Massar | Guide Carrière Maroc",
+    appTitle: "Massar | Guide Carrière Maroc",
     appSubtitle: "Découvrez votre voie professionnelle idéale au Maroc",
     next: "Suivant",
     back: "Retour",
@@ -768,9 +419,6 @@ const TRANSLATIONS = {
     marksStep: "Vos notes",
     resultsStep: "Vos résultats",
     bacTrack: "Filière du Bac",
-    academic: "Académique",
-    personality: "Personnalité",
-    market: "Marché",
     city: "Votre ville actuelle",
     mobility: "Mobilité géographique",
     mobilityOptions: ["Ma ville uniquement", "Prêt à déménager au Maroc", "À distance OK"],
@@ -783,18 +431,6 @@ const TRANSLATIONS = {
     examModeLabel: "Type de notes saisies",
     examModeWatani: "Notes du National uniquement",
     examModeFull: "Bac complet (Régional + National + contrôle continu)",
-    // TASK 1 — examTiming
-    examTimingLabel: "Quand effectuez-vous cette évaluation ?",
-    examTimingPre: "Avant le Bac (je peux encore m'améliorer)",
-    examTimingPost: "Après le Bac (résultats officiels définitifs)",
-    examTimingHint: "Cela détermine la liste exacte des matières affichées",
-    // TASK 2 — goalPreference
-    goalPreferenceLabel: "Quel style vous correspond le mieux ?",
-    goalPreferenceOptions: {
-      prestige:   { icon:"🏆", label:"Prestige & longues études (concours, grandes écoles)" },
-      balanced:   { icon:"⚖️", label:"Équilibré — meilleur choix qui reste valorisé" },
-      practical:  { icon:"🔧", label:"Emploi rapide / voie pratique (OFPPT / BTS)" },
-    },
     marksSectionWatani: "Examen National",
     marksSectionRegional: "Examen Régional",
     marksSectionContinuous: "Contrôle continu (optionnel)",
@@ -859,73 +495,6 @@ const TRANSLATIONS = {
     improvementTip3: "Rejoignez des groupes de révision sur WhatsApp ou Telegram",
     improvementTip4: "Plateformes gratuites : Khan Academy, Idrisse, YouTube Dar Taliba",
     improvementDisclaimer: "Ces projections sont indicatives. Aucune admission n'est garantie.",
-    // SUBJECTS FIX: examLevel + trackField selectors
-    examLevelLabel: "Niveau d'examen",
-    examLevelBac1: "1ère Bac (Régional / جهوي)",
-    examLevelBac2: "2ème Bac (National / وطني)",
-    trackFieldLabel: "Filière officielle",
-    trackFields: {
-      SE:  "Sciences Expérimentales",
-      SM:  "Sciences Mathématiques",
-      ST:  "Sciences et Technologies",
-      ECO: "Sciences Économiques",
-      LSH: "Lettres et Sciences Humaines",
-      AA:  "Arts Appliqués",
-      EO:  "Enseignement Originel",
-      BP:  "Bac Professionnel",
-    },
-    smOptionLabel: "Option (Sciences Mathématiques)",
-    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
-    examYearLabel: "Année d'examen",
-    examYearBac1: "1ère Bac (Régional / جهوي)",
-    examYearBac2: "2ème Bac (National / وطني)",
-    bac1FieldLabel: "Filière (1ère Bac)",
-    bac1Fields: {
-      SE:"Sciences Expérimentales", SM:"Sciences Mathématiques", ST:"Sciences et Technologies",
-      ECO:"Sciences Économiques", LSH:"Lettres et Sciences Humaines",
-      AA:"Arts Appliqués", EO:"Enseignement Originel", BP:"Bac Professionnel",
-    },
-    bac2TrackLabel: "Filière (2ème Bac)",
-    bac2Tracks: {
-      SVT:"Sciences de la Vie et de la Terre", PC:"Sciences Physiques (Physique-Chimie)",
-      SMA:"Sciences Maths – Option A (SVT)", SMB:"Sciences Maths – Option B (Ing.)",
-      ST:"Sciences et Technologies", ECO:"Sciences Économiques",
-      LSH:"Lettres et Sciences Humaines", AA:"Arts Appliqués",
-      EO:"Enseignement Originel", BP:"Bac Professionnel",
-    },
-    smOptionA: "Option A (SVT)",
-    smOptionB: "Option B (Sciences de l'ingénieur)",
-    eoOptionLabel: "Spécialité (Ens. Originel)",
-    eoOptionArabic: "Littérature arabe",
-    eoOptionSharia: "Charia islamique",
-    bpExtrasLabel: "Matières supplémentaires (Bac Pro)",
-    // NEW INPUT: Profile Boost step translations
-    profileBoostStep: "🚀 Booster ton profil",
-    profileBoostDesc: "6 questions rapides qui affinent vraiment les recommandations",
-    pb_prestige: "Importance du prestige pour toi et ta famille",
-    pb_prestige0: "Pas important — résultats et emploi d'abord",
-    pb_prestige1: "Un peu important",
-    pb_prestige2: "Très important — le prestige est non-négociable",
-    pb_money: "Importance de la stabilité financière maintenant",
-    pb_money0: "Pas la priorité pour l'instant",
-    pb_money1: "Important mais pas le seul critère",
-    pb_money2: "Indispensable, c'est ma contrainte principale",
-    pb_handsOn: "Tu préfères le travail concret / terrain au bureau ?",
-    pb_handsOn0: "Non — je préfère analyser et réfléchir",
-    pb_handsOn1: "Un mix des deux",
-    pb_handsOn2: "Oui — le terrain me motive plus",
-    pb_risk: "Tu acceptes les voies incertaines (startup/créatif/indépendant) ?",
-    pb_risk0: "Non — je veux un chemin balisé",
-    pb_risk1: "Un peu, si j'ai un plan B",
-    pb_risk2: "Oui — l'incertitude ne me fait pas peur",
-    pb_intl: "Tu veux un parcours qui fonctionne à l'étranger ?",
-    pb_intl0: "Non, je reste au Maroc",
-    pb_intl1: "Peut-être plus tard",
-    pb_intl2: "Oui, l'international est dans mon plan",
-    pb_focus: "Tu peux étudier 2 à 4h par jour sérieusement ?",
-    pb_focus0: "Difficile pour moi de façon constante",
-    pb_focus1: "Oui, avec quelques difficultés parfois",
-    pb_focus2: "Oui toujours — la discipline c'est mon moteur",
     // Feature 2: Study abroad
     studyAbroadLabel: "Souhaitez-vous étudier à l'étranger ?",
     studyAbroadRegionLabel: "Région préférée",
@@ -1206,121 +775,7 @@ const TRANSLATIONS = {
 
   en: {
     dir: "ltr",
-    // HOME PAGE 3D CSS — translations
-    homeHero: "Pick your path — with clarity.",
-    homeHeroSub: "Massar combines your personality + your Bac marks (track-accurate subjects for Bac 1/Bac 2) and returns 3 directions: Best Fit, Balanced, Ambitious — with reasons, eligibility (public/private), and a 30-day action plan.",
-    homeCTA: "Start free",
-    homeSecondaryCTA: "See an example",
-    homeMicroTrust: "No fake promises. Clear rules, real alternatives.",
-    homeParentLine: "Clear for you — credible for parents.",
-    homeValueBullets: ["Accurate subjects for your track","3 views: Fit • Balanced • Ambitious","Eligibility shown: public vs private","Practical 30-day plan","Shareable result + ready caption"],
-    homeTrustChips: ["Explainable","Realistic","Mobile-first","Built for Morocco"],
-    homeNotSure: "If you're unsure, that's normal. We'll give you 3 strong directions to test this month. A result is a compass — not a label.",
-    homeFamilyNote: "We get it. We include an 'ambitious track' you can defend to parents, with requirements and a plan to reach it.",
-    homeShareCTA: "Share your profile — let the card speak.",
-    homeHowItWorks: "How it works",
-    homeStep1Title: "Personality test",
-    homeStep1Desc: "8–12 minutes — smart, direct questions that surface real affinities.",
-    homeStep2Title: "Enter your grades",
-    homeStep2Desc: "/20, track-accurate subjects — zero guesswork.",
-    homeStep3Title: "Your roadmap",
-    homeStep3Desc: "Paths + reasons + next steps — in 3 views: Fit, Balanced, Ambitious.",
-    homeTrust1: "Bac 1 / Bac 2",
-    homeTrust2: "Public / private",
-    homeTrust3: "Real eligibility — no empty promises",
-    homeFooterBy: "Massar — your career compass in Morocco",
-    homeFooterContact: "contact@massar.ma",
-    homeBackToTest: "Resume the test",
-    // Journey stage + learner type
-    journeyTitle: "Where are you right now?",
-    journeyDesc: "This helps us personalise your recommendations.",
-    journeyPreBac: "Pre-Bac (still studying / before final results)",
-    journeyPostBac: "Post-Bac (I have my final Bac results)",
-    journeyPreBacHint: "We'll suggest directions based on your personality and interests",
-    journeyPostBacHint: "We'll analyse your actual grades for precise recommendations",
-    preBacStrengthsTitle: "What are you really good at right now?",
-    preBacStrengthsDesc: "Pick 3 strengths that feel genuinely true",
-    preBacStrengthsOpts: {
-      teaching:"Explaining/teaching", solving:"Problem solving", designing:"Designing/creating",
-      negotiating:"Persuading/negotiating", organizing:"Organizing/leading",
-      building:"Hands-on building/repair", sports:"Sports discipline",
-      writing:"Writing/communication", tech:"Tech curiosity",
-    },
-    preBacInterestsTitle: "What do you enjoy most?",
-    preBacInterestsDesc: "Pick 3 interests that describe your passion",
-    preBacInterestsOpts: {
-      competition:"Competition", helping:"Helping people", building2:"Building things",
-      creativity:"Creativity", business:"Business/money", technology:"Technology",
-      languages:"Languages/travel", outdoors:"Outdoors/nature", handson:"Hands-on work",
-    },
-    preBacSliderTitle: "Self-rate key subjects (1 = weak / 5 = strong)",
-    preBacConstraints: "Constraints & priorities",
-    prestige_priority: "Prestige importance",
-    prestige_low:"Not important", prestige_med:"Somewhat important", prestige_high:"Very important",
-    preferenceDialLabel: "What matters most to you in your path?",
-    preferenceDialOpts: {
-      prestige: { icon:"🏆", label:"Prestige & social recognition" },
-      money:    { icon:"💰", label:"Income & financial stability" },
-      abroad:   { icon:"🌍", label:"Studying or working abroad" },
-      balanced: { icon:"⚖️", label:"Balance across everything" },
-      freedom:  { icon:"🕊️", label:"Freedom & flexibility" },
-    },
-    publicEyeLabel: "Are you comfortable in the spotlight? (coaching / media / performance)",
-    publicEyeYes:   "Yes, I love it",
-    publicEyeMaybe: "Maybe, it's fine",
-    publicEyeNo:    "No, I prefer behind the scenes",
-    sportsUmbrellaA: "Health & Human Performance",
-    sportsUmbrellaB: "Sport Management & Events",
-    sportsUmbrellaC: "Coaching & Field Performance",
-    learnerTitle: "How do you learn?",
-    learnerDesc: "6 quick questions to understand your learning style",
-    learnerTypes: {
-      architect:"The Architect", striker:"The Striker", diplomat:"The Diplomat",
-      sprinter:"The Sprinter", sentinel:"The Sentinel", visionary:"The Visionary",
-    },
-    learnerTypeIcons: {
-      architect:"🏗️", striker:"⚡", diplomat:"🤝", sprinter:"🏃", sentinel:"🛡️", visionary:"🔭",
-    },
-    resultsPage: "Page", resultsOf: "of",
-    identityMirrorTitle: "Your Career Identity Mirror",
-    underPressure: "How you think under pressure",
-    consistencySecret: "What you need to stay consistent",
-    unfairAdvantage: "Your unfair advantage",
-    blindSpot: "Blind spot to be aware of",
-    credibilityLine: "If this doesn't feel completely right, that's normal — it's a guide, not a verdict.",
-    prestigePage2Title: "Prestige & Family Reality (Morocco)",
-    marketPage3Title: "Your market in 2030",
-    directionsPage4Title: "Your detailed directions",
-    planPage5Title: "Your starter plan",
-    pdfPage6Title: "Full Personal Coach Dossier",
-    futureProofScore: "Future score",
-    moroccoDemandsLabel: "Morocco demand",
-    globalDemandsLabel: "Global demand",
-    hedgeSkillLabel: "Recommended hedge skill",
-    weakPoint2Win: "Your win this week",
-    riskAvoid: "Risk to avoid",
-    prioritySelector: "Adjust by priority",
-    previewLocked: "PDF-exclusive content",
-    pdfBenefits: [
-      "City-specific school shortlist (6–12 institutions)",
-      "Prestige Plan A/B/C with timeline (elite / solid / direct-to-market)",
-      "Grade-raise strategy: key subjects + realistic steps",
-      "Full family script (Arabic + French) + objection replies",
-      "Full decision matrix + scenario comparisons",
-      "90-day roadmap (weeks 2–12) + resources",
-      "Scholarships & fees guide (public / private)",
-      "How you win as your learner type — full playbook",
-      "Personalised traps to avoid",
-      "International pathway guide (optional)",
-    ],
-
-        backHome: "← Home",
-    revealCard: "Reveal my card",
-    downloadStory: "Download Story 9:16",
-    downloadSquare: "Download Square 1:1",
-    downloadCard: "Download Card 5:7",
-    copyCaption: "Copy caption",
-        appTitle: "Massar | Morocco Career Guide",
+    appTitle: "Massar | Morocco Career Guide",
     appSubtitle: "Discover your ideal career path in Morocco",
     next: "Next",
     back: "Back",
@@ -1336,9 +791,6 @@ const TRANSLATIONS = {
     marksStep: "Your Grades",
     resultsStep: "Your Results",
     bacTrack: "Bac Track",
-    academic: "Academic",
-    personality: "Personality",
-    market: "Market",
     city: "Your Current City",
     mobility: "Willingness to Relocate",
     mobilityOptions: ["Same city only", "Willing to move within Morocco", "Remote learning OK"],
@@ -1351,18 +803,6 @@ const TRANSLATIONS = {
     examModeLabel: "Which grades are these?",
     examModeWatani: "National exam grades only",
     examModeFull: "Full Bac (Regional + National + continuous assessment)",
-    // TASK 1 — examTiming
-    examTimingLabel: "When is this evaluation?",
-    examTimingPre: "Before Bac (I can still improve)",
-    examTimingPost: "After Bac (final official results)",
-    examTimingHint: "This determines which exact subjects are shown",
-    // TASK 2 — goalPreference
-    goalPreferenceLabel: "Which style fits you best right now?",
-    goalPreferenceOptions: {
-      prestige:   { icon:"🏆", label:"Prestige & long studies (competitive exams, grandes écoles)" },
-      balanced:   { icon:"⚖️", label:"Balanced — best option that still has good standing" },
-      practical:  { icon:"🔧", label:"Fast job / practical route (OFPPT / BTS / hands-on)" },
-    },
     marksSectionWatani: "National Exam",
     marksSectionRegional: "Regional Exam",
     marksSectionContinuous: "Continuous Assessment (optional)",
@@ -1427,73 +867,6 @@ const TRANSLATIONS = {
     improvementTip3: "Join revision groups on WhatsApp or Telegram with same-track students",
     improvementTip4: "Free platforms: Khan Academy, Coursera (audit), YouTube tutorials",
     improvementDisclaimer: "These are indicative projections only. No admission is guaranteed.",
-    // SUBJECTS FIX: examLevel + trackField selectors
-    examLevelLabel: "Exam level",
-    examLevelBac1: "1st Bac (Regional)",
-    examLevelBac2: "2nd Bac (National)",
-    trackFieldLabel: "Official track / field",
-    trackFields: {
-      SE:  "Experimental Sciences",
-      SM:  "Mathematical Sciences",
-      ST:  "Sciences & Technology",
-      ECO: "Economic Sciences",
-      LSH: "Letters & Humanities",
-      AA:  "Applied Arts",
-      EO:  "Original Teaching",
-      BP:  "Vocational Bac",
-    },
-    smOptionLabel: "Option (Mathematical Sciences)",
-    // SUBJECT MODEL (MOROCCO) FIX: examYear + bac2Track selectors
-    examYearLabel: "Exam year",
-    examYearBac1: "1st Bac (Regional)",
-    examYearBac2: "2nd Bac (National)",
-    bac1FieldLabel: "Field (1st Bac)",
-    bac1Fields: {
-      SE:"Experimental Sciences", SM:"Mathematical Sciences", ST:"Sciences & Technology",
-      ECO:"Economic Sciences", LSH:"Letters & Humanities",
-      AA:"Applied Arts", EO:"Original Teaching", BP:"Vocational Bac",
-    },
-    bac2TrackLabel: "Track (2nd Bac)",
-    bac2Tracks: {
-      SVT:"Life & Earth Sciences", PC:"Physical Sciences (Physics-Chemistry)",
-      SMA:"Maths Sciences – Option A (Life Sci.)", SMB:"Maths Sciences – Option B (Eng. Sci.)",
-      ST:"Sciences & Technology", ECO:"Economic Sciences",
-      LSH:"Letters & Humanities", AA:"Applied Arts",
-      EO:"Original Teaching", BP:"Vocational Bac",
-    },
-    smOptionA: "Option A (Life & Earth Sciences)",
-    smOptionB: "Option B (Engineering Sciences)",
-    eoOptionLabel: "Speciality (Original Teaching)",
-    eoOptionArabic: "Arabic Literature",
-    eoOptionSharia: "Islamic Sharia",
-    bpExtrasLabel: "Extra subjects (Vocational Bac)",
-    // NEW INPUT: Profile Boost step translations
-    profileBoostStep: "🚀 Profile Boost",
-    profileBoostDesc: "6 quick questions that meaningfully sharpen your recommendations",
-    pb_prestige: "How important is prestige to you / your family?",
-    pb_prestige0: "Not important — outcomes and work matter more",
-    pb_prestige1: "Somewhat important",
-    pb_prestige2: "Very important — prestige is non-negotiable",
-    pb_money: "How important is income stability right now?",
-    pb_money0: "Not a priority right now",
-    pb_money1: "Important but not the only factor",
-    pb_money2: "Essential — it's my main constraint",
-    pb_handsOn: "Do you prefer hands-on / real-world work over desk work?",
-    pb_handsOn0: "No — I prefer thinking and analysing",
-    pb_handsOn1: "A mix of both",
-    pb_handsOn2: "Yes — field work motivates me more",
-    pb_risk: "Are you okay with uncertain paths (startup/creator/freelance)?",
-    pb_risk0: "No — I want a clear, stable path",
-    pb_risk1: "Somewhat, if I have a backup plan",
-    pb_risk2: "Yes — uncertainty doesn't scare me",
-    pb_intl: "Do you want a path that can work internationally?",
-    pb_intl0: "No, I plan to stay in Morocco",
-    pb_intl1: "Maybe in the future",
-    pb_intl2: "Yes, international is part of my plan",
-    pb_focus: "Can you study 2 to 4 hours a day consistently?",
-    pb_focus0: "Hard for me to do consistently",
-    pb_focus1: "Yes, with some difficulty sometimes",
-    pb_focus2: "Yes always — discipline is my strength",
     // Feature 2: Study abroad
     studyAbroadLabel: "Are you considering studying abroad?",
     studyAbroadRegionLabel: "Preferred region",
@@ -1805,222 +1178,46 @@ const STREAM_BY_TRACK = {
 };
 
 // National exam (Watani) subjects by track (Morocco)
-// TASK 1 — ACCURATE MOROCCAN BAC SUBJECT MAPS
-// ─────────────────────────────────────────────────────────────────
-// TWO maps: PRE (during year / mock exam) and POST (final official Bac marks).
-// The UI uses info.examTiming ("pre" | "post") to pick the right list.
-// KEY RULE: Physics + Chemistry are ONE combined mark ("pc") in Moroccan science
-//           post-Bac for SMA/SMB/PC/SVT/TECH tracks. Keep them separate only pre-Bac.
-// ─────────────────────────────────────────────────────────────────
-
-// SUBJECT MODEL (MOROCCO) FIX: Single source of truth for all Moroccan Bac subjects.
-// examYear = "bac1" | "bac2"
-// bac1Field = "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP"   (only shown when examYear=bac1)
-// bac2Track = "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (only shown when examYear=bac2)
-// eoOption  = "arabic" | "sharia"   (EO track only)
-// bpExtras  = ["math","physchem","svt"] optional toggle (BP only)
-
-// ── Bac 1 (1ère Bac / Régional) ─────────────────────────────────
-const BAC1_SUBJECTS_BY_FIELD = {
-  SE:  ["arabic","french","islamic","history_geo","translation"],
-  SM:  ["arabic","french","islamic","history_geo","translation"],
-  ST:  ["arabic","french","islamic"],
-  ECO: ["arabic","french","islamic","history_geo","law","mgmt_info"],
-  LSH: ["french","islamic","math"],
-  AA:  ["arabic","french","islamic","math","info_infog","art_culture_hist"],
-  EO:  ["french","math","history_geo","tawtiq"],  // + sharia extras via getSubjectsForMarks
-  BP:  ["french","islamic","arabic_lang_culture"], // + bpExtras via getSubjectsForMarks
+const WATANI_SUBJECTS_BY_TRACK = {
+  SMA:  ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
+  SMB:  ["math", "physics", "chemistry", "eng_sciences", "philosophy", "foreign2"],
+  PC:   ["math", "physics", "chemistry", "svt", "philosophy", "foreign2"],
+  SVT:  ["math", "physics", "chemistry", "biology", "philosophy", "foreign2"],
+  ECO:  ["math", "economics_stats", "accounting", "management", "philosophy", "foreign2"],
+  LET:  ["arabic", "history", "philosophy", "foreign2"],
+  TECH: ["math", "physics", "chemistry", "tech", "philosophy", "foreign2"],
+  ARTS: ["arts", "design", "philosophy", "foreign2", "history"],
 };
-
-// ── Bac 2 (2ème Bac / National) ──────────────────────────────────
-// IMPORTANT: SE is a Bac1 field only. In Bac2 it splits into SVT and PC tracks.
-// SMA and SMB are separate tracks (not a shared SM with options).
-const BAC2_SUBJECTS_BY_TRACK = {
-  SVT: ["math","physchem","svt","philosophy","english"],
-  PC:  ["math","physchem","philosophy","english"],
-  SMA: ["math","physchem","philosophy","english","svt"],      // SM Option A
-  SMB: ["math","physchem","philosophy","english","eng_sci"],  // SM Option B
-  ST:  ["math","physchem","eng_sci","philosophy","english"],
-  ECO: ["math","acct_fin","econ_stats","bus_econ_org","philosophy","english"],
-  LSH: ["arabic_lit","history_geo","philosophy","english"],
-  AA:  ["comm_multimedia","env_product_design","philosophy","english"],
-  EO:  ["lit","tafsir_hadith","philosophy","english"],  // + arabic/sharia extras
-  BP:  ["prof_synth","philosophy","english"],           // + bpExtras extras
-};
-
-// ── getSubjectsForMarks: THE single helper driving marks UI + average + results ──
-// SUBJECT MODEL (MOROCCO) FIX: all paths go through here.
-function getSubjectsForMarks(info) {
-  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2"); // migrate old key
-
-  let base;
-  if (year === "bac1") {
-    const field = info.bac1Field || info.trackField || "SE";  // migrate trackField
-    base = BAC1_SUBJECTS_BY_FIELD[field] || BAC1_SUBJECTS_BY_FIELD.SE;
-  } else {
-    const track = info.bac2Track || info.trackField || "SVT"; // migrate trackField
-    base = BAC2_SUBJECTS_BY_TRACK[track] || BAC2_SUBJECTS_BY_TRACK.SVT;
-  }
-  let list = [...base];
-
-  // EO extras (bac1 or bac2)
-  if (year === "bac1" && (info.bac1Field === "EO" || info.trackField === "EO")) {
-    if (info.eoOption === "sharia") list = [...list, "lang_sci", "inheritance_timing"];
-  }
-  if (year === "bac2" && (info.bac2Track === "EO" || info.trackField === "EO")) {
-    if (info.eoOption === "arabic") list = [...list, "lang_sci"];
-    if (info.eoOption === "sharia") list = [...list, "fiqh_usul"];
-  }
-
-  // BP extras (bac1 or bac2)
-  const isBP = (year === "bac1" && (info.bac1Field === "BP" || info.trackField === "BP"))
-             || (year === "bac2" && (info.bac2Track === "BP" || info.trackField === "BP"));
-  if (isBP && Array.isArray(info.bpExtras)) {
-    info.bpExtras.forEach(k => { if (!list.includes(k)) list.push(k); });
-  }
-
-  // Dev logging (localhost only)
-  if (typeof window !== "undefined" && (window.__DEV__ ||
-      (typeof location !== "undefined" && location.hostname === "localhost"))) {
-    const field = year === "bac1" ? (info.bac1Field || info.trackField) : (info.bac2Track || info.trackField);
-    console.log(`[Massar Subjects] examYear=${year} field/track=${field} → [${list.join(", ")}]`);
-  }
-
-  return list;
-}
-
-// SUBJECT MODEL (MOROCCO) FIX: map bac2Track/bac1Field → scoring engine bacTrack key.
-const BAC2_TRACK_TO_SCORING = {
-  SVT:"SVT", PC:"PC", SMA:"SMA", SMB:"SMB",
-  ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
-};
-const BAC1_FIELD_TO_SCORING = {
-  SE:"SVT", SM:"SMA", ST:"TECH", ECO:"ECO", LSH:"LET", AA:"ARTS", EO:"LET", BP:"TECH",
-};
-
-// SUBJECT MODEL (MOROCCO) FIX: resolve bacTrack for scoring engine from new info fields.
-function getScoringBacTrack(info) {
-  const year = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
-  if (year === "bac1") {
-    const field = info.bac1Field || info.trackField || "SE";
-    return BAC1_FIELD_TO_SCORING[field] || "SVT";
-  }
-  const track = info.bac2Track || info.trackField || "SVT";
-  return BAC2_TRACK_TO_SCORING[track] || "SVT";
-}
-
-// ── Legacy aliases (dead stubs — not used for subject lists anywhere) ─
-// SUBJECT MODEL (MOROCCO) FIX: kept only so no lingering ref crashes the build.
-const TRACK_FIELD_TO_BAC_TRACK = BAC1_FIELD_TO_SCORING; // legacy compat
-const TRACK_FIELD_TO_BAC_TRACK_REVERSE = { SVT:"SE",SMA:"SM",SMB:"SM",PC:"SVT",TECH:"ST",ECO:"ECO",LET:"LSH",ARTS:"AA" };
-const SUBJECTS_BY_TRACK        = { SMA:["math","physchem","english","philosophy","svt"], SMB:["math","physchem","english","philosophy","eng_sci"], PC:["math","physchem","english","philosophy"], SVT:["svt","physchem","math","english","philosophy"], ECO:["math","econ_stats","acct_fin","bus_econ_org","english","philosophy"], LET:["arabic_lit","history_geo","philosophy","english"], TECH:["math","physchem","eng_sci","english","philosophy"], ARTS:["comm_multimedia","env_product_design","philosophy","english"] };
-const SUBJECTS_POST_BY_TRACK   = SUBJECTS_BY_TRACK;
-const SUBJECTS_PRE_BY_TRACK    = SUBJECTS_BY_TRACK;
-const WATANI_SUBJECTS_BY_TRACK = SUBJECTS_BY_TRACK;
-// (Old SUBJECTS_BY_FIELD_AND_LEVEL alias for any remaining ref)
-const SUBJECTS_BY_FIELD_AND_LEVEL = null; // decommissioned — use BAC1_SUBJECTS_BY_FIELD / BAC2_SUBJECTS_BY_TRACK
 
 // Regional (Jihawi) subjects (1ère Bac), used only when examMode="full_bac"
 const REGIONAL_SUBJECTS_BY_STREAM = {
-  scientific: ["arabic", "islamic", "history"],
-  eco:        ["arabic", "islamic", "history"],
-  letters:    ["arabic", "islamic", "history"],
-  arts:       ["arabic", "islamic", "history"],
+  scientific: ["arabic", "french", "islamic", "history"],
+  eco:        ["arabic", "french", "islamic", "history"],
+  letters:    ["arabic", "french", "islamic", "history"],
+  arts:       ["arabic", "french", "islamic", "history"],
 };
 
-// SUBJECTS FIX: migrateMarks — map old saved-session keys to canonical keys.
-// physics + chemistry → physchem; biology → svt; history → history_geo; pc → physchem; etc.
-function migrateMarks(marks) {
-  if (!marks || typeof marks !== "object") return marks || {};
-  const out = { ...marks };
-  // physics + chemistry → physchem
-  if (out.physchem == null) {
-    if (out.pc != null) { out.physchem = out.pc; }
-    else {
-      const p = Number(out.physics) || 0;
-      const c = Number(out.chemistry) || 0;
-      if (p > 0 || c > 0) out.physchem = (p > 0 && c > 0) ? (p + c) / 2 : Math.max(p, c);
-    }
-  }
-  delete out.pc; delete out.physics; delete out.chemistry;
-  // biology → svt
-  if (out.svt == null && out.biology != null) out.svt = out.biology;
-  delete out.biology;
-  // history → history_geo
-  if (out.history_geo == null && out.history != null) out.history_geo = out.history;
-  delete out.history;
-  // economics_stats → econ_stats
-  if (out.econ_stats == null && out.economics_stats != null) out.econ_stats = out.economics_stats;
-  delete out.economics_stats;
-  // accounting → acct_fin
-  if (out.acct_fin == null && out.accounting != null) out.acct_fin = out.accounting;
-  delete out.accounting;
-  // economics → econ_stats (loose)
-  if (out.econ_stats == null && out.economics != null) out.econ_stats = out.economics;
-  delete out.economics;
-  // SUBJECT SYSTEM FIX: bus_org → bus_econ_org (old key rename)
-  if (out.bus_econ_org == null && out.bus_org != null) out.bus_econ_org = out.bus_org;
-  delete out.bus_org;
-  // management → bus_econ_org (canonical key)
-  if (out.management != null && out.bus_econ_org == null) out.bus_econ_org = out.management;
-  delete out.management;
-  return out;
-}
-
-// SUBJECTS FIX: canonical subject labels (AR / FR / EN) for all Bac tracks.
 const SUBJECT_LABELS = {
-  // ── Core ──────────────────────────────────────────────────────────
-  arabic:              { ar:"اللغة العربية",            fr:"Arabe",                            en:"Arabic"                        },
-  arabic_lit:          { ar:"الأدب العربي",             fr:"Littérature Arabe",                en:"Arabic Literature"             },
-  french:              { ar:"اللغة الفرنسية",            fr:"Français",                         en:"French"                        },
-  english:             { ar:"اللغة الإنجليزية",         fr:"Anglais",                          en:"English"                       },
-  islamic:             { ar:"التربية الإسلامية",         fr:"Éducation islamique",              en:"Islamic Education"             },
-  history_geo:         { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géographie",              en:"History & Geography"           },
-  philosophy:          { ar:"الفلسفة",                  fr:"Philosophie",                      en:"Philosophy"                    },
-  math:                { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
-  translation:         { ar:"الترجمة",                  fr:"Traduction",                       en:"Translation"                   },
-  // ── Sciences ─────────────────────────────────────────────────────
-  physchem:            { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics & Chemistry"           },
-  svt:                 { ar:"علوم الحياة والأرض",        fr:"SVT",                              en:"Life & Earth Sciences"         },
-  // ── Technology / Engineering ─────────────────────────────────────
-  eng_sci:             { ar:"علوم المهندس",              fr:"Sciences de l'ingénieur",          en:"Engineering Sciences"          },
-  // ── Economics / Business ─────────────────────────────────────────
-  law:                 { ar:"القانون",                  fr:"Droit",                            en:"Law"                           },
-  mgmt_info:           { ar:"التدبير ونظم المعلومات",   fr:"Gestion et Systèmes d'info.",      en:"Management & Info. Systems"    },
-  acct_fin:            { ar:"المحاسبة والرياضيات الم.", fr:"Comptabilité & Maths financières", en:"Accounting & Financial Maths"  },
-  econ_stats:          { ar:"الاقتصاد والإحصاء",        fr:"Économie & Statistiques",          en:"Economics & Statistics"        },
-  bus_econ_org:             { ar:"اقتصاد المقاولة والتنظيم", fr:"Économie d'entreprise & Org.",     en:"Business Economics & Org."     },
-  // ── Arts Appliqués ───────────────────────────────────────────────
-  info_infog:          { ar:"إعلامية وإنفوغرافيا",      fr:"Informatique & Infographie",       en:"IT & Infographics"             },
-  art_culture_hist:    { ar:"ثقافة وتاريخ الفنون",      fr:"Culture et Histoire des arts",     en:"Art Culture & History"         },
-  comm_multimedia:     { ar:"التواصل والوسائط المتعددة",fr:"Communication & Multimédia",       en:"Communication & Multimedia"    },
-  env_product_design:  { ar:"تصميم بيئات ومنتجات",      fr:"Design d'env. & de produits",      en:"Environment & Product Design"  },
-  // ── Enseignement Originel ─────────────────────────────────────────
-  tawtiq:              { ar:"التوثيق والإجراءات القانونية",fr:"Tawthiq et procédures judiciaires",en:"Legal Documentation"        },
-  lang_sci:            { ar:"علوم اللغة",               fr:"Sciences de la langue",            en:"Language Sciences"             },
-  inheritance_timing:  { ar:"الفرائض والمواقيت",        fr:"Héritage & Calcul des temps",      en:"Inheritance & Timing Calculus" },
-  lit:                 { ar:"الأدب",                   fr:"Littérature",                      en:"Literature"                    },
-  tafsir_hadith:       { ar:"التفسير والحديث",          fr:"Tafsir & Hadith",                  en:"Tafsir & Hadith"               },
-  fiqh_usul:           { ar:"الفقه وأصوله",             fr:"Fiqh & Usul al-Fiqh",             en:"Fiqh & Usul al-Fiqh"           },
-  // ── Bac Professionnel ─────────────────────────────────────────────
-  prof_synth:          { ar:"التقييم المهني الاصطناعي", fr:"Épreuve professionnelle de synthèse",en:"Professional Synthesis Test" },
-  arabic_lang_culture: { ar:"اللغة العربية والثقافة",   fr:"Langue arabe & Culture",           en:"Arabic Language & Culture"     },
-  // ── Backward-compat keys (for old saved sessions / narrative helpers) ──
-  pc:                  { ar:"الفيزياء والكيمياء",        fr:"Physique-Chimie",                  en:"Physics-Chemistry"             },
-  physics:             { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
-  chemistry:           { ar:"الكيمياء",                 fr:"Chimie",                           en:"Chemistry"                     },
-  biology:             { ar:"علم الأحياء",               fr:"Biologie",                         en:"Biology"                       },
-  economics:           { ar:"الاقتصاد",                 fr:"Économie",                         en:"Economics"                     },
-  management:          { ar:"التدبير",                  fr:"Gestion",                          en:"Management"                    },
-  history:             { ar:"التاريخ والجغرافيا",        fr:"Histoire-Géo",                     en:"History & Geography"           },
-  tech:                { ar:"التكنولوجيا",              fr:"Technologie",                      en:"Technology"                    },
-  arts:                { ar:"الفنون",                   fr:"Arts",                             en:"Arts"                          },
-  design:              { ar:"التصميم",                  fr:"Design",                           en:"Design"                        },
-  accounting:          { ar:"المحاسبة",                 fr:"Comptabilité",                     en:"Accounting"                    },
-  // SUBJECT SYSTEM FIX: lang2 key removed
-  sn_math:             { ar:"الرياضيات",                fr:"Mathématiques",                    en:"Mathematics"                   },
-  sn_physics:          { ar:"الفيزياء",                 fr:"Physique",                         en:"Physics"                       },
-  sn_biology:          { ar:"الأحياء",                  fr:"Biologie",                         en:"Biology"                       },
+  math:       { ar: "الرياضيات",          fr: "Mathématiques", en: "Mathematics"         },
+  physics:    { ar: "الفيزياء",           fr: "Physique",      en: "Physics"              },
+  chemistry:  { ar: "الكيمياء",           fr: "Chimie",        en: "Chemistry"            },
+  biology:    { ar: "علم الأحياء",        fr: "Biologie",      en: "Biology"              },
+  french:     { ar: "اللغة الفرنسية",     fr: "Français",      en: "French"               },
+  arabic:     { ar: "اللغة العربية",      fr: "Arabe",         en: "Arabic"               },
+  english:    { ar: "اللغة الإنجليزية",  fr: "Anglais",       en: "English"              },
+  economics:  { ar: "الاقتصاد",           fr: "Économie",      en: "Economics"            },
+  management: { ar: "التدبير",            fr: "Gestion",       en: "Management"           },
+  tech:       { ar: "التكنولوجيا",        fr: "Technologie",   en: "Technology"           },
+  philosophy: { ar: "الفلسفة",            fr: "Philosophie",   en: "Philosophy"           },
+  history:    { ar: "التاريخ والجغرافيا", fr: "Histoire-Géo",  en: "History & Geography" },
+  arts:       { ar: "الفنون",             fr: "Arts",          en: "Arts"                 },
+  design:     { ar: "التصميم",            fr: "Design",        en: "Design"               },
+  foreign2: { ar: "اللغة الأجنبية الثانية", fr: "2ème langue étrangère", en: "Second foreign language" },
+  svt: { ar: "علوم الحياة والأرض (SVT)", fr: "SVT", en: "Life & Earth Sciences (SVT)" },
+  eng_sciences: { ar: "علوم المهندس", fr: "Sciences de l'ingénieur", en: "Engineering Sciences" },
+  economics_stats: { ar: "الاقتصاد العام والإحصاء", fr: "Économie générale & Statistiques", en: "Economics & Statistics" },
+  accounting: { ar: "المحاسبة", fr: "Comptabilité", en: "Accounting" },
+  islamic: { ar: "التربية الإسلامية", fr: "Éducation islamique", en: "Islamic Education" },
 };
 
 const MOROCCAN_CITIES = [
@@ -2063,7 +1260,7 @@ const CLUSTER_CONSTRAINTS = {
     // Public medicine (Médecine/Pharmacie) in Morocco is extremely selective.
     // National average acceptance rate: top 2–3% of SVT bac holders.
     minAvg: 16.0,
-    requiredSubjects: { svt: 14, pc: 13 },
+    requiredSubjects: { biology: 14, chemistry: 13 },
     privateOk: true,
     hardPenalty: 0.45,   // pushes cluster out of top 3 when !privateBudget
   },
@@ -2129,7 +1326,7 @@ const CLUSTERS = [
   {
     id:"it", icon:"💻", demandIndex:0.95,
     bacAffinity:{ SMA:0.9,SMB:0.9,PC:0.7,SVT:0.3,ECO:0.4,LET:0.2,TECH:0.8,ARTS:0.2 },
-    subjectWeights:{ math:0.35,pc:0.2,tech:0.3,french:0.15 },
+    subjectWeights:{ math:0.35,physics:0.2,tech:0.3,french:0.1,english:0.05 },
     traitWeights:{ analytical:0.35,creativity:0.25,structure:0.2,social:-0.05,risk:0.1,leadership:0.05 },
     salary:{ min:5000,max:25000,currency:"MAD" },
     pathways:{
@@ -2159,7 +1356,7 @@ const CLUSTERS = [
   {
     id:"data", icon:"📊", demandIndex:0.92,
     bacAffinity:{ SMA:0.95,SMB:0.85,PC:0.7,SVT:0.5,ECO:0.7,LET:0.15,TECH:0.6,ARTS:0.1 },
-    subjectWeights:{ math:0.45,pc:0.1,economics:0.2,french:0.1,tech:0.15 },
+    subjectWeights:{ math:0.45,physics:0.1,economics:0.2,french:0.1,tech:0.15 },
     traitWeights:{ analytical:0.45,creativity:0.2,structure:0.25,social:-0.05,risk:0.05,leadership:0.1 },
     salary:{ min:6000,max:30000,currency:"MAD" },
     pathways:{
@@ -2189,7 +1386,7 @@ const CLUSTERS = [
   {
     id:"cyber", icon:"🔐", demandIndex:0.88,
     bacAffinity:{ SMA:0.85,SMB:0.8,PC:0.6,SVT:0.2,ECO:0.3,LET:0.15,TECH:0.75,ARTS:0.1 },
-    subjectWeights:{ math:0.3,pc:0.15,tech:0.4,french:0.15 },
+    subjectWeights:{ math:0.3,physics:0.15,tech:0.4,french:0.1,english:0.05 },
     traitWeights:{ analytical:0.4,creativity:0.15,structure:0.3,social:-0.1,risk:0.1,leadership:0.05 },
     salary:{ min:7000,max:28000,currency:"MAD" },
     pathways:{
@@ -2219,7 +1416,7 @@ const CLUSTERS = [
   {
     id:"network", icon:"📡", demandIndex:0.8,
     bacAffinity:{ SMA:0.8,SMB:0.85,PC:0.65,SVT:0.2,ECO:0.25,LET:0.1,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.25,pc:0.3,tech:0.4,french:0.05 },
+    subjectWeights:{ math:0.25,physics:0.3,tech:0.4,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.1,structure:0.35,social:0.1,risk:0.05,leadership:0.1 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -2249,7 +1446,7 @@ const CLUSTERS = [
   {
     id:"industrial", icon:"⚙️", demandIndex:0.78,
     bacAffinity:{ SMA:0.8,SMB:0.95,PC:0.75,SVT:0.2,ECO:0.2,LET:0.05,TECH:0.9,ARTS:0.05 },
-    subjectWeights:{ math:0.3,pc:0.35,tech:0.35 },
+    subjectWeights:{ math:0.3,physics:0.35,tech:0.3,chemistry:0.05 },
     traitWeights:{ analytical:0.25,creativity:0.15,structure:0.4,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:5500,max:22000,currency:"MAD" },
     pathways:{
@@ -2279,7 +1476,7 @@ const CLUSTERS = [
   {
     id:"energy", icon:"🌞", demandIndex:0.85,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.85,SVT:0.5,ECO:0.2,LET:0.05,TECH:0.8,ARTS:0.05 },
-    subjectWeights:{ math:0.3,pc:0.55,tech:0.15 },
+    subjectWeights:{ math:0.3,physics:0.45,chemistry:0.15,tech:0.1 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.3,social:0.1,risk:0.05,leadership:0.05 },
     salary:{ min:6000,max:24000,currency:"MAD" },
     pathways:{
@@ -2309,7 +1506,7 @@ const CLUSTERS = [
   {
     id:"civil", icon:"🏗️", demandIndex:0.72,
     bacAffinity:{ SMA:0.85,SMB:0.9,PC:0.75,SVT:0.2,ECO:0.15,LET:0.05,TECH:0.85,ARTS:0.1 },
-    subjectWeights:{ math:0.35,pc:0.4,tech:0.2,french:0.05 },
+    subjectWeights:{ math:0.35,physics:0.4,tech:0.2,french:0.05 },
     traitWeights:{ analytical:0.3,creativity:0.2,structure:0.35,social:0.1,risk:0.0,leadership:0.05 },
     salary:{ min:5000,max:20000,currency:"MAD" },
     pathways:{
@@ -2339,7 +1536,7 @@ const CLUSTERS = [
   {
     id:"health", icon:"🏥", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.75,SVT:0.98,ECO:0.15,LET:0.1,TECH:0.3,ARTS:0.05 },
-    subjectWeights:{ svt:0.5,pc:0.35,math:0.15 },
+    subjectWeights:{ biology:0.5,chemistry:0.3,math:0.1,physics:0.1 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.25,social:0.3,risk:0.0,leadership:0.1 },
     salary:{ min:8000,max:40000,currency:"MAD" },
     pathways:{
@@ -2399,7 +1596,7 @@ const CLUSTERS = [
   {
     id:"marketing", icon:"📣", demandIndex:0.75,
     bacAffinity:{ SMA:0.5,SMB:0.4,PC:0.4,SVT:0.3,ECO:0.9,LET:0.65,TECH:0.4,ARTS:0.6 },
-    subjectWeights:{ economics:0.35,english:0.15,management:0.25,french:0.2,arts:0.05 },
+    subjectWeights:{ economics:0.35,french:0.25,management:0.25,arabic:0.1,arts:0.05 },
     traitWeights:{ analytical:0.15,creativity:0.4,structure:0.1,social:0.25,risk:0.05,leadership:0.05 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -2550,7 +1747,7 @@ const CLUSTERS = [
   {
     id:"trades", icon:"🔧", demandIndex:0.82,
     bacAffinity:{ SMA:0.5,SMB:0.65,PC:0.5,SVT:0.4,ECO:0.35,LET:0.2,TECH:0.85,ARTS:0.25 },
-    subjectWeights:{ tech:0.4,math:0.25,pc:0.2,french:0.15 },
+    subjectWeights:{ tech:0.4,math:0.25,physics:0.2,french:0.1,arabic:0.05 },
     traitWeights:{ analytical:0.2,creativity:0.15,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4500,max:18000,currency:"MAD" },
     pathways:{
@@ -2581,7 +1778,7 @@ const CLUSTERS = [
   {
     id:"automotive", icon:"🚗", demandIndex:0.78,
     bacAffinity:{ SMA:0.55,SMB:0.7,PC:0.5,SVT:0.35,ECO:0.3,LET:0.2,TECH:0.9,ARTS:0.2 },
-    subjectWeights:{ tech:0.45,math:0.2,pc:0.2,french:0.15 },
+    subjectWeights:{ tech:0.45,math:0.2,physics:0.2,french:0.1,arabic:0.05 },
     traitWeights:{ analytical:0.25,creativity:0.1,structure:0.35,social:0.1,risk:0.1,leadership:0.1 },
     salary:{ min:4000,max:16000,currency:"MAD" },
     pathways:{
@@ -2674,7 +1871,7 @@ const CLUSTERS = [
   {
     id:"culinary_ops", icon:"🍽️", demandIndex:0.72,
     bacAffinity:{ SMA:0.3,SMB:0.3,PC:0.3,SVT:0.35,ECO:0.55,LET:0.45,TECH:0.3,ARTS:0.5 },
-    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,english:0.1,history:0.1 },
+    subjectWeights:{ french:0.25,arabic:0.2,economics:0.2,management:0.15,biology:0.1,history:0.1 },
     traitWeights:{ analytical:0.15,creativity:0.25,structure:0.35,social:0.45,risk:0.2,leadership:0.25 },
     salary:{ min:3500,max:16000,currency:"MAD" },
     pathways:{
@@ -2881,30 +2078,10 @@ function clamp(val, min = 0, max = 100) {
   return isNaN(n) ? min : Math.min(max, Math.max(min, n));
 }
 
-// TASK 2 — PRESTIGE TIER per cluster
-// A = medicine / engineering / data / law  (socially elite in Morocco)
-// B = business / logistics / civil / network (solid, respected)
-// C = tourism / hospitality / arts / trades / sports / culinary (low cultural prestige)
-// OFPPT/ISTA are PATHWAYS shown inside clusters, never standalone cluster IDs.
-const CLUSTER_PRESTIGE_TIER = {
-  health: "A", data: "A", it: "A", cyber: "A", industrial: "A",
-  energy: "A", civil: "A",
-  finance: "B", edu_law: "B", network: "B", logistics: "B", marketing: "B",
-  creative_digital: "B",
-  tourism: "C", arts_media: "C", sports: "C", trades: "C",
-  automotive: "C", culinary_ops: "C",
-};
-
-// TASK 2 — Academic tier A/B/C/D (replaces HIGH/MID/LOW for new scoring)
-function getAcademicTierABCD(avg) {
-  if (avg >= 15.5) return "A";
-  if (avg >= 14.0) return "B";
-  if (avg >= 12.0) return "C";
-  return "D";
-}
-function tierIsHigh(tier) { return tier === "A" || tier === "B"; }
-
-// Legacy alias — kept for backward-compat with old callers
+// Cultural sensitivity patch (Tier + Goal) — academic tier from overallAvg
+// HIGH ≥14.5 → public selective/grande école first
+// MID  ≥12   → university first
+// LOW  <12   → practical can be default
 function getAcademicTier(overallAvg) {
   const avg = Number(overallAvg) || 0;
   if (avg >= 14.5) return "HIGH";
@@ -2912,251 +2089,121 @@ function getAcademicTier(overallAvg) {
   return "LOW";
 }
 
-// TASK 2 — computePES: Prestige Expectation Score [0..1]
-// Deterministic. Reads average, track stream, top subject, and family pressure field.
-function computePES(overallAvg, bacTrack, effectiveMarks, fpField) {
-  const avg = clamp(Number(overallAvg) || 0, 0, 20);
-  const stream = STREAM_BY_TRACK[bacTrack] || "scientific";
-  let pes = avg / 20;
-  if (stream === "scientific") pes = Math.min(1, pes * 1.15);
-  else if (stream === "eco")   pes = Math.min(1, pes * 1.05);
-  if (fpField === "medicine" || fpField === "engineering") pes = Math.min(1, pes + 0.08);
-  const markVals = Object.values(effectiveMarks||{}).map(Number).filter(v => !isNaN(v) && v > 0);
-  if (markVals.length && Math.max(...markVals) >= 16) pes = Math.min(1, pes + 0.05);
-  return pes;
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// Morocco Credibility Gate — Pre-Bac deterministic ranking
-// Gate A: Readiness/Eligibility (trait+learner+interests+sliders)
-// Gate B: Morocco Viability (must have ≥1 credible route)
-// Gate C: preferenceDial (prestige/money/abroad/balanced/freedom)
-// Also: publicEye gate — blocks coaching/performance as #1 if "No"
-// ─────────────────────────────────────────────────────────────────
-
-// Clusters that have credible public routes in Morocco (Gate B)
-const MOROCCO_VIABLE_CLUSTERS = new Set([
-  "it","data","cyber","network","industrial","energy","civil",
-  "health","finance","marketing","logistics","edu_law",
-  "creative_digital","automotive","trades",
-]);
-
-// Prestige-recognized tracks for preferenceDial==="prestige" (Gate C)
-const PRESTIGE_DIAL_CLUSTERS = new Set([
-  "it","data","cyber","health","finance","civil","industrial","energy","network","edu_law",
-]);
-
-// Money dial — direct-to-market employability boost
-const MONEY_DIAL_CLUSTERS = new Set([
-  "it","logistics","finance","industrial","automotive","trades","health","marketing",
-]);
-
-// Abroad dial — globally transferable
-const ABROAD_DIAL_CLUSTERS = new Set([
-  "it","data","cyber","finance","health","industrial","civil","energy","edu_law","marketing",
-]);
-
-// Freedom dial — remote/flexible potential
-const FREEDOM_DIAL_CLUSTERS = new Set([
-  "it","data","creative_digital","marketing","arts_media",
-]);
-
-// Sports cluster sub-track IDs for umbrella logic
-const SPORTS_UMBRELLA = {
-  A: "sports_health",   // Santé & Performance Humaine
-  B: "sports_mgmt",    // Management du Sport
-  C: "sports_coaching", // Coaching & Performance (public-facing)
-};
-
-/**
- * applyPreBacCredibilityGates — post-process ranked clusters for pre-bac journey.
- * Returns a new sorted array with gate penalties/boosts applied.
- * Does NOT mutate the engine scores.
- */
-function applyPreBacCredibilityGates(rankedClusters, preBacData, traits, reality) {
-  if (!rankedClusters || rankedClusters.length === 0) return rankedClusters;
-
-  const prestige     = preBacData.prestige     || "med";  // low/med/high
-  const abroad       = !!preBacData.abroad;
-  const publicEye    = preBacData.publicEye    || "maybe"; // yes/maybe/no
-  const prefDial     = preBacData.preferenceDial || "balanced";
-  const sliders      = preBacData.sliders      || {};
-
-  // Gate A: readiness score from traits + interests + sliders
-  function readinessScore(cluster) {
-    const rd = REALITY_CLUSTER_MAP[cluster.id] || {};
-    const interestMatch = (rd.interestTags || []).filter(
-      t => (preBacData.interests || []).includes(t)
-    ).length;
-    const strengthMatch = (rd.strengthTags || []).filter(
-      s => (preBacData.strengths || []).includes(s)
-    ).length;
-    const avgSlider = Object.values(sliders).length
-      ? Object.values(sliders).reduce((a, b) => a + b, 0) / Object.values(sliders).length
-      : 3;
-    const traitScore = cluster.scores.trait || 0.5;
-    return (interestMatch * 0.2 + strengthMatch * 0.2 + (avgSlider / 5) * 0.3 + traitScore * 0.3);
-  }
-
-  // Gate B: Morocco viable check
-  function moroViadble(cluster) {
-    return MOROCCO_VIABLE_CLUSTERS.has(cluster.id) ||
-      !!(cluster.pathways?.university?.schools?.length ||
-         cluster.pathways?.grandeEcole?.schools?.length ||
-         cluster.pathways?.practical?.schools?.length);
-  }
-
-  // Gate C: preferenceDial modifier
-  function dialBoost(cluster) {
-    switch (prefDial) {
-      case "prestige": return PRESTIGE_DIAL_CLUSTERS.has(cluster.id) ? 0.12 : -0.08;
-      case "money":    return MONEY_DIAL_CLUSTERS.has(cluster.id)    ? 0.10 : -0.04;
-      case "abroad":   return ABROAD_DIAL_CLUSTERS.has(cluster.id)   ? 0.10 : -0.03;
-      case "freedom":  return FREEDOM_DIAL_CLUSTERS.has(cluster.id)  ? 0.09 : -0.02;
-      default:         return 0; // balanced
-    }
-  }
-
-  // Sports public-eye gate
-  function sportsGate(cluster) {
-    if (cluster.id !== "sports") return 0;
-    if (publicEye === "no") return -0.25; // demote heavily
-    if (publicEye === "maybe") return -0.08;
-    return 0;
-  }
-
-  // Prestige gate A: if prestige=high AND readiness<0.40, cannot be #1 in main lane
-  function prestigeReadinessGate(cluster, rank) {
-    if (prestige !== "high") return 0;
-    const rd = readinessScore(cluster);
-    if (rd < 0.40 && rank === 0) return -0.35;
-    return 0;
-  }
-
-  return [...rankedClusters]
-    .map(cluster => {
-      const gateBoost = dialBoost(cluster) + sportsGate(cluster);
-      const viableBoost = moroViadble(cluster) ? 0 : -0.20; // Gate B penalty
-      return {
-        ...cluster,
-        scores: {
-          ...cluster.scores,
-          final: Math.min(1, Math.max(0, cluster.scores.final + gateBoost + viableBoost)),
-          _preBacGateDial: prefDial,
-          _preBacPublicEye: publicEye,
-        },
-      };
-    })
-    .sort((a, b) => b.scores.final - a.scores.final)
-    .map((cluster, rank) => {
-      const pgPenalty = prestigeReadinessGate(cluster, rank);
-      if (pgPenalty !== 0) {
-        return {
-          ...cluster,
-          scores: {
-            ...cluster.scores,
-            final: Math.min(1, Math.max(0, cluster.scores.final + pgPenalty)),
-          },
-        };
-      }
-      return cluster;
-    })
-    .sort((a, b) => b.scores.final - a.scores.final);
-}
-
-// LOGIC FIX: computeThreeViews — uses pre-computed lane scores (fit/balanced/ambitious)
-// stored on each cluster by computeClusterScores. See spec §3.7.
-// Lane formulas (already baked into scores.fit / scores.balanced / scores.ambitious):
-//   Best Personal Fit  : 45% trait + 25% handsOn-match + 15% market + 15% futureIndex
-//   Best Balanced      : 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl
-//   Most Ambitious     : 35% prestige + 25% academic proximity + 15% focusAbility + 15% future + 10% market
-// Cultural constraints enforced here on top of the pre-scored values.
+// FIX: multi-view recommendation
+// Returns { bestFit, balanced, ambitious } from ranked clusters.
+// bestFit    = highest trait+interest match (personal)
+// balanced   = highest final score (already top-1, academic/prestige blend)
+// ambitious  = highest prestige that's academically reachable (top-6)
+// PrestigeIndex / Guardrails — computeThreeViews
+// Implements three distinct scoring perspectives as per spec:
+//   ambitiousScore  = 0.35*prestige + 0.25*market + 0.2*bac + 0.2*academic - penalties
+//   balancedScore   = existingFinalScore + 0.08*(prestige-0.5)
+//   personalScore   = 0.45*trait + 0.2*market + 0.2*academic + 0.15*bac - penalties
+// Guardrails: high-avg students can't have low-prestige cluster as #1 unless explicit passion.
 function computeThreeViews(rankedClusters, overallAvg, info, effectiveMarks) {
   if (!rankedClusters || rankedClusters.length === 0) return { bestFit:null, balanced:null, ambitious:null };
 
   const avg           = clamp(Number(overallAvg) || 0, 0, 20);
   const safeInfo      = (info && typeof info === "object") ? info : {};
-  const goalMode      = safeInfo.goalMode      || "unsure";
-  const goalPref      = safeInfo.goalPreference || "prestige";
+  const goalMode      = safeInfo.goalMode || "unsure";
   const privateBudget = !!safeInfo.privateBudget;
-  const fpField       = safeInfo.fpField || "";
-  const pes           = computePES(avg, safeInfo.bacTrack||"SMA", effectiveMarks||{}, fpField);
-  const academicTier  = getAcademicTierABCD(avg);
-  const isHighTier    = tierIsHigh(academicTier);
-  const isPractical   = goalPref === "practical" || goalMode === "practical";
 
-  // profileBoost fields for cultural constraints
-  const pb         = safeInfo.profileBoost || {};
-  const pbPrestige = Number(pb.prestigePriority  ?? 1);
-  const pbHandsOn  = Number(pb.handsOn           ?? 1);
+  // Interests from reality — used for passion-mode exemption check
+  // (GoalMode "fit" = "Passion" in spec language)
+  const TOURISM_INTERESTS  = new Set(["i_people","i_helping","i_outdoors","i_content"]);
+  const SPORTS_INTERESTS   = new Set(["i_sports","i_leading","i_people","i_outdoors"]);
+  const ARTS_INTERESTS     = new Set(["i_content","i_gaming","i_alone","i_people"]);
 
-  // Cultural Credibility Filter for Three Views tab (applied on top of lane scores)
-  function tierCPenalty(clusterId) {
-    if (isPractical || pbHandsOn >= 2) return 0;
-    const ct = CLUSTER_PRESTIGE_TIER[clusterId] || "B";
-    if (ct !== "C") return 0;
-    if (avg < 12) return 0;
-    if (avg >= 15.5) return 0.30;
-    if (isHighTier) return 0.18;
-    return 0.06;
+  // Low-prestige clusters that must not be #1 for high-avg non-passion students
+  const LOW_PRESTIGE_BLOCKED = new Set(["tourism","sports","arts_media","culinary_ops","creative_digital"]);
+
+  function hasPassionExemption(clusterId) {
+    if (goalMode !== "fit") return false;
+    // "fit" = Passion in spec language. Also check relevant interests.
+    return true; // fit/passion mode always lifts the block
   }
 
-  // Medicine penalty in Balanced when public-ineligible + no budget
-  function medPenalty(c) {
-    return (c.id === "health" && c.eligibilityTag === "notEligiblePublic" && !privateBudget) ? 0.12 : 0;
-  }
-
-  // ── Best Personal Fit: use pre-computed scores.fit, personality guardrail ──
-  const fitSorted = [...rankedClusters].sort((a,b) => {
-    // Apply mild tier-C penalty on fit tab too (50% strength)
-    return (b.scores.fit||0) - tierCPenalty(b.id)*0.5 - ((a.scores.fit||0) - tierCPenalty(a.id)*0.5);
-  });
-
-  function fitPersonalityOk(cluster, rank) {
-    const ts = cluster.scores.trait || 0;
-    if (cluster.id === "health" && ts < 0.60) { if (rank === 0) return false; }
-    if (ts < 0.55 && rank === 0) return false;
-    if (ts < 0.45 && avg < 16.5)  return false;
-    return true;
-  }
-  let bestFit = null;
-  for (let i = 0; i < fitSorted.length; i++) {
-    if (fitPersonalityOk(fitSorted[i], i)) { bestFit = fitSorted[i]; break; }
-  }
-  bestFit = bestFit || fitSorted[0] || null;
-
-  // ── Best Balanced: use pre-computed scores.balanced + cultural gate ──
-  const balSorted = [...rankedClusters].sort((a,b) => {
-    const sa = (a.scores.balanced||0) - tierCPenalty(a.id) - medPenalty(a);
-    const sb = (b.scores.balanced||0) - tierCPenalty(b.id) - medPenalty(b);
-    return sb - sa;
-  });
-  const balanced = balSorted[0] || null;
-
-  // ── Most Ambitious: use pre-computed scores.ambitious + prestige gate ──
-  const ambSorted = [...rankedClusters].sort((a,b) => {
-    let sa = a.scores.ambitious||0;
-    let sb = b.scores.ambitious||0;
-    // Cultural sanity: pbPrestige=2 + avg ≥ 14 → Tier C cannot be #1
-    if (pbPrestige >= 2 && avg >= 14) {
-      if (CLUSTER_PRESTIGE_TIER[a.id] === "C") sa -= 0.20;
-      if (CLUSTER_PRESTIGE_TIER[b.id] === "C") sb -= 0.20;
+  // Guardrails — Patch D
+  // Returns true if cluster can legitimately be #1 for this student
+  function passesGuardrail(cluster, thisScore, allScored) {
+    if (!LOW_PRESTIGE_BLOCKED.has(cluster.id)) return true;
+    if (avg < 14.5) return true;
+    if (hasPassionExemption(cluster.id)) return true;
+    // Check: is this score dominant (exceeds next best by >=0.12)?
+    const sorted = [...allScored].sort((a,b)=>b.s-a.s);
+    const rank1 = sorted[0];
+    const rank2 = sorted[1];
+    if (rank1?.c?.id === cluster.id && rank2) {
+      return (thisScore - rank2.s) >= 0.12;
     }
-    return sb - sa;
-  });
-  // Medicine: not #1 in Ambitious if avg < 15.5 + !privateBudget
-  let ambitious = null;
-  for (const item of ambSorted) {
-    if (item.id === "health" && !privateBudget && avg < 15.5) continue;
-    ambitious = item; break;
+    return false;
   }
-  ambitious = ambitious || ambSorted[0] || null;
 
-  if (typeof window !== "undefined" && window.__DEV__) {
-    console.log("[Massar ThreeViews] PES:", pes.toFixed(2), "tier:", academicTier,
-      "| fit:", bestFit?.id, "balanced:", balanced?.id, "ambitious:", ambitious?.id);
+  // Pull best candidate from scored array, applying guardrail
+  function pickBest(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    for (const item of sorted) {
+      if (passesGuardrail(item.c, item.s, scored)) return item.c;
+    }
+    return sorted[0]?.c || null; // fallback if all blocked
   }
+
+  // ── C: ambitious scoring ──────────────────────────────────────
+  const ambitiousScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const penalty = (() => {
+      let p = 0;
+      // Eligibility: notEligiblePublic and no private budget → cap enforced separately
+      if (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") {
+        p += 0.08;
+      }
+      // Avg gap heuristic (labelled as such): if avg < cluster minAvg by >2, reduce
+      const cc = CLUSTER_CONSTRAINTS[c.id];
+      if (cc && cc.minAvg && avg < cc.minAvg - 2) {
+        p += 0.08;
+      }
+      return p;
+    })();
+    let s = 0.35*cp.prestigeIndex + 0.25*(c.scores.market||0) + 0.2*(c.scores.bac||0) + 0.2*(c.scores.academic||0) - penalty;
+    // Eligibility realism guard: notEligiblePublic with no private budget → cap at 0.65
+    if (c.eligibilityTag === "notEligiblePublic" && !privateBudget) {
+      s = Math.min(s, 0.65);
+    }
+    s = Math.min(1, Math.max(0, s));
+    return { c, s };
+  });
+  const ambitious = pickBest(ambitiousScored);
+
+  // ── C: balanced scoring ───────────────────────────────────────
+  const balancedScored = rankedClusters.map(c => {
+    const cp = CLUSTER_PRESTIGE[c.id] || { prestigeIndex:0.5 };
+    const s = Math.min(1, Math.max(0, (c.scores.final||0) + 0.08*(cp.prestigeIndex - 0.5)));
+    return { c, s };
+  });
+  const balanced = pickBest(balancedScored);
+
+  // ── C: personal fit scoring ───────────────────────────────────
+  const personalScored = rankedClusters.map(c => {
+    const penalty = (c.eligibilityTag === "privateOnly" || c.eligibilityTag === "notEligiblePublic") ? 0.05 : 0;
+    const s = Math.min(1, Math.max(0,
+      0.45*(c.scores.trait||0) + 0.2*(c.scores.market||0) + 0.2*(c.scores.academic||0) + 0.15*(c.scores.bac||0) - penalty
+    ));
+    return { c, s };
+  });
+  // bestFit: guardrail still applies for very high avg — but less strict (0.08 gap)
+  function pickBestFit(scored) {
+    const sorted = [...scored].sort((a,b)=>b.s-a.s);
+    if (avg < 14.5) return sorted[0]?.c || null;
+    for (const item of sorted) {
+      if (!LOW_PRESTIGE_BLOCKED.has(item.c.id)) return item.c;
+      if (hasPassionExemption(item.c.id)) return item.c;
+      // dominance check: 0.08 gap (more lenient for personal fit)
+      const rank2 = sorted.find(x => x.c.id !== item.c.id);
+      if (rank2 && (item.s - rank2.s) >= 0.08) return item.c;
+    }
+    return sorted[0]?.c || null;
+  }
+  const bestFit = pickBestFit(personalScored);
 
   return { bestFit, balanced, ambitious };
 }
@@ -3186,12 +2233,8 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   if (!rankedClusters || rankedClusters.length === 0) return { primary: [], secondary: null };
 
   const goalMode  = info.goalMode  || "unsure";
-  // TASK 2 — goalPreference overrides goalMode for the practical exemption check
-  const goalPref  = info.goalPreference || "prestige";
   const avg       = clamp(Number(overallAvg) || 0, 0, 20);
   const isHighAvg = avg >= 14.5;
-  // Practical mode: user explicitly chose practical route — no prestige gates apply
-  const isPractical = goalPref === "practical" || goalMode === "practical";
 
   // Helper: get prestige metadata for a cluster
   function getMeta(c) {
@@ -3209,7 +2252,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
 
   // 3B: Hard gate — low-prestige clusters can only be in top-3 if score is dominant
   function applyHardGate(sorted) {
-    if (!isHighAvg || isPractical) return sorted;
+    if (!isHighAvg || goalMode === "practical") return sorted;
     const topScore = sorted[0]?.scores?.final || 0;
     const top3 = [];
     const rest = [];
@@ -3254,10 +2297,7 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
   let primary;
   let secondary = null;
 
-  if (isPractical) {
-    // TASK 2 — practical preference: practical boost, no prestige gates at all
-    primary = practicalSort(rankedClusters);
-  } else if (goalMode === "prestige") {
+  if (goalMode === "prestige") {
     // 3C: sort by prestige composite, then gate
     primary = applyHardGate(prestigeSort(rankedClusters));
   } else if (goalMode === "fit") {
@@ -3276,134 +2316,53 @@ function culturallyRerankClusters(rankedClusters, info, overallAvg) {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// TASK 3 — Logic Self-Check (dev-only, 5 cases)
-// Runs once on localhost to validate scoring logic.
-// No import.meta usage — uses window.__DEV__ or hostname check only.
+// Sanity checks — Step 5
+// Dev-only. Runs once at load if on localhost.
+// No import.meta. No crashes if checks fail.
 // ─────────────────────────────────────────────────────────────────
-function runLogicSelfCheck() {
+function runSanityChecks() {
   try {
-    const LOW_PRACTICAL = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
-    const GOOD_SVT      = new Set(["data","cyber","it","health","energy","industrial","civil"]);
-    const GOOD_LET      = new Set(["edu_law","marketing","arts_media","creative_digital"]);
-    const GOOD_ECO      = new Set(["finance","marketing","logistics","edu_law"]);
+    const LOW_IDS = new Set(["tourism","sports","culinary_ops","arts_media","trades","automotive"]);
 
-    // Minimal synthetic cluster builder used by culturallyRerankClusters
-    const makeRC = (id, final, academic, trait) => ({
-      id,
-      scores: { final, academic, trait: trait||0.5, market:0.7, bac:0.6, interest:0.5, strength:0.5, identity:0.5, priority:0.5 },
-      pathways: {
-        grandeEcole: ["data","it","cyber","health","energy","industrial","civil","finance","edu_law"].includes(id) ? {schools:["ENSA"]} : null,
-        university: {schools:["FST"]},
-        practical: {schools:["OFPPT"]},
-      },
-      eligibilityTag: "eligible",
+    // Build minimal synthetic clusters for testing
+    const makeSC = (id, finalScore, academicScore) => ({
+      id, scores: { final: finalScore, academic: academicScore },
+      pathways: {},
     });
 
-    // Synthetic compute helper — bypasses full engine, tests rerank + three-views only
-    function makeRanked(idScores) {
-      return idScores.map(([id,f,a,t]) => makeRC(id,f,a,t)).sort((a,b)=>b.scores.final-a.scores.final);
+    // Check 1: overallAvg=15, goalMode=prestige → top-3 must not contain tourism/sports
+    const synth = [
+      makeSC("it",      0.74, 0.82),
+      makeSC("finance", 0.71, 0.78),
+      makeSC("data",    0.70, 0.79),
+      makeSC("tourism", 0.68, 0.40),  // should NOT be in top-3
+      makeSC("sports",  0.65, 0.30),  // should NOT be in top-3
+    ];
+    const info1 = { goalMode: "prestige" };
+    const { primary: p1 } = culturallyRerankClusters(synth, info1, 15);
+    const top3ids1 = p1.slice(0,3).map(c=>c.id);
+    if (top3ids1.some(id => LOW_IDS.has(id))) {
+      console.warn("[Massar] Sanity check FAILED (1): high-avg prestige still shows low-prestige cluster in top-3:", top3ids1);
     }
 
-    let passed = 0, failed = 0;
-    function assert(label, condition, data) {
-      if (condition) { passed++; }
-      else { failed++; console.warn(`[SelfCheck FAIL] ${label}`, data); }
+    // Check 2: goalMode=practical → tourism/sports ARE allowed in top-3
+    const info2 = { goalMode: "practical" };
+    const { primary: p2 } = culturallyRerankClusters(synth, info2, 15);
+    const top3ids2 = p2.slice(0,3).map(c=>c.id);
+    if (!top3ids2.some(id => LOW_IDS.has(id))) {
+      console.warn("[Massar] Sanity check WARN (2): practical mode should allow hands-on clusters in top-3:", top3ids2);
     }
 
-    // ── Case A: SVT post, avg 15.2, strong pc/svt/math
-    // → top-3 should include Data/AI or Engineering/Cyber; NOT Tourism, NOT OFPPT-only
-    {
-      const ranked = makeRanked([
-        ["data",    0.82, 0.90, 0.75],
-        ["cyber",   0.78, 0.85, 0.65],
-        ["it",      0.76, 0.82, 0.70],
-        ["health",  0.71, 0.88, 0.55],
-        ["tourism", 0.55, 0.30, 0.60],
-        ["sports",  0.40, 0.20, 0.55],
-      ]);
-      const info = { goalMode:"prestige", goalPreference:"prestige", privateBudget:false };
-      const { primary } = culturallyRerankClusters(ranked, info, 15.2);
-      const top3 = primary.slice(0,3).map(c=>c.id);
-      assert("Case A: high SVT — no low-practical in top-3", !top3.some(id=>LOW_PRACTICAL.has(id)), top3);
-      assert("Case A: high SVT — at least one GOOD cluster in top-3", top3.some(id=>GOOD_SVT.has(id)), top3);
-    }
-
-    // ── Case B: SVT post, avg 11.5 → practical options allowed in top-3
-    {
-      const ranked = makeRanked([
-        ["trades",    0.62, 0.40, 0.70],
-        ["automotive",0.60, 0.38, 0.65],
-        ["it",        0.55, 0.55, 0.45],
-        ["tourism",   0.52, 0.30, 0.60],
-      ]);
-      const info = { goalMode:"unsure", goalPreference:"prestige" };
-      const { primary } = culturallyRerankClusters(ranked, info, 11.5);
-      const top3 = primary.slice(0,3).map(c=>c.id);
-      // low avg — practical clusters ARE allowed (no prestige gate for avg < 12)
-      assert("Case B: low avg — practical clusters not blocked", top3.length > 0, top3);
-    }
-
-    // ── Case C: LET post, high arabic/french/philo → law/education ok
-    {
-      const ranked = makeRanked([
-        ["edu_law",        0.80, 0.85, 0.72],
-        ["marketing",      0.72, 0.75, 0.65],
-        ["creative_digital",0.65, 0.60, 0.70],
-        ["sports",         0.50, 0.20, 0.60],
-      ]);
-      const info = { goalMode:"prestige", goalPreference:"prestige" };
-      const { primary } = culturallyRerankClusters(ranked, info, 14.0);
-      const top3 = primary.slice(0,3).map(c=>c.id);
-      assert("Case C: LET — edu_law or marketing in top-3", top3.some(id=>GOOD_LET.has(id)), top3);
-    }
-
-    // ── Case D: ECO post, high eco/math → finance/business ok
-    {
-      const ranked = makeRanked([
-        ["finance",  0.81, 0.87, 0.70],
-        ["logistics",0.75, 0.80, 0.65],
-        ["tourism",  0.60, 0.35, 0.55],
-        ["sports",   0.45, 0.20, 0.60],
-      ]);
-      const info = { goalMode:"prestige", goalPreference:"prestige" };
-      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
-      const top3 = primary.slice(0,3).map(c=>c.id);
-      assert("Case D: ECO — finance/logistics in top-3", top3.some(id=>GOOD_ECO.has(id)), top3);
-      assert("Case D: ECO — tourism/sports NOT in top-3", !top3.some(id=>["tourism","sports"].includes(id)), top3);
-    }
-
-    // ── Case E: Practical preference even with avg 14.5 → allow tourism/practical to rise
-    {
-      const ranked = makeRanked([
-        ["it",      0.72, 0.80, 0.55],
-        ["tourism", 0.68, 0.40, 0.78],
-        ["sports",  0.65, 0.30, 0.80],
-      ]);
-      const info = { goalMode:"practical", goalPreference:"practical" };
-      const { primary } = culturallyRerankClusters(ranked, info, 14.5);
-      const top3 = primary.slice(0,3).map(c=>c.id);
-      assert("Case E: practical pref — low-prestige clusters CAN appear in top-3", top3.some(id=>LOW_PRACTICAL.has(id)), top3);
-    }
-
-    if (failed === 0) {
-      console.log(`%c[Massar Logic Self-Check] ✅ All ${passed} cases passed.`, "color:green;font-weight:bold");
-    } else {
-      console.warn(`[Massar Logic Self-Check] ⚠️ ${failed} case(s) failed, ${passed} passed.`);
-    }
+    console.log("[Massar] Sanity checks passed. Check1 top3:", top3ids1, "Check2 top3:", top3ids2);
   } catch (e) {
-    console.warn("[Massar Logic Self-Check] error:", e);
+    console.warn("[Massar] Sanity check error:", e);
   }
 }
 
-// Run self-check on localhost only (no import.meta)
-// Deferred to next tick to avoid blocking module parse
-if (typeof globalThis !== "undefined") {
-  try {
-    if (typeof window !== "undefined" && typeof window.location !== "undefined"
-        && window.location.hostname === "localhost") {
-      setTimeout(runLogicSelfCheck, 1400);
-    }
-  } catch (_e) { /* skip in non-browser environments */ }
+// Run sanity checks on localhost only (no import.meta)
+if (typeof window !== "undefined" && typeof window.location !== "undefined"
+    && window.location.hostname === "localhost") {
+  setTimeout(runSanityChecks, 1200);
 }
 
 // src/massar/utils/storage.js
@@ -3451,39 +2410,6 @@ function loadSession() {
     if (!parsed || parsed._v !== SCHEMA_VERSION) return null;
     // Basic shape validation
     if (typeof parsed.lang !== "string") return null;
-    // TASK 1 — migrate old physics/chemistry mark keys → physchem
-    if (parsed.marks) parsed.marks = migrateMarks(parsed.marks);
-    // SUBJECT MODEL (MOROCCO) FIX: migrate old info.trackField / examLevel → new fields
-    if (parsed.info) {
-      const inf = parsed.info;
-      // If old examLevel exists but new examYear doesn't, promote it
-      if (!inf.examYear && inf.examLevel) inf.examYear = inf.examLevel;
-      // If old trackField exists but new bac1Field/bac2Track don't, derive them
-      if (inf.trackField && !inf.bac1Field && !inf.bac2Track) {
-        const bac1Fields = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
-        const bac2Tracks = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
-        const year = inf.examYear || "bac2";
-        if (year === "bac1" && bac1Fields.includes(inf.trackField)) {
-          inf.bac1Field = inf.trackField;
-        } else if (year === "bac2" && bac2Tracks.includes(inf.trackField)) {
-          inf.bac2Track = inf.trackField;
-        } else {
-          // Map old bacTrack style
-          const OLD_BAC_TRACK_MAP = {
-            SVT:"bac2:SVT", PC:"bac2:PC", SMA:"bac2:SMA", SMB:"bac2:SMB",
-            SE:"bac1:SE", SM:"bac1:SM",
-          };
-          const mapped = OLD_BAC_TRACK_MAP[inf.bacTrack] || null;
-          if (mapped) {
-            const [yr, tk] = mapped.split(":");
-            inf.examYear = yr;
-            if (yr === "bac1") inf.bac1Field = tk;
-            else               inf.bac2Track = tk;
-          }
-        }
-      }
-      parsed.info = inf;
-    }
     return parsed;
   } catch {
     return null;
@@ -3597,39 +2523,6 @@ function getEligibilityTag(clusterId, effectiveMarks, overallAvg, privateBudget)
   return null;
 }
 
-// C — Prestige index per cluster (drives prestige boost for high-avg students)
-const PRESTIGE_INDEX = {
-  it: 0.85, data: 0.9, cyber: 0.85, network: 0.75,
-  industrial: 0.8, energy: 0.8, civil: 0.78,
-  health: 0.95, finance: 0.8, marketing: 0.6,
-  logistics: 0.65, tourism: 0.45, edu_law: 0.7, arts_media: 0.4,
-  sports: 0.55, creative_digital: 0.55, trades: 0.4, automotive: 0.45, culinary_ops: 0.35,
-};
-
-// LOGIC FIX: future-proofing index per cluster (automation resistance + global demand)
-// Used in Balanced and Ambitious scoring lanes (spec §3.6)
-const FUTURE_INDEX = {
-  data:            0.97,  // AI/ML — highest demand globally
-  cyber:           0.95,  // Cybersecurity — structural shortage
-  it:              0.88,  // Software — broad and resilient
-  health:          0.90,  // Healthcare — demographic-driven
-  energy:          0.88,  // Renewables — Morocco's Vision 2030
-  industrial:      0.82,  // Manufacturing automation engineers
-  civil:           0.78,  // Infrastructure — large in Morocco
-  network:         0.76,  // Connectivity infrastructure
-  finance:         0.74,  // Fintech-resistant roles
-  edu_law:         0.72,  // Law + education remain human-heavy
-  logistics:       0.70,  // Supply chain — partially automatable
-  marketing:       0.62,  // Creative/strategy roles survive
-  creative_digital:0.65,  // Digital creation — growing demand
-  trades:          0.80,  // Skilled trades — hard to automate, Morocco needs them
-  automotive:      0.65,  // Shifting with EVs — moderate
-  tourism:         0.58,  // Seasonal, service-dependent
-  sports:          0.60,  // Coaching/management resilient
-  arts_media:      0.55,  // Creative but competitive
-  culinary_ops:    0.52,  // Local demand, limited automation
-};
-
 // ── Cluster scores ────────────────────────────────────────────────
 /**
  * Ranks all clusters given effective marks + reality layer inputs.
@@ -3653,15 +2546,6 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
   const priority     = reality.priority     || "stability";
   const prefStyle    = reality.preferredStyle || "";
   const strengthsNow = reality.strengthsNow  || [];
-
-  // NEW INPUT: profileBoost — 6 high-signal personal questions
-  const pb = reality.profileBoost || {};
-  const pbPrestige = Number(pb.prestigePriority ?? 1);   // 0-2
-  const pbMoney    = Number(pb.moneyPriority    ?? 1);   // 0-2
-  const pbHandsOn  = Number(pb.handsOn          ?? 1);   // 0-2
-  const pbRisk     = Number(pb.riskTolerance    ?? 1);   // 0-2
-  const pbIntl     = Number(pb.internationalIntent ?? 1); // 0-2
-  const pbFocus    = Number(pb.focusAbility     ?? 1);   // 0-2
 
   // Practical-cluster boost keys — clusters that should surface for hands-on profiles
   const PRACTICAL_CLUSTERS = new Set(["trades","automotive","sports","creative_digital","culinary","industrial","energy","logistics","tourism"]);
@@ -3750,71 +2634,27 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
     // Priority "prestige" users get a stronger weight
     const prestigeMod = priority === "prestige" ? (culturalScores.prestige - 0.5) * 0.08 : 0;
 
-    // TASK 2 — Cultural Credibility Filter at base scoring level
-    // Uses CLUSTER_PRESTIGE_TIER + goalPreference to penalise Tier C clusters for high-avg students.
-    // goalPreference="practical" fully lifts the penalty (user explicitly chose this path).
-    const goalPref      = reality.goalPreference || reality.goal || "prestige";
-    const academicTier  = getAcademicTierABCD(overallAvg);
-    const clusterPTier  = CLUSTER_PRESTIGE_TIER[cluster.id] || "B";
-    const isPractPref   = goalPref === "practical" || goalPref === "handsOn";
+    // Cultural sensitivity patch (Tier + Goal) — penalty for practical-only clusters shown to high-avg students
+    // who did NOT choose handsOn goal. Keeps OFPPT/ISTA from dominating top slots for tier=HIGH.
+    const goal = reality.goal || "prestige";
+    const academicTier = getAcademicTier(overallAvg);
     let goalTierPenalty = 0;
-    if (!isPractPref && clusterPTier === "C") {
-      if (academicTier === "A")      goalTierPenalty = 0.20; // avg ≥ 15.5: strong
-      else if (academicTier === "B") goalTierPenalty = 0.13; // avg 14–15.5: moderate
-      else if (academicTier === "C") goalTierPenalty = 0.06; // avg 12–14: mild
-      // tier D (avg < 12): no penalty — realism first
-    } else if (!isPractPref && clusterPTier === "B") {
-      // Mild prestige signal: keep original mild logic for vocational-only clusters
+    if (academicTier === "HIGH" && goal !== "handsOn") {
+      const hasGrandeEcole = !!(cluster.pathways?.grandeEcole?.schools?.length);
+      const hasUniversity  = !!(cluster.pathways?.university?.schools?.length);
+      const hasPublicRoute = hasGrandeEcole || hasUniversity;
+      if (!hasPublicRoute) {
+        // Cluster has no university/grande-école pathway → penalise for high-avg non-handsOn students
+        goalTierPenalty = 0.15;
+      } else if (PRACTICAL_CLUSTERS.has(cluster.id) && !hasGrandeEcole) {
+        // Vocational-leaning cluster with university only — modest penalty
+        goalTierPenalty = 0.08;
+      }
+    } else if (academicTier === "MID" && goal === "prestige" && PRACTICAL_CLUSTERS.has(cluster.id)) {
+      // Mid-tier prestige students: gentle nudge away from purely vocational top slots
       const hasPublicRoute = !!(cluster.pathways?.grandeEcole?.schools?.length || cluster.pathways?.university?.schools?.length);
-      if (academicTier === "A" && !hasPublicRoute && PRACTICAL_CLUSTERS.has(cluster.id)) goalTierPenalty = 0.08;
+      if (!hasPublicRoute) goalTierPenalty = 0.06;
     }
-
-    // NEW INPUT: profile boost modifiers
-    // handsOn boost: practical clusters rise for handsOn=2; academic clusters dampened
-    const isHandsOnCluster     = PRACTICAL_CLUSTERS.has(cluster.id);
-    const isAcademicCluster    = ACADEMIC_CLUSTERS.has(cluster.id);
-    const handsOnBoost         = isHandsOnCluster  ? (pbHandsOn  - 1) * 0.08 :
-                                  isAcademicCluster ? (1 - pbHandsOn) * 0.04 : 0;
-    // prestige boost: high-prestige clusters rise for pbPrestige=2
-    const pbPrestigeBoost      = ((PRESTIGE_INDEX[cluster.id] ?? 0.6) - 0.5) * pbPrestige * 0.05;
-    // risk boost: creative_digital / startup-adjacent clusters rise for risk-tolerant
-    const riskAdjacentClusters = new Set(["creative_digital","sports","arts_media","automotive","culinary_ops"]);
-    const riskBoost            = riskAdjacentClusters.has(cluster.id) ? (pbRisk - 1) * 0.04 : 0;
-    // international intent: clusters with strong abroad potential boosted
-    const intlClusters         = new Set(["it","data","cyber","health","finance","industrial","civil","energy","network","edu_law"]);
-    const intlBoost            = intlClusters.has(cluster.id) ? pbIntl * 0.02 : 0;
-    // focus ability: competitive selective clusters boosted for high focus
-    const focusClusters        = new Set(["health","data","cyber","it","industrial","civil","energy","finance","edu_law"]);
-    const focusBoost           = focusClusters.has(cluster.id) ? (pbFocus - 1) * 0.04 : 0;
-    // Tier D rule: if avg < 12, handsOn=2 or prestige=0 → trades/practical must surface
-    const tierD                = overallAvg < 12;
-    const tierDHandsOnBoost    = tierD && isHandsOnCluster && pbHandsOn >= 1 ? 0.08 : 0;
-
-    // LOGIC FIX: future-proofing index (spec §3.6)
-    const futureIdx = FUTURE_INDEX[cluster.id] ?? 0.6;
-
-    // B — Medicine hard gate: strong reality penalty if student doesn't meet public threshold
-    const failsHealthPublic =
-      cluster.id === "health" &&
-      (overallAvg < 16 ||
-       (effectiveMarks.svt ?? 0) < 14 ||
-       (effectiveMarks.pc  ?? 0) < 13);
-    let realityPenalty = 0;
-    if (failsHealthPublic) {
-      realityPenalty = privateBudget ? 0.22 : 0.45;
-    }
-
-    // C — Prestige boost: reward high-prestige clusters for high-avg students
-    const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
-    let prestigeBoost = 0;
-    if      (overallAvg >= 15.5) prestigeBoost = 0.14 * prestige;
-    else if (overallAvg >= 14.5) prestigeBoost = 0.10 * prestige;
-
-    // C — Cultural dampener: prevent tourism/arts from topping science-track high-avg students
-    const scienceTrack     = ["SMA","SMB","PC","SVT","TECH"].includes(bacTrack);
-    const lowPrestigeCluster = ["tourism","arts_media"].includes(cluster.id);
-    let culturalDampener = 0;
-    if (scienceTrack && overallAvg >= 14.5 && lowPrestigeCluster) culturalDampener = 0.10;
 
     const finalScore = Math.min(1, Math.max(0,
       SCORING_WEIGHTS.bac       * bacScore
@@ -3827,41 +2667,7 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
       + SCORING_WEIGHTS.priority  * priorityScore
       + mobilityBoost + styleMod + snBoost - penalty
       + academicUtilMod + prestigeMod
-      - goalTierPenalty   // Cultural sensitivity patch (Tier + Goal)
-      - realityPenalty    // B — medicine hard gate
-      + prestigeBoost     // C — prestige boost for high-avg students
-      - culturalDampener  // C — tourism/arts dampener for science+high-avg
-      + handsOnBoost + pbPrestigeBoost + riskBoost + intlBoost + focusBoost + tierDHandsOnBoost
-    ));
-
-    // LOGIC FIX: lane-specific sub-scores for computeThreeViews
-    // Best Personal Fit: 45% trait + 25% handsOn/styleMod + 15% market + 15% futureIndex
-    const fitLaneScore = Math.min(1, Math.max(0,
-      0.45 * traitScore
-      + 0.25 * Math.max(0, traitScore * 0.5 + (pbHandsOn / 2) * (isHandsOnCluster ? 0.8 : 0.4) * 0.5)
-      + 0.15 * marketScore
-      + 0.15 * futureIdx
-      - (overallAvg < 10 ? 0.10 : 0) // mild academic penalty only for very low avg
-    ));
-    // Best Balanced: 40% academic + 20% market + 15% trait + 15% futureIndex + 10% intl/mobility
-    const balancedLaneScore = Math.min(1, Math.max(0,
-      0.40 * academicScore
-      + 0.20 * marketScore
-      + 0.15 * traitScore
-      + 0.15 * futureIdx
-      + 0.10 * (pbIntl / 2 * 0.5 + (mobility > 0 ? 0.5 : 0) * 0.5)
-      - realityPenalty
-      - goalTierPenalty
-      + prestigeBoost * 0.5
-    ));
-    // Most Ambitious: 35% prestige + 25% academic proximity + 15% focus + 15% futureIndex + 10% market
-    const ambLaneScore = Math.min(1, Math.max(0,
-      0.35 * (PRESTIGE_INDEX[cluster.id] ?? 0.6)
-      + 0.25 * Math.min(1, academicScore * 1.2)
-      + 0.15 * (pbFocus / 2)
-      + 0.15 * futureIdx
-      + 0.10 * marketScore
-      - realityPenalty
+      - goalTierPenalty  // Cultural sensitivity patch (Tier + Goal)
     ));
 
     return {
@@ -3870,10 +2676,6 @@ function computeClusterScores(bacTrack, effectiveMarks, traits, mobility, privat
         bac: bacScore, academic: academicScore, trait: traitScore, market: marketScore,
         strength: strengthScore, interest: interestScore, identity: identityScore,
         priority: priorityScore, final: finalScore,
-        // LOGIC FIX: lane-specific scores and futureIndex
-        fit: fitLaneScore, balanced: balancedLaneScore, ambitious: ambLaneScore,
-        future: futureIdx,
-        prestige: PRESTIGE_INDEX[cluster.id] ?? 0.6,
       },
       eligibilityTag,
       overallAvg,
@@ -3921,7 +2723,7 @@ const TRAIT_LABELS = {
 // Uses best 1–2 subjects by mark, not generic strings.
 function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effectiveMarks = {}) {
   if (!top3?.length) return "";
-  const t          = TRANSLATIONS[lang];
+  const t          = TRANSLATIONS[lang] || TRANSLATIONS.fr;
   const topCluster = top3[0];
   const name       = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
   const safeTr     = (traits && typeof traits === "object") ? traits : {};
@@ -3930,10 +2732,10 @@ function generateNarrative(top3, traits, bacTrack, lang, reality = {}, effective
   const priority     = reality.priority     || "stability";
   const t_pri        = t.realityPriorityOptions?.[priority]?.label || priority;
 
-  // SUBJECT SYSTEM FIX: narrative uses subjects from effectiveMarks (already filtered by getSubjectsForMarks)
-  // SUBJECT SYSTEM FIX: use keys from effectiveMarks (already from getSubjectsForMarks)
+  // Narrative fix — pick best 1–2 subjects by mark and calibrate wording
+  const trackSubjects = WATANI_SUBJECTS_BY_TRACK[bacTrack] || [];
   const SUBJ_LABELS   = SUBJECT_LABELS || {};
-  const markedSubjs   = Object.keys(effectiveMarks||{})
+  const markedSubjs   = trackSubjects
     .map(s => ({ s, v: Number(effectiveMarks[s]) || 0 }))
     .filter(x => x.v > 0)
     .sort((a,b) => b.v - a.v);
@@ -4029,12 +2831,11 @@ function RadarChart({ traits, lang }) {
 
 // Score contribution mini-bars
 function ScoreContribChart({ cluster, t }) {
-  if (!cluster || !t) return null;
   const factors = [
-    { key:"bac",      label:t.bacTrack||"Bac",    color:"#3b82f6", value:cluster.scores?.bac      || 0 },
-    { key:"academic", label:t.academic||"Acad",   color:"#10b981", value:cluster.scores?.academic || 0 },
-    { key:"trait",    label:t.personality||"Perso",color:"#e8a124", value:cluster.scores?.trait    || 0 },
-    { key:"market",   label:t.market||"Marché",   color:"#8b5cf6", value:cluster.scores?.market   || 0 },
+    { key:"bac",      label:t.bacTrack,    color:"#3b82f6", value:cluster.scores.bac      },
+    { key:"academic", label:t.academic,    color:"#10b981", value:cluster.scores.academic },
+    { key:"trait",    label:t.personality, color:"#e8a124", value:cluster.scores.trait    },
+    { key:"market",   label:t.market,      color:"#8b5cf6", value:cluster.scores.market   },
   ];
   return (
     <div style={{marginTop:8}}>
@@ -4054,8 +2855,7 @@ function ScoreContribChart({ cluster, t }) {
 
 // Goal 3: Medicine eligibility panel — only shown for health cluster
 function MedicineEligibilityPanel({ cluster, t }) {
-  if (!cluster || !t) return null;
-  const c = CLUSTER_CONSTRAINTS["health"] || {};
+  const c = CLUSTER_CONSTRAINTS["health"];
   const avg = cluster.overallAvg || 0;
   const meetsPublic = avg >= c.minAvg &&
     Object.entries(c.requiredSubjects || {}).every(
@@ -4187,37 +2987,7 @@ function GoalModeDualView({ primary, secondary, t, lang, dir, bacTrack, goal, ov
   );
 }
 
-
-// ─────────────────────────────────────────────────────────────────
-// Cluster appearance explanations — shown in ClusterCard for transparency
-// ─────────────────────────────────────────────────────────────────
-const CLUSTER_WHY_EXPLAIN = {
-  sports: {
-    ar: "ظهر هذا المسار بسبب ميولك نحو الأنشطة البدنية والتدريب. يشمل: علوم الحركة، التغذية الرياضية، إدارة الرياضة — وليس فقط التدريب الميداني.",
-    fr: "Cette filière est apparue car tu as montré un intérêt pour les activités physiques et le coaching. Elle couvre : kinésithérapie, nutrition sportive, management du sport — pas seulement l'entraînement.",
-    en: "This field appeared because of your interest in physical activities and coaching. It covers: sports science, nutrition, sport management — not just field coaching.",
-  },
-  creative_digital: {
-    ar: "اخترناه لأن ملفك يُظهر إبداعاً ورغبة في بناء أشياء. الاقتصاد الرقمي ينمو بسرعة في المغرب.",
-    fr: "Sélectionné car ton profil montre de la créativité et le désir de construire. L'économie digitale croît rapidement au Maroc.",
-    en: "Selected because your profile shows creativity and desire to build. Morocco's digital economy is growing rapidly.",
-  },
-  arts_media: {
-    ar: "إبداعك وتواصلك الاجتماعي يجعلانك مناسباً لصناعة الإعلام والتواصل الرقمي المتنامية.",
-    fr: "Ta créativité et ton social font de toi un bon candidat pour les médias et la communication digitale en croissance.",
-    en: "Your creativity and social skills fit the growing media and digital communications sector.",
-  },
-};
-
-function getClusterWhyExplanation(clusterId, lang) {
-  const why = CLUSTER_WHY_EXPLAIN[clusterId];
-  if (!why) return null;
-  return why[lang] || why.en || null;
-}
-
 function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
-  if (!cluster || !t || !lang) return null;
-  const _whyLine = getClusterWhyExplanation(cluster.id, lang);
   // Cultural sensitivity patch (Tier + Goal) — compute initial tab based on tier + goal
   const academicTier = getAcademicTier(overallAvg);
   const effectiveGoal = goal || "prestige";
@@ -4310,15 +3080,6 @@ function ClusterCard({ cluster, rank, t, lang, bacTrack, goal, overallAvg }) {
       {/* Goal 3: Medicine eligibility panel */}
       {cluster.id === "health" && (
         <MedicineEligibilityPanel cluster={cluster} t={t}/>
-      )}
-
-      {/* Why this appeared — transparency for non-obvious clusters */}
-      {_whyLine && (
-        <div style={{fontSize:11,color:"var(--accent2)",marginBottom:10,padding:"6px 10px",
-          background:"rgba(59,130,246,0.06)",borderRadius:8,lineHeight:1.5,
-          border:"1px solid rgba(59,130,246,0.15)"}}>
-          💡 {_whyLine}
-        </div>
       )}
 
       {/* Pathway tabs */}
@@ -4482,255 +3243,6 @@ function StepIndicator({ step, total, t }) {
   );
 }
 
-// ────────────────────────────────────────────────────────────────
-// HOME MOTION ENGINE (parallax + reveal)
-// ────────────────────────────────────────────────────────────────
-
-/** Returns true when prefers-reduced-motion is set. */
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = React.useState(false);
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-      setReduced(mq.matches);
-      const handler = (e) => setReduced(e.matches);
-      mq.addEventListener("change", handler);
-      return () => mq.removeEventListener("change", handler);
-    } catch { /* matchMedia not available */ }
-  }, []);
-  return reduced;
-}
-
-/**
- * useRevealOnScroll — attaches an IntersectionObserver to a ref.
- * Adds class "reveal--in" when element enters viewport.
- * @param {number} [threshold=0.15]
- */
-function useRevealOnScroll(threshold = 0.15) {
-  const ref = React.useRef(null);
-  const reduced = usePrefersReducedMotion();
-
-  React.useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (reduced) { el.classList.add("reveal--in"); return; }
-
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { el.classList.add("reveal--in"); obs.disconnect(); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [reduced, threshold]);
-
-  return ref;
-}
-
-// ────────────────────────────────────────────────────────────────
-// HOME PAGE UI — updated with premium copy
-// ────────────────────────────────────────────────────────────────
-function HomePage({ lang, setLang, onStartTest, savedSession, t, dir }) {
-  const reduced = usePrefersReducedMotion();
-
-  const scrollYRef   = React.useRef(0);
-  const rafRef       = React.useRef(null);
-  const layer1Ref    = React.useRef(null);
-  const layer2Ref    = React.useRef(null);
-  const layer3Ref    = React.useRef(null);
-  const heroPanelRef = React.useRef(null);
-  const heroCardRef  = React.useRef(null);
-
-  React.useEffect(() => {
-    if (reduced) return;
-    const onScroll = () => { scrollYRef.current = window.scrollY; };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    const tick = () => {
-      const sy = scrollYRef.current;
-      if (layer1Ref.current)    layer1Ref.current.style.transform    = `translate3d(0, ${sy * 0.08}px, 0)`;
-      if (layer2Ref.current)    layer2Ref.current.style.transform    = `translate3d(0, ${sy * 0.14}px, 0)`;
-      if (layer3Ref.current)    layer3Ref.current.style.transform    = `translate3d(0, ${sy * 0.06}px, 0)`;
-      if (heroPanelRef.current) heroPanelRef.current.style.transform = `translate3d(0, ${sy * 0.04}px, 0)`;
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => { window.removeEventListener("scroll", onScroll); if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [reduced]);
-
-  React.useEffect(() => {
-    if (reduced) return;
-    const card = heroCardRef.current;
-    if (!card || window.matchMedia("(hover: none)").matches) return;
-    const onMove = (e) => {
-      const rect = card.getBoundingClientRect();
-      const dx = (e.clientX - rect.left - rect.width/2) / (rect.width/2);
-      const dy = (e.clientY - rect.top  - rect.height/2) / (rect.height/2);
-      card.style.transform = `perspective(900px) rotateX(${-dy * 5}deg) rotateY(${dx * 5}deg)`;
-    };
-    const onLeave = () => { card.style.transform = ""; };
-    card.addEventListener("mousemove", onMove);
-    card.addEventListener("mouseleave", onLeave);
-    return () => { card.removeEventListener("mousemove", onMove); card.removeEventListener("mouseleave", onLeave); };
-  }, [reduced]);
-
-  const revealHow     = useRevealOnScroll(0.12);
-  const revealValue   = useRevealOnScroll(0.15);
-  const revealTrust   = useRevealOnScroll(0.2);
-  const revealNotSure = useRevealOnScroll(0.15);
-  const revealFooter  = useRevealOnScroll(0.3);
-
-  const scrollToHow = () => { const el = document.getElementById("how-it-works"); if (el) el.scrollIntoView({ behavior: "smooth" }); };
-
-  const LANGS = [{ code:"ar", lbl:"عربية" }, { code:"fr", lbl:"Français" }, { code:"en", lbl:"English" }];
-
-  const steps = [
-    { n:"1", title: t.homeStep1Title, desc: t.homeStep1Desc },
-    { n:"2", title: t.homeStep2Title, desc: t.homeStep2Desc },
-    { n:"3", title: t.homeStep3Title, desc: t.homeStep3Desc },
-  ];
-
-  const trustChips  = t.homeTrustChips  || [t.homeTrust1, t.homeTrust2, t.homeTrust3];
-  const valueBullets = t.homeValueBullets || [];
-
-  const tagline = lang==="ar" ? "المغرب • الباكالوريا • سوق الشغل"
-                : lang==="fr" ? "Maroc • Bac • Marché de l'emploi"
-                :               "Morocco • Bac • Job market";
-
-  return (
-    <div className="home-root" dir={dir}>
-
-      {/* Parallax depth layers */}
-      <div className="home-parallax" aria-hidden="true">
-        <div ref={layer1Ref} className="hp-layer hp-orb1" style={{willChange:"transform"}}/>
-        <div ref={layer2Ref} className="hp-layer hp-grid" style={{willChange:"transform"}}/>
-        <div ref={layer3Ref} className="hp-layer hp-spot" style={{willChange:"transform"}}/>
-        <div className="hp-float hp-sparkle" aria-hidden="true"/>
-        <div className="hp-float hp-blob"    aria-hidden="true"/>
-      </div>
-
-      {/* Nav */}
-      <nav className="home-nav">
-        <span className="home-nav-brand">مسار</span>
-        <div className="home-nav-lang">
-          {LANGS.map(l => (
-            <button key={l.code} className={lang === l.code ? "active" : ""} onClick={() => setLang(l.code)}>
-              {l.lbl}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      {/* Hero */}
-      <section className="home-hero-wrap">
-        <div ref={heroPanelRef} className="home-hero" style={{willChange: reduced ? undefined : "transform"}}>
-          <div ref={heroCardRef} className="home-hero-card">
-            {/* Tagline chip — Morocco-localised */}
-            <span className="home-hero-eyebrow">{tagline}</span>
-            <h1>{t.homeHero}</h1>
-            <p>{t.homeHeroSub}</p>
-            <div className="home-hero-glass">
-              <div className="home-cta-row">
-                <button className="home-btn-primary" onClick={onStartTest}>
-                  {savedSession ? t.homeBackToTest : t.homeCTA}
-                </button>
-                <button className="home-btn-secondary" onClick={scrollToHow}>
-                  {t.homeSecondaryCTA || t.homeHowItWorks} ↓
-                </button>
-              </div>
-              {/* Parent line under buttons */}
-              {t.homeParentLine && (
-                <p className="home-parent-line">{t.homeParentLine}</p>
-              )}
-            </div>
-            {/* Micro trust */}
-            {t.homeMicroTrust && (
-              <p className="home-micro-trust">{t.homeMicroTrust}</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* Value bullets */}
-      {valueBullets.length > 0 && (
-        <div ref={revealValue} className="home-value-bullets reveal">
-          <ul>
-            {valueBullets.map((b, i) => (
-              <li key={i}><span className="home-bullet-dot" aria-hidden="true">✦</span>{b}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* How it works */}
-      <section id="how-it-works" className="home-how">
-        <div ref={revealHow} className="reveal">
-          <div className="home-section-label">🔍 {t.homeHowItWorks}</div>
-          <h2 className="home-section-title">{t.homeHowItWorks}</h2>
-          <div className="home-steps">
-            {steps.map((s, i) => <StepCard key={s.n} step={s} delay={i * 80} />)}
-          </div>
-        </div>
-      </section>
-
-      {/* Trust chips */}
-      <div ref={revealTrust} className="home-trust reveal">
-        {trustChips.map((label, i) => (
-          <div key={i} className="home-trust-chip" style={{"--chip-delay": `${i * 60}ms`}}>
-            <span className="home-trust-chip-dot"/>
-            <span>{label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Not-sure + family note */}
-      {(t.homeNotSure || t.homeFamilyNote) && (
-        <div ref={revealNotSure} className="home-reassure-row reveal">
-          {t.homeNotSure && (
-            <div className="home-reassure-card">
-              <div className="home-reassure-icon">🧭</div>
-              <p>{t.homeNotSure}</p>
-            </div>
-          )}
-          {t.homeFamilyNote && (
-            <div className="home-reassure-card">
-              <div className="home-reassure-icon">👨‍👩‍👧</div>
-              <p>{t.homeFamilyNote}</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Bottom CTA + share line */}
-      <div ref={revealFooter} className="reveal" style={{textAlign:"center",padding:"0 24px 56px",position:"relative",zIndex:1}}>
-        <button className="home-btn-primary" onClick={onStartTest} style={{fontSize:17,padding:"17px 44px"}}>
-          {savedSession ? t.homeBackToTest : t.homeCTA}
-        </button>
-        {t.homeShareCTA && (
-          <p style={{marginTop:14,fontSize:13,color:"rgba(232,236,240,0.45)"}}>{t.homeShareCTA}</p>
-        )}
-      </div>
-
-      {/* Footer */}
-      <footer className="home-footer">
-        <div style={{marginBottom:4}}>{t.homeFooterBy}</div>
-        <a href={`mailto:${t.homeFooterContact}`}>{t.homeFooterContact}</a>
-      </footer>
-    </div>
-  );
-}
-
-/** Individual step card with scroll-reveal + hover tilt. */
-function StepCard({ step, delay }) {
-  const ref = useRevealOnScroll(0.1);
-  return (
-    <div ref={ref} className="home-step-card reveal" style={{"--reveal-delay": `${delay}ms`}}>
-      <div className="home-step-num">{step.n}</div>
-      <h3>{step.title}</h3>
-      <p>{step.desc}</p>
-    </div>
-  );
-}
-
 // ── Step 0: Language ──────────────────────────────────────────────
 function StepLang({ lang, setLang, onNext, t, dir }) {
   return (
@@ -4826,8 +3338,8 @@ function StepReality({ lang, reality, setReality, onNext, onBack, t, dir }) {
   return (
     <div className="card" dir={dir}>
       <StepIndicator step={2} total={7} t={t}/>
-      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t?.realityStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t?.realityDesc}</p>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.realityStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t.realityDesc}</p>
 
       {/* Section 1 — Strengths */}
       <div className="reality-section">
@@ -4914,224 +3426,24 @@ function StepReality({ lang, reality, setReality, onNext, onBack, t, dir }) {
   );
 }
 
-// ── Step 2.5: Profile Boost ───────────────────────────────────────
-// NEW INPUT: 6 high-signal questions that sharpen all 3 recommendation lanes.
-// Stored in reality.profileBoost as { prestigePriority, moneyPriority, handsOn,
-//   riskTolerance, internationalIntent, focusAbility } each 0|1|2.
-function StepProfileBoost({ lang, reality, setReality, onNext, onBack, t, dir }) {
-  const pb = reality.profileBoost || {};
-  const set = (field, val) =>
-    setReality(prev => ({ ...prev, profileBoost: { ...(prev.profileBoost || {}), [field]: val } }));
-
-  const QUESTIONS = [
-    {
-      key: "prestigePriority",
-      label: t.pb_prestige,
-      opts: [t.pb_prestige0, t.pb_prestige1, t.pb_prestige2],
-    },
-    {
-      key: "moneyPriority",
-      label: t.pb_money,
-      opts: [t.pb_money0, t.pb_money1, t.pb_money2],
-    },
-    {
-      key: "handsOn",
-      label: t.pb_handsOn,
-      opts: [t.pb_handsOn0, t.pb_handsOn1, t.pb_handsOn2],
-    },
-    {
-      key: "riskTolerance",
-      label: t.pb_risk,
-      opts: [t.pb_risk0, t.pb_risk1, t.pb_risk2],
-    },
-    {
-      key: "internationalIntent",
-      label: t.pb_intl,
-      opts: [t.pb_intl0, t.pb_intl1, t.pb_intl2],
-    },
-    {
-      key: "focusAbility",
-      label: t.pb_focus,
-      opts: [t.pb_focus0, t.pb_focus1, t.pb_focus2],
-    },
-  ];
-
-  const answered = QUESTIONS.filter(q => pb[q.key] != null).length;
-  const canProceed = answered >= 4; // allow skipping 2 max
-
-  return (
-    <div className="card" dir={dir}>
-      <StepIndicator step={2} total={8} t={t}/>
-      <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.profileBoostStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:24}}>{t.profileBoostDesc}</p>
-
-      {QUESTIONS.map((q, qi) => {
-        const val = pb[q.key];
-        return (
-          <div key={q.key} className="reality-section" style={{marginBottom:20}}>
-            <div className="reality-section-title" style={{fontSize:14,marginBottom:10}}>
-              {qi + 1}. {q.label}
-            </div>
-            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-              {q.opts.map((opt, i) => (
-                <button
-                  key={i}
-                  className={`identity-btn${val === i ? " selected" : ""}`}
-                  style={{flex:"1 1 auto",minWidth:100,fontSize:13,padding:"10px 12px",textAlign:"center"}}
-                  onClick={() => set(q.key, i)}
-                >
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-
-      <p style={{fontSize:12,color:"var(--muted)",marginTop:8,marginBottom:16}}>
-        {answered}/6 {lang==="ar"?"أسئلة مُجابة":lang==="fr"?"réponses":"answered"}
-        {!canProceed && " — "+( lang==="ar"?"يرجى الإجابة على 4 على الأقل":lang==="fr"?"répondre à au moins 4":"please answer at least 4")}
-      </p>
-
-      <div className="btn-row">
-        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
-        <button className="btn btn-primary" onClick={onNext}
-          disabled={!canProceed} style={{opacity:canProceed?1:0.4}}>
-          {t.next} →
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ── Step 3: Info ──────────────────────────────────────────────────
 function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
-  const set = (field, val) => setInfo(p => ({ ...p, [field]: val }));
-
-  // SUBJECT MODEL (MOROCCO) FIX: when changing year/field/track, also sync scoring bacTrack
-  const setExamYear = (yr) => {
-    const mapped = yr === "bac1"
-      ? BAC1_FIELD_TO_SCORING[info.bac1Field || "SE"]
-      : BAC2_TRACK_TO_SCORING[info.bac2Track || "SVT"];
-    setInfo(p => ({ ...p, examYear: yr, examLevel: yr, bacTrack: mapped || "SVT" }));
+  const resetMarksOnTrackChange = (newTrack) => {
+    // parent resets marks when bacTrack changes
+    setInfo(p=>({...p,bacTrack:newTrack}));
   };
-  const setBac1Field = (f) => {
-    const mapped = BAC1_FIELD_TO_SCORING[f] || "SVT";
-    setInfo(p => ({ ...p, bac1Field: f, trackField: f, bacTrack: mapped }));
-  };
-  const setBac2Track = (tk) => {
-    const mapped = BAC2_TRACK_TO_SCORING[tk] || "SVT";
-    setInfo(p => ({ ...p, bac2Track: tk, trackField: tk, bacTrack: mapped }));
-  };
-
-  const BAC1_FIELDS  = ["SE","SM","ST","ECO","LSH","AA","EO","BP"];
-  const BAC2_TRACKS  = ["SVT","PC","SMA","SMB","ST","ECO","LSH","AA","EO","BP"];
-  const BP_EXTRAS    = ["math","physchem","svt"];
-
-  const examYear   = info.examYear  || "bac2";
-  const bac1Field  = info.bac1Field || "SE";
-  const bac2Track  = info.bac2Track || "SVT";
-  const isBac1     = examYear === "bac1";
-  const isEO       = isBac1 ? bac1Field === "EO" : bac2Track === "EO";
-  const isBP       = isBac1 ? bac1Field === "BP" : bac2Track === "BP";
-  const canProceed = !!examYear && (isBac1 ? !!bac1Field : !!bac2Track);
-
-  const selStyle = (sel) => ({
-    padding:"10px 14px", borderRadius:10, textAlign:"start",
-    border:`2px solid ${sel ? "var(--accent)" : "var(--border)"}`,
-    background: sel ? "rgba(232,161,36,0.10)" : "var(--surface2)",
-    color: sel ? "var(--accent)" : "var(--text)",
-    cursor:"pointer", fontFamily:"inherit", fontWeight:sel?700:400, fontSize:13,
-  });
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={3} total={8} t={t}/>
+      <StepIndicator step={3} total={7} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:20}}>{t.infoStep}</h2>
 
-      {/* SUBJECT MODEL (MOROCCO) FIX: examYear selector — bac1 vs bac2 */}
       <div className="field">
-        <label style={{fontWeight:600}}>{t.examYearLabel || t.examLevelLabel}</label>
-        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
-          {[["bac1", t.examYearBac1 || t.examLevelBac1], ["bac2", t.examYearBac2 || t.examLevelBac2]].map(([val,lbl]) => (
-            <button key={val}
-              className={`mob-btn ${examYear===val?"selected":""}`}
-              onClick={()=>setExamYear(val)}>{lbl}
-            </button>
-          ))}
-        </div>
+        <label>{t.bacTrack}</label>
+        <select value={info.bacTrack} onChange={e=>resetMarksOnTrackChange(e.target.value)}>
+          {BAC_TRACKS.map(b=><option key={b.id} value={b.id}>{b.label[lang]}</option>)}
+        </select>
       </div>
-
-      {/* SUBJECT MODEL (MOROCCO) FIX: Bac1 field selector (only when bac1) */}
-      {isBac1 && (
-        <div className="field">
-          <label style={{fontWeight:600}}>{t.bac1FieldLabel || t.trackFieldLabel}</label>
-          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
-            {BAC1_FIELDS.map(key => {
-              const lbl = t.bac1Fields?.[key] || t.trackFields?.[key] || key;
-              return (
-                <button key={key} onClick={()=>setBac1Field(key)} style={selStyle(bac1Field===key)}>
-                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* SUBJECT MODEL (MOROCCO) FIX: Bac2 track selector (only when bac2) */}
-      {!isBac1 && (
-        <div className="field">
-          <label style={{fontWeight:600}}>{t.bac2TrackLabel || t.trackFieldLabel}</label>
-          <div style={{display:"flex",flexDirection:"column",gap:6,marginTop:8}}>
-            {BAC2_TRACKS.map(key => {
-              const lbl = t.bac2Tracks?.[key] || key;
-              return (
-                <button key={key} onClick={()=>setBac2Track(key)} style={selStyle(bac2Track===key)}>
-                  <span style={{fontWeight:800,marginInlineEnd:6}}>{key}</span> — {lbl}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* EO: eoOption arabic / sharia */}
-      {isEO && (
-        <div className="field">
-          <label style={{fontWeight:600}}>{t.eoOptionLabel}</label>
-          <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr",marginTop:8}}>
-            {[["arabic",t.eoOptionArabic],["sharia",t.eoOptionSharia]].map(([val,lbl]) => (
-              <button key={val}
-                className={`mob-btn ${info.eoOption===val?"selected":""}`}
-                onClick={()=>set("eoOption",val)}>{lbl}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* BP: bpExtras multi-select */}
-      {isBP && (
-        <div className="field">
-          <label style={{fontWeight:600}}>{t.bpExtrasLabel}</label>
-          <div className="chip-grid" style={{marginTop:8}}>
-            {BP_EXTRAS.map(k => {
-              const sel = (info.bpExtras||[]).includes(k);
-              return (
-                <button key={k}
-                  className={`chip-btn${sel?" selected":""}`}
-                  onClick={()=>setInfo(p=>{
-                    const cur = p.bpExtras||[];
-                    return {...p, bpExtras: sel ? cur.filter(x=>x!==k) : [...cur,k]};
-                  })}>
-                  {SUBJECT_LABELS[k]?.[lang] || k}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
       <div className="field">
         <label>{t.city}</label>
@@ -5176,7 +3488,7 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       </div>
       </div>
 
-      {/* Cultural sensitivity patch — study goal selector */}
+      {/* Cultural sensitivity patch (Tier + Goal) — study goal selector */}
       <div className="field">
         <label style={{fontWeight:600}}>{t.studyGoalLabel}</label>
         <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
@@ -5262,50 +3574,6 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
       )}
 
 
-      {/* TASK 1 — examTiming: determines PRE vs POST subject list in StepMarks */}
-      <div className="field">
-        <label style={{fontWeight:600}}>{t.examTimingLabel || "When is this evaluation?"}</label>
-        {t.examTimingHint && <div style={{fontSize:11,color:"var(--muted)",marginTop:2,marginBottom:8}}>{t.examTimingHint}</div>}
-        <div className="mobility-grid" style={{gridTemplateColumns:"1fr 1fr"}}>
-          {[
-            { key:"pre",  label: t.examTimingPre  || "Before Bac" },
-            { key:"post", label: t.examTimingPost || "After Bac"  },
-          ].map(({key,label}) => (
-            <button key={key}
-              className={`mob-btn ${(info.examTiming||"post")===key?"selected":""}`}
-              onClick={()=>setInfo(p=>({...p,examTiming:key}))}>
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* TASK 2 — goalPreference: drives Cultural Credibility Filter in scoring */}
-      <div className="field">
-        <label style={{fontWeight:600}}>{t.goalPreferenceLabel || "Which style fits you best?"}</label>
-        <div style={{display:"flex",flexDirection:"column",gap:8,marginTop:8}}>
-          {["prestige","balanced","practical"].map(key => {
-            const opt = t.goalPreferenceOptions?.[key] || { icon:"🔹", label:key };
-            const sel = (info.goalPreference || "prestige") === key;
-            return (
-              <button key={key}
-                onClick={()=>setInfo(p=>({...p,goalPreference:key}))}
-                style={{
-                  display:"flex",alignItems:"center",gap:12,
-                  padding:"12px 16px",borderRadius:12,
-                  border:`2px solid ${sel?"var(--accent)":"var(--border)"}`,
-                  background:sel?"rgba(232,161,36,0.1)":"var(--surface2)",
-                  color:sel?"var(--accent)":"var(--text)",
-                  cursor:"pointer",textAlign:"start",transition:"all 0.2s",fontFamily:"inherit",
-                }}>
-                <span style={{fontSize:20}}>{opt.icon}</span>
-                <span style={{fontSize:13,fontWeight:sel?700:400,lineHeight:1.4}}>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <div className="btn-row">
         <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
         <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
@@ -5313,40 +3581,64 @@ function StepInfo({ lang, info, setInfo, onNext, onBack, t, dir }) {
     </div>
   );
 }
+
+// ── Step 3: Marks ─────────────────────────────────────────────────
 function StepMarks({ lang, info, marks, setMarks, onNext, onBack, t, dir }) {
-  // SUBJECT MODEL (MOROCCO) FIX: always use getSubjectsForMarks for the exact official subject list
-  const subjs = getSubjectsForMarks(info);
-  // Header: show bac1/bac2 label
-  const examYear = info.examYear || (info.examLevel === "bac1" ? "bac1" : "bac2");
-  const levelHeader = examYear === "bac1"
-    ? (t.examYearBac1 || t.examLevelBac1 || "Bac 1 (Régional)")
-    : (t.examYearBac2 || t.examLevelBac2 || "Bac 2 (National)");
-  // Guard: if no subjects yet (field/track not selected), show prompt
-  if (subjs.length === 0) {
-    return (
-      <div className="card" dir={dir}>
-        <p style={{textAlign:"center",color:"var(--muted)",marginTop:40}}>
-          {lang==="ar"?"يرجى اختيار الشعبة أولاً":lang==="fr"?"Veuillez d'abord choisir votre filière":"Please select your track first"}
-        </p>
-        <div className="btn-row">
-          <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
-        </div>
-      </div>
-    );
-  }
+  const wataniSubjs = WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || [];
+  const stream = STREAM_BY_TRACK[info.bacTrack] || "scientific";
+  const regionalSubjs = (info.examMode === "full_bac") ? (REGIONAL_SUBJECTS_BY_STREAM[stream] || []) : [];
+  const subjs = wataniSubjs;
 
   return (
     <div className="card" dir={dir}>
-      <StepIndicator step={4} total={8} t={t}/>
+      <StepIndicator step={4} total={7} t={t}/>
       <h2 style={{fontSize:20,fontWeight:700,marginBottom:4}}>{t.marksStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:8}}>{t.marks}</p>
+      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.marks}</p>
 
-{/* SUBJECTS FIX: level header shows bac1/bac2 */}
-<div className="section-title" style={{ marginTop: 0 }}>
-  {levelHeader}
+{regionalSubjs.length > 0 && (
+  <>
+    <div className="section-title" style={{ marginTop: 0 }}>
+      {t.marksSectionRegional}
+    </div>
+    <div className="marks-grid">
+      {regionalSubjs.map((s) => {
+        const val = Number(marks[s]) || 0;
+        const pct = (val / 20) * 100;
+        const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
+        return (
+          <div key={s} className="mark-input">
+            <div className="mark-label">{SUBJECT_LABELS[s]?.[lang] || s}</div>
+            <div className="mark-row">
+              <input
+                type="number"
+                min="0"
+                max="20"
+                step="0.5"
+                value={val || ""}
+                placeholder="0"
+                onChange={(e) =>
+                  setMarks((prev) => ({
+                    ...prev,
+                    [s]: Math.min(20, Math.max(0, Number(e.target.value) || 0)),
+                  }))
+                }
+              />
+              <div className="mark-bar">
+                <div className="mark-bar-fill" style={{ width: `${pct}%`, background: color }} />
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </>
+)}
+
+<div className="section-title" style={{ marginTop: regionalSubjs.length > 0 ? 16 : 0 }}>
+  {t.marksSectionWatani}
 </div>
 <div className="marks-grid">
-  {subjs.map((s) => {
+  {wataniSubjs.map((s) => {
     const val = Number(marks[s]) || 0;
     const pct = (val / 20) * 100;
     const color = val >= 15 ? "#10b981" : val >= 10 ? "#3b82f6" : "#ef4444";
@@ -5410,8 +3702,8 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
   return (
     <div className="card" dir={dir}>
       <StepIndicator step={5} total={7} t={t}/>
-      <h2 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{t?.bacStatusStep}</h2>
-      <p style={{color:"var(--muted)",fontSize:14,marginBottom:24,lineHeight:1.6}}>{t?.bacStatusQ}</p>
+      <h2 style={{fontSize:20,fontWeight:700,marginBottom:8}}>{t.bacStatusStep}</h2>
+      <p style={{color:"var(--muted)",fontSize:14,marginBottom:24,lineHeight:1.6}}>{t.bacStatusQ}</p>
 
       {/* Bac timing */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:20}}>
@@ -5499,375 +3791,559 @@ function StepBacStatus({ lang, info, setInfo, reality, setReality, onNext, onBac
 }
 
 // ─────────────────────────────────────────────────────────────────
+// computeMassarType — deterministic 4-letter code from traits + reality
+// Dims: A/C  S/I  P/O  R/K
 // ─────────────────────────────────────────────────────────────────
-// ARCHETYPE SYSTEM v2 — 12 archetypes from data contract
-// pickArchetype, computeRarity, makeSerialId, computeDeterministicStats
-// All wording preserved exactly from the TXT data contract.
-// ─────────────────────────────────────────────────────────────────
-
-const ARCHETYPES_V2 = [
-  { id:"mllm",  code:"MS-MLLM",  rarity:"RARE",   icon:"🧠",  titleLatin:"EL MO3ALLIM", titleAr:"المعلّم",    titleFr:"Le Prof",        titleEn:"The Teacher",
-    viralLine:{ ar:"كنشرحها ببساطة… وكتدخل للراس. 🧠✨", fr:"J'explique simple… et ça rentre direct. 🧠✨", en:"I make it click—fast. 🧠✨" },
-    signatureMove:{ ar:"كنحوّل المعقّد لخطوات ساهلة.", fr:"Je transforme le compliqué en étapes claires.", en:"I turn complexity into clear steps." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتشرح للناس حتى بلا ما تحس… وكتحس براسك مسؤول على الفهم ديالهم.", truth:"الحقيقة: كتحتاج حدّ يطلب منك \"طبقها دابا\" باش ما تبقاش غير فالكلام." }, fr:{ looks:"Ça se voit: Tu expliques naturellement… même quand personne te demande.", truth:"La vérité: Il te faut un \"passe à l'action maintenant\" pour ne pas rester dans la théorie." }, en:{ looks:"Looks like: You naturally teach—without trying.", truth:"Truth: You need a 'do it now' push so you don't stay in theory." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتهدا وتختار كلامك بعناية. دليل عندك: الناس كتطلب منك تشرح لهم حتى فأصعب اللحظات. الثمن إلا تجاهلت: كتشل الوقت فالتحليل وما تتحرك. البروتوكول: قبل ما تهضر، سجّل لك نقطة واحدة تطبّقها — هي اللي تُكمّل الشرح.", consistency:"كتلاحظ عليك: بوحدك كتفقد الإيقاع. دليل عندك: الإنجازات ديالك دايماً ربطت بشخص تانٍ ولو صغير. الثمن إلا تجاهلت: كتبقى فالنظرية بلا أثر. البروتوكول: حدد شريك أو جمهور صغير — ولو واحد — تشرح له هاد الأسبوع.", advantage:"كتلاحظ عليك: كتفهم بسرعة كيفاش يفكّر الآخر وكتوصل له الفكرة بطريقته هو. دليل عندك: الناس كتحفظ كلامك أكثر مما كتتصور. الثمن إلا ما استغلتيش: كتضيّع هاد الميزة فالشرح بلا استهداف. البروتوكول: استغل الفهم ديالك لـ\"شخص واحد محدد\" — مش الكل.", blindSpot:"كتلاحظ عليك: كتزيد فالشرح وكتأخر التطبيق. دليل عندك: أفكارك كاملة فراسك… والتنفيذ متأخر. الثمن إلا ما بدّلتيش: الفرص كتفوت على واحد أخر أقل فهماً منك. البروتوكول: بعد أي شرح — طبّق خطوة واحدة صغيرة قبل النوم." }, fr:{ pressure:"Sous pression, tu restes calme et précis. Tu cherches la clarté, pas le bruit.", consistency:"Pour tenir, il te faut un binôme ou un petit public. Seul, tu expliques… sans exécuter.", advantage:"Tu lis comment l'autre pense, puis tu simplifies jusqu'à l'évidence.", blindSpot:"Trop d'explications, pas assez de pratique. Règle: une mini-action après chaque session." }, en:{ pressure:"Under pressure, you go calm and precise. You chase clarity, not noise.", consistency:"You need a buddy/small audience. Alone, you may explain… but delay execution.", advantage:"You read how people think, then simplify until it clicks.", blindSpot:"Explaining > doing. Rule: one micro-action after every study block." } },
-    hookQuestion:{ ar:"واش كتشرح مزيان… ولكن كتأجل التطبيق؟ شنو أول حاجة تقدر تطبقها اليوم؟", fr:"Tu expliques bien… mais tu exécutes quand exactement ? C'est quoi ton premier pas aujourd'hui ?", en:"You explain well—but when do you execute? What's your first step today?" },
-    shareCaption:{ ar:"طلع ليا «المعلّم» 🧠✨ كنحوّل أي فكرة لشي مفهوم… شنو طلع ليك؟ 👀 #مسار #MassarPro", fr:"J'ai eu «Le Prof» 🧠✨ Je rends le compliqué simple… t'as eu quoi toi ? 👀 #MassarPro", en:"I got \"The Teacher\" 🧠✨ What did you get? 👀 #MassarPro" },
-    statsProfile:{ stat1Label:{ar:"الفهم",fr:"Clarté",en:"Clarity"}, stat2Label:{ar:"التأثير",fr:"Impact",en:"Impact"}, stat3Label:{ar:"الانضباط",fr:"Discipline",en:"Discipline"} } },
-  { id:"mhni",  code:"MS-MHNI",  rarity:"RARE",   icon:"🏛️", titleLatin:"EL MOHTARIF", titleAr:"المحترف",    titleFr:"Le Pro",         titleEn:"The Professional",
-    viralLine:{ ar:"كنخدمها بالنّظام… والنتيجة كتقول كلشي. ✅", fr:"Je bosse carré… et le résultat parle. ✅", en:"Clean work. Loud results. ✅" },
-    signatureMove:{ ar:"الجودة قبل السرعة.", fr:"Qualité avant vitesse.", en:"Quality over speed." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتكره العشوائية وكتحترم اللي خدام بنظام.", truth:"الحقيقة: كتقدر تخسر فرص زوينة غير حيث كتسنى \"الوقت المناسب\"." }, fr:{ looks:"Ça se voit: Tu respectes le travail structuré, fiable.", truth:"La vérité: Tu peux rater des chances en attendant le \"moment parfait\"." }, en:{ looks:"Looks like: You value structure and reliability.", truth:"Truth: You may miss chances waiting for perfect timing." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتختار المسار المضمون وكتنفذه بهدوء. دليل عندك: الناس كتثق فيك في اللحظات الصعبة أكثر من العادية. الثمن إلا تجاهلت: كتبقى في الأمان وتتفوّت عليك فرص بسبب مش الوقت المناسب. البروتوكول: حدد مسبقًا معيار كافي — مش مثالي — وعمّق به.", consistency:"كتلاحظ عليك: بلا روتين واضح كتفقد الإنتاجية. دليل عندك: أفضل أعمالك كانت في فترات فيها نظام ثابت. الثمن إلا تجاهلت: كتتشتت وتحس بضغط بلا نتيجة. البروتوكول: روتين أسبوعي بسيط — 3 أولويات لا أكثر — وراجعه كل جمعة.", advantage:"كتلاحظ عليك: الانضباط ديالك كيعطي نتائج كتبانو قبل ما يتوقع الناس. دليل عندك: مشاريع بدت عادية معك خرجت أقوى. الثمن إلا ما استغلتيش: الميزة كتبقى في الظل بلا اعتراف. البروتوكول: وثّق نجاح صغير هاد الأسبوع — ولو جملة واحدة تشاركها.", blindSpot:"كتلاحظ عليك: كتتهرب من التجريب خوفًا من هبوط الجودة. دليل عندك: بزاف من الأفكار الزوينة بقات فراسك. الثمن إلا ما بدّلتيش: كتبقى ثابت بينما الدنيا كتتحرك. البروتوكول: حدد تجربة صغيرة محدودة الوقت — أسبوع واحد — مش التزام دائم." }, fr:{ pressure:"Sous pression, tu sécurises: solide > flashy.", consistency:"Routine claire + seuil \"c'est suffisant\".", advantage:"Ta discipline inspire confiance.", blindSpot:"Tu testes peu. Fix: mini-test rapide, sans risque." }, en:{ pressure:"Safe solid move > flashy.", consistency:"Routine + \"good enough\" threshold.", advantage:"Discipline builds trust early.", blindSpot:"Low experimentation. Fix: small safe tests." } },
-    hookQuestion:{ ar:"واش الكمال كيعطلك؟ شنو \"نسخة 70%\" تقدر تطلقها هاد السيمانة؟", fr:"Le perfectionnisme te bloque ? C'est quoi ta version \"70%\" que tu peux sortir cette semaine ?", en:"What's your 70% version you can ship this week?" },
-    shareCaption:{ ar:"طلع ليا «المحترف» ✅ الخدمة عندي معيار… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Pro» ✅ Chez moi c'est carré… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Professional\" ✅ What did you get? 👀 #MassarPro" },
-    statsProfile:{ stat1Label:{ar:"الجودة",fr:"Qualité",en:"Quality"}, stat2Label:{ar:"الثبات",fr:"Constance",en:"Consistency"}, stat3Label:{ar:"المرونة",fr:"Adaptation",en:"Adaptation"} } },
-  { id:"hrrk",  code:"MS-HRRK",  rarity:"COMMON", icon:"⚡",  titleLatin:"EL MOHARRIK",titleAr:"المحرّك",    titleFr:"Le Booster",     titleEn:"The Spark",
-    viralLine:{ ar:"كنشعل البداية… وكنجرّي حتى كيتحركو الناس. ⚡", fr:"J'allume le départ… et je tire tout le monde. ⚡", en:"I spark momentum. ⚡" },
-    signatureMove:{ ar:"كنبدأ قبل ما تكمل الخطة.", fr:"Je lance avant la perfection.", en:"I start before it's perfect." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتقدر تشعل الحماس فثانية… وكتكره الروتين.", truth:"الحقيقة: إلا ما بانش تقدم سريع، كتطيح الطاقة." }, fr:{ looks:"Ça se voit: Tu crées l'énergie vite… routine = non.", truth:"La vérité: Sans progrès visible, ta motivation chute." }, en:{ looks:"Looks like: You create momentum fast.", truth:"Truth: No progress = energy drops." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: كتبحث على أول ضربة تفرق الموقف وتنطلق بسرعة. دليل عندك: أفضل قراراتك كانت سريعة ومبنية على حدس قوي. الثمن إلا تجاهلت: الطاقة كتروح فالتحضير وما تبقى طاقة للتنفيذ. البروتوكول: حدد الخطوة الأولى \"اللي تحرك الموقف\" وأنجزها قبل أي اجتماع أو نقاش.", consistency:"كتلاحظ عليك: بلا تحدي جديد كتبرد بسرعة. دليل عندك: إنجازاتك الكبيرة جاءت مع deadline أو منافسة. الثمن إلا تجاهلت: كتبدأ مشاريع وما تكملها وكتفقد الثقة. البروتوكول: ضع تحدي صغير يومي مع مقياس واضح — ولو خطوة واحدة تعدّ عليها.", advantage:"كتلاحظ عليك: كتقدر تشعل الحماس في فريق أو شخص بكلمة أو موقف. دليل عندك: الناس كتنتظر رأيك لتبدأ. الثمن إلا ما استغلتيش: هاد الطاقة كتضيع في أماكن لا تستحق. البروتوكول: استغل الطاقة ديالك في \"بداية\" واحدة مهمة هاد الأسبوع — مش بزاف.", blindSpot:"كتلاحظ عليك: كتسخّن بسرعة وتبرد بسرعة. دليل عندك: بزاف من البدايات اللي ما وصلتش للنهاية. الثمن إلا ما بدّلتيش: الناس كتبدأ ما تثق في استمرارك. البروتوكول: ضع نقطة تحقق ثابتة (كل 3 أيام) + مكافأة صغيرة لكل مرحلة تكمّل." }, fr:{ pressure:"Premier move qui change tout, puis tu fonces.", consistency:"Micro-défi + tracking (streak).", advantage:"Tu relances l'énergie d'un groupe.", blindSpot:"Up/down. Fix: petites victoires mesurables." }, en:{ pressure:"First game-changing move then sprint.", consistency:"Micro-challenges + tracking.", advantage:"You energize teams.", blindSpot:"Drops fast. Fix: measurable micro-wins." } },
-    hookQuestion:{ ar:"شنو اللي كيشعل فيك الحماس فعلاً؟ وشنو اللي كيطفّيه بسرعة؟", fr:"Qu'est-ce qui t'allume… et qu'est-ce qui te coupe net ?", en:"What fuels you—and what kills your momentum?" },
-    shareCaption:{ ar:"طلع ليا «المحرّك» ⚡ كنبدأ قبل الكلام… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Booster» ⚡ J'allume le game… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Spark\" ⚡ What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"السرعة",fr:"Vitesse",en:"Speed"}, stat2Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat3Label:{ar:"الثبات",fr:"Stabilité",en:"Stability"} } },
-  { id:"bnaa",  code:"MS-BNAA",  rarity:"RARE",   icon:"🧱",  titleLatin:"EL BANNAA",  titleAr:"البنّاء",    titleFr:"Le Bâtisseur",   titleEn:"The Builder",
-    viralLine:{ ar:"كنركّبها قطعة بقطعة… وكنخرجها قوية. 🧱", fr:"Pièce par pièce… solide à la fin. 🧱", en:"Brick by brick. 🧱" },
-    signatureMove:{ ar:"كنمشي خطوة بخطوة بلا ضجيج.", fr:"Step-by-step, sans blabla.", en:"Quiet execution, steady progress." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتخدم فصمت وتفاجئ بالنتيجة.", truth:"الحقيقة: التفاصيل كتقدر تعطلّك." }, fr:{ looks:"Ça se voit: Tu bosses en silence, résultat solide.", truth:"La vérité: Les détails peuvent te ralentir." }, en:{ looks:"Looks like: Quiet worker, strong finish.", truth:"Truth: Details can slow you down." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتقسم المشكل لأجزاء صغيرة وتنجزها بصمت. دليل عندك: الناس تفاجأت بنتائجك وهي كانت توقع أقل. الثمن إلا تجاهلت: كتغرق في التفاصيل وكتأخر التسليم. البروتوكول: حدد \"ما يكفي\" للمرحلة الأولى — V1 — وأسلّم في وقت محدد.", consistency:"كتلاحظ عليك: بلا خطة مكتوبة كتفقد الاتجاه. دليل عندك: كل مشروع نجح معك كان فيه قائمة واضحة. الثمن إلا تجاهلت: كتضيع الوقت في تحديد \"من أين تبدأ\". البروتوكول: أنجز checklist قصيرة (3-5 خطوات) في بداية كل أسبوع + مراجعة كل جمعة.", advantage:"كتلاحظ عليك: كتقدر تخلق نظامًا وسط الفوضى بينما الآخرين كيتشتتوا. دليل عندك: الناس كتطلب منك تساعدهم يُنظّموا أشياءهم. الثمن إلا ما استغلتيش: الميزة كتبقى فالظل بلا اعتراف. البروتوكول: وثّق نظامًا عملت معك — شاركه مع شخص واحد هاد الأسبوع.", blindSpot:"كتلاحظ عليك: كتبقى فمرحلة التحسين أطول من اللازم. دليل عندك: بزاف من الأشياء \"شبه جاهزة\" ما طلعت للنور. الثمن إلا ما بدّلتيش: الفرص كتفوت لمن ينجز أقل منك لكن في الوقت. البروتوكول: ضع deadline صارم لـ V1 — الكمال في V2 مش الآن." }, fr:{ pressure:"Tu découpes et tu avances morceau par morceau.", consistency:"Checklist courte + revue hebdo.", advantage:"Tu structures sans perdre la qualité.", blindSpot:"Trop polir. Fix: deadline V1." }, en:{ pressure:"Break it down, solve stepwise.", consistency:"Short checklist + weekly review.", advantage:"Structure + quality.", blindSpot:"Over-polish. Fix: V1 deadline." } },
-    hookQuestion:{ ar:"شنو \"نسخة أولى\" تقدر تكمّلها فـ48 ساعة؟", fr:"C'est quoi ta V1 que tu peux finir en 48h ?", en:"What's a V1 you can finish in 48 hours?" },
-    shareCaption:{ ar:"طلع ليا «البنّاء» 🧱 كنربح بالثبات… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Bâtisseur» 🧱 Résultat solide… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Builder\" 🧱 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"التنفيذ",fr:"Exécution",en:"Execution"}, stat2Label:{ar:"الدقة",fr:"Précision",en:"Precision"}, stat3Label:{ar:"الصبر",fr:"Endurance",en:"Endurance"} } },
-  { id:"nazl",  code:"MS-NAZL",  rarity:"COMMON", icon:"🧭",  titleLatin:"EL MALLAH",  titleAr:"الملاّح",    titleFr:"Le Navigateur",  titleEn:"The Navigator",
-    viralLine:{ ar:"كنقرا الطريق قبل ما نبدا… وكنوصل بلا ما نضيع. 🧭", fr:"Je lis la route avant… j'arrive sans me perdre. 🧭", en:"Plan first. Win after. 🧭" },
-    signatureMove:{ ar:"كنربط بين الخيارات ونختار الأقل مخاطرة.", fr:"Je connecte les options et je sécurise le chemin.", en:"I connect options and reduce risk." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتفكر فالعواقب قبل ما تدير أي خطوة.", truth:"الحقيقة: البداية كتكون أصعب عليك من الطريق." }, fr:{ looks:"Ça se voit: Tu penses aux conséquences avant d'agir.", truth:"La vérité: Démarrer te coûte plus que continuer." }, en:{ looks:"Looks like: You foresee outcomes.", truth:"Truth: Starting is the hard part." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتخرج بخطة بديلة بهدوء بينما الآخرين كيفوشوا. دليل عندك: الناس كتلجأ إليك لأنك \"دايما عندك بلان\". الثمن إلا تجاهلت: كتضيع الوقت في التخطيط وما تبدأش. البروتوكول: ضع حد زمني للتخطيط — 20 دقيقة max — ثم تحرك.", consistency:"كتلاحظ عليك: بلا خطة A/B كتحس بالحصار ولا كتتجمّد. دليل عندك: كل مرة كان عندك plan بديل سارت الأمور. الثمن إلا تجاهلت: كتبقى متردد وكتضيع فرص واضحة. البروتوكول: لكل هدف — ضع خطة A وخطة B مسبقًا، ولو جملتين.", advantage:"كتلاحظ عليك: كتسبق المشاكل وكتتجنب الغلط اللي الآخرين ما كيشوفوش. دليل عندك: قراراتك الكبيرة نادرًا ما ندمت عليها. الثمن إلا ما استغلتيش: كتبقى في الخلف وأقل جرأة منك كيأخذ الفرصة. البروتوكول: شارك تحليلك مع شخص في فريقك — نظرتك قيمة.", blindSpot:"كتلاحظ عليك: البداية هي أصعب جزء عندك. دليل عندك: أكثر مشاريعك تأخرت في \"ابدأ\", مش في \"أكمل\". الثمن إلا ما بدّلتيش: الفرص الزوينة كتفوت لأن كنت لا تزال تفكر. البروتوكول: حدد أصغر خطوة ممكنة بلا مخاطرة وأنجزها اليوم." }, fr:{ pressure:"Plan B/C sans panique.", consistency:"A/B/C te garde en mouvement.", advantage:"Tu évites les pièges tôt.", blindSpot:"Tu retardes le départ. Fix: micro-action." }, en:{ pressure:"Backup plans.", consistency:"A/B/C keeps you moving.", advantage:"Avoids pitfalls.", blindSpot:"Delays start. Fix micro-step." } },
-    hookQuestion:{ ar:"شنو أصغر خطوة بلا مخاطرة تقدر تديرها اليوم؟", fr:"C'est quoi le plus petit pas sans risque aujourd'hui ?", en:"What's the smallest zero-risk step today?" },
-    shareCaption:{ ar:"طلع ليا «الملاّح» 🧭 كنمشي بالخطة… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Navigateur» 🧭 Plan clair… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Navigator\" 🧭 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"التخطيط",fr:"Plan",en:"Planning"}, stat2Label:{ar:"الحكمة",fr:"Prudence",en:"Prudence"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
-  { id:"qaid",  code:"MS-QAID",  rarity:"EPIC",   icon:"👑",  titleLatin:"EL QAID",    titleAr:"القائد",     titleFr:"Le Leader",      titleEn:"The Leader",
-    viralLine:{ ar:"كنخلّي الناس يتفاهمو… وكنخرج النتيجة من الجماعة. 👑", fr:"Je cadre le groupe… et on sort le résultat. 👑", en:"I lead with clarity. 👑" },
-    signatureMove:{ ar:"كنقود بالوضوح وبحسم الأولويات.", fr:"Je mène par la clarté et les priorités.", en:"I turn chaos into priorities." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: الناس كتتبعك حيث كتجيب الوضوح وسط الفوضى.", truth:"الحقيقة: كتشدّ بزاف بوحدك وكتتقل." }, fr:{ looks:"Ça se voit: On te suit parce que tu clarifies tout.", truth:"La vérité: Tu portes trop seul." }, en:{ looks:"Looks like: People follow your clarity.", truth:"Truth: You carry too much alone." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتفرز المهم من اللي يمكن ينتظر وتحدد الأولوية بسرعة. دليل عندك: الناس كتتبعك في اللحظات الصعبة أكثر من العادية. الثمن إلا تجاهلت: كتحمل كثير بوحدك وتُصاب بالإرهاق في صمت. البروتوكول: في كل ضغط — حدد أولوية واحدة للمجموعة وواحدة للتفويض.", consistency:"كتلاحظ عليك: الالتزام العلني كيخليك تصمد. دليل عندك: الأهداف اللي أعلنتها أنجزت أكثر من اللي بقات في راسك. الثمن إلا تجاهلت: بلا جمهور كتفقد الزخم. البروتوكول: أعلن هدفًا صغيرًا لشخص تحترم رأيه — ولو جملة واحدة.", advantage:"كتجمع الناس بلا \"منصب\".", blindSpot:"ما كتفوّضش. الحل: تفويض واحد فالأسبوع." }, fr:{ pressure:"Important vs secondaire, vite.", consistency:"Engagement public = stabilité.", advantage:"Tu mobilises sans titre.", blindSpot:"Délègue peu. Fix: 1 délégation / semaine." }, en:{ pressure:"Prioritize fast.", consistency:"Public commitment works.", advantage:"Mobilize without title.", blindSpot:"Low delegation." } },
-    hookQuestion:{ ar:"شنو مهمة وحدة تقدر تفوّضها هاد السيمانة؟", fr:"C'est quoi UNE chose que tu peux déléguer cette semaine ?", en:"What's one thing you can delegate this week?" },
-    shareCaption:{ ar:"طلع ليا «القائد» 👑 كنقود بالوضوح… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Leader» 👑 Je mène par la clarté… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Leader\" 👑 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"القيادة",fr:"Leadership",en:"Leadership"}, stat2Label:{ar:"التأثير",fr:"Influence",en:"Influence"}, stat3Label:{ar:"التنظيم",fr:"Organisation",en:"Organization"} } },
-  { id:"mqni",  code:"MS-MQNI",  rarity:"RARE",   icon:"🎯",  titleLatin:"EL MOQNI3",  titleAr:"المقنِع",    titleFr:"Le Persuasif",   titleEn:"The Persuader",
-    viralLine:{ ar:"كنقنع بلا صياح… بالكلام اللي فبلاصتو. 🎯", fr:"Je convaincs sans forcer… timing parfait. 🎯", en:"Quiet persuasion. Big impact. 🎯" },
-    signatureMove:{ ar:"الحُجّة + التوقيت = نتيجتي.", fr:"Argument + timing = impact.", en:"Argument + timing = impact." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتقدر تبدّل رأي الناس بجملة وحدة.", truth:"الحقيقة: خاصك القياس باش تبقى ثابت." }, fr:{ looks:"Ça se voit: Une phrase bien placée et tu retournes la salle.", truth:"La vérité: Il te faut des chiffres pour rester stable." }, en:{ looks:"Looks like: You can flip a room with one line.", truth:"Truth: You need metrics to stay grounded." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتبحث على الجملة اللي تغير الموقف وكتستغل التوقيت. دليل عندك: في أصعب النقاشات كنت أنت اللي قلبت الميزان. الثمن إلا تجاهلت: الإقناع يحتاج طاقة — بلا راحة كتفقد حدّتك. البروتوكول: قبل أي نقاش مهم — حدد الجملة الواحدة اللي تريد تُبلّغها.", consistency:"كتلاحظ عليك: بلا هدف اجتماعي (عرض/نقاش/جمهور) كتفقد الدافع. دليل عندك: أفضل أعمالك كانت فيها \"شخص تقنعه\". الثمن إلا تجاهلت: كتشتغل بلا هدف وكتحس بالفراغ. البروتوكول: حدد هدفًا اجتماعيًا كل أسبوع — عرض صغير، نقاش، فرصة للإقناع.", advantage:"كتلاحظ عليك: كتجيب الدعم والموارد بسرعة أكثر من غيرك. دليل عندك: الناس \"تصدّق\" فيك وتعطيك الفرصة قبل ما تُثبت. الثمن إلا ما استغلتيش: هاد الثقة كتضيع إلا استخدمتها بلا نتائج حقيقية. البروتوكول: بعد كل إقناع — ضع تعهدًا بنتيجة قابلة للقياس.", blindSpot:"كتلاحظ عليك: كتتهرب من الأرقام والقياس. دليل عندك: بزاف من المبادرات ديالك كانت ناجحة لكن ما عندكش أرقام تُثبتها. الثمن إلا ما بدّلتيش: كتفقد المصداقية أمام من يطلب الدليل. البروتوكول: حدد KPI واحد فقط لهاد الأسبوع وراقبه يوميًا." }, fr:{ pressure:"La phrase décisive.", consistency:"Objectif social régulier.", advantage:"Support rapide.", blindSpot:"Mesure faible. Fix KPI hebdo." }, en:{ pressure:"Decisive line.", consistency:"Social targets.", advantage:"Fast support.", blindSpot:"Track a KPI." } },
-    hookQuestion:{ ar:"شنو رقم واحد غادي تراقبو هاد الشهر؟", fr:"C'est quoi LE chiffre que tu suis ce mois-ci ?", en:"What's the one metric you'll track this month?" },
-    shareCaption:{ ar:"طلع ليا «المقنِع» 🎯 كنقنع بالهدوء… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Persuasif» 🎯 Timing + كلام فبلاصتو… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Persuader\" 🎯 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"الإقناع",fr:"Persuasion",en:"Persuasion"}, stat2Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat3Label:{ar:"القياس",fr:"Mesure",en:"Tracking"} } },
-  { id:"mbd3",  code:"MS-MBD3",  rarity:"RARE",   icon:"🎨",  titleLatin:"EL MOBDI3",  titleAr:"المبدع",     titleFr:"L'Artiste",      titleEn:"The Creator",
-    viralLine:{ ar:"كنشوف اللي ما كيتشافش… وكنقلبو لحاجة كتخدم. 🎨", fr:"Je vois l'angle que personne capte… et je le rends utile. 🎨", en:"I see patterns others miss. 🎨" },
-    signatureMove:{ ar:"إبداع عملي، ماشي غير أفكار.", fr:"Créatif, mais concret.", en:"Creative, but practical." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتولد الأفكار وكتشوف الربط.", truth:"الحقيقة: خاصك إطار بسيط باش تنفذ." }, fr:{ looks:"Ça se voit: Idées et connexions rares.", truth:"La vérité: Il te faut un cadre simple." }, en:{ looks:"Looks like: Rare connections.", truth:"Truth: Need structure to execute." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتغير الزاوية بدل الصدام المباشر. دليل عندك: أكثر الحلول اللي جبتها جاءت في اللحظات الصعبة. الثمن إلا تجاهلت: الإبداع بلا تنفيذ كيبقى فكرة فقط. البروتوكول: جيب 3 بدائل في 5 دقائق ثم اختر واحدة وابدأها.", consistency:"كتلاحظ عليك: الروتين القاسي كيقتل إبداعك. دليل عندك: أفضل أفكارك جاءت في بيئة فيها حرية. الثمن إلا تجاهلت: بلا هيكل بسيط كتشتت وما تكمّل. البروتوكول: خصص وقت للإبداع بشكل منفصل عن التنفيذ — ولو 30 دقيقة يوميًا.", advantage:"كتلاحظ عليك: كتشوف روابط بين أشياء الآخرون ما يشوفوهاش. دليل عندك: الحلول اللي جبتها كانت دائمًا خارج التوقع. الثمن إلا ما استغلتيش: الإبداع بلا توجيه كيفوت. البروتوكول: حوّل فكرة إبداعية واحدة لمشروع صغير قابل للإنجاز هاد الأسبوع.", blindSpot:"كتلاحظ عليك: الروتين الثابت كيطفيك وكتهرب منه. دليل عندك: المهام الرتيبة كتراكمت بلا إنجاز. الثمن إلا ما بدّلتيش: الإبداع بلا انضباط ما يوصلش للنتيجة. البروتوكول: ضع إطارًا صغيرًا ثابتًا (3 خطوات يومية فقط) يحرر وقتك للإبداع." }, fr:{ pressure:"Tu changes d'angle.", consistency:"Création ≠ exécution.", advantage:"Idées neuves.", blindSpot:"Routine = baisse. Fix cadre minimal." }, en:{ pressure:"Change angle.", consistency:"Create vs execute.", advantage:"Novel ideas.", blindSpot:"Routine kills you." } },
-    hookQuestion:{ ar:"شنو فكرة وحدة غادي تحوّلها لواقع فـ7 أيام؟", fr:"Quelle UNE idée tu rends réelle en 7 jours ?", en:"Which ONE idea becomes real in 7 days?" },
-    shareCaption:{ ar:"طلع ليا «المبدع» 🎨 كنبدّل الزاوية وكنلقى الحل… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Artiste» 🎨 Je change l'angle… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Creator\" 🎨 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"الإبداع",fr:"Créa",en:"Creativity"}, stat2Label:{ar:"التنفيذ",fr:"Exécution",en:"Execution"}, stat3Label:{ar:"الأصالة",fr:"Originalité",en:"Originality"} } },
-  { id:"7aris", code:"MS-7ARIS", rarity:"COMMON", icon:"🛡️", titleLatin:"EL 7ARIS",   titleAr:"الحارس",     titleFr:"Le Gardien",     titleEn:"The Sentinel",
-    viralLine:{ ar:"كنحافظ على الوتيرة… وكنربح بالاستمرار. 🛡️", fr:"Je garde le rythme… je gagne au long terme. 🛡️", en:"Consistency wins. 🛡️" },
-    signatureMove:{ ar:"الاستمرار هو السلاح ديالي.", fr:"La constance, c'est mon arme.", en:"Consistency is my weapon." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتربح بالاستمرار.", truth:"الحقيقة: المفاجآت كتقلقك حتى كتعاود توازن." }, fr:{ looks:"Ça se voit: Tu gagnes à la constance.", truth:"La vérité: L'imprévu te dérègle." }, en:{ looks:"Looks like: You outlast hype.", truth:"Truth: Chaos disrupts you." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتشدّ بالطريقة المضمونة بدل التجريب. دليل عندك: في أصعب الأوقات كنت أنت الثابت بينما الآخرين كيتشتتوا. الثمن إلا تجاهلت: الاستقرار ديالك كتحسبه \"ضعف\" بينما هو أحد أقوى الأصول. البروتوكول: في كل ضغط — حدد الروتين الأساسي اللي يُبقيك ثابتًا حتى الأزمة تعدي.", consistency:"كتلاحظ عليك: الروتين هو وقودك الحقيقي. دليل عندك: فترات الانقطاع كانت دائمًا بعدها تراجع واضح. الثمن إلا تجاهلت: بلا روتين كتحس بضياع وكتضيع وقتًا في \"إعادة البدء\". البروتوكول: حدد روتين صغير (3-5 خطوات يومية) + مكافأة بسيطة كل أسبوع كاملة.", advantage:"كتلاحظ عليك: كتكمل ما يتخلى عنه الآخرون لأن الحماس انتهت. دليل عندك: الأهداف البعيدة المدى أنت من ينجزها في الفريق. الثمن إلا ما استغلتيش: هاد الصبر كتضيع فأشياء لا تستحق. البروتوكول: استغل الاستمرارية ديالك في هدف طويل الأمد واحد — وكن صريحًا مع غيرك على هاد الأسلوب.", blindSpot:"كتلاحظ عليك: المفاجآت والعشوائية كتضرك أكثر من غيرك. دليل عندك: في مواقف غير متوقعة كنت أبطأ في الاستجابة. الثمن إلا ما بدّلتيش: بيئة غير منظمة كتمنعك من الوصول لإمكانياتك. البروتوكول: ضع خطة احتياطية مسبقًا لأكثر 2 سيناريوهات محتملة في حياتك." }, fr:{ pressure:"Méthode sûre.", consistency:"mini-rituel + reward.", advantage:"Long terme.", blindSpot:"imprévu. Fix plan B." }, en:{ pressure:"Safe method.", consistency:"mini-ritual + reward.", advantage:"long-term win.", blindSpot:"chaos. Fix backup plan." } },
-    hookQuestion:{ ar:"شنو روتين صغير تقدر تحافظ عليه حتى فأسوأ أسبوع؟", fr:"C'est quoi ton mini-rituel même dans ta pire semaine ?", en:"What's your tiny routine even on bad weeks?" },
-    shareCaption:{ ar:"طلع ليا «الحارس» 🛡️ كنربح بالاستمرار… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Gardien» 🛡️ Constance > hype… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Sentinel\" 🛡️ What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"الثبات",fr:"Constance",en:"Consistency"}, stat2Label:{ar:"الانضباط",fr:"Discipline",en:"Discipline"}, stat3Label:{ar:"التحمل",fr:"Endurance",en:"Endurance"} } },
-  { id:"m7lll", code:"MS-M7LLL", rarity:"COMMON", icon:"🔍",  titleLatin:"EL MO7ALLIL",titleAr:"المحلّل",    titleFr:"L'Analyste",     titleEn:"The Analyst",
-    viralLine:{ ar:"كنحلّلها فصمت… وكنخرج بقرار صائب. 🔍", fr:"Je calcule en silence… décision propre. 🔍", en:"Silent analysis. Sharp decision. 🔍" },
-    signatureMove:{ ar:"كنحوّل الضباب لخطة واضحة.", fr:"Je clarifie le flou.", en:"I turn fog into plan." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتلقا الغلط قبل ما يبان.", truth:"الحقيقة: بلا موعد نهائي كتغرق فالتفكير." }, fr:{ looks:"Ça se voit: Tu vois l'erreur avant les autres.", truth:"La vérité: Sans deadline, tu sur-analyses." }, en:{ looks:"Looks like: You catch mistakes early.", truth:"Truth: No deadline = overthinking." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتقيس الاحتمالات وكتتجنب القرار المتسرع. دليل عندك: قراراتك الكبيرة نادرًا ندمت عليها لأنك درستها. الثمن إلا تجاهلت: التحليل المطوّل كيُبطّئك بينما العالم كيتحرك. البروتوكول: في كل ضغط — ضع \"وقت التفكير\" محدد (20 دقيقة max) ثم تحرك.", consistency:"كتلاحظ عليك: بلا deadline كتغرق في التفاصيل. دليل عندك: أفضل تحليلاتك خرجت مع ضغط وقت حقيقي. الثمن إلا تجاهلت: كتبقى في \"مرحلة الدراسة\" وتفوّتك فرص التنفيذ. البروتوكول: حدد deadline قصير لكل تحليل — ولو 24 ساعة — والتزم به.", advantage:"كتلاحظ عليك: كتلاحظ الغلط قبل ما يبان ويكلف. دليل عندك: تدخلاتك كانت دائمًا في الوقت المناسب. الثمن إلا ما استغلتيش: الدقة ديالك كتضيع في تفاصيل صغيرة بدل القرارات الكبيرة. البروتوكول: استغل نظرتك التحليلية في قرار مهم واحد هاد الأسبوع — مش الكل.", blindSpot:"كتلاحظ عليك: كتبحث عن الكمال قبل تتحرك. دليل عندك: بزاف من الأشياء ظلت في التخطيط لأن \"الوقت لم يكن مناسبًا\". الثمن إلا ما بدّلتيش: الفرص كتفوت لمن ينفذ بـ80% في الوقت. البروتوكول: قرر بـ80% من المعلومات — الـ20% الباقية كتتعلمها في التنفيذ." }, fr:{ pressure:"Tu gardes le contrôle.", consistency:"deadlines courtes.", advantage:"qualité ↑ erreurs ↓", blindSpot:"perfection. Fix 80%." }, en:{ pressure:"controlled.", consistency:"short deadlines.", advantage:"quality upgrade.", blindSpot:"perfectionism." } },
-    hookQuestion:{ ar:"إمتى غادي تحسم قرار واحد نهائي؟", fr:"Tu tranches QUAND sur une décision ?", en:"When will you decide?" },
-    shareCaption:{ ar:"طلع ليا «المحلّل» 🔍 كنقرا التفاصيل اللي كتفلت… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Analyste» 🔍 Je capte les détails… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Analyst\" 🔍 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"التحليل",fr:"Analyse",en:"Analysis"}, stat2Label:{ar:"الدقة",fr:"Précision",en:"Precision"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
-  { id:"rayd",  code:"MS-RAYD",  rarity:"EPIC",   icon:"🚀",  titleLatin:"EL RAYED",   titleAr:"الرائد",     titleFr:"Le Pionnier",    titleEn:"The Pioneer",
-    viralLine:{ ar:"كنجرّب قبل ما يطلبو مني… وكنبني طريق جديد. 🚀", fr:"Je teste avant tout le monde… je trace la route. 🚀", en:"I move first. 🚀" },
-    signatureMove:{ ar:"كنغامر بحساب، ماشي بتهور.", fr:"Risque… mais calculé.", en:"Calculated risk." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: كتزهق من العادي وكتقلب على الجديد.", truth:"الحقيقة: بلا مشروع حيّ كتتشتت." }, fr:{ looks:"Ça se voit: Le normal t'ennuie.", truth:"La vérité: Sans projet vivant, dispersion." }, en:{ looks:"Looks like: You chase novelty.", truth:"Truth: No live project = scattered focus." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتتعلم بسرعة وكتبحث على طريق خارج القاعدة. دليل عندك: في أصعب الأزمات كنت أول من وجد الحل غير المتوقع. الثمن إلا تجاهلت: الابتكار بلا بنية كيتشتت. البروتوكول: في كل أزمة — ضع 3 بدائل خارج المألوف ثم اختر الأكثر قابلية للتنفيذ.", consistency:"كتلاحظ عليك: بلا مشروع حيّ كتفقد الدافع والتركيز. دليل عندك: الفترات الأكثر إنتاجية كانت فيها شيء \"تبنيه\" باستمرار. الثمن إلا تجاهلت: الطاقة كتتبدّد في أشياء متعددة بلا نتيجة. البروتوكول: حدد مشروعًا واحدًا يستمر 30 يومًا — وكن صارمًا على الاستمرار.", advantage:"كتلاحظ عليك: كتسبق التغيير وكتستغل الفرص قبل ما يراها الآخرين. دليل عندك: بزاف من القرارات اللي بدت جريئة كانت صح. الثمن إلا ما استغلتيش: هاد الحدس مش مُوثَّق وكيضيع. البروتوكول: سجّل الفرص اللي تشوفها (ولو جملة) — تعود إليها لاحقًا.", blindSpot:"كتلاحظ عليك: الملل السريع كيخليك تتخلى عن مشاريع قبل ما تظهر نتائجها. دليل عندك: بزاف من الأفكار الزوينة توقفت في المنتصف. الثمن إلا ما بدّلتيش: كتبقى متميزًا لكن بلا إنجاز مكتمل. البروتوكول: إلا حسيت بالملل — غيّر الطريقة مش الهدف (تنويع داخل نفس المشروع)." }, fr:{ pressure:"voie hors cadre.", consistency:"un projet 30 jours.", advantage:"avance tôt.", blindSpot:"ennui. Fix variation interne." }, en:{ pressure:"out-of-box path.", consistency:"one project 30 days.", advantage:"early mover.", blindSpot:"boredom." } },
-    hookQuestion:{ ar:"شنو المشروع الواحد اللي غادي تركز عليه 30 يوم؟", fr:"C'est quoi LE projet que tu portes 30 jours ?", en:"What ONE project will you commit to for 30 days?" },
-    shareCaption:{ ar:"طلع ليا «الرائد» 🚀 كنمشي قدّام وكنتعلم فالطريق… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «Le Pionnier» 🚀 J'avance avant tout le monde… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Pioneer\" 🚀 What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"الجرأة",fr:"Audace",en:"Boldness"}, stat2Label:{ar:"الابتكار",fr:"Innovation",en:"Innovation"}, stat3Label:{ar:"التركيز",fr:"Focus",en:"Focus"} } },
-  { id:"mzan",  code:"MS-MZAN",  rarity:"RARE",   icon:"⚖️",  titleLatin:"EL MIZAN",   titleAr:"المُتوازن",  titleFr:"L'Équilibré",    titleEn:"The Balancer",
-    viralLine:{ ar:"كنوازن بين العقل والقلب… بلا ما نضيع. ⚖️", fr:"Je garde l'équilibre… cerveau + cœur. ⚖️", en:"Balance is my superpower. ⚖️" },
-    signatureMove:{ ar:"كنختار اللي كيعيشني مزيان اليوم وغدا.", fr:"Je choisis ce qui tient aujourd'hui ET demain.", en:"I choose what works now and later." },
-    coldReading:{ ar:{ looks:"ظاهر عليك: ما كتتباعش بسهولة بالكلام الكبير… كتقلب على المعنى.", truth:"الحقيقة: كتمشي فالوسط حتى كتضيع الاختيار. خاصك تحسم." }, fr:{ looks:"Ça se voit: Tu n'achètes pas le hype. Tu veux du sens.", truth:"La vérité: À force d'équilibrer, tu peux retarder le choix." }, en:{ looks:"Looks like: You don't buy hype—you want meaning.", truth:"Truth: Over-balancing can delay decisions." } },
-    mirror:{ ar:{ pressure:"كتلاحظ عليك: تحت الضغط كتولي واقعي وكتبحث على حل يخدم بدل الصدام. دليل عندك: نادرًا ما كنت طرفًا في صراع غير ضروري. الثمن إلا تجاهلت: التوازن ديالك كيصير تأخير إلا ما حدّدتيش أولوية واضحة. البروتوكول: في كل ضغط — حدد ما هو الأهم (واحد فقط) ثم تصرّف.", consistency:"كتلاحظ عليك: بلا أولويات محدودة كتنتشر وتفقد التركيز. دليل عندك: الفترات الأقل إنتاجية كانت فيها أكثر من 3 \"أولويات\". الثمن إلا تجاهلت: كتتعب وتحس أنك تشتغل كثير بنتيجة قليلة. البروتوكول: حدد أولويتين فقط هاد الأسبوع — والباقي ينتظر.", advantage:"كتلاحظ عليك: كتقدر تجمع بين الدراسة والحياة بطريقة الآخرين يعجزون عنها. دليل عندك: نادرًا ما احترقت أو انهرت تمامًا. الثمن إلا ما استغلتيش: هاد القدرة كتضيع في التوازن بلا نمو حقيقي. البروتوكول: استغل التوازن ديالك بإضافة مهارة جديدة صغيرة — لا تنتظر \"الوقت المثالي\".", blindSpot:"كتلاحظ عليك: كتتجنب الحسم خوفًا من الاختيار الخاطئ. دليل عندك: بزاف من القرارات الكبيرة تأخرت لأنك كنت \"تزن الأمور\". الثمن إلا ما بدّلتيش: الفرص كتفوت بينما كنت لا تزال تفكر. البروتوكول: اختر قرارًا واحدًا معلقًا واختبره أسبوعًا كاملًا — هاد الأسبوع." }, fr:{ pressure:"Tu restes lucide, tu cherches une solution qui marche.", consistency:"2 priorités max (notes + skill).", advantage:"Tu avances sans te cramer.", blindSpot:"Tu évites de trancher. Fix: 1 choix + 1 semaine test." }, en:{ pressure:"You stay realistic and practical.", consistency:"2 priorities max.", advantage:"You progress without burnout.", blindSpot:"Decision avoidance. Fix: one choice + one-week test." } },
-    hookQuestion:{ ar:"واش كتوازن بزاف حتى كتأخر القرار؟ شنو اختيار واحد غادي تجربو أسبوع واحد؟", fr:"Tu veux trop équilibrer ? Quel choix tu testes 1 semaine pour trancher ?", en:"Are you delaying decisions? What will you test for one week?" },
-    shareCaption:{ ar:"طلع ليا «المتوازن» ⚖️ كنقلب على اللي يخدم اليوم وغدا… شنو طلع ليك؟ 👀 #MassarPro", fr:"J'ai eu «L'Équilibré» ⚖️ Je veux du solide, pas du hype… t'as eu quoi ? 👀 #MassarPro", en:"I got \"The Balancer\" ⚖️ What did you get? 👀" },
-    statsProfile:{ stat1Label:{ar:"التوازن",fr:"Équilibre",en:"Balance"}, stat2Label:{ar:"الواقعية",fr:"Réalisme",en:"Practicality"}, stat3Label:{ar:"الحسم",fr:"Décision",en:"Decision"} } },
-];
-
-// Fast lookup by id
-const ARCHETYPES_V2_BY_ID = Object.fromEntries(ARCHETYPES_V2.map(a => [a.id, a]));
-
-// ── computeRarity (deterministic, threshold-based) ─────────────────
-function computeRarity(confidence) {
-  const c = Math.round(Number(confidence) || 0);
-  if (c >= 80) return "EPIC";
-  if (c >= 60) return "RARE";
-  return "COMMON";
-}
-
-// ── makeSerialId (deterministic, no randomness) ────────────────────
-function makeSerialId(archetypeCode, seed) {
-  const s = Math.abs(Math.round(seed || 0)) % 999;
-  return `${archetypeCode}-${String(s).padStart(3, "0")}`;
-}
-
-// ── computeDeterministicStats ──────────────────────────────────────
-// stat1 = (structure + analytical) / 2 × 100
-// stat2 = (leadership + social) / 2 × 100
-// stat3 = (risk + creativity) / 2 × 100
-function computeDeterministicStats(traits) {
-  const tr = (traits && typeof traits === "object") ? traits : {};
-  const s = (x, y) => Math.min(100, Math.max(0, Math.round(((Number(tr[x]) || 0.5) + (Number(tr[y]) || 0.5)) / 2 * 100)));
-  return { stat1: s("structure","analytical"), stat2: s("leadership","social"), stat3: s("risk","creativity") };
-}
-
-// ── pickArchetypeV2 — deterministic trait→archetype (no gender, no sports push) ──
-function pickArchetypeV2(profile) {
-  const { traits={}, learnerType="", strengths=[], confidence=0 } = profile || {};
-  const tr = {
-    analytical: Number(traits.analytical  || 0),
-    social:     Number(traits.social      || 0),
-    structure:  Number(traits.structure   || 0),
-    creativity: Number(traits.creativity  || 0),
-    risk:       Number(traits.risk        || 0),
-    leadership: Number(traits.leadership  || 0),
-  };
-  const entries = Object.entries(tr).sort((a, b) => b[1] - a[1]);
-  const [topTrait, topVal] = entries[0] || ["structure", 0.5];
-  const isMixed = entries.length > 1 && Math.abs(entries[0][1] - entries[1][1]) < 0.06;
-  const hasTeaching = (strengths||[]).some(s => ["teaching","s_writing","s_speaking","s_learning"].includes(s));
-  const isMomentum  = learnerType === "striker" || learnerType === "sprinter";
-  const isPlanner   = learnerType === "sentinel" || learnerType === "architect";
-  const needsRoutine= tr.structure < 0.4 && tr.risk < 0.4;
-  const getById     = id => ARCHETYPES_V2_BY_ID[id] || ARCHETYPES_V2_BY_ID["mzan"];
-  if (hasTeaching && tr.social >= 0.45) return getById("mllm");
-  if (isMomentum && tr.risk >= 0.4)     return getById("hrrk");
-  if (isPlanner && tr.analytical < 0.5) return getById("nazl");
-  if (needsRoutine)                      return getById("7aris");
-  if (isMixed && topVal < 0.55)          return getById("mzan");
-  switch (topTrait) {
-    case "leadership": return getById("qaid");
-    case "analytical": return tr.structure >= 0.5 ? getById("m7lll") : getById("nazl");
-    case "structure":  return confidence >= 55 ? getById("mhni") : getById("bnaa");
-    case "creativity": return getById("mbd3");
-    case "social":     return confidence >= 55 ? getById("mqni") : getById("mllm");
-    case "risk":       return tr.creativity >= 0.5 ? getById("rayd") : getById("hrrk");
-    default:           return getById("mzan");
-  }
-}
-
-// ── computeMassarType kept for backward compat (returns old 4-letter code)
-// Now also returns the new archetype id via pickArchetypeV2
 function computeMassarType(traits, reality) {
+  // FIX: results page null-safety — guard traits object being undefined/incomplete
   const safeTr = traits && typeof traits === "object" ? traits : {};
   const ps = reality?.preferredStyle || "";
+  // Dim 1: A(nalytical) vs C(reative)
   const d1 = (safeTr.analytical || 0) >= (safeTr.creativity || 0) ? "A" : "C";
+  // Dim 2: S(ocial) vs I(ndependent)
   const d2 = (safeTr.social || 0) >= 0.5 ? "S" : "I";
+  // Dim 3: P(ractical) vs O(theoretical)
   const practicalBias = ps === "handson" ? 0.15 : ps === "academic" ? -0.15 : 0;
   const practicalScore = ((safeTr.structure || 0) + (1 - (safeTr.creativity || 0))) / 2 + practicalBias;
   const d3 = practicalScore >= 0.5 ? "P" : "O";
+  // Dim 4: R(isk-taker) vs K(stable)
   const d4 = (safeTr.risk || 0) >= 0.5 ? "R" : "K";
   return d1 + d2 + d3 + d4;
 }
 
-function massarTypeDesc(code, t, langOverride) {
-  const lang = langOverride || (t?.dir === "rtl" ? "ar" : (t?.next === "Next" ? "en" : "fr"));
-  // code is the old 4-letter internal type — return a simple tagline
-  return lang === "ar" ? "اكتشف هويتك المهنية" : lang === "fr" ? "Découvre ton identité pro" : "Discover your career identity";
+// ── Moroccan Archetype System ─────────────────────────────────────
+// 8 identity archetypes — Modern Moroccan, brandable, confident.
+
+const ARCH_SVG = {
+  BENA:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="14" width="5" height="7" rx="1"/><rect x="9.5" y="10" width="5" height="11" rx="1"/><rect x="16" y="6" width="5" height="15" rx="1"/><line x1="2" y1="21" x2="22" y2="21"/></svg>`,
+  MHNI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9C4.5 20 1 17 1 12V7z"/><path d="M9 12l2 2 4-4"/></svg>`,
+  HRRK:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h8l-1 8 9-12h-8z"/></svg>`,
+  TGRI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H9M17 7v8"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="7" r="2"/></svg>`,
+  MLAH:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="12"/><line x1="12" y1="12" x2="17.5" y2="8"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+  SDGI:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="4" height="4" rx="0.5"/><rect x="10" y="3" width="4" height="4" rx="0.5"/><rect x="17" y="3" width="4" height="4" rx="0.5"/><rect x="3" y="10" width="4" height="4" rx="0.5"/><rect x="10" y="10" width="4" height="4" rx="0.5"/><rect x="17" y="17" width="4" height="4" rx="0.5"/><rect x="3" y="17" width="4" height="4" rx="0.5"/><rect x="17" y="10" width="4" height="4" rx="0.5"/></svg>`,
+  RAID:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c0 0 4 4 4 9a4 4 0 01-8 0c0-5 4-9 4-9z"/><path d="M8 17l-2 4M16 17l2 4M10 21h4"/></svg>`,
+  MTQN:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></svg>`,
+};
+
+const MOROCCAN_ARCHETYPES = {
+  BENA:{
+    code:"BENA", svgKey:"BENA", icon:"🏗️",
+    name:{ ar:"البنّاء", fr:"Le Bâtisseur", en:"The Builder" },
+    tagline:{ ar:"يُنجز ما يعد به الآخرون فقط.", fr:"Il livre ce que d'autres promettent.", en:"Delivers what others only promise." },
+    description:{ ar:"دقة وانضباط في كل ما يبدأ به — إنجازاته تتكلم عنه.", fr:"Précision et discipline dans tout ce qu'il entreprend.", en:"Precision and discipline in everything he starts." },
+    strengths:{ ar:["موثوقية عالية","انضباط متواصل","تنفيذ دقيق"], fr:["Haute fiabilité","Discipline constante","Exécution précise"], en:["High reliability","Consistent discipline","Precise execution"] },
+    risk:{ ar:"مقاومة التغيير تُضيّع فرصاً جديدة.", fr:"La résistance au changement fait rater des opportunités.", en:"Resistance to change misses new opportunities." },
+    bestEnv:{ ar:"بيئة منظمة بأهداف واضحة ومعايير ثابتة.", fr:"Environnement structuré avec objectifs clairs.", en:"Structured environment with clear goals." },
+    worstEnv:{ ar:"الفوضى وتغيير الأولويات باستمرار.", fr:"Chaos et priorités changeantes.", en:"Chaos and constantly shifting priorities." },
+    opposite:"RAID", evolvesTrait:"creativity", evolvesInto:"SDGI",
+  },
+  MHNI:{
+    code:"MHNI", svgKey:"MHNI", icon:"🏛️",
+    name:{ ar:"المِهْنِي", fr:"Le Professionnel", en:"The Professional" },
+    tagline:{ ar:"اسمه ضمانة وتوقيعه معيار.", fr:"Son nom est garantie, sa signature un standard.", en:"His name is trust, his work the standard." },
+    description:{ ar:"موثوق ومتقن يرفع من قيمة عمله في كل مشروع يُنجزه.", fr:"Fiable et maîtrisé, il rehausse la valeur de son travail.", en:"Reliable and masterful, raises the bar in every project." },
+    strengths:{ ar:["موثوقية لا تُضاهى","تحليل ميداني دقيق","شبكة مهنية قوية"], fr:["Fiabilité incomparable","Analyse terrain précise","Fort réseau professionnel"], en:["Unmatched reliability","Precise field analysis","Strong professional network"] },
+    risk:{ ar:"الاستناد إلى المكانة قد يُبطئ التكيف مع المتغيرات.", fr:"S'appuyer sur la réputation peut ralentir l'adaptation.", en:"Leaning on reputation may slow adaptation to change." },
+    bestEnv:{ ar:"مؤسسات راسخة تُقدّر الجودة والخبرة المتراكمة.", fr:"Institutions établies valorisant qualité et expertise.", en:"Established institutions valuing quality and expertise." },
+    worstEnv:{ ar:"بيئات تجريبية سريعة بلا منهجية واضحة.", fr:"Environnements expérimentaux rapides sans méthode.", en:"Fast experimental environments without methodology." },
+    opposite:"RAID", evolvesTrait:"risk", evolvesInto:"HRRK",
+  },
+  HRRK:{
+    code:"HRRK", svgKey:"HRRK", icon:"⚡",
+    name:{ ar:"المُحرّك", fr:"Le Moteur", en:"The Driver" },
+    tagline:{ ar:"يُشعل الطاقة ويقود إلى الأمام.", fr:"Il allume l'énergie et mène vers l'avant.", en:"Ignites energy and drives forward." },
+    description:{ ar:"قائد طبيعي يدفع المجموعات لأبعد مما تتوقع من نفسها.", fr:"Leader naturel poussant les équipes au-delà de leurs attentes.", en:"Natural leader who pushes teams beyond their expectations." },
+    strengths:{ ar:["قيادة إلهامية","طاقة تنظيمية عالية","حسم وسرعة"], fr:["Leadership inspirant","Haute énergie organisationnelle","Décision rapide"], en:["Inspiring leadership","High organisational energy","Quick decisiveness"] },
+    risk:{ ar:"الطاقة بلا بنية تُبدد النتائج وتُشتت الفريق.", fr:"L'énergie sans structure disperse les résultats.", en:"Energy without structure dissipates results." },
+    bestEnv:{ ar:"مشاريع جماعية ومبادرات تحتاج قيادة ميدانية.", fr:"Projets collectifs nécessitant un leadership de terrain.", en:"Collective projects needing hands-on leadership." },
+    worstEnv:{ ar:"عمل فردي صامت بلا أثر مباشر على الآخرين.", fr:"Travail solo silencieux sans impact sur autrui.", en:"Silent solo work with no impact on others." },
+    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
+  },
+  TGRI:{
+    code:"TGRI", svgKey:"TGRI", icon:"🔀",
+    name:{ ar:"التاجر الذكي", fr:"Le Négociant Malin", en:"The Sharp Dealer" },
+    tagline:{ ar:"يرى الفرصة قبل أن يراها غيره.", fr:"Il voit l'opportunité avant les autres.", en:"Sees the opportunity before anyone else." },
+    description:{ ar:"يُحوّل الأفكار والعلاقات إلى قيمة حقيقية قابلة للقياس.", fr:"Transforme idées et relations en valeur réelle et mesurable.", en:"Turns ideas and relationships into real measurable value." },
+    strengths:{ ar:["حدس تجاري حاد","شبكة علاقات واسعة","مفاوض طبيعي"], fr:["Flair commercial aigu","Large réseau","Négociateur naturel"], en:["Sharp commercial instinct","Wide network","Natural negotiator"] },
+    risk:{ ar:"القفز بين الفرص دون إتمام يُشتت الطاقة والتركيز.", fr:"Sauter entre opportunités sans finaliser disperse l'énergie.", en:"Jumping between opportunities without finishing dissipates energy." },
+    bestEnv:{ ar:"بيئة تجارية ديناميكية مع استقلالية واسعة النطاق.", fr:"Environnement commercial dynamique avec large autonomie.", en:"Dynamic business environment with wide autonomy." },
+    worstEnv:{ ar:"بيروقراطية صارمة وعمل متكرر بلا معنى.", fr:"Bureaucratie rigide et travail répétitif.", en:"Rigid bureaucracy and repetitive work." },
+    opposite:"MTQN", evolvesTrait:"structure", evolvesInto:"MHNI",
+  },
+  MLAH:{
+    code:"MLAH", svgKey:"MLAH", icon:"🧭",
+    name:{ ar:"الملاح", fr:"Le Navigateur", en:"The Navigator" },
+    tagline:{ ar:"يتحرك بخطة حيث يضيع الآخرون.", fr:"Il avance avec plan là où les autres se perdent.", en:"Moves with a plan where others get lost." },
+    description:{ ar:"محلل استراتيجي يرسم الطريق بدقة ويُخطط بعيد المدى.", fr:"Analyste stratégique qui trace la route et planifie à long terme.", en:"Strategic analyst who maps the route and plans long-term." },
+    strengths:{ ar:["تفكير استراتيجي عميق","تحليل دقيق","رؤية بعيدة المدى"], fr:["Pensée stratégique profonde","Analyse précise","Vision long terme"], en:["Deep strategic thinking","Precise analysis","Long-term vision"] },
+    risk:{ ar:"الإفراط في التحليل يُعطّل قرار التنفيذ في اللحظة المناسبة.", fr:"L'analyse excessive bloque l'exécution au bon moment.", en:"Over-analysis blocks timely execution." },
+    bestEnv:{ ar:"بيئة بحثية أو استراتيجية مع وقت كافٍ للتفكير.", fr:"Environnement recherche ou stratégie avec temps de réflexion.", en:"Research or strategy environment with thinking time." },
+    worstEnv:{ ar:"قرارات سريعة بلا معطيات أو تحليل كافٍ.", fr:"Décisions rapides sans données suffisantes.", en:"Quick decisions without sufficient data." },
+    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
+  },
+  SDGI:{
+    code:"SDGI", svgKey:"SDGI", icon:"🌐",
+    name:{ ar:"الصانع الرقمي", fr:"Le Fabricant Digital", en:"The Digital Maker" },
+    tagline:{ ar:"يصنع ما لم يُتخيَّل بعد.", fr:"Il fabrique ce qui n'a pas encore été imaginé.", en:"Builds what hasn't been imagined yet." },
+    description:{ ar:"مُبدع تقني يجمع الأفكار والأدوات الرقمية في منتجات حقيقية.", fr:"Créatif technique combinant idées et outils numériques en produits réels.", en:"Technical creative combining ideas and digital tools into real products." },
+    strengths:{ ar:["إبداع تقني متميز","بناء شبكات رقمية","ابتكار ملموس"], fr:["Créativité technique distincte","Construction réseaux numériques","Innovation concrète"], en:["Distinctive technical creativity","Digital network building","Concrete innovation"] },
+    risk:{ ar:"كثرة المشاريع غير المكتملة تُبدد الطاقة والأثر.", fr:"Trop de projets non finalisés dissipent l'énergie.", en:"Too many unfinished projects dissipate energy and impact." },
+    bestEnv:{ ar:"فرق رقمية متنوعة بثقافة تجريبية وإبداعية.", fr:"Équipes numériques diverses avec culture expérimentale et créative.", en:"Diverse digital teams with experimental and creative culture." },
+    worstEnv:{ ar:"هياكل جامدة تُعاقب على التجريب والخطأ.", fr:"Structures rigides qui punissent l'expérimentation.", en:"Rigid structures that punish experimentation." },
+    opposite:"BENA", evolvesTrait:"structure", evolvesInto:"BENA",
+  },
+  RAID:{
+    code:"RAID", svgKey:"RAID", icon:"🚀",
+    name:{ ar:"الرائد", fr:"Le Pionnier", en:"The Pioneer" },
+    tagline:{ ar:"يسير في طرق لم يشقّها أحد.", fr:"Il marche sur des chemins que personne n'a tracés.", en:"Walks paths no one has traced yet." },
+    description:{ ar:"مُبتكر مستقل يُعيد تعريف ما اعتقد الناس أنه مسلّمة ثابتة.", fr:"Innovateur indépendant redéfinissant ce que les gens croyaient inévitable.", en:"Independent innovator who redefines what people thought inevitable." },
+    strengths:{ ar:["إبداع نظري جريء","استقلالية فكرية عميقة","حدس حاد"], fr:["Créativité théorique audacieuse","Indépendance intellectuelle","Intuition aiguë"], en:["Bold theoretical creativity","Deep intellectual independence","Sharp intuition"] },
+    risk:{ ar:"الأفكار تبقى في الذهن إن لم تُطوّر مهارة التواصل والتنفيذ.", fr:"Les idées restent en tête sans compétences en communication.", en:"Ideas stay in your head without communication and execution skills." },
+    bestEnv:{ ar:"بيئة ريادية تُقدّر الأصالة والاستقلالية الفكرية.", fr:"Environnement entrepreneurial valorisant originalité et autonomie.", en:"Entrepreneurial environment valuing originality and autonomy." },
+    worstEnv:{ ar:"بيروقراطية وعمل متكرر بلا معنى أو أثر.", fr:"Bureaucratie et travail répétitif sans sens.", en:"Bureaucracy and repetitive meaningless work." },
+    opposite:"BENA", evolvesTrait:"social", evolvesInto:"SDGI",
+  },
+  MTQN:{
+    code:"MTQN", svgKey:"MTQN", icon:"⚙️",
+    name:{ ar:"المُتقن", fr:"Le Maître Artisan", en:"The Master Craftsman" },
+    tagline:{ ar:"حرفته علامته وإتقانه هويته.", fr:"Son métier est sa marque, sa maîtrise son identité.", en:"Craft is his mark, mastery is his identity." },
+    description:{ ar:"يصقل مهاراته بصبر واستمرار حتى تصبح حرفة لا تُضاهى.", fr:"Affine patiemment ses compétences jusqu'à une maîtrise incomparable.", en:"Patiently refines skills until they become unmatched mastery." },
+    strengths:{ ar:["إتقان تقني عالٍ","صبر وتركيز عميق","جودة لا تُساوم"], fr:["Haute maîtrise technique","Patience et concentration","Qualité sans compromis"], en:["High technical mastery","Patience and deep focus","Uncompromising quality"] },
+    risk:{ ar:"التقليل من قيمة النفس يجعل الآخرين يستغلون المهارة.", fr:"Se sous-estimer amène les autres à exploiter ses compétences.", en:"Undervaluing yourself lets others exploit your skills." },
+    bestEnv:{ ar:"ورشة أو مختبر مع استقلالية تامة في المنتج النهائي.", fr:"Atelier ou labo avec pleine autonomie sur le produit.", en:"Workshop or lab with full autonomy over the final product." },
+    worstEnv:{ ar:"اجتماعات بلا قرار ومجموعات بلا هدف واضح.", fr:"Réunions sans décision et groupes sans but.", en:"Meetings without decisions and purposeless groups." },
+    opposite:"HRRK", evolvesTrait:"leadership", evolvesInto:"MHNI",
+  },
+};
+
+// Maps 16 computed internal codes → 8 Moroccan archetypes
+const ARCHETYPE_MAP = {
+  ASPR: MOROCCAN_ARCHETYPES.MHNI,
+  ASPK: MOROCCAN_ARCHETYPES.BENA,
+  AOPR: MOROCCAN_ARCHETYPES.MLAH,
+  AOPK: MOROCCAN_ARCHETYPES.MLAH,
+  ISPR: MOROCCAN_ARCHETYPES.MTQN,
+  ISPK: MOROCCAN_ARCHETYPES.MTQN,
+  IOPR: MOROCCAN_ARCHETYPES.RAID,
+  IOPK: MOROCCAN_ARCHETYPES.RAID,
+  CSPR: MOROCCAN_ARCHETYPES.SDGI,
+  CSPK: MOROCCAN_ARCHETYPES.SDGI,
+  COPR: MOROCCAN_ARCHETYPES.HRRK,
+  COPK: MOROCCAN_ARCHETYPES.TGRI,
+  ASOR: MOROCCAN_ARCHETYPES.HRRK,
+  ASOK: MOROCCAN_ARCHETYPES.MHNI,
+  CSOR: MOROCCAN_ARCHETYPES.HRRK,
+};
+
+function getArchetype(code) {
+  return ARCHETYPE_MAP[code] || MOROCCAN_ARCHETYPES.MLAH;
 }
 
-// ── ArchetypeCard (new) — full cold reading + mirror blocks ─────────────────
-function ArchetypeCard({ massarType, t, lang, traits, top3, confidence, archV2 }) {
-  const [expanded, setExpanded] = useState(false);
+function massarTypeDesc(code, t) {
+  const archetype = getArchetype(code);
+  const lang = t?.dir==="rtl" ? "ar" : (t?.next==="Next" ? "en" : "fr");
+  return archetype.tagline?.[lang] || archetype.tagline?.en || "";
+}
 
-  // Use v2 archetype if provided, else derive from traits
-  const arch = archV2 || pickArchetypeV2({ traits: (traits && typeof traits === 'object') ? traits : {}, confidence: Number(confidence)||0 }) || ARCHETYPES_V2_BY_ID.mzan;
-  const safeTr = (traits && typeof traits === "object") ? traits : {};
 
-  const rarityLabel = { COMMON:{ ar:"عادي", fr:"Commun", en:"Common" }, RARE:{ ar:"نادر", fr:"Rare", en:"Rare" }, EPIC:{ ar:"ملحمي", fr:"Épique", en:"Epic" } };
-  const rarityGlow  = { COMMON:"#3b82f6", RARE:"#f59e0b", EPIC:"#a855f7" };
-  const rarity      = computeRarity(confidence);
-  const rarColor    = rarityGlow[rarity] || "#3b82f6";
-  const rarLabel    = rarityLabel[rarity]?.[lang] || rarityLabel[rarity]?.en || rarity;
+// ─────────────────────────────────────────────────────────────────
+// ImproveModeCard — shown when bacStatus==="before"
+// ─────────────────────────────────────────────────────────────────
+function ImproveModeCard({ t, lang, marks, traits, rankedClusters, reality, setReality }) {
+  const MAX_SN = 5;
+  const snKeys = ["sn_math","sn_physics","sn_biology","sn_writing","sn_speaking","sn_fixing","sn_mechanics","sn_cooking","sn_design","sn_video","sn_sport_team","sn_sport_indiv","sn_coaching","sn_gaming"];
+  const styleOpts = [
+    { val:"handson", label:t.preferredStyleOptions?.handson||"Hands-on" },
+    { val:"academic", label:t.preferredStyleOptions?.academic||"Academic" },
+    { val:"mixed",   label:t.preferredStyleOptions?.mixed||"Mixed" },
+  ];
 
-  const title = lang === "ar" ? arch.titleAr : lang === "fr" ? arch.titleFr : arch.titleEn;
-  const vl    = arch.viralLine?.[lang] || arch.viralLine?.en || "";
-  const cr    = arch.coldReading?.[lang] || arch.coldReading?.en || {};
-  const mr    = arch.mirror?.[lang] || arch.mirror?.en || {};
-  const hq    = arch.hookQuestion?.[lang] || arch.hookQuestion?.en || "";
+  const toggleSN = (k) => {
+    setReality(prev => {
+      const arr = prev.strengthsNow || [];
+      if (arr.includes(k)) return {...prev, strengthsNow: arr.filter(x=>x!==k)};
+      if (arr.length >= MAX_SN) return prev;
+      return {...prev, strengthsNow:[...arr, k]};
+    });
+  };
+  const setStyle = (v) => setReality(prev=>({...prev, preferredStyle:v}));
 
-  // Deterministic stat seed for serialId
-  const statSeed = Math.round((safeTr.analytical || 0.5) * 100 + (safeTr.social || 0.5) * 10);
-  const sid = makeSerialId(arch.code, statSeed);
+  const sn      = reality.strengthsNow   || [];
+  const style   = reality.preferredStyle || "";
+  // FIX: results page null-safety — guard rankedClusters being undefined/empty
+  const safeRanked = Array.isArray(rankedClusters) ? rankedClusters : [];
+  const top3    = safeRanked.slice(0,3);
 
-  const mirrorBlocks = [
-    { icon:"⚡", label: t?.underPressure      || (lang==="ar"?"تحت الضغط":lang==="fr"?"Sous pression":"Under pressure"),     text: mr.pressure   },
-    { icon:"🔋", label: t?.consistencySecret  || (lang==="ar"?"للمثابرة":lang==="fr"?"Constance":"Consistency"),            text: mr.consistency },
-    { icon:"🎯", label: t?.unfairAdvantage    || (lang==="ar"?"ميزتك":lang==="fr"?"Avantage":"Your advantage"),             text: mr.advantage   },
-    { icon:"🌑", label: t?.blindSpot          || (lang==="ar"?"نقطة عمياء":lang==="fr"?"Point aveugle":"Blind spot"),        text: mr.blindSpot   },
-  ].filter(b => b.text);
+  // ── Upgrade targets (deterministic) ──────────────────────────────
+  // 1. Distance to health threshold
+  const healthConstraint = { minAvg:16, bioMin:14, chemMin:13 };
+  const subjVals = Object.values(marks).map(Number).filter(v=>!isNaN(v)&&v>0);
+  const avg = subjVals.length ? subjVals.reduce((a,b)=>a+b,0)/subjVals.length : 0;
+  const bio  = Number(marks.biology)  || 0;
+  const chem = Number(marks.chemistry)|| 0;
 
-  // Compute fit meters from traits + top3
-  const identityFitPct = clamp(Math.round(((safeTr.analytical||0.5)+(safeTr.creativity||0.5)+(safeTr.risk||0.5)+(safeTr.leadership||0.5))/4 * 100));
-  const academicFitPct = clamp(Math.round(((top3||[])[0]?.scores?.academic ?? 0.5) * 100));
-  const marketFitPct   = clamp(Math.round(((top3||[])[0]?.scores?.market   ?? 0.7) * 100));
+  const healthGapAvg  = Math.max(0, healthConstraint.minAvg  - avg).toFixed(1);
+  const healthGapBio  = Math.max(0, healthConstraint.bioMin  - bio).toFixed(1);
+  const healthGapChem = Math.max(0, healthConstraint.chemMin - chem).toFixed(1);
+  const isCloseToHealth = avg >= 13 && avg < healthConstraint.minAvg;
+
+  // 2. Key subjects to improve for top cluster
+  const topCluster = top3[0];
+  const keySubjs = topCluster
+    ? Object.entries(topCluster.subjectWeights||{}).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([s])=>s)
+    : [];
+
+  // 3. Style-based suggestion
+  const styleTip = {
+    handson: {
+      ar:"مهاراتك التطبيقية ستفيدك في المهن التقنية والحرفية. OFPPT وبرامج التكوين المهني هي الطريق الأقصر.",
+      fr:"Tes compétences pratiques te donnent un avantage dans les métiers techniques. OFPPT et les BTS techniques sont la voie la plus directe.",
+      en:"Your hands-on strengths give you an edge in technical trades. OFPPT and BTS technical programs are your fastest track.",
+    },
+    academic:{
+      ar:"استمر في بناء أساسك الأكاديمي. التحضير للمباريات (classes prépa) يفتح أفقاً أوسع.",
+      fr:"Continue à renforcer ta base académique. Les classes prépa ouvrent des portes considérables.",
+      en:"Keep building your academic base. Prépa classes open significant doors in Morocco.",
+    },
+    mixed:{
+      ar:"ملفك المختلط يؤهلك لمسارات ENCG أو BTS تقني — توازن بين النظرية والتطبيق.",
+      fr:"Ton profil mixte te positionne bien pour ENCG ou un BTS technique — équilibre théorie-pratique.",
+      en:"Your mixed profile is well-suited for ENCG or a technical BTS — the balance of theory and practice.",
+    },
+  };
+  const styleLang = lang;
+  const tipText = style ? (styleTip[style]?.[styleLang]||styleTip[style]?.en||"") : "";
+
+  // 4. Cluster unlock message
+  // FIX: results page null-safety — safeRanked[2] may be undefined
+  const nearCluster = safeRanked.find((c,i)=>i>=3 && safeRanked[2] && c.scores.final > safeRanked[2].scores.final*0.85);
 
   return (
     <div style={{
-      background:`linear-gradient(135deg,${rarColor}15,rgba(30,41,59,0.6))`,
-      border:`2px solid ${rarColor}60`,
-      borderRadius:20, padding:"24px 20px", marginBottom:20,
-      boxShadow:`0 0 40px ${rarColor}20`,
-      animation:"fadeIn 0.5s ease",
+      background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.25)",
+      borderRadius:14,padding:"22px 24px",margin:"24px 0",
     }}>
-      {/* Header row */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:8}}>
-        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,textTransform:"uppercase",color:"var(--muted)"}}>
-          {t?.archetypeTitle || "IDENTITÉ"}
+      <h3 style={{fontSize:16,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>{t.improveModeTitle}</h3>
+
+      {/* Section: strengthsNow */}
+      <div style={{marginTop:16}}>
+        <div style={{fontSize:14,fontWeight:600,marginBottom:4}}>{t.strengthsNowLabel}</div>
+        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.strengthsNowDesc} ({sn.length}/{MAX_SN})</div>
+        <div className="chip-grid">
+          {snKeys.map(k=>{
+            const sel = sn.includes(k);
+            const maxed = !sel && sn.length >= MAX_SN;
+            return (
+              <button key={k}
+                className={`chip-btn${sel?" selected":""}${maxed?" maxed":""}`}
+                onClick={()=>!maxed&&toggleSN(k)}>
+                {t.strengthsNowOptions?.[k]||k}
+              </button>
+            );
+          })}
         </div>
-        <div style={{
-          fontSize:11,fontWeight:800,letterSpacing:1.5,textTransform:"uppercase",
-          color:rarColor, background:`${rarColor}18`,
-          border:`1px solid ${rarColor}50`, borderRadius:20, padding:"3px 12px",
-          boxShadow:`0 0 12px ${rarColor}30`,
+      </div>
+
+      {/* Section: preferredStyle */}
+      <div style={{marginTop:16}}>
+        <div style={{fontSize:14,fontWeight:600,marginBottom:8}}>{t.preferredStyleLabel}</div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {styleOpts.map(o=>(
+            <button key={o.val}
+              className={`chip-btn${style===o.val?" selected":""}`}
+              onClick={()=>setStyle(o.val)}>
+              {o.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Outputs */}
+      {(style || sn.length > 0) && (
+        <div style={{marginTop:20,display:"flex",flexDirection:"column",gap:14}}>
+
+          {/* Distance to health (only if applicable) */}
+          {isCloseToHealth && (avg < healthConstraint.minAvg) && (
+            <div style={{padding:"12px 16px",background:"rgba(239,68,68,0.08)",
+              border:"1px solid rgba(239,68,68,0.2)",borderRadius:10}}>
+              <div style={{fontSize:13,fontWeight:600,color:"#f87171",marginBottom:6}}>⚕️ Distance to Medicine Threshold</div>
+              <div style={{fontSize:13,color:"var(--muted)"}}>
+                {(t.improveDistanceHealth || "")
+                  .replace("{avg}", healthGapAvg)
+                  .replace("{bio}", healthGapBio)
+                  .replace("{chem}", healthGapChem)}
+              </div>
+            </div>
+          )}
+
+          {/* Style tip */}
+          {tipText && (
+            <div style={{padding:"12px 16px",background:"var(--surface2)",borderRadius:10,
+              fontSize:13,color:"var(--text)",lineHeight:1.6}}>
+              💡 {tipText}
+            </div>
+          )}
+
+          {/* Upgrade targets for top cluster */}
+          {keySubjs.length > 0 && (
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"var(--text)",marginBottom:8}}>
+                {t.improveTargetLabel}: {t[CLUSTER_KEY_MAP[topCluster?.id]]||""}
+              </div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                {keySubjs.map(s=>{
+                  const cur = Number(marks[s])||0;
+                  const target = Math.min(20, cur+2);
+                  return (
+                    <div key={s} style={{
+                      background:"var(--surface2)",border:"1px solid var(--border)",
+                      borderRadius:10,padding:"10px 14px",fontSize:12,
+                    }}>
+                      <div style={{fontWeight:700,color:"var(--text)",marginBottom:4}}>
+                        {SUBJECT_LABELS[s]?.[lang]||s}
+                      </div>
+                      <div style={{color:"var(--muted)"}}>
+                        {cur.toFixed(1)} → <span style={{color:"#10b981",fontWeight:700}}>{target.toFixed(1)}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Near-unlock cluster */}
+          {nearCluster && (
+            <div style={{fontSize:12,color:"var(--muted)",fontStyle:"italic"}}>
+              {(t.improveClusterUp || "").replace("{clusters}", t[CLUSTER_KEY_MAP[nearCluster.id]]||nearCluster.id)}
+            </div>
+          )}
+
+        </div>
+      )}
+
+      <p style={{fontSize:11,color:"var(--muted)",fontStyle:"italic",marginTop:14}}>
+        {t.improvementDisclaimer}
+      </p>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// getRarity — unified rarity tier from overall alignment %
+// FIX: unified with ShareCard spec — Common, Rare, Epic, Legendary
+function getRarity(confidence) {
+  if (confidence >= 85) return "legendary";
+  if (confidence >= 70) return "epic";
+  if (confidence >= 55) return "rare";
+  return "common";
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ArchetypeCard — Phase 1: Hero Identity Section
+// ─────────────────────────────────────────────────────────────────
+function ArchetypeCard({ massarType, typeDesc, t, lang, traits, top3, confidence }) {
+  const archetype = getArchetype(massarType);
+  const [expanded, setExpanded] = useState(false);
+
+  const name   = archetype.name?.[lang] || archetype.name?.en || massarType;
+  const opposite = MOROCCAN_ARCHETYPES[archetype.opposite];
+  const oppName  = opposite?.name?.[lang] || opposite?.name?.en || archetype.opposite;
+  const evolveTrait = archetype.evolvesTrait || "";
+  const evolveCode  = archetype.evolvesInto || "";
+  const evolveInto  = MOROCCAN_ARCHETYPES[evolveCode]?.name?.[lang] || evolveCode;
+
+  const strengths = archetype.strengths?.[lang] || archetype.strengths?.en || [];
+  const risk      = archetype.risk?.[lang]      || archetype.risk?.en      || "";
+  const bestEnv   = archetype.bestEnv?.[lang]   || archetype.bestEnv?.en   || "";
+  const worstEnv  = archetype.worstEnv?.[lang]  || archetype.worstEnv?.en  || "";
+
+  const rarity = getRarity(confidence);
+  // FIX: unified rarity labels — Common, Rare, Epic, Legendary
+  const rarityLabels = {
+    common:    { ar:"عادي",    fr:"Commun",    en:"Common"    },
+    rare:      { ar:"نادر",    fr:"Rare",      en:"Rare"      },
+    epic:      { ar:"ملحمي",   fr:"Épique",    en:"Epic"      },
+    legendary: { ar:"أسطوري", fr:"Légendaire", en:"Legendary" },
+  };
+  const rarityIcons = { common:"◇", rare:"◆", epic:"★", legendary:"👑" };
+  const rarityLabel = rarityLabels[rarity]?.[lang] || rarityLabels[rarity]?.en || rarity;
+
+  // Compute 3 meter scores
+  // FIX: clamp numeric UI values
+  const safeTrA = traits && typeof traits === "object" ? traits : {};
+  const identityFitPct = clamp(Math.round(Math.max(0.35, Math.min(0.95,
+    ((safeTrA.analytical||0.5)+(safeTrA.creativity||0.5)+(safeTrA.risk||0.5)+(safeTrA.leadership||0.5))/4)) * 100));
+  const academicFitPct = clamp(Math.round(Math.max(0.3, Math.min(0.9,
+    top3[0]?.scores?.academic ?? 0.5)) * 100));
+  const marketFitPct = clamp(Math.round(Math.max(0.4, Math.min(0.95,
+    top3[0]?.scores?.market ?? 0.7)) * 100));
+
+  // Phase 4: Alignment story — weakest dimension
+  const dims = [
+    { key:"identity", pct:identityFitPct, sentences:{
+      ar:"هذا المجال لا يتوافق تلقائياً مع شخصيتك.",
+      fr:"Ce domaine ne correspond pas naturellement à ta personnalité.",
+      en:"This domain doesn't naturally match your personality.",
+    }},
+    { key:"academic", pct:academicFitPct, sentences:{
+      ar:"إمكاناتك تتجاوز مستواك الأكاديمي الحالي.",
+      fr:"Ton potentiel dépasse ton niveau académique actuel.",
+      en:"Your potential exceeds your current academic level.",
+    }},
+    { key:"market", pct:marketFitPct, sentences:{
+      ar:"الطلب على هذا التخصص أقل استقراراً في سوق العمل.",
+      fr:"La demande est plus instable dans ce secteur.",
+      en:"Market demand is less stable in this sector.",
+    }},
+  ];
+  const weakest = dims.reduce((a,b)=>a.pct<b.pct?a:b);
+
+  const traitLabelMap = {
+    analytical:{ ar:"التحليل", fr:"Analytique", en:"Analytical" },
+    creativity:{ ar:"الإبداع", fr:"Créativité", en:"Creativity" },
+    risk:{ ar:"المبادرة", fr:"Initiative", en:"Initiative" },
+    leadership:{ ar:"القيادة", fr:"Leadership", en:"Leadership" },
+    social:{ ar:"التواصل", fr:"Social", en:"Social" },
+    structure:{ ar:"التنظيم", fr:"Organisation", en:"Organisation" },
+  };
+  const evolveLbl = traitLabelMap[evolveTrait]?.[lang] || evolveTrait;
+
+  return (
+    <div className={`rarity-${rarity}`} style={{
+      background:"linear-gradient(135deg,rgba(232,161,36,0.08),rgba(59,130,246,0.05))",
+      border:"2px solid",
+      borderRadius:20,padding:"28px 28px 22px",marginBottom:20,
+    }}>
+      {/* Rarity badge + type label */}
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
+        <div style={{fontSize:10,fontWeight:700,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase"}}>
+          {t?.archetypeTitle || "Identity"}
+        </div>
+        <span className={`rarity-badge rarity-badge-${rarity}`}>
+          {rarityIcons[rarity]} {rarityLabel}
+        </span>
+      </div>
+
+      {/* Hero identity row */}
+      <div style={{display:"flex",alignItems:"center",gap:18,marginBottom:16,flexWrap:"wrap"}}>
+        <div className="archetype-icon-wrap" style={{
+          width:72,height:72,borderRadius:18,
+          background:"rgba(232,161,36,0.1)",border:"1.5px solid rgba(232,161,36,0.3)",
+          fontSize:36,flexShrink:0,
         }}>
-          {rarLabel} ✦ {arch.code}
+          <span className="icon-inner">{archetype.icon}</span>
+        </div>
+        <div style={{flex:1,minWidth:160}}>
+          <div style={{
+            fontSize:32,fontWeight:900,lineHeight:1.1,
+            background:"linear-gradient(135deg,#fbbf24,#e8a124)",
+            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+            marginBottom:4,
+          }}>{name}</div>
+          <div style={{fontSize:14,fontWeight:800,color:"var(--accent2)",letterSpacing:3}}>{archetype.code}</div>
+        </div>
+        {/* FIX: Arabic-first UX — dir="ltr" prevents % rendering before number in RTL */}
+        <div style={{background:"rgba(232,161,36,0.15)",border:"1px solid rgba(232,161,36,0.3)",
+          borderRadius:12,padding:"12px 18px",textAlign:"center",flexShrink:0}}>
+          <div dir="ltr" style={{fontSize:28,fontWeight:900,color:"var(--accent)",lineHeight:1}}>
+            {clamp(confidence)}%
+          </div>
+          <div style={{fontSize:10,color:"var(--muted)",marginTop:2,letterSpacing:0.5}}>{t?.confidenceLabel || "Alignment"}</div>
         </div>
       </div>
 
-      {/* Icon + title */}
-      <div style={{textAlign:"center",marginBottom:18}}>
-        <div style={{
-          fontSize:52, marginBottom:8,
-          filter:`drop-shadow(0 0 16px ${rarColor}80)`,
-          animation:"archetypeGlow 4s ease-in-out infinite",
-        }}>{arch.icon}</div>
-        <div style={{
-          fontSize:32, fontWeight:900, letterSpacing:-0.5,
-          background:`linear-gradient(135deg,#fff,${rarColor},#fbbf24)`,
-          WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent",
-          marginBottom:4,
-        }}>{arch.titleLatin}</div>
-        <div style={{fontSize:16,fontWeight:700,color:"var(--text)",marginBottom:4}}>{title}</div>
-        <div style={{
-          display:"inline-block",fontSize:11,fontWeight:700,letterSpacing:2,
-          color:rarColor,opacity:0.7,fontFamily:"monospace",
-        }}>{arch.code}</div>
+      {/* Tagline */}
+      <div style={{fontSize:13,color:"var(--muted)",marginBottom:20,fontStyle:"italic",lineHeight:1.6,
+        padding:"10px 14px",background:"rgba(255,255,255,0.03)",borderRadius:10,borderLeft:"3px solid rgba(232,161,36,0.4)"}}>
+        {typeDesc}
       </div>
 
-      {/* Viral line */}
-      <div style={{
-        textAlign:"center",fontSize:14,color:"var(--muted)",
-        fontStyle:"italic",lineHeight:1.6,marginBottom:16,
-        padding:"10px 14px",background:"rgba(255,255,255,0.03)",
-        borderRadius:10,borderLeft:`3px solid ${rarColor}50`,
-      }}>{vl}</div>
-
-      {/* 3 fit meters */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:14}}>
+      {/* 3 Fit Meters */}
+      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:8}}>
         {[
-          { label:t?.identityFit||"Identité", pct:identityFitPct, color:rarColor },
-          { label:t?.academicFit||"Académique", pct:academicFitPct, color:"var(--accent2)" },
-          { label:t?.marketFit||"Marché", pct:marketFitPct, color:"#10b981" },
-        ].map(m => (
+          { label:t?.identityFit||"Identity", pct:identityFitPct, color:"var(--accent)" },
+          { label:t?.academicFit||"Academic", pct:academicFitPct, color:"var(--accent2)" },
+          { label:t?.marketFit||"Market",   pct:marketFitPct, color:"#10b981" },
+        ].map(m=>(
           <div key={m.label} style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10,padding:"10px 12px",textAlign:"center"}}>
             <div style={{fontSize:10,color:"var(--muted)",marginBottom:6,fontWeight:600}}>{m.label}</div>
+            {/* FIX: Arabic-first UX — bar direction forced LTR */}
             <div dir="ltr" style={{height:4,background:"var(--border)",borderRadius:2,overflow:"hidden",marginBottom:6}}>
               <div style={{height:"100%",width:`${m.pct}%`,background:m.color,borderRadius:2,animation:"barGrow 1s ease both"}}/>
             </div>
+            {/* FIX: Arabic-first UX — percentage always LTR */}
             <div style={{fontSize:15,fontWeight:800,color:m.color}} dir="ltr">{m.pct}%</div>
           </div>
         ))}
       </div>
 
-      {/* Confidence + serial */}
-      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:6}}>
-        <span className={`confidence-badge ${confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low"}`}>
-          {t?.confidenceLabel||"Alignement"}: <span dir="ltr">{clamp(confidence)}%</span>
-        </span>
-        <span style={{fontSize:10,fontFamily:"monospace",color:"var(--muted)",letterSpacing:1}}>{sid}</span>
-      </div>
+      {/* Phase 4: Alignment story sentence */}
+      {weakest.pct < 70 && (
+        <div style={{fontSize:12,color:"var(--warn)",marginBottom:16,padding:"8px 12px",
+          background:"rgba(245,158,11,0.06)",borderRadius:8,border:"1px solid rgba(245,158,11,0.2)"}}>
+          ⚡ {weakest.sentences[lang] || weakest.sentences.en}
+        </div>
+      )}
 
       {/* Expand toggle */}
-      <button onClick={() => setExpanded(e => !e)} style={{
-        background:"none",border:"none",cursor:"pointer",color:rarColor,
-        fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:4,
-        marginBottom: expanded ? 16 : 0,
-      }}>
-        {expanded ? "▲" : "▼"}{" "}
-        {expanded
-          ? (lang==="ar"?"إخفاء التفاصيل":lang==="fr"?"Réduire":"Hide details")
-          : (lang==="ar"?"اكتشف هويتك كاملة":lang==="fr"?"Voir le profil complet":"See full identity")}
+      <button onClick={()=>setExpanded(e=>!e)}
+        style={{background:"none",border:"none",cursor:"pointer",color:"var(--accent2)",
+          fontSize:12,fontWeight:600,display:"flex",alignItems:"center",gap:4,marginBottom:expanded?16:0}}>
+        {expanded ? "▲" : "▼"} {expanded ? (lang==="ar"?"إخفاء التفاصيل":lang==="fr"?"Réduire":"Hide details") : (lang==="ar"?"عرض التفاصيل الكاملة":lang==="fr"?"Voir les détails":"Show full archetype")}
       </button>
 
       {expanded && (
-        <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:4}}>
+        <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:16}}>
 
-          {/* Cold Reading */}
-          {(cr.looks || cr.truth) && (
-            <div style={{background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:12,padding:"14px 16px"}}>
-              <div style={{fontSize:11,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>
-                {lang==="ar"?"🔍 القراءة الباردة":lang==="fr"?"🔍 Cold Reading":"🔍 Cold Reading"}
-              </div>
-              {cr.looks && (
-                <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,marginBottom:8}}>{cr.looks}</p>
-              )}
-              {cr.truth && (
-                <p style={{fontSize:13,color:rarColor,lineHeight:1.7,fontWeight:600,margin:0}}>{cr.truth}</p>
-              )}
-            </div>
-          )}
-
-          {/* Identity Mirror blocks */}
-          {mirrorBlocks.length > 0 && (
-            <div>
-              <div style={{fontSize:11,fontWeight:800,color:"var(--muted)",letterSpacing:2,textTransform:"uppercase",marginBottom:10}}>
-                {t?.identityMirrorTitle || (lang==="ar"?"مرآة هويتك":lang==="fr"?"Miroir Identité":"Identity Mirror")}
-              </div>
-              {mirrorBlocks.map((b, i) => (
-                <div key={i} style={{
-                  background:"var(--surface2)",border:"1px solid var(--border)",
-                  borderRadius:12,padding:"12px 14px",marginBottom:8,
-                }}>
-                  <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
-                    <span style={{fontSize:16}}>{b.icon}</span>
-                    <span style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:0.5}}>{b.label}</span>
-                  </div>
-                  <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0}}>{b.text}</p>
-                </div>
+          {/* Core strengths */}
+          <div style={{padding:"12px 16px",background:"rgba(16,185,129,0.06)",border:"1px solid rgba(16,185,129,0.2)",borderRadius:10}}>
+            <div style={{fontWeight:700,fontSize:12,color:"#10b981",marginBottom:8}}>{t.archetypeStrengths}</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+              {strengths.map((s,i)=>(
+                <span key={i} style={{padding:"4px 10px",background:"rgba(16,185,129,0.1)",border:"1px solid rgba(16,185,129,0.25)",borderRadius:20,fontSize:12,color:"var(--text)"}}>
+                  {s}
+                </span>
               ))}
             </div>
+          </div>
+
+          {/* Growth warning */}
+          {risk && (
+            <div style={{padding:"10px 14px",background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.18)",borderRadius:10,fontSize:12,color:"#f87171"}}>
+              <strong>{t.archetypeRisk}: </strong>{risk}
+            </div>
           )}
 
-          {/* Hook question */}
-          {hq && (
-            <div style={{
-              background:`${rarColor}08`,border:`1px solid ${rarColor}30`,
-              borderRadius:12,padding:"14px 16px",
-            }}>
-              <div style={{fontSize:11,fontWeight:800,color:rarColor,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>
-                {lang==="ar"?"❓ سؤال للتأمل":lang==="fr"?"❓ Question clé":"❓ Hook question"}
+          {/* Best/worst env */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            <div style={{padding:"10px 14px",background:"rgba(59,130,246,0.06)",border:"1px solid rgba(59,130,246,0.18)",borderRadius:10}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--accent2)",marginBottom:4}}>✅ {t.archetypeBestEnv}</div>
+              <div style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{bestEnv}</div>
+            </div>
+            <div style={{padding:"10px 14px",background:"rgba(107,114,128,0.08)",border:"1px solid var(--border)",borderRadius:10}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--muted)",marginBottom:4}}>⚠️ {t.archetypeWorstEnv}</div>
+              <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{worstEnv}</div>
+            </div>
+          </div>
+
+          {/* Opposite + Evolution */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {opposite && (
+              <div style={{padding:"10px 14px",background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:10}}>
+                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t.archetypeOpposite}</div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--text)"}}>{opposite.icon} {oppName}</div>
+                <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{archetype.opposite}</div>
               </div>
-              <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,margin:0,fontWeight:600}}>{hq}</p>
-            </div>
-          )}
-
-          {/* Signature move */}
-          {arch.signatureMove?.[lang] && (
-            <div style={{textAlign:"center",padding:"10px",color:"var(--muted)",fontSize:12,fontStyle:"italic"}}>
-              ✦ {arch.signatureMove?.[lang] || ''}
-            </div>
-          )}
+            )}
+            {evolveCode && (
+              <div style={{padding:"10px 14px",background:"rgba(232,161,36,0.06)",border:"1px solid rgba(232,161,36,0.2)",borderRadius:10}}>
+                <div style={{fontSize:11,color:"var(--muted)",marginBottom:4}}>{t.archetypeEvolution} <strong style={{color:"var(--accent)"}}>{evolveLbl}</strong></div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--accent)"}}>→ {evolveInto}</div>
+                <div style={{fontSize:11,color:"var(--muted)",fontWeight:700,letterSpacing:1}}>{evolveCode}</div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -6895,7 +5371,7 @@ function ShareCardPortrait({ p }) {
 // Preview = pure CSS/DOM — three separate layout components per format.
 // Export  = Canvas API — runs only on download click.
 // ─────────────────────────────────────────────────────────────────
-function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
+function ShareCard({ t, lang, massarType, topCluster, confidence }) {
   const [copied,  setCopied]  = useState(false);
   // format: "card" (5:7) | "square" (1:1) | "story" (9:16)
   const [fmt, setFmt] = useState("card");
@@ -6913,7 +5389,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
 
   // FIX: development debug logs — share card prepared
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    if (import.meta?.env?.DEV) {
       console.log("[Massar] share card prepared:", { massarType, archType: archetype?.code, clusterName, confidence });
     }
   }, [massarType, clusterName, confidence]); // eslint-disable-line
@@ -6947,15 +5423,12 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
   const accent      = rarity.color;
   const glow        = rarity.glow;
 
-  // Viral caption — use archV2 shareCaption from data contract if available
-  const archV2sc = pickArchetypeV2({ traits, confidence });
-  const caption = archV2sc?.shareCaption?.[lang]
-    ? archV2sc.shareCaption[lang] + (clusterName ? `\n${lang==="ar"?"أفضل مسار":lang==="fr"?"Top voie":"Top path"}: ${clusterName} (${confidence}%)\n🔗 massarpro.com` : "")
-    : lang==="ar"
-    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massarpro.com`
+  // Viral caption (unchanged)
+  const caption = lang==="ar"
+    ? `نوعي في مسار: ${archCode} — ${archName}\nأفضل مسار: ${clusterName} (%${confidence})\nجرّبها: massar.ma`
     : lang==="fr"
-    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massarpro.com`
-    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massarpro.com`;
+    ? `Mon Type Massar: ${archCode} — ${archName}\nVoie #1 : ${clusterName} (${confidence}% compatibilité)\nFais le test: massar.ma`
+    : `My Massar Type: ${archCode} — ${archName}\nTop path: ${clusterName} (${confidence}% match)\nTry yours: massar.ma`;
 
   // Format metadata
   const FMT = {
@@ -6978,19 +5451,18 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
     document.body.removeChild(ta); cb();
   };
 
-  // ── Canvas export — El M3allem style ─────────────────────────
+  // ── Canvas export ─────────────────────────────────────────────
   function buildCanvas() {
     const W=fmtMeta.exportW, H=fmtMeta.exportH;
-    const PAD=Math.round(W*0.072);
+    const PAD=Math.round(W*0.074);
     const canvas=document.createElement("canvas");
     canvas.width=W; canvas.height=H;
     const ctx=canvas.getContext("2d");
-    if (!ctx) { return canvas; } // guard: getContext may return null in some environments
+    if (!ctx) return;
     const arF="Tajawal,Cairo,Noto Kufi Arabic,Tahoma,Arial,sans-serif";
     const enF="system-ui,-apple-system,Segoe UI,sans-serif";
     const bF=isRTL?arF:enF;
 
-    // ── Shared helpers ────────────────────────────────────────
     function rr(x,y,w,h,r){
       ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
       ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
@@ -6998,395 +5470,365 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
       ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
       ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
     }
-    const tx=(txt,x,y,font,col,mw,align="left")=>{
-      ctx.save(); ctx.font=font; ctx.fillStyle=col;
-      ctx.textAlign=align; ctx.textBaseline="alphabetic";
-      ctx.fillText(txt,x,y,mw||W-PAD*2); ctx.restore();
+    const dtC=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
+      ctx.fillText(txt,W/2,y,mw||W-PAD*2); ctx.restore();
     };
-    const txC=(txt,y,font,col,mw)=>tx(txt,W/2,y,font,col,mw,"center");
-    const txL=(txt,y,font,col,mw)=>{
-      if(isRTL){ const tw=ctx.measureText(txt).width; tx(txt,W-PAD,y,font,col,mw,"right"); }
-      else { tx(txt,PAD,y,font,col,mw,"left"); }
-    };
-    const txR=(txt,y,font,col,mw)=>{
-      if(isRTL){ tx(txt,PAD,y,font,col,mw,"left"); }
-      else { tx(txt,W-PAD,y,font,col,mw,"right"); }
+    const dtL=(txt,y,font,col,mw)=>{
+      ctx.save(); ctx.font=font; ctx.fillStyle=col; ctx.textBaseline="alphabetic";
+      if(isRTL){ const tw=ctx.measureText(txt).width; ctx.fillText(txt,W-PAD-Math.min(tw,mw||W),y,mw||W-PAD*2); }
+      else { ctx.fillText(txt,PAD,y,mw||W-PAD*2); }
+      ctx.restore();
     };
 
-    // ── Gold palette ──────────────────────────────────────────
-    const GOLD="#e8a124", GOLD2="#fbbf24", BLUE="#1e3a5f", BLUE2="#3b82f6";
-    const BG1="#07091a", BG2="#0b1230", BG3="#0f1840";
-    const sid=serialId(archCode);
-
-    // ── Stats labels from archetype strengths ─────────────────
-    const statLabels = {
-      ar:["الحرفة","الاستراتيجية","الانضباط"],
-      fr:["Craft","Stratégie","Discipline"],
-      en:["Craft","Strategy","Discipline"],
-    }[lang] || ["Craft","Strategy","Discipline"];
-    const rawTr = traits && typeof traits==="object" ? traits : {};
-    const statVals = [
-      Math.round(clamp((rawTr.analytical||0.65)*100)),
-      Math.round(clamp((rawTr.leadership||0.60)*100)),
-      Math.round(clamp((rawTr.structure||0.70)*100)),
-    ];
-
-    // ════════════════════════════════════════════════════════
-    // SHARED BACKGROUND — deep navy + Moroccan ornamental tile
-    // ════════════════════════════════════════════════════════
-    const bg=ctx.createLinearGradient(0,0,W*0.4,H);
-    bg.addColorStop(0,BG1); bg.addColorStop(0.5,BG2); bg.addColorStop(1,BG3);
+    // Background + grain + blobs (shared)
+    const bg=ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,"#060a14"); bg.addColorStop(0.5,"#0a1020"); bg.addColorStop(1,"#0d1628");
     ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-
-    // Moroccan geometric tile overlay (8-pointed star grid, CSS-only approximation)
-    // We draw a subtle repeating lattice using canvas paths
-    const tileSize = Math.round(W*0.12);
-    ctx.save(); ctx.globalAlpha=0.04;
-    ctx.strokeStyle=GOLD2; ctx.lineWidth=1.5;
-    for(let gx=0;gx<W+tileSize;gx+=tileSize){
-      for(let gy=0;gy<H+tileSize;gy+=tileSize){
-        const cx2=gx, cy2=gy, r2=tileSize*0.38;
-        // 8-pointed star
-        ctx.beginPath();
-        for(let p=0;p<8;p++){
-          const a=(p/8)*Math.PI*2-Math.PI/8;
-          const a2=((p+0.5)/8)*Math.PI*2-Math.PI/8;
-          const rI=r2*0.45;
-          if(p===0) ctx.moveTo(cx2+Math.cos(a)*r2,cy2+Math.sin(a)*r2);
-          else ctx.lineTo(cx2+Math.cos(a)*r2,cy2+Math.sin(a)*r2);
-          ctx.lineTo(cx2+Math.cos(a2)*rI,cy2+Math.sin(a2)*rI);
-        }
-        ctx.closePath(); ctx.stroke();
-      }
-    }
-    ctx.restore();
-
-    // Gold radial glow top-right
-    const glowGrad=ctx.createRadialGradient(W*0.82,H*0.06,0,W*0.82,H*0.06,W*0.5);
-    glowGrad.addColorStop(0,GOLD+"28"); glowGrad.addColorStop(1,"transparent");
-    ctx.fillStyle=glowGrad; ctx.fillRect(0,0,W,H);
-
-    // Film grain
-    for(let i=0;i<10000;i++){
-      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.016})`;
+    for(let i=0;i<12000;i++){
+      ctx.fillStyle=`rgba(255,255,255,${Math.random()*0.018})`;
       ctx.fillRect(Math.floor(Math.random()*W),Math.floor(Math.random()*H),1,1);
     }
+    const gx=isRTL?W*0.2:W*0.8;
+    const blob=ctx.createRadialGradient(gx,H*0.06,0,gx,H*0.06,W*0.45);
+    blob.addColorStop(0,accent+"30"); blob.addColorStop(1,"transparent");
+    ctx.fillStyle=blob; ctx.fillRect(0,0,W,H);
 
-    // ── Double border (outer gold + inner subtle) ─────────────
-    ctx.save(); ctx.strokeStyle=GOLD; ctx.lineWidth=3.5;
-    ctx.shadowColor=GOLD; ctx.shadowBlur=30;
-    rr(8,8,W-16,H-16,Math.round(W*0.032)); ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.strokeStyle=GOLD+"30"; ctx.lineWidth=1.5;
-    rr(20,20,W-40,H-40,Math.round(W*0.024)); ctx.stroke(); ctx.restore();
+    // Neon border
+    ctx.save(); ctx.strokeStyle=accent; ctx.lineWidth=5;
+    ctx.shadowColor=accent; ctx.shadowBlur=40;
+    rr(10,10,W-20,H-20,Math.round(W*0.036)); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.strokeStyle=accent+"22"; ctx.lineWidth=2;
+    rr(26,26,W-52,H-52,Math.round(W*0.026)); ctx.stroke(); ctx.restore();
 
-    // Corner ornaments (4 corners)
-    const ornSize=Math.round(W*0.055);
-    [[20,20,1,1],[W-20,20,-1,1],[20,H-20,1,-1],[W-20,H-20,-1,-1]].forEach(([ox,oy,sx2,sy2])=>{
-      ctx.save(); ctx.strokeStyle=GOLD+"88"; ctx.lineWidth=2;
-      ctx.shadowColor=GOLD; ctx.shadowBlur=8;
-      ctx.beginPath();
-      ctx.moveTo(ox,oy+ornSize*sy2); ctx.lineTo(ox,oy); ctx.lineTo(ox+ornSize*sx2,oy);
-      ctx.stroke(); ctx.restore();
-    });
+    // ── Portrait (9:16) canvas: centred vertical layout ──────────
+    if (fmt === "story") {
+      const cx = W/2;
+      let y = PAD*1.3;
 
-    // ════════════════════════════════════════════════════════
-    // LAYOUT — card (5:7) and square share same vertical flow
-    // story (9:16) has separate flow below
-    // ════════════════════════════════════════════════════════
-    if(fmt==="story"){
-      // ── 9:16 Portrait El M3allem layout ────────────────────
-      let y=Math.round(H*0.048);
+      // Rarity pill — tier-colored (matches DOM)
+      const rarityPillColorsP = {
+        legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+        epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+        rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+        common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+      };
+      const rpcP = rarityPillColorsP[rarity.key] || rarityPillColorsP.common;
 
-      // Header bar — "MASSAR | 2024"
-      const hdrTxt=`MASSAR | ${new Date().getFullYear()}`;
-      const hdrSubTxt=isRTL?"محرك الهوية المهنية بالمغرب":"Morocco Career Identity Engine";
-      const hdrF=`bold ${Math.round(W*0.030)}px ${bF}`;
-      txC(hdrTxt,y,hdrF,GOLD,W-PAD*2);
-      y+=Math.round(H*0.032);
-      txC(hdrSubTxt,y,`${Math.round(W*0.022)}px ${bF}`,"#4b5563",W-PAD*2);
-      y+=Math.round(H*0.038);
+      // Brand line (centred)
+      dtC(isRTL ? "مسار" : "MASSAR", y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
 
-      // Thin gold rule
-      ctx.save(); const rg=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      rg.addColorStop(0,"transparent"); rg.addColorStop(0.2,GOLD+"55");
-      rg.addColorStop(0.8,GOLD+"55"); rg.addColorStop(1,"transparent");
-      ctx.strokeStyle=rg; ctx.lineWidth=1.5;
-      ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-      y+=Math.round(H*0.032);
-
-      // Rarity pill — "RARE ✦ VERIFIED PROFILE"
-      const rarTxt=`${rarityLabel.toUpperCase()} ✦ ${isRTL?"ملف موثّق":lang==="fr"?"PROFIL VÉRIFIÉ":"VERIFIED PROFILE"}`;
-      const rarF=`bold ${Math.round(W*0.028)}px ${bF}`;
-      ctx.font=rarF;
-      const rtw=ctx.measureText(rarTxt).width;
-      const rpW=rtw+W*0.07, rpH=W*0.068, rpX=(W-rpW)/2;
-      ctx.save(); ctx.fillStyle=BLUE; ctx.strokeStyle=accent;
-      ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=18;
+      // Rarity pill (centred)
+      y += Math.round(H*0.038);
+      const rarTxt = `${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+      const rpF = `bold ${Math.round(W*0.030)}px ${bF}`;
+      ctx.font = rpF;
+      const rtw = ctx.measureText(rarTxt).width;
+      const rpW=rtw+W*0.06, rpH=W*0.065, rpX=cx-rpW/2;
+      ctx.save(); ctx.fillStyle=rpcP.bg; ctx.strokeStyle=rpcP.border;
+      ctx.lineWidth=2.5; ctx.shadowColor=accent; ctx.shadowBlur=14;
       rr(rpX,y-rpH*0.72,rpW,rpH,rpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
-      tx(rarTxt,(W)/2,y,rarF,accent,rpW,"center");
-      y+=Math.round(H*0.06);
+      ctx.save(); ctx.font=rpF; ctx.fillStyle=rpcP.text; ctx.textBaseline="alphabetic";
+      ctx.textAlign="center"; ctx.fillText(rarTxt, cx, y, rpW); ctx.restore();
 
-      // Central emblem icon — badge/shield style
-      const iR=Math.round(W*0.18);
-      const iCX=W/2, iCY=y+iR;
-      // Shield shape (hexagon approximation)
+      // Icon circle — 72px-equivalent scaled
+      y += Math.round(H*0.07);
+      const ibR = Math.round(W*0.17);
       ctx.save();
-      ctx.beginPath();
-      for(let p=0;p<6;p++){
-        const a=(p/6)*Math.PI*2-Math.PI/2;
-        if(p===0) ctx.moveTo(iCX+Math.cos(a)*(iR+8),iCY+Math.sin(a)*(iR+8));
-        else ctx.lineTo(iCX+Math.cos(a)*(iR+8),iCY+Math.sin(a)*(iR+8));
-      }
-      ctx.closePath();
-      ctx.strokeStyle=accent+"66"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=24; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR+5, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"55"; ctx.lineWidth=3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.fillStyle=accent+"18"; ctx.shadowBlur=50; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, y+ibR, ibR, 0, Math.PI*2);
+      ctx.strokeStyle=accent+"88"; ctx.lineWidth=2.5; ctx.shadowBlur=20; ctx.stroke();
       ctx.restore();
-      const discG2=ctx.createRadialGradient(iCX,iCY,0,iCX,iCY,iR);
-      discG2.addColorStop(0,accent+"30"); discG2.addColorStop(1,"transparent");
-      ctx.save(); ctx.beginPath(); ctx.arc(iCX,iCY,iR,0,Math.PI*2);
-      ctx.fillStyle=discG2; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
-      ctx.save(); ctx.beginPath(); ctx.arc(iCX,iCY,iR,0,Math.PI*2);
-      ctx.strokeStyle=accent; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=18; ctx.stroke(); ctx.restore();
-      ctx.save(); ctx.font=`${Math.round(iR*1.0)}px serif`;
+      ctx.save(); ctx.font=`${Math.round(ibR*1.1)}px serif`;
       ctx.textAlign="center"; ctx.textBaseline="middle";
-      ctx.fillText(archIcon, iCX, iCY+iR*0.06); ctx.restore();
-      y=iCY+iR+Math.round(H*0.04);
+      ctx.fillText(archIcon, cx, y+ibR+ibR*0.06); ctx.restore();
+      y += ibR*2 + Math.round(H*0.04);
 
-      // Archetype name (large gradient)
-      const nmF=`900 ${Math.round(W*0.076)}px ${bF}`;
-      ctx.save(); ctx.font=nmF;
-      const nmG=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      nmG.addColorStop(0,"#fff"); nmG.addColorStop(0.5,GOLD2); nmG.addColorStop(1,GOLD);
-      ctx.fillStyle=nmG; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
-      ctx.fillText(archName,W/2,y,W-PAD*2); ctx.restore();
-      y+=Math.round(H*0.044);
+      // Profile label
+      dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+        y, `bold ${Math.round(W*0.022)}px ${bF}`, "#4b5563");
+      y += Math.round(H*0.044);
 
-      // Code + Arabic name (if not Arabic lang, show Arabic below)
-      if(!isRTL && archetype.name?.ar){
-        txC(archetype.name.ar, y, `${Math.round(W*0.030)}px ${arF}`, "#6b7280", W-PAD*2);
-        y+=Math.round(H*0.038);
-      }
-      const cF2=`bold ${Math.round(W*0.032)}px monospace,${bF}`;
-      txC(`[ ${archCode} ]`, y, cF2, BLUE2, W-PAD*2);
-      y+=Math.round(H*0.04);
+      // Archetype name — white→accent→gold gradient
+      ctx.save(); ctx.font=`900 ${Math.round(W*0.072)}px ${bF}`;
+      ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=ng; ctx.fillText(archName,cx,y,W-PAD*2); ctx.restore();
+      y += Math.round(H*0.046);
 
-      // Tagline italic
-      txC(archTagline, y, `italic ${Math.round(W*0.030)}px ${isRTL?arF:"Georgia,"+enF}`, "#9ca3af", W-PAD*2.2);
-      y+=Math.round(H*0.05);
+      // Code pill
+      const cF=`bold ${Math.round(W*0.034)}px monospace,${bF}`;
+      ctx.font=cF;
+      const ctw=ctx.measureText(archCode).width;
+      const cpW=ctw+W*0.055, cpH=W*0.060, cpX=cx-cpW/2;
+      ctx.save(); ctx.fillStyle="#1e3a5f"; ctx.strokeStyle="#3b82f6"; ctx.lineWidth=2;
+      rr(cpX,y,cpW,cpH,cpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(archCode, y+cpH*0.68, cF, "#60a5fa");
+      y += cpH + Math.round(H*0.018);
+
+      // Level badge
+      const lvF=`600 ${Math.round(W*0.025)}px ${bF}`;
+      ctx.font=lvF;
+      const ltw=ctx.measureText(level.text).width;
+      const lpW=ltw+W*0.04, lpH=W*0.044, lpX=cx-lpW/2;
+      ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+      rr(lpX,y,lpW,lpH,lpH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+      dtC(level.text, y+lpH*0.68, lvF, accent+"cc");
+      y += lpH + Math.round(H*0.032);
+
+      // Tagline (14px-equivalent italic)
+      const tgF=`italic ${Math.round(W*0.034)}px ${isRTL?arF:"Georgia,"+enF}`;
+      dtC(archTagline, y, tgF, "#9ca3af", W-PAD*2.5);
+      y += Math.round(H*0.055);
 
       // Divider
-      ctx.save(); const dg3=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      dg3.addColorStop(0,"transparent"); dg3.addColorStop(0.2,GOLD+"44");
-      dg3.addColorStop(0.8,GOLD+"44"); dg3.addColorStop(1,"transparent");
-      ctx.strokeStyle=dg3; ctx.lineWidth=1.5;
+      ctx.save();
+      const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      dg.addColorStop(0,"transparent"); dg.addColorStop(0.2,accent+"44");
+      dg.addColorStop(0.8,accent+"44"); dg.addColorStop(1,"transparent");
+      ctx.strokeStyle=dg; ctx.lineWidth=1.5;
       ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-      y+=Math.round(H*0.036);
+      y += Math.round(H*0.048);
 
-      // 3 STATS BARS
-      const barTotalW=W-PAD*2, barH3=Math.round(H*0.018);
-      const statLF=`bold ${Math.round(W*0.027)}px ${bF}`;
-      const statVF=`bold ${Math.round(W*0.027)}px monospace,${bF}`;
-      const statColors=[GOLD,BLUE2,"#10b981"];
-      for(let si=0;si<3;si++){
-        const sl=statLabels[si], sv=statVals[si], sc=statColors[si];
-        txL(sl, y, statLF, "#9ca3af");
-        txR(`${sv}`, y, statVF, sc);
-        y+=Math.round(H*0.024);
-        ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barTotalW,barH3,barH3/2); ctx.fill(); ctx.restore();
-        const fw3=Math.max(barH3,Math.round((sv/100)*barTotalW));
-        const fg3=ctx.createLinearGradient(PAD,0,PAD+fw3,0);
-        fg3.addColorStop(0,sc); fg3.addColorStop(1,sc+"88");
-        ctx.save(); ctx.fillStyle=fg3; ctx.shadowColor=sc; ctx.shadowBlur=8;
-        rr(PAD,y,fw3,barH3,barH3/2); ctx.fill(); ctx.restore();
-        y+=barH3+Math.round(H*0.028);
+      // Top path label + name
+      const pK=lang==="ar"?"أفضل مسار":lang==="fr"?"Voie #1":"Top Path";
+      dtC(pK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      y += Math.round(H*0.044);
+      dtC(clusterName, y, `bold ${Math.round(W*0.042)}px ${bF}`, "#f3f4f6", W-PAD*2);
+      y += Math.round(H*0.056);
+
+      // Match label + value
+      const mK=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+      dtC(mK, y, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+      ctx.save(); ctx.font=`bold ${Math.round(W*0.046)}px monospace,${bF}`;
+      ctx.fillStyle=accent; ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+      ctx.fillText(`${confidence}%`, cx, y); ctx.restore();
+      y += Math.round(H*0.022);
+
+      // Confidence bar
+      const barW=W-PAD*2, barH=Math.round(H*0.016);
+      ctx.save(); ctx.fillStyle="#1e293b"; rr(PAD,y,barW,barH,barH/2); ctx.fill();
+      const fw=Math.max(barH,Math.round((confidence/100)*barW));
+      const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);
+      fg.addColorStop(0,accent); fg.addColorStop(1,"#fbbf24");
+      ctx.fillStyle=fg; ctx.shadowColor=accent; ctx.shadowBlur=10;
+      rr(PAD,y,fw,barH,barH/2); ctx.fill(); ctx.restore();
+      y += barH + Math.round(H*0.04);
+
+      // Chips (centred row)
+      if(strengths.length>0){
+        const chipH=Math.round(H*0.038), chipFont=`600 ${Math.round(W*0.026)}px ${bF}`;
+        ctx.font=chipFont;
+        const chips=strengths.map(s=>({ text:s, w:ctx.measureText(s).width+W*0.04 }));
+        const totalW=chips.reduce((a,c)=>a+c.w+W*0.014,0)-W*0.014;
+        let chipX=cx-totalW/2;
+        for(const chip of chips){
+          ctx.save(); ctx.fillStyle="#1e293b"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+          rr(chipX,y,chip.w,chipH,chipH/2); ctx.fill(); ctx.stroke(); ctx.restore();
+          ctx.save(); ctx.font=chipFont; ctx.fillStyle="#93c5fd"; ctx.textBaseline="alphabetic";
+          ctx.fillText(chip.text, chipX+W*0.02, y+chipH*0.68); ctx.restore();
+          chipX+=chip.w+W*0.014;
+        }
       }
 
-      // Top direction
-      const dirLbl=isRTL?"أفضل اتجاه هذا الأسبوع:":lang==="fr"?"Top direction cette semaine :":"Top direction this week:";
-      txC(dirLbl, y, `${Math.round(W*0.024)}px ${bF}`, "#6b7280");
-      y+=Math.round(H*0.036);
-      ctx.save(); ctx.font=`bold ${Math.round(W*0.044)}px ${bF}`;
-      const cng=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      cng.addColorStop(0,"#f3f4f6"); cng.addColorStop(1,GOLD2);
-      ctx.fillStyle=cng; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
-      ctx.fillText(clusterName||"—",W/2,y,W-PAD*2); ctx.restore();
-      y+=Math.round(H*0.048);
-
-      // Confidence bar row
-      const mLbl=isRTL?`التوافق — ${confidence}%`:lang==="fr"?`Compatibilité — ${confidence}%`:`Match — ${confidence}%`;
-      txC(mLbl, y, `bold ${Math.round(W*0.028)}px monospace,${bF}`, GOLD);
-      y+=Math.round(H*0.026);
-      const barW4=W-PAD*2, barH4=Math.round(H*0.016);
-      ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barW4,barH4,barH4/2); ctx.fill(); ctx.restore();
-      const fw4=Math.max(barH4,Math.round((confidence/100)*barW4));
-      const fg4=ctx.createLinearGradient(PAD,0,PAD+fw4,0);
-      fg4.addColorStop(0,GOLD); fg4.addColorStop(1,GOLD2);
-      ctx.save(); ctx.fillStyle=fg4; ctx.shadowColor=GOLD; ctx.shadowBlur=10;
-      rr(PAD,y,fw4,barH4,barH4/2); ctx.fill(); ctx.restore();
-
       // Footer
-      const fy3=H-PAD*0.85;
-      ctx.save(); const fl3=ctx.createLinearGradient(PAD,0,W-PAD,0);
-      fl3.addColorStop(0,"transparent"); fl3.addColorStop(0.15,GOLD+"28");
-      fl3.addColorStop(0.85,GOLD+"28"); fl3.addColorStop(1,"transparent");
-      ctx.strokeStyle=fl3; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(PAD,fy3-PAD*0.3); ctx.lineTo(W-PAD,fy3-PAD*0.3); ctx.stroke(); ctx.restore();
-      txL("MassarPro.com", fy3, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-      txR(sid, fy3, `500 ${Math.round(W*0.019)}px monospace,${bF}`, GOLD+"66");
+      const fy=H-PAD*0.9;
+      ctx.save();
+      const fl=ctx.createLinearGradient(PAD,0,W-PAD,0);
+      fl.addColorStop(0,"transparent"); fl.addColorStop(0.15,accent+"28");
+      fl.addColorStop(0.85,accent+"28"); fl.addColorStop(1,"transparent");
+      ctx.strokeStyle=fl; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(PAD,fy-PAD*0.28); ctx.lineTo(W-PAD,fy-PAD*0.28); ctx.stroke(); ctx.restore();
+      dtC(`massar.ma • ${new Date().getFullYear()}`, fy, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+      // Serial ID (right-aligned)
+      const sidP = serialId(archCode);
+      const sidFP = `500 ${Math.round(W*0.018)}px monospace,${bF}`;
+      ctx.font = sidFP;
+      const sidWP = ctx.measureText(sidP).width;
+      ctx.save(); ctx.font=sidFP; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+      ctx.fillText(sidP, W-PAD-sidWP, fy); ctx.restore();
+
       return canvas;
     }
 
-    // ── Card (5:7) and Square (1:1) — unified El M3allem layout ──
-    let y=Math.round(H*0.05);
+    // ── Card / Square canvas: legendary layout ──────────────────
+    // Rarity pill tier colors (canvas approximation)
+    const rarityPillColors = {
+      legendary:{ bg:"#92400e", text:"#fde68a", border:"#f59e0b" },
+      epic:     { bg:"#4c1d95", text:"#e9d5ff", border:"#a855f7" },
+      rare:     { bg:"#164e63", text:"#a5f3fc", border:"#22d3ee" },
+      common:   { bg:"#1e293b", text:"#94a3b8", border:"#475569" },
+    };
+    const rpc = rarityPillColors[rarity.key] || rarityPillColors.common;
 
-    // Header: "MASSAR | YEAR" left + rarity pill right
-    const hdrY=Math.round(H*0.058);
-    const hdrTxt2=`MASSAR | ${new Date().getFullYear()}`;
-    const hdrSubTxt2=isRTL?"محرك الهوية المهنية":lang==="fr"?"Morocco Career Identity Engine":"Morocco Career Identity Engine";
-    txL(hdrTxt2, hdrY, `bold ${Math.round(W*0.028)}px ${bF}`, GOLD);
-    txL(hdrSubTxt2, hdrY+Math.round(H*0.022), `${Math.round(W*0.018)}px ${bF}`, "#4b5563");
+    // Header accent strip
+    const stripW=W*0.08, sx=isRTL?W-PAD-stripW:PAD;
+    const sg=ctx.createLinearGradient(sx,0,sx+stripW,0);
+    sg.addColorStop(0,accent); sg.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=sg; rr(sx,PAD*0.78,stripW,4,2); ctx.fill(); ctx.restore();
 
-    // Rarity pill right-aligned — "RARE ✦ VERIFIED PROFILE"
-    const rarTxt2=`${rarityLabel.toUpperCase()} ✦ ${isRTL?"موثّق":lang==="fr"?"VÉRIFIÉ":"VERIFIED"}`;
-    const rarF2=`bold ${Math.round(W*0.022)}px ${bF}`;
-    ctx.font=rarF2;
-    const rtw2=ctx.measureText(rarTxt2).width;
-    const rpW3=rtw2+W*0.05, rpH3=W*0.048;
-    const rpX3=isRTL?PAD:W-PAD-rpW3;
-    const rpY3=hdrY-rpH3*0.72;
-    ctx.save(); ctx.fillStyle=BLUE; ctx.strokeStyle=accent;
-    ctx.lineWidth=1.5; ctx.shadowColor=accent; ctx.shadowBlur=12;
-    rr(rpX3,rpY3,rpW3,rpH3,rpH3/2); ctx.fill(); ctx.stroke(); ctx.restore();
-    tx(rarTxt2, rpX3+rpW3/2, hdrY, rarF2, accent, rpW3, "center");
-    y=hdrY+Math.round(H*0.04);
+    // Brand mark
+    const brandY=PAD*1.44;
+    const brandStr = isRTL ? "مسار" : "MASSAR";
+    dtL(brandStr, brandY, `bold ${Math.round(W*0.026)}px ${bF}`, "#6b7280");
+    const subStr = isRTL ? "بوابة مسارك المهني" : "Career Identity Engine";
+    dtL(subStr, brandY+Math.round(H*0.018), `${Math.round(W*0.018)}px ${bF}`, "#374151");
 
-    // Gold rule separator
-    ctx.save(); const srg=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    srg.addColorStop(0,"transparent"); srg.addColorStop(0.1,GOLD+"55");
-    srg.addColorStop(0.9,GOLD+"55"); srg.addColorStop(1,"transparent");
-    ctx.strokeStyle=srg; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-    y+=Math.round(H*0.03);
+    // Rarity pill — tier-colored
+    const rarityTxt=`${rarity.emoji} ${rarityLabel.toUpperCase()}`;
+    const rpFont=`bold ${Math.round(W*0.027)}px ${bF}`;
+    ctx.font=rpFont;
+    const rtw=ctx.measureText(rarityTxt).width;
+    const rpW2=rtw+W*0.05, rpH2=W*0.052, rpX2=isRTL?PAD:W-PAD-rpW2;
+    const rpY2=brandY-rpH2*0.72;
+    ctx.save(); ctx.fillStyle=rpc.bg; ctx.strokeStyle=rpc.border;
+    ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(rpX2,rpY2,rpW2,rpH2,rpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=rpFont; ctx.fillStyle=rpc.text; ctx.textBaseline="alphabetic";
+    ctx.fillText(rarityTxt, rpX2+rpW2*0.1, brandY, rpW2); ctx.restore();
 
-    // Central emblem — badge/shield icon (larger for card)
-    const iR2=Math.round(W*(fmt==="square"?0.18:0.20));
-    const iCX2=W/2, iCY2=y+iR2;
-    // Outer halo rings
-    [iR2*1.28, iR2*1.12, iR2*1.0].forEach((r3,ri)=>{
-      ctx.save(); ctx.beginPath(); ctx.arc(iCX2,iCY2,r3,0,Math.PI*2);
-      ctx.strokeStyle=ri===2?accent:accent+(ri===1?"44":"18");
-      ctx.lineWidth=ri===2?2.5:1.5;
-      ctx.shadowColor=accent; ctx.shadowBlur=ri===2?24:8; ctx.stroke(); ctx.restore();
-    });
-    const discG3=ctx.createRadialGradient(iCX2,iCY2,0,iCX2,iCY2,iR2);
-    discG3.addColorStop(0,accent+"28"); discG3.addColorStop(1,"transparent");
-    ctx.save(); ctx.beginPath(); ctx.arc(iCX2,iCY2,iR2,0,Math.PI*2);
-    ctx.fillStyle=discG3; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
-    // Hexagonal badge border
-    ctx.save(); ctx.beginPath();
-    for(let p=0;p<6;p++){
-      const a=(p/6)*Math.PI*2-Math.PI/2;
-      if(p===0) ctx.moveTo(iCX2+Math.cos(a)*iR2,iCY2+Math.sin(a)*iR2);
-      else ctx.lineTo(iCX2+Math.cos(a)*iR2,iCY2+Math.sin(a)*iR2);
-    }
-    ctx.closePath(); ctx.strokeStyle=GOLD+"88"; ctx.lineWidth=2;
-    ctx.shadowColor=GOLD; ctx.shadowBlur=10; ctx.stroke(); ctx.restore();
-    ctx.save(); ctx.font=`${Math.round(iR2*0.95)}px serif`;
+    // Multi-ring halo icon
+    const ibSz=Math.round(W*0.26);
+    const ibCX=W/2, ibCY=Math.round(H*0.185)+ibSz/2;
+    // Outermost ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.044),0,Math.PI*2);
+    ctx.strokeStyle=accent+"1e"; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore();
+    // Mid ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2+Math.round(W*0.022),0,Math.PI*2);
+    ctx.strokeStyle=accent+"44"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Glow disc
+    const discGrad=ctx.createRadialGradient(ibCX,ibCY,0,ibCX,ibCY,ibSz/2);
+    discGrad.addColorStop(0,accent+"28"); discGrad.addColorStop(0.6,accent+"10"); discGrad.addColorStop(1,"transparent");
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.fillStyle=discGrad; ctx.shadowColor=accent; ctx.shadowBlur=40; ctx.fill(); ctx.restore();
+    // Border ring
+    ctx.save(); ctx.beginPath(); ctx.arc(ibCX,ibCY,ibSz/2,0,Math.PI*2);
+    ctx.strokeStyle=accent+"88"; ctx.lineWidth=2; ctx.shadowColor=accent; ctx.shadowBlur=20; ctx.stroke(); ctx.restore();
+    // Emoji
+    ctx.save(); ctx.font=`${Math.round(ibSz*0.5)}px serif`;
     ctx.textAlign="center"; ctx.textBaseline="middle";
-    ctx.fillText(archIcon, iCX2, iCY2+iR2*0.06); ctx.restore();
-    y=iCY2+iR2+Math.round(H*0.032);
+    ctx.fillText(archIcon, ibCX, ibCY+ibSz*0.03); ctx.restore();
 
-    // Archetype name (big gradient)
-    const nmF2=`900 ${Math.round(W*(fmt==="square"?0.078:0.072))}px ${bF}`;
-    ctx.save(); ctx.font=nmF2;
-    const nmG2=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    nmG2.addColorStop(0,"#ffffff"); nmG2.addColorStop(0.45,GOLD2); nmG2.addColorStop(1,GOLD);
-    ctx.fillStyle=nmG2; ctx.textAlign="center"; ctx.textBaseline="alphabetic";
-    ctx.fillText(archName,W/2,y,W-PAD*2); ctx.restore();
-    y+=Math.round(H*0.038);
+    // Profile label
+    const profileHeaderY=ibCY+ibSz/2+Math.round(H*0.030);
+    dtC(lang==="ar"?"النوع المهني":lang==="fr"?"PROFIL MASSAR":"MASSAR PROFILE",
+      profileHeaderY, `bold ${Math.round(W*0.021)}px ${bF}`, "#4b5563");
 
-    // Arabic name (if not Arabic UI — adds prestige feel)
-    if(!isRTL && archetype.name?.ar){
-      txC(archetype.name.ar, y, `${Math.round(W*0.026)}px ${arF}`, "#6b7280", W-PAD*2);
-      y+=Math.round(H*0.032);
-    }
+    // Archetype name — white→accent→gold gradient
+    const nameY=profileHeaderY+Math.round(H*0.050);
+    ctx.save(); ctx.font=`900 ${Math.round(W*0.078)}px ${bF}`;
+    ctx.textBaseline="alphabetic"; ctx.textAlign="center";
+    const ng=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    ng.addColorStop(0,"#ffffff"); ng.addColorStop(0.45,accent); ng.addColorStop(1,"#fbbf24");
+    ctx.fillStyle=ng; ctx.fillText(archName,W/2,nameY,W-PAD*2); ctx.restore();
 
-    // Code + tagline
-    txC(`[ ${archCode} ]`, y, `bold ${Math.round(W*0.030)}px monospace,${bF}`, BLUE2);
-    y+=Math.round(H*0.032);
-    txC(archTagline, y, `italic ${Math.round(W*0.028)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2.2);
-    y+=Math.round(H*0.042);
+    // Code pill
+    const codeY2=nameY+Math.round(H*0.044);
+    const cFont=`bold ${Math.round(W*0.036)}px monospace,${bF}`;
+    ctx.font=cFont;
+    const ctw2=ctx.measureText(archCode).width;
+    const cpW2=ctw2+W*0.050, cpH2=W*0.058, cpX2=(W-cpW2)/2-W*0.035;
+    ctx.save(); ctx.fillStyle="rgba(30,58,95,0.9)"; ctx.strokeStyle="rgba(59,130,246,0.7)";
+    ctx.lineWidth=2; ctx.shadowColor="#3b82f6"; ctx.shadowBlur=8;
+    rr(cpX2,codeY2,cpW2,cpH2,cpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=cFont; ctx.fillStyle="#60a5fa"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(archCode, cpX2+cpW2/2, codeY2+cpH2*0.68); ctx.restore();
+    // Level badge (right of code)
+    const lvlFont=`600 ${Math.round(W*0.024)}px ${bF}`;
+    ctx.font=lvlFont;
+    const ltw2=ctx.measureText(level.text).width;
+    const lpW2=ltw2+W*0.038, lpH2=W*0.040, lpX2=cpX2+cpW2+W*0.018;
+    const lpY2=codeY2+(cpH2-lpH2)/2;
+    ctx.save(); ctx.fillStyle=accent+"12"; ctx.strokeStyle=accent+"44"; ctx.lineWidth=1.5;
+    rr(lpX2,lpY2,lpW2,lpH2,lpH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.font=lvlFont; ctx.fillStyle=accent+"cc"; ctx.textBaseline="alphabetic";
+    ctx.textAlign="center"; ctx.fillText(level.text, lpX2+lpW2/2, lpY2+lpH2*0.68); ctx.restore();
 
-    // Gold divider
-    ctx.save(); const dg4=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    dg4.addColorStop(0,"transparent"); dg4.addColorStop(0.2,GOLD+"55");
-    dg4.addColorStop(0.8,GOLD+"55"); dg4.addColorStop(1,"transparent");
-    ctx.strokeStyle=dg4; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.moveTo(PAD,y); ctx.lineTo(W-PAD,y); ctx.stroke(); ctx.restore();
-    y+=Math.round(H*0.032);
+    // Tagline italic
+    const sigY2=codeY2+cpH2+Math.round(H*0.036);
+    dtC(archTagline, sigY2, `italic ${Math.round(W*0.035)}px ${isRTL?arF:"Georgia,"+enF}`, "#94a3b8", W-PAD*2);
 
-    // 3 STATS BARS (left label, right value, fill bar)
-    const barTW2=W-PAD*2, barHH=Math.round(H*(fmt==="square"?0.020:0.016));
-    const sLF2=`bold ${Math.round(W*0.024)}px ${bF}`;
-    const sVF2=`bold ${Math.round(W*0.024)}px monospace,${bF}`;
-    const sCols=[GOLD,BLUE2,"#10b981"];
-    for(let si=0;si<3;si++){
-      const sl=statLabels[si], sv=statVals[si], sc=sCols[si];
-      txL(sl, y, sLF2, "#9ca3af");
-      txR(`${sv}%`, y, sVF2, sc);
-      y+=Math.round(H*0.022);
-      ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barTW2,barHH,barHH/2); ctx.fill(); ctx.restore();
-      const fwS=Math.max(barHH,Math.round((sv/100)*barTW2));
-      const fgS=ctx.createLinearGradient(PAD,0,PAD+fwS,0);
-      fgS.addColorStop(0,sc); fgS.addColorStop(1,sc+"88");
-      ctx.save(); ctx.fillStyle=fgS; ctx.shadowColor=sc; ctx.shadowBlur=8;
-      rr(PAD,y,fwS,barHH,barHH/2); ctx.fill(); ctx.restore();
-      y+=barHH+Math.round(H*0.024);
-    }
-    y+=Math.round(H*0.006);
+    // Divider
+    const divY2=sigY2+Math.round(H*0.044);
+    ctx.save();
+    const dg2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    dg2.addColorStop(0,"transparent"); dg2.addColorStop(0.2,accent+"55");
+    dg2.addColorStop(0.8,accent+"55"); dg2.addColorStop(1,"transparent");
+    ctx.strokeStyle=dg2; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(PAD,divY2); ctx.lineTo(W-PAD,divY2); ctx.stroke(); ctx.restore();
 
-    // "Top direction this week: ___"
-    const dirLbl2=isRTL?"أفضل اتجاه هذا الأسبوع:":lang==="fr"?"Top direction cette semaine :":"Top direction this week:";
-    txL(dirLbl2, y, `${Math.round(W*0.022)}px ${bF}`, "#6b7280");
-    y+=Math.round(H*0.034);
-    ctx.save(); ctx.font=`bold ${Math.round(W*0.038)}px ${bF}`;
-    const cng2=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    cng2.addColorStop(0,"#f3f4f6"); cng2.addColorStop(1,GOLD2);
-    ctx.fillStyle=cng2; ctx.textBaseline="alphabetic"; ctx.textAlign="left";
-    if(isRTL){ ctx.textAlign="right"; ctx.fillText(clusterName||"—",W-PAD,y,W-PAD*2); }
-    else { ctx.fillText(clusterName||"—",PAD,y,W-PAD*2); }
-    ctx.restore();
-    y+=Math.round(H*0.04);
+    // Top path
+    const pLabelY2=divY2+Math.round(H*0.050);
+    const pKey=lang==="ar"?"أفضل مسار":lang==="fr"?"VOIE #1":"TOP PATH";
+    dtL(pKey, pLabelY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pNameY2=pLabelY2+Math.round(H*0.048);
+    dtL(clusterName, pNameY2, `bold ${Math.round(W*0.044)}px ${bF}`, "#f1f5f9", W-PAD*2);
 
-    // Massar identity line: "Massar Identity: BENA | Tier: Rare"
-    const idTxt=`Massar Identity: ${archCode}  |  Tier: ${rarityLabel}`;
-    txL(idTxt, y, `600 ${Math.round(W*0.020)}px monospace,${bF}`, GOLD+"88");
-    y+=Math.round(H*0.024);
+    // Match % (RTL-safe)
+    const confY2=pNameY2+Math.round(H*0.060);
+    const cKey=lang==="ar"?"التوافق":lang==="fr"?"Compatibilité":"Match";
+    dtL(cKey, confY2, `bold ${Math.round(W*0.024)}px ${bF}`, "#6b7280");
+    const pctStr=`${confidence}%`;
+    const pFont=`900 ${Math.round(W*0.046)}px monospace,${bF}`;
+    ctx.font=pFont;
+    const ptw=ctx.measureText(pctStr).width;
+    const pctX=isRTL?PAD:W-PAD-ptw;
+    ctx.save(); ctx.font=pFont; ctx.fillStyle=accent;
+    ctx.textBaseline="alphabetic"; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    ctx.fillText(pctStr,pctX,confY2); ctx.restore();
 
     // Confidence bar
-    const barW5=W-PAD*2, barH5=Math.round(H*0.016);
-    const cLbl=isRTL?`التوافق — ${confidence}%`:lang==="fr"?`Compatibilité — ${confidence}%`:`Match — ${confidence}%`;
-    txL(cLbl, y, `600 ${Math.round(W*0.020)}px monospace,${bF}`, GOLD);
-    y+=Math.round(H*0.022);
-    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,y,barW5,barH5,barH5/2); ctx.fill(); ctx.restore();
-    const fw5=Math.max(barH5,Math.round((confidence/100)*barW5));
-    const fg5=ctx.createLinearGradient(PAD,0,PAD+fw5,0);
-    fg5.addColorStop(0,GOLD); fg5.addColorStop(1,GOLD2);
-    ctx.save(); ctx.fillStyle=fg5; ctx.shadowColor=GOLD; ctx.shadowBlur=10;
-    rr(PAD,y,fw5,barH5,barH5/2); ctx.fill(); ctx.restore();
+    const barY2=confY2+Math.round(H*0.018), barH2=Math.round(H*0.018), barW2=W-PAD*2;
+    ctx.save(); ctx.fillStyle="#0f172a"; rr(PAD,barY2,barW2,barH2,barH2/2); ctx.fill(); ctx.restore();
+    const fw2=Math.max(barH2,Math.round((confidence/100)*barW2));
+    const fg2=ctx.createLinearGradient(PAD,0,PAD+fw2,0);
+    fg2.addColorStop(0,accent); fg2.addColorStop(1,"#fbbf24");
+    ctx.save(); ctx.fillStyle=fg2; ctx.shadowColor=accent; ctx.shadowBlur=12;
+    rr(PAD,barY2,fw2,barH2,barH2/2); ctx.fill(); ctx.restore();
 
-    // Footer: MassarPro.com + serial
-    const fyF=H-PAD*0.85;
-    ctx.save(); const flF=ctx.createLinearGradient(PAD,0,W-PAD,0);
-    flF.addColorStop(0,"transparent"); flF.addColorStop(0.12,GOLD+"28");
-    flF.addColorStop(0.88,GOLD+"28"); flF.addColorStop(1,"transparent");
-    ctx.strokeStyle=flF; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(PAD,fyF-PAD*0.3); ctx.lineTo(W-PAD,fyF-PAD*0.3); ctx.stroke(); ctx.restore();
-    txL("MassarPro.com", fyF, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
-    txR(sid, fyF, `500 ${Math.round(W*0.018)}px monospace,${bF}`, GOLD+"66");
+    // Trait chips
+    if(strengths.length>0){
+      const chipY2=barY2+barH2+Math.round(H*0.044);
+      const chipH2=Math.round(H*0.046), chipFont2=`600 ${Math.round(W*0.026)}px ${bF}`;
+      ctx.font=chipFont2;
+      let cxp = isRTL ? W-PAD : PAD;
+      for(const s of strengths){
+        const icon2 = CHIP_ICON[s] || "✦";
+        const chipTxt = `${icon2} ${s}`;
+        const cw=ctx.measureText(chipTxt).width+W*0.040;
+        if(isRTL){ cxp-=cw; if(cxp<PAD) break; }
+        else { if(cxp+cw>W-PAD) break; }
+        ctx.save(); ctx.fillStyle="rgba(30,41,59,0.9)"; ctx.strokeStyle=accent+"3a"; ctx.lineWidth=1.5;
+        rr(cxp,chipY2,cw,chipH2,chipH2/2); ctx.fill(); ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.font=chipFont2; ctx.fillStyle="#a5f3fc"; ctx.textBaseline="alphabetic";
+        ctx.fillText(chipTxt, cxp+W*0.018, chipY2+chipH2*0.68); ctx.restore();
+        if(isRTL){ cxp-=W*0.014; } else { cxp+=cw+W*0.014; }
+      }
+    }
+
+    // Footer: brand + serial ID
+    const fy2=H-PAD*0.85;
+    ctx.save();
+    const fl2=ctx.createLinearGradient(PAD,0,W-PAD,0);
+    fl2.addColorStop(0,"transparent"); fl2.addColorStop(0.15,accent+"28");
+    fl2.addColorStop(0.85,accent+"28"); fl2.addColorStop(1,"transparent");
+    ctx.strokeStyle=fl2; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(PAD,fy2-PAD*0.3); ctx.lineTo(W-PAD,fy2-PAD*0.3); ctx.stroke(); ctx.restore();
+    dtL(`massar.ma • ${new Date().getFullYear()}`, fy2, `bold ${Math.round(W*0.022)}px ${bF}`, "#374151");
+    const sid2=serialId(archCode);
+    const sidFont=`500 ${Math.round(W*0.018)}px monospace,${bF}`;
+    ctx.font=sidFont;
+    const sidW2=ctx.measureText(sid2).width;
+    const sidX2=isRTL?PAD:W-PAD-sidW2;
+    ctx.save(); ctx.font=sidFont; ctx.fillStyle=accent+"55"; ctx.textBaseline="alphabetic";
+    ctx.fillText(sid2, sidX2, fy2); ctx.restore();
 
     return canvas;
   }
-
 
   const downloadPng = () => {
     try {
@@ -7415,7 +5857,7 @@ function ShareCard({ t, lang, massarType, topCluster, confidence, traits }) {
       {/* Section label */}
       <div style={{fontSize:10,fontWeight:800,color:"var(--muted)",letterSpacing:2,
         textTransform:"uppercase",marginBottom:14}}>
-        {t?.shareTitle}
+        {t.shareTitle}
       </div>
 
       {/* Format segmented control */}
@@ -7465,7 +5907,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
   const storageKey = `massar_xp_${massarType}_${cluster?.id||"x"}`;
 
   const [checked, setChecked] = useState(()=>{
-    try { const _d=typeof localStorage!=='undefined'?localStorage.getItem(storageKey):null; return JSON.parse(_d||"{}"); } catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(storageKey)||"{}"); } catch { return {}; }
   });
 
   const allTasks = (cluster?.actionPlan||[]).flatMap((week,wi)=>
@@ -7511,7 +5953,7 @@ function XPProgressionTracker({ top3, t, lang, massarType }) {
       <div className="result-card">
         {(cluster?.actionPlan||[]).map((week,wi)=>(
           <div key={wi} className="week-card">
-            <div className="week-label">{t?.weekLabel} {wi+1}</div>
+            <div className="week-label">{t.weekLabel} {wi+1}</div>
             {(week.items||[]).map((item,ii)=>{
               const isObj = item&&typeof item==="object";
               const label = isObj?item.label:item;
@@ -7584,7 +6026,7 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   }
 
   const tabs = [
-    { key:"bestFit",   icon:"💡", label: lang==="ar"?"أفضل توافق": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
+    { key:"bestFit",   icon:"💡", label: lang==="ar"?"الأنسب شخصياً": lang==="fr"?"Meilleure affinité":"Best Personal Fit" },
     { key:"balanced",  icon:"⚖️", label: lang==="ar"?"الخيار المتوازن": lang==="fr"?"Option équilibrée":"Best Balanced" },
     { key:"ambitious", icon:"🚀", label: lang==="ar"?"الأكثر طموحاً": lang==="fr"?"Plus ambitieux":"Most Ambitious" },
   ];
@@ -7708,2115 +6150,6 @@ function ThreeViewPanel({ t, lang, views, overallAvg }) {
   );
 }
 
-// ── WhyThisIsTop: deterministic 3-bullet explanation block ────────
-// Shows "Why this is #1" for the top cluster: Academic tier + Prestige + Future-proofing.
-// Spec §4 — trust-building explainability.
-function WhyThisIsTop({ cluster, overallAvg, lang, t }) {
-  if (!cluster) return null;
-  const avg = Number(overallAvg) || 0;
-  const tier = getAcademicTierABCD(avg);
-  const tierLabel = { A:"A (≥16)", B:"B (14–15.9)", C:"C (12–13.9)", D:"D (<12)" }[tier] || tier;
-  const prestige = PRESTIGE_INDEX[cluster.id] ?? 0.6;
-  const futureIdx = FUTURE_INDEX[cluster.id]  ?? 0.6;
-  const clusterName = (lang==="ar"?"المجال":lang==="fr"?"Domaine":"Field") + ": " + cluster.id;
-
-  const pctPr = Math.round(prestige * 100);
-  const pctFu = Math.round(futureIdx * 100);
-
-  const bullet = (icon, txt) => (
-    <div key={txt} style={{display:"flex",gap:8,alignItems:"flex-start",marginBottom:7}}>
-      <span style={{fontSize:16,lineHeight:1}}>{icon}</span>
-      <span style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{txt}</span>
-    </div>
-  );
-
-  const tiers = {
-    ar: { A:"أكاديمي ممتاز", B:"مستوى جيد جداً", C:"مستوى متوسط", D:"مسار تطبيقي" },
-    fr: { A:"Excellent académique", B:"Très bon niveau", C:"Niveau moyen", D:"Voie pratique" },
-    en: { A:"Excellent academic tier", B:"Strong academic tier", C:"Average tier", D:"Practical-track tier" },
-  };
-  const tierText = (tiers[lang]||tiers.en)[tier] || tierLabel;
-
-  const presText = lang==="ar"
-    ? `الهيبة المهنية: ${pctPr}٪ — ${pctPr>=80?"مسار رفيع المستوى":pctPr>=65?"مسار مرموق":"مسار عملي"}`
-    : lang==="fr"
-    ? `Prestige: ${pctPr}% — ${pctPr>=80?"filière très cotée":pctPr>=65?"filière respectée":"filière pratique"}`
-    : `Prestige: ${pctPr}% — ${pctPr>=80?"top-tier field":pctPr>=65?"respected field":"practical field"}`;
-
-  const futText = lang==="ar"
-    ? `مقاومة المستقبل: ${pctFu}٪ — ${pctFu>=80?"طلب مرتفع في 2030+":pctFu>=65?"مستقر ومتنامٍ":"يعتمد على التخصص"}`
-    : lang==="fr"
-    ? `Résistance à l'avenir: ${pctFu}% — ${pctFu>=80?"forte demande 2030+":pctFu>=65?"stable et croissant":"dépend de la spécialisation"}`
-    : `Future-proofing: ${pctFu}% — ${pctFu>=80?"high demand 2030+":pctFu>=65?"stable and growing":"depends on specialisation"}`;
-
-  const tierBullet = lang==="ar"
-    ? `مستواك الأكاديمي: ${tierText} — يتوافق مع متطلبات هذا المسار`
-    : lang==="fr"
-    ? `Ton niveau académique: ${tierText} — compatible avec les prérequis`
-    : `Your academic tier: ${tierText} — aligns with this field's requirements`;
-
-  // Prestige alternative for low-prestige clusters recommended to high-avg students
-  const showPrestAlt = prestige < 0.62 && avg >= 14.5;
-  const altClusters = showPrestAlt
-    ? Object.entries(PRESTIGE_INDEX)
-        .filter(([id, p]) => p >= 0.78 && id !== cluster.id)
-        .sort((a,b) => b[1]-a[1])
-        .slice(0,2)
-        .map(([id]) => id)
-    : [];
-  const altLabel = lang==="ar"
-    ? "إذا كنت تريد مساراً أكثر هيبة: فكّر في "
-    : lang==="fr"
-    ? "Pour une filière plus cotée, explore : "
-    : "If you want a more prestigious label, consider: ";
-
-  return (
-    <div style={{
-      background:"rgba(99,102,241,0.04)", border:"1px solid rgba(99,102,241,0.18)",
-      borderRadius:14, padding:"14px 16px", marginBottom:16,
-    }}>
-      <div style={{fontSize:11,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:10}}>
-        {lang==="ar"?"🔍 لماذا هذا هو الخيار الأول؟"
-          :lang==="fr"?"🔍 Pourquoi ce choix en #1 ?"
-          :"🔍 Why is this #1?"}
-      </div>
-      {bullet("🎓", tierBullet)}
-      {bullet("🏆", presText)}
-      {bullet("🔮", futText)}
-      {showPrestAlt && altClusters.length > 0 && (
-        <div style={{
-          marginTop:10,padding:"8px 12px",
-          background:"rgba(232,161,36,0.07)",border:"1px solid rgba(232,161,36,0.2)",
-          borderRadius:10,fontSize:12,color:"var(--text)",lineHeight:1.6,
-        }}>
-          💡 {altLabel}
-          <strong>{altClusters.join(" · ")}</strong>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── DEV_TESTS: built-in regression test suite ─────────────────────
-// Spec §5 — run on localhost, logs to console. Set window.__RUN_TESTS=true to force.
-// Tests are deterministic and do not render in production UI.
-function runDevTests() {
-  const PASS = "\x1b[32m✅\x1b[0m";
-  const FAIL = "\x1b[31m❌\x1b[0m";
-  let failures = 0;
-
-  function check(label, condition) {
-    if (condition) {
-      console.log(PASS, label);
-    } else {
-      console.warn(FAIL, label);
-      failures++;
-    }
-  }
-
-  function scoreCase(bacTrack, marks, pb={}, goal="prestige") {
-    const traits = { analytical:0.7, social:0.6, structure:0.65, creativity:0.5, risk:0.5, leadership:0.6 };
-    const reality = {
-      strengths:["s_math","s_learning","s_discipline"],
-      interests:["i_research","i_building"],
-      identityType:"academic", priority:"prestige",
-      goalPreference:goal, goalMode:goal,
-      profileBoost:{ prestigePriority:pb.pres??1, moneyPriority:1, handsOn:pb.handsOn??0,
-        riskTolerance:1, internationalIntent:1, focusAbility:pb.focus??1 },
-    };
-    // SUBJECT SYSTEM FIX: use getSubjectsForMarks with a synthetic info object for tests
-    const testInfo = { trackField: TRACK_FIELD_TO_BAC_TRACK_REVERSE?.[bacTrack] || "SE", examLevel:"bac2", smOption:"A", eoOption:"arabic", bpExtras:[] };
-    const subjs = getSubjectsForMarks(testInfo);
-    const eff = {};
-    subjs.forEach(s => eff[s] = marks[s] ?? 13);
-    return computeClusterScores(bacTrack, eff, traits, 1, false, reality);
-  }
-
-  function top3ids(ranked) { return ranked.slice(0,3).map(c=>c.id); }
-  function views(ranked, avgVal, info={}) {
-    const avg = Object.values(info.marks||{}).length
-      ? Object.values(info.marks||{}).reduce((a,b)=>a+Number(b),0)/Object.values(info.marks||{}).length
-      : avgVal;
-    const eff = info.marks || {};
-    return computeThreeViews(ranked, avg, { goalPreference:"prestige", goalMode:"prestige", privateBudget:false, ...info }, eff);
-  }
-
-  // TEST 1 — SVT avg 14.8: medicine NOT #1 in Balanced
-  (()=>{
-    const ranked = scoreCase("SVT", { svt:14, pc:12, math:15, english:14, philosophy:13 });
-    const avgVal = (14+12+15+14+13)/5; // 13.6 — wait, let's use 14.8 avg
-    // Use marks that give ~14.8 avg
-    const ranked2 = scoreCase("SVT", { svt:15, pc:14, math:16, english:14, philosophy:15 });
-    const avg2 = (15+14+16+14+15)/5;
-    const v = computeThreeViews(ranked2, avg2, {goalPreference:"prestige",privateBudget:false},{svt:15,pc:14});
-    check("T1 SVT avg~14.8 → Medicine NOT #1 in Balanced", v.balanced?.id !== "health");
-  })();
-
-  // TEST 2 — SVT avg 16.2, SVT≥14, PC≥13 → Medicine appears in Ambitious and Balanced
-  (()=>{
-    const ranked = scoreCase("SVT", { svt:17, pc:15, math:16, english:16, philosophy:15 });
-    const avg = (17+15+16+16+15)/5;
-    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",privateBudget:false},{svt:17,pc:15});
-    check("T2 SVT avg~15.8 eligible → Medicine in Ambitious (not blocked)", v.ambitious?.id === "health" || v.balanced?.id === "health");
-  })();
-
-  // TEST 3 — SMA avg 15, strong math → IT/Data/Engineering in top-3, not Tourism
-  (()=>{
-    const ranked = scoreCase("SMA", { math:17, pc:15, english:14, philosophy:13 });
-    const t3 = top3ids(ranked);
-    const HIGH_PRESTIGE = new Set(["it","data","cyber","industrial","civil","energy","finance","network"]);
-    check("T3 SMA avg~14.75 → tourism NOT in top-3", !t3.includes("tourism"));
-    check("T3 SMA avg~14.75 → at least 1 high-prestige cluster in top-3", t3.some(id=>HIGH_PRESTIGE.has(id)));
-  })();
-
-  // TEST 4 — Tier C handsOn=2 → trades in top-3
-  (()=>{
-    const traits = { analytical:0.4, social:0.5, structure:0.7, creativity:0.4, risk:0.5, leadership:0.5 };
-    const reality = {
-      strengths:["s_mechanical","s_tools"],
-      interests:["i_machines","i_building"],
-      identityType:"builder", priority:"stability",
-      goalPreference:"practical", goalMode:"practical",
-      profileBoost:{ prestigePriority:0, moneyPriority:1, handsOn:2, riskTolerance:1, internationalIntent:0, focusAbility:1 },
-    };
-    const eff = { math:11, pc:10, english:11, philosophy:10 };
-    const ranked = computeClusterScores("TECH", eff, traits, 0, false, reality);
-    const t3 = top3ids(ranked);
-    check("T4 Tier C + handsOn=2 → trades in top-3", t3.includes("trades") || t3.includes("automotive") || t3.includes("industrial"));
-  })();
-
-  // TEST 5 — Tier A + pbPrestige=2 → no Tier C cluster as #1 in Ambitious
-  (()=>{
-    const ranked = scoreCase("SMA", { math:18, pc:17, english:17, philosophy:16 }, { pres:2 });
-    const avg = (18+17+17+16)/4;
-    const v = computeThreeViews(ranked, avg, {goalPreference:"prestige",goalMode:"prestige",privateBudget:false,profileBoost:{prestigePriority:2}},{});
-    const tier = CLUSTER_PRESTIGE_TIER[v.ambitious?.id] || "B";
-    check("T5 Tier A + prestige=2 → ambitious is NOT Tier C", tier !== "C");
-  })();
-
-  console.log(`[Massar DEV_TESTS] ${failures===0?"\x1b[32m All 5 tests pass \x1b[0m":"\x1b[31m "+failures+" test(s) failed\x1b[0m"}`);
-}
-
-// Auto-run on localhost (deferred to not block render)
-if (typeof window !== "undefined" && (window.__DEV__ || window.__RUN_TESTS ||
-  (typeof location !== "undefined" && location.hostname === "localhost"))) {
-  setTimeout(runDevTests, 1800);
-}
-
-
-
-// ─────────────────────────────────────────────────────────────────
-// CHANGELOG (top-12 lines):
-// 1. Two journeys: journeyStage "prebac" | "postbac" — step inserted after language
-// 2. Pre-Bac flow: strengths/interests/sliders/constraints instead of marks
-// 3. Learner Type test (6 questions) → 6 types: Architect/Striker/Diplomat/Sprinter/Sentinel/Visionary
-// 4. Results rebuilt as 6 guided pages (Page 1/6 → 6/6)
-// 5. Page 1: Identity Mirror (pressure/consistency/advantage/blindspot)
-// 6. Page 2: Prestige & Family Reality with eligibility truth blocks
-// 7. Page 3: Future-Proof & Market 2030 with demand bars
-// 8. Page 4: Top 3 Directions (match breakdown bars + coach explanation)
-// 9. Page 5: 7-day plan + starter wins + risk + priority selector
-// 10. Page 6: PDF offer (10-item list + teaser previews + payment form)
-// 11. All new strings tri-lingual AR/FR/EN (MSA Arabic, no dialect)
-// 12. Fixed duplicate clamp; clamp(min,val,max) removed; kept clamp(val,min,max)
-// ─────────────────────────────────────────────────────────────────
-
-// ─────────────────────────────────────────────────────────────────
-// LEARNER TYPE SYSTEM
-// ─────────────────────────────────────────────────────────────────
-const LEARNER_QUESTIONS = [
-  {
-    id:"lq1",
-    ar:"حين تتعلم موضوعاً جديداً، ما أول شيء تفعله عفوياً؟",
-    fr:"Quand tu apprends un nouveau sujet, que fais-tu en premier naturellement ?",
-    en:"When you learn something new, what do you naturally do first?",
-    options:{
-      ar:["أضع خطة وأبني إطاراً منظماً","أبدأ بالتطبيق مباشرة","أشرحه لشخص آخر أو أتحدث عنه","أنتظر حتى الليلة الأخيرة","أراجعه مراراً في جدول منتظم","أبحث عن المعنى الكبير ورابطه بحياتي"],
-      fr:["Je construis un plan structuré","Je commence à pratiquer directement","Je l'explique à quelqu'un","J'attends la dernière minute","Je révise régulièrement selon un planning","Je cherche le sens global et le lien avec ma vie"],
-      en:["I build a structured framework","I start practising immediately","I explain it to someone","I wait until the last minute","I revise regularly on a schedule","I look for the big picture and its meaning"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-  {
-    id:"lq2",
-    ar:"ما الذي يُفقدك الاستمرارية في الدراسة؟",
-    fr:"Qu'est-ce qui te fait perdre ta régularité dans les études ?",
-    en:"What makes you lose consistency in studying?",
-    options:{
-      ar:["الفوضى وغياب الخطة","غياب التطبيق الفعلي","الدراسة بمفردي بدون نقاش","الروتين الممل بدون ضغط","تغيير الجدول أو انكسار العادة","الشعور بعدم المعنى"],
-      fr:["Le chaos et l'absence de plan","Pas de pratique réelle","Étudier seul sans discussion","La routine ennuyeuse sans pression","Changement de planning / rupture d'habitude","Se sentir sans sens"],
-      en:["Chaos and no plan","No real practice","Studying alone without discussion","Boring routine without pressure","Schedule changes / habit disruption","Feeling meaningless"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-  {
-    id:"lq3",
-    ar:"كيف تتذكر المعلومات بشكل أفضل؟",
-    fr:"Comment mémorises-tu le mieux ?",
-    en:"How do you remember information best?",
-    options:{
-      ar:["برسم خرائط ذهنية وتصنيفات","بالتطبيق والممارسة المتكررة","بشرحه بصوت عالٍ أو تعليم غيري","بحفظه تحت ضغط الوقت","بالتكرار المنتظم يومياً","بربطه بقصة أو صورة أو معنى شخصي"],
-      fr:["En faisant des cartes mentales et des catégories","En pratiquant et répétant","En l'expliquant à voix haute","En le mémorisant sous pression de temps","Par répétition quotidienne régulière","En le reliant à une histoire ou un sens personnel"],
-      en:["Mind maps and categorization","Practising and repeating","Explaining it aloud or teaching","Memorising under time pressure","Daily regular repetition","Linking it to a story or personal meaning"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-  {
-    id:"lq4",
-    ar:"ما نمط طاقتك خلال اليوم الدراسي؟",
-    fr:"Quel est ton schéma d'énergie pendant la journée d'étude ?",
-    en:"What's your energy pattern during a study day?",
-    options:{
-      ar:["مستقر ومتوازن — أخطط ثم أنفذ","دفقات قصيرة مكثفة ثم استراحات","مرتفع حين أتحدث مع الآخرين","يتصاعد نحو الموعد النهائي","ثابت ومنتظم كل يوم","متذبذب حسب الإلهام والمعنى"],
-      fr:["Stable et équilibré — je planifie puis j'exécute","Courtes rafales intenses puis pauses","Élevé quand je parle aux autres","Qui monte vers la deadline","Constant et régulier chaque jour","Variable selon l'inspiration et le sens"],
-      en:["Stable and balanced — plan then execute","Short intense bursts then breaks","High when talking with others","Builds towards a deadline","Consistent and regular every day","Variable depending on inspiration and meaning"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-  {
-    id:"lq5",
-    ar:"حين تفشل في مهمة أو امتحان، كيف تتعافى؟",
-    fr:"Quand tu échoues à une tâche ou un examen, comment tu te remets ?",
-    en:"When you fail a task or exam, how do you recover?",
-    options:{
-      ar:["أحلل ما حدث وأُعيد تنظيم خطتي","أتصرف مباشرة وأجرب مرة أخرى","أتحدث مع شخص وأعالج الأمر بصوت عالٍ","أُهملها وأركز على الاختبار القادم","أعود لروتيني المنتظم بثبات","أبحث عن درس أعمق أو مغزى في الفشل"],
-      fr:["J'analyse ce qui s'est passé et réorganise mon plan","J'agis directement et réessaie","Je parle à quelqu'un et traite ça à voix haute","Je laisse tomber et me concentre sur le prochain examen","Je retourne à ma routine régulière calmement","Je cherche la leçon profonde ou le sens dans l'échec"],
-      en:["Analyse what happened and reorganise my plan","Act immediately and try again","Talk to someone and process it aloud","Forget it and focus on the next exam","Return to my regular routine calmly","Look for a deeper lesson or meaning in the failure"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-  {
-    id:"lq6",
-    ar:"ما الذي يجعل العمل يبدو لك ذا معنى حقيقي؟",
-    fr:"Qu'est-ce qui rend un travail vraiment significatif pour toi ?",
-    en:"What makes work feel genuinely meaningful to you?",
-    options:{
-      ar:["حين أرى النظام والبناء خلفه","حين أرى نتائج ملموسة فورية","حين يؤثر في الآخرين ويُغيّر أفكارهم","حين يتحداني ويضغط على حدودي","حين يُبنى على الاتساق والالتزام","حين يرتبط بمعنى أكبر أو بصيرة عميقة"],
-      fr:["Quand je vois la structure et le système derrière","Quand je vois des résultats concrets immédiats","Quand ça impacte les autres et change leur vision","Quand ça me défie et pousse mes limites","Quand il se construit sur la constance et l'engagement","Quand il se connecte à un sens plus grand ou une vision profonde"],
-      en:["When I see the system and structure behind it","When I see immediate tangible results","When it impacts others and changes their thinking","When it challenges me and pushes my limits","When it's built on consistency and commitment","When it connects to a bigger meaning or deep insight"],
-    },
-    scores:["architect","striker","diplomat","sprinter","sentinel","visionary"],
-  },
-];
-
-const LEARNER_TYPE_DATA = {
-  architect: {
-    ar:{ signature:"أنت تبني الأنظمة قبل أن تبني النتائج.",
-      learn:["تتعلم بالخرائط الذهنية والتصنيفات","تحتاج الإطار الكلي قبل التفاصيل","تُخطط بدقة ثم تُنفذ بانضباط"],
-      ruined:["الفوضى تُشلّه","التعليمات غير المنطقية تُرهقه","التغيير المفاجئ يُقلقه"],
-      coach:["أعطه الخطة الكاملة أولاً","اربط كل مهمة بالإطار العام","امنحه وقتاً للتخطيط"] },
-    fr:{ signature:"Tu construis les systèmes avant les résultats.",
-      learn:["Tu apprends par cartes mentales","Tu as besoin du cadre global avant les détails","Tu planifies précisément avant d'exécuter"],
-      ruined:["Le chaos le paralyse","Les instructions illogiques l'épuisent","Le changement soudain l'inquiète"],
-      coach:["Donne-lui le plan complet d'abord","Relie chaque tâche au cadre global","Accorde-lui du temps pour planifier"] },
-    en:{ signature:"You build systems before you build results.",
-      learn:["Learn through mind maps and frameworks","Need the big picture before details","Plan precisely then execute with discipline"],
-      ruined:["Chaos paralyses them","Illogical instructions drain them","Sudden changes cause anxiety"],
-      coach:["Give the full plan first","Connect each task to the overall framework","Allow planning time"] },
-  },
-  striker: {
-    ar:{ signature:"أنت تتعلم بالفعل — المشاريع هي مدرستك.",
-      learn:["تتعلم بالتطبيق المباشر","تحتاج نتائج سريعة لتبقى متحمساً","تُفضّل التجربة على النظرية"],
-      ruined:["الدراسة النظرية الطويلة تُملّه","غياب التطبيق يُفقده الدافع","الانتظار بدون إنجاز يُحبطه"],
-      coach:["حوّل كل مفهوم لمشروع صغير","امنحه تحديات أسبوعية قابلة للقياس","اجعل التعلم نشاطاً لا قراءة"] },
-    fr:{ signature:"Tu apprends par l'action — les projets sont ton école.",
-      learn:["Tu apprends par la pratique directe","Tu as besoin de résultats rapides pour rester motivé","Tu préfères l'expérience à la théorie"],
-      ruined:["La longue théorie l'ennuie","L'absence de pratique le démotive","Attendre sans accomplissement le décourage"],
-      coach:["Transforme chaque concept en mini-projet","Donne-lui des défis hebdomadaires mesurables","Rends l'apprentissage une activité, pas une lecture"] },
-    en:{ signature:"You learn by doing — projects are your classroom.",
-      learn:["Learn through direct practice","Need quick results to stay motivated","Prefer experience over theory"],
-      ruined:["Long theory bores them","Absence of practice demotivates","Waiting without accomplishment discourages"],
-      coach:["Turn each concept into a mini-project","Set measurable weekly challenges","Make learning an activity, not reading"] },
-  },
-  diplomat: {
-    ar:{ signature:"أنت تُعمّق فهمك حين تُعلّم وتُناقش.",
-      learn:["تتعلم بالشرح والتعليم","تزدهر في النقاش والتبادل","تحتاج جمهوراً ولو افتراضياً"],
-      ruined:["الدراسة المنعزلة تُضعفه","غياب ردود الفعل يُعيقه","العمل الصامت لفترات طويلة يُنهكه"],
-      coach:["شجّعه على تدريس مادة لزميل","انشئ مجموعات مراجعة","اطلب منه شرح ما تعلّمه بصوت عالٍ"] },
-    fr:{ signature:"Tu approfondir ta compréhension en enseignant et discutant.",
-      learn:["Tu apprends en expliquant et enseignant","Tu t'épanouis dans les discussions","Tu as besoin d'un public, même virtuel"],
-      ruined:["L'étude isolée l'affaiblit","L'absence de feedback le bloque","Le travail silencieux prolongé l'épuise"],
-      coach:["Encourage-le à enseigner un cours à un camarade","Crée des groupes de révision","Demande-lui d'expliquer ce qu'il a appris à voix haute"] },
-    en:{ signature:"You deepen understanding by teaching and discussing.",
-      learn:["Learn by explaining and teaching","Thrive in discussion and exchange","Need an audience, even virtual"],
-      ruined:["Isolated study weakens them","Absence of feedback blocks progress","Long silent work exhausts them"],
-      coach:["Encourage teaching a topic to a peer","Create study groups","Ask them to explain what they learned aloud"] },
-  },
-  sprinter: {
-    ar:{ signature:"أنت تُبدع تحت ضغط الوقت — المواعيد النهائية تُحرّرك.",
-      learn:["ذاكرتك تتفعّل بالضغط","تعمل بكفاءة عالية في الوقت الضيق","تحتاج تحديات حقيقية لتبقى يقظاً"],
-      ruined:["الجداول الممتدة تُرخي تركيزه","الأمان المريح يُخدّر دافعيته","الوقت الزائد يُشتته"],
-      coach:["ضع مواعيد وهمية قصيرة لكل مهمة","قسّم المادة لسباقات سريعة","استخدم تقنية البومودورو المكثفة"] },
-    fr:{ signature:"Tu crées sous la pression du temps — les deadlines te libèrent.",
-      learn:["Ta mémoire s'active sous pression","Tu travailles avec haute efficacité dans le temps serré","Tu as besoin de vrais défis pour rester alerte"],
-      ruined:["Les longs plannings relâchent sa concentration","Le confort sécurisé endort sa motivation","Le temps excédentaire le distrait"],
-      coach:["Fixe de fausses deadlines courtes pour chaque tâche","Découpe la matière en sprints rapides","Utilise la technique Pomodoro intensive"] },
-    en:{ signature:"You create under time pressure — deadlines liberate you.",
-      learn:["Memory activates under pressure","Work with high efficiency in tight time","Need real challenges to stay alert"],
-      ruined:["Extended schedules loosen focus","Comfortable safety numbs motivation","Excess time causes distraction"],
-      coach:["Set short fake deadlines for each task","Break material into quick sprints","Use intensive Pomodoro technique"] },
-  },
-  sentinel: {
-    ar:{ signature:"أنت تبني قوتك بالتكرار والانضباط — الروتين هو سلاحك.",
-      learn:["تتعلم بالتكرار المنتظم","العادات والروتين تُثبّت معارفك","الاتساق هو قوتك الخفية"],
-      ruined:["الفوضى وكسر الجدول يُزعزعانه","التغييرات المفاجئة تُصيبه بالقلق","المهام غير المحددة تُشوّشه"],
-      coach:["صمّم له جدولاً يومياً محدداً","اجعل المراجعة عادة يومية صغيرة","احترم إيقاعه ولا تكسر عاداته"] },
-    fr:{ signature:"Tu construis ta force par la répétition et la discipline — la routine est ton arme.",
-      learn:["Tu apprends par la répétition régulière","Les habitudes et routines solidifient tes connaissances","La constance est ta force cachée"],
-      ruined:["Le chaos et la rupture de planning le déstabilisent","Les changements soudains lui causent de l'anxiété","Les tâches non définies le confondent"],
-      coach:["Conçois-lui un planning quotidien précis","Fais de la révision une petite habitude quotidienne","Respecte son rythme et ne brise pas ses habitudes"] },
-    en:{ signature:"You build strength through repetition and discipline — routine is your weapon.",
-      learn:["Learn through regular repetition","Habits and routines solidify knowledge","Consistency is your hidden strength"],
-      ruined:["Chaos and schedule disruption destabilise them","Sudden changes cause anxiety","Undefined tasks cause confusion"],
-      coach:["Design a precise daily schedule","Make revision a small daily habit","Respect their rhythm and don't break habits"] },
-  },
-  visionary: {
-    ar:{ signature:"أنت تُحرَّك بالمعنى والرؤية — الإلهام هو وقودك.",
-      learn:["تتعلم حين ترى الصورة الكبيرة والمعنى","الإبداع والاستكشاف يُحرّكانك","تحتاج ربط المادة بهدف حياتي"],
-      ruined:["التلقين الأعمى يُميت شغفه","الجزئيات المُملّة المنفصلة تُيئسه","غياب الرؤية يُعطّل تقدمه"],
-      coach:["ابدأ دائماً بالسؤال: لماذا هذا مهم؟","اربط كل مادة بمستقبل مُحدد","شجّعه على إيجاد مشاريع إبداعية حقيقية"] },
-    fr:{ signature:"Tu es mu par le sens et la vision — l'inspiration est ton carburant.",
-      learn:["Tu apprends quand tu vois la grande image et le sens","La créativité et l'exploration te motivent","Tu as besoin de relier la matière à un but de vie"],
-      ruined:["L'apprentissage par cœur aveugle tue sa passion","Les détails ennuyeux et déconnectés le découragent","L'absence de vision bloque sa progression"],
-      coach:["Commence toujours par la question : pourquoi c'est important ?","Relie chaque matière à un futur spécifique","Encourage-le à trouver de vrais projets créatifs"] },
-    en:{ signature:"You're driven by meaning and vision — inspiration is your fuel.",
-      learn:["Learn when you see the big picture and meaning","Creativity and exploration motivate","Need to connect material to a life purpose"],
-      ruined:["Blind memorisation kills passion","Boring disconnected details discourage","Absence of vision blocks progress"],
-      coach:["Always start with: why does this matter?","Connect every subject to a specific future","Encourage finding real creative projects"] },
-  },
-};
-
-function computeLearnerType(learnerAnswers) {
-  const scores = { architect:0, striker:0, diplomat:0, sprinter:0, sentinel:0, visionary:0 };
-  LEARNER_QUESTIONS.forEach(q => {
-    const ans = learnerAnswers[q.id];
-    if (ans != null && q.scores[ans]) {
-      scores[q.scores[ans]] = (scores[q.scores[ans]] || 0) + 1;
-    }
-  });
-  const sorted = Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  return { primary: sorted[0]?.[0] || "architect", secondary: sorted[1]?.[0] || "striker", scores };
-}
-
-// ─────────────────────────────────────────────────────────────────
-// STEP: Journey Stage selection (after lang, before personality)
-// ─────────────────────────────────────────────────────────────────
-function StepJourney({ lang, journeyStage, setJourneyStage, onNext, onBack, t, dir }) {
-  const sel = (val) => setJourneyStage(val);
-  return (
-    <div className="card" dir={dir}>
-      <h2 style={{fontSize:20,fontWeight:800,marginBottom:6}}>{t.journeyTitle}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:22}}>{t.journeyDesc}</p>
-      {[
-        { val:"postbac", icon:"🎓", title:t.journeyPostBac, hint:t.journeyPostBacHint },
-        { val:"prebac",  icon:"📚", title:t.journeyPreBac,  hint:t.journeyPreBacHint  },
-      ].map(opt => (
-        <button key={opt.val} onClick={()=>sel(opt.val)} style={{
-          width:"100%", textAlign: dir==="rtl" ? "right" : "left",
-          display:"flex", gap:14, alignItems:"flex-start",
-          padding:"16px 18px", borderRadius:14, marginBottom:12,
-          border:`2px solid ${journeyStage===opt.val?"var(--accent)":"var(--border)"}`,
-          background: journeyStage===opt.val ? "rgba(232,161,36,0.09)" : "var(--surface2)",
-          color:"var(--text)", cursor:"pointer", fontFamily:"inherit", transition:"all 0.18s",
-        }}>
-          <span style={{fontSize:26,flexShrink:0}}>{opt.icon}</span>
-          <div>
-            <div style={{fontSize:15,fontWeight:700,marginBottom:3}}>{opt.title}</div>
-            <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>{opt.hint}</div>
-          </div>
-        </button>
-      ))}
-      <div className="btn-row">
-        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
-        <button className="btn btn-primary" onClick={onNext}>{t.next} →</button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// STEP: Learner Type Test (6 questions, after personality)
-// ─────────────────────────────────────────────────────────────────
-function StepLearnerType({ lang, learnerAnswers, setLearnerAnswers, onNext, onBack, t, dir }) {
-  const answered = LEARNER_QUESTIONS.filter(q => learnerAnswers[q.id] != null).length;
-  const canProceed = answered >= 5;
-  const set = (qid, idx) => setLearnerAnswers(p => ({...p, [qid]: idx}));
-  return (
-    <div className="card" dir={dir}>
-      <h2 style={{fontSize:20,fontWeight:800,marginBottom:4}}>{t.learnerTitle}</h2>
-      <p style={{color:"var(--muted)",fontSize:13,marginBottom:20}}>{t.learnerDesc}</p>
-      {LEARNER_QUESTIONS.map((q, qi) => {
-        const qText = q[lang] || q.en;
-        const opts = q.options[lang] || q.options.en;
-        const sel  = learnerAnswers[q.id];
-        return (
-          <div key={q.id} style={{marginBottom:22}}>
-            <div style={{fontSize:14,fontWeight:700,marginBottom:10,lineHeight:1.5}}>
-              {qi+1}. {qText}
-            </div>
-            <div style={{display:"flex",flexDirection:"column",gap:6}}>
-              {opts.map((opt,i) => (
-                <button key={i} onClick={()=>set(q.id,i)} style={{
-                  textAlign: dir==="rtl"?"right":"left",
-                  padding:"10px 14px", borderRadius:10, fontSize:13, lineHeight:1.45,
-                  border:`1.5px solid ${sel===i?"var(--accent)":"var(--border)"}`,
-                  background: sel===i ? "rgba(232,161,36,0.10)" : "var(--surface2)",
-                  color:"var(--text)", cursor:"pointer", fontFamily:"inherit", transition:"all 0.15s",
-                }}>
-                  {opt}
-                </button>
-              ))}
-            </div>
-          </div>
-        );
-      })}
-      <p style={{fontSize:12,color:"var(--muted)",marginBottom:12}}>
-        {answered}/6 {lang==="ar"?"أسئلة مُجابة":lang==="fr"?"réponses":"answered"}
-      </p>
-      <div className="btn-row">
-        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
-        <button className="btn btn-primary" onClick={onNext}
-          disabled={!canProceed} style={{opacity:canProceed?1:0.5}}>
-          {t.next} →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// STEP: Pre-Bac Inputs (strengths / interests / sliders / constraints)
-// Only shown when journeyStage === "prebac"
-// ─────────────────────────────────────────────────────────────────
-function StepPreBacInputs({ lang, preBacData, setPreBacData, onNext, onBack, t, dir }) {
-  const set = (field, val) => setPreBacData(p => ({...p, [field]: val}));
-  const toggleArr = (field, key) => setPreBacData(p => {
-    const cur = p[field] || [];
-    return {...p, [field]: cur.includes(key) ? cur.filter(x=>x!==key) : [...cur, key]};
-  });
-
-  const strengthKeys = Object.keys(t.preBacStrengthsOpts || {});
-  const interestKeys = Object.keys(t.preBacInterestsOpts || {});
-  const subjects = ["math","physchem","svt","french","english"];
-  const subjectLabels = { math:"Maths", physchem:"Physique-Chimie", svt:"SVT", french:"Français/Arabe", english:"Anglais" };
-
-  const selStr       = preBacData.strengths      || [];
-  const selInt       = preBacData.interests      || [];
-  const sliders      = preBacData.sliders        || {};
-  const prestige     = preBacData.prestige       || "med";
-  const mobility     = preBacData.mobility       || "city";
-  const abroad       = preBacData.abroad         || false;
-  const privateBudget = preBacData.privateBudget || false;
-  const prefDial     = preBacData.preferenceDial || "balanced";
-  const publicEye    = preBacData.publicEye      || "maybe";
-
-  const canProceed = selStr.length >= 2 && selInt.length >= 2;
-
-  const chipStyle = (sel) => ({
-    padding:"8px 14px", borderRadius:20, border:`1.5px solid ${sel?"var(--accent)":"var(--border)"}`,
-    background: sel?"rgba(232,161,36,0.1)":"var(--surface2)", color:"var(--text)",
-    cursor:"pointer", fontSize:12, fontFamily:"inherit", transition:"all 0.15s",
-    margin:"3px",
-  });
-
-  const dialOpts = t.preferenceDialOpts || {
-    prestige:{icon:"🏆",label:"Prestige"},money:{icon:"💰",label:"Revenu"},
-    abroad:{icon:"🌍",label:"Étranger"},balanced:{icon:"⚖️",label:"Équilibre"},freedom:{icon:"🕊️",label:"Liberté"},
-  };
-
-  return (
-    <div className="card" dir={dir}>
-      <h2 style={{fontSize:18,fontWeight:800,marginBottom:4}}>{t.journeyPreBac}</h2>
-      <p style={{color:"var(--muted)",fontSize:12,marginBottom:20}}>
-        {lang==="ar"?"اختر ما يعكس واقعك الآن":lang==="fr"?"Choisis ce qui reflète ta réalité maintenant":"Select what reflects your current reality"}
-      </p>
-
-      {/* ── Preference Dial — Gate C ── */}
-      <div style={{marginBottom:22,padding:"16px",background:"rgba(99,102,241,0.05)",
-        border:"1.5px solid rgba(99,102,241,0.2)",borderRadius:14}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:12,color:"var(--text)"}}>
-          🎯 {t.preferenceDialLabel || "Qu'est-ce qui compte le plus ?"}
-        </div>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {Object.entries(dialOpts).map(([key,opt]) => {
-            const sel = prefDial === key;
-            return (
-              <button key={key} onClick={()=>set("preferenceDial",key)}
-                style={{
-                  display:"flex",alignItems:"center",gap:6,
-                  padding:"9px 14px",borderRadius:12,
-                  border:`2px solid ${sel?"#6366f1":"var(--border)"}`,
-                  background:sel?"rgba(99,102,241,0.12)":"var(--surface2)",
-                  color:sel?"#818cf8":"var(--muted)",
-                  cursor:"pointer",fontSize:12,fontFamily:"inherit",fontWeight:sel?700:400,
-                  transition:"all 0.18s",
-                }}>
-                <span style={{fontSize:16}}>{opt.icon}</span>
-                <span>{opt.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Strengths */}
-      <div style={{marginBottom:20}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.preBacStrengthsTitle}</div>
-        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.preBacStrengthsDesc} ({selStr.length}/3)</div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-          {strengthKeys.map(k => {
-            const sel = selStr.includes(k);
-            const disabled = !sel && selStr.length >= 3;
-            return (
-              <button key={k} onClick={()=>!disabled&&toggleArr("strengths",k)}
-                style={{...chipStyle(sel), opacity: disabled?0.45:1, cursor: disabled?"not-allowed":"pointer"}}>
-                {(t.preBacStrengthsOpts||{})[k]||k}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Interests */}
-      <div style={{marginBottom:20}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:4}}>{t.preBacInterestsTitle}</div>
-        <div style={{fontSize:12,color:"var(--muted)",marginBottom:8}}>{t.preBacInterestsDesc} ({selInt.length}/3)</div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
-          {interestKeys.map(k => {
-            const sel = selInt.includes(k);
-            const disabled = !sel && selInt.length >= 3;
-            return (
-              <button key={k} onClick={()=>!disabled&&toggleArr("interests",k)}
-                style={{...chipStyle(sel), opacity: disabled?0.45:1, cursor: disabled?"not-allowed":"pointer"}}>
-                {(t.preBacInterestsOpts||{})[k]||k}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Subject sliders */}
-      <div style={{marginBottom:20}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{t.preBacSliderTitle}</div>
-        {subjects.map(s => (
-          <div key={s} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-            <span style={{fontSize:12,width:110,flexShrink:0,color:"var(--text)"}}>{subjectLabels[s]}</span>
-            <input type="range" min={1} max={5} step={1}
-              value={sliders[s]||3}
-              onChange={e=>set("sliders",{...sliders,[s]:Number(e.target.value)})}
-              style={{flex:1,accentColor:"var(--accent)"}}/>
-            <span style={{fontSize:13,fontWeight:700,color:"var(--accent)",width:20,textAlign:"center"}}>
-              {sliders[s]||3}
-            </span>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Public Eye Gate — sports umbrella ── */}
-      <div style={{marginBottom:20,padding:"14px 16px",background:"rgba(232,161,36,0.05)",
-        border:"1px solid rgba(232,161,36,0.25)",borderRadius:12}}>
-        <div style={{fontSize:13,fontWeight:700,marginBottom:10,color:"var(--text)"}}>
-          🎤 {t.publicEyeLabel || "À l'aise sous les projecteurs ?"}
-        </div>
-        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
-          {[
-            {key:"yes",   label: t.publicEyeYes   || "Oui"},
-            {key:"maybe", label: t.publicEyeMaybe || "Peut-être"},
-            {key:"no",    label: t.publicEyeNo    || "Non"},
-          ].map(opt => (
-            <button key={opt.key} onClick={()=>set("publicEye",opt.key)}
-              style={chipStyle(publicEye===opt.key)}>
-              {opt.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Constraints */}
-      <div style={{marginBottom:16}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>{t.preBacConstraints}</div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
-          {["low","med","high"].map(p => (
-            <button key={p} onClick={()=>set("prestige",p)} style={chipStyle(prestige===p)}>
-              {(t["prestige_"+p]||p)}
-            </button>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:8,marginTop:8,flexWrap:"wrap"}}>
-          {["city","move","remote"].map(m => (
-            <button key={m} onClick={()=>set("mobility",m)} style={chipStyle(mobility===m)}>
-              {lang==="ar"
-                ? {city:"نفس المدينة",move:"مستعد للانتقال",remote:"عن بُعد"}[m]
-                : lang==="fr"
-                ? {city:"Même ville",move:"Prêt à déménager",remote:"À distance"}[m]
-                : {city:"Same city",move:"Ready to move",remote:"Remote OK"}[m]}
-            </button>
-          ))}
-        </div>
-        <div style={{display:"flex",gap:10,marginTop:8,flexWrap:"wrap"}}>
-          <button onClick={()=>set("abroad",!abroad)} style={chipStyle(abroad)}>
-            {lang==="ar"?"مهتم بالخارج":lang==="fr"?"Intéressé par l'étranger":"Interested in abroad"}
-          </button>
-          <button onClick={()=>set("privateBudget",!privateBudget)} style={chipStyle(privateBudget)}>
-            {lang==="ar"?"ميزانية للخاص":lang==="fr"?"Budget école privée":"Private school budget"}
-          </button>
-        </div>
-      </div>
-
-      <div className="btn-row">
-        <button className="btn btn-secondary" onClick={onBack}>{t.back}</button>
-        <button className="btn btn-primary" onClick={onNext}
-          disabled={!canProceed} style={{opacity:canProceed?1:0.5}}>
-          {t.next} →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// RESULTS FLOW — 6-screen guided career journey
-// Pages: 1=Identity | 2=Prestige | 3=Market | 4=Directions | 5=Plan | 6=PDF
-//         (structured 6-page mobile-first experience)
-// ─────────────────────────────────────────────────────────────────
-
-// Prestige ladder mapping by bacTrack → relevant prestige routes
-const PRESTIGE_LADDER = {
-  SMA:  ["ENSA","ENSIAS","INPT","ENSEM","Classe Prépa"],
-  SMB:  ["ENSA","ENSIAS","ENSEM","Classe Prépa","BTS Tech"],
-  PC:   ["ENSA","ENSIAS","INPT","FST (Ingénierie)","Classe Prépa"],
-  SVT:  ["Médecine","Pharmacie","ENSA","FST","IFCS"],
-  ECO:  ["ENCG","ISCAE","HEM","FSJES","ESCA"],
-  LET:  ["FSJES","Sciences Humaines","Journalisme (ISIC)","ENCG (Management)"],
-  TECH: ["ENSA","ENSAM","FST Tech","OFPPT BTS"],
-  ARTS: ["ESAV","ISADAC","ENSAD","Écoles de design"],
-  SVT_bac2: ["Médecine","Pharmacie","ENSA","FST","IFCS"],
-  SMA_bac2: ["ENSA","ENSIAS","INPT","ENSEM","Classe Prépa"],
-};
-
-function getPrestigeRoutes(info) {
-  const track = info.bac2Track || info.bacTrack || "SMA";
-  return PRESTIGE_LADDER[track] || PRESTIGE_LADDER.SMA;
-}
-
-function genOrderId() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  return "MSR-" + Array.from({length:6}, ()=>chars[Math.floor(Math.random()*chars.length)]).join("");
-}
-
-// ── Results Flow translations (appended to existing t object) ────
-const RF_COPY = {
-  ar: {
-    screenLabel:      (n,tot) => `${n} من ${tot}`,
-    jab1Title:        "هويتك المهنية",
-    jab1Sub:          "هذا بوصلة — ليس حكماً نهائياً.",
-    jab1StrengthsLabel:"نقاط قوتك",
-    sharePrompt:      "شارك نتيجتك",
-    captionOpts:      (arch, path) => [
-      `مسار كشف ليا نوعي: «${arch}» ${path ? `وأفضل مسار هو ${path}` : ""} 🧭\nشنو طلعات نتيجتك؟ 👀 #مسار #MassarPro`,
-      `كنت نتساءل على نوعيتي… مسار جاوبني بـ «${arch}» 🔥 جرّب ديالك على massar.ma\nشنو طلعات نتيجتك؟ 👀 #مسار #MassarPro`,
-      `مسار قالي «${arch}» — وما كذبش عليا 😄 الأرقام والشخصية مع بعض بالمغرب\nشنو طلعات نتيجتك؟ 👀 #مسار #MassarPro`,
-    ],
-    continueBtn:      "متابعة",
-    backBtn:          "رجوع",
-    jab2Title:        "ثلاثة اتجاهات مناسبة لك",
-    jab2Sub:          "يمكنك تغيير رأيك. هذا استكشاف.",
-    fitLabel:         "أفضل توافق",
-    balLabel:         "الخيار المتوازن",
-    ambLabel:         "الأكثر طموحاً",
-    matchPct:         (p) => `${p}% توافق`,
-    whyLabel:         "السبب",
-    jab3Title:        "سلّم المكانة والمسارات التنافسية",
-    jab3Sub:          "نظرة موضوعية على موقعك الحالي وما يمكن تحقيقه.",
-    typicalReq:       "المتطلب المعتاد",
-    yourPosition:     "موقعك الحالي",
-    priorityUpgrade:  "الخطوة الأولى",
-    strongAvg:        "معدل مرتفع عادةً (≥15)",
-    veryStrongAvg:    "معدل مرتفع جداً (≥16)",
-    solidAvg:         "معدل جيد (≥12)",
-    yourAvg:          (a) => `معدلك: ${a.toFixed(1)}/20`,
-    raiseKey:         "ارفع نقطك في المواد الأساسية", // already correct
-    jab4Title:        "خطتك في 7 أيام",
-    jab4Sub:          "5 خطوات عملية تبدأ اليوم.",
-    jab4Upsell:       "هل تريد الخطة الكاملة لـ 90 يوماً + قائمة المدارس؟ احصل على ملف PDF.",
-    taskDone:         "تم",
-    rfTitle:          "ملف PDF الشامل — 199 درهم",
-    rfSub:            "يُرسل إلى بريدك الإلكتروني خلال 24 ساعة بعد تأكيد الدفع.",
-    rfPrice:          "199 درهم — مرة واحدة فقط",
-    rfBenefits:       [
-      "قائمة المدارس المناسبة لمدينتك وتنقّلك وميزانيتك (6–12 مؤسسة)",
-      "خطة المكانة A/B/C مع جدول زمني للوصول إلى ENSA/ENCG/الطب",
-      "استراتيجية رفع النقط: المواد الأهم والخطوات الواقعية",
-      "نص محادثة مع الأسرة (عربي + فرنسي) مخصص لضغط أسرتك",
-      "مصفوفة القرار: توافق / جدوى / مكانة / سوق / مخاطر / وقت",
-      "خريطة طريق 90 يوماً (الأسابيع 2–12) + موارد مختارة",
-    ],
-    teaserCards:      [
-      { icon:"🏫", title:"قائمة المدارس لمدينتك", blur:"ENSA الرباط، ENCG الدار البيضاء، INPT، …" },
-      { icon:"🏆", title:"خطة المكانة A/B/C",     blur:"المسار أ: 6 أشهر مكثفة → ENSA…" },
-      { icon:"📅", title:"خطة 90 يوماً + موارد",  blur:"الأسبوع 2: تمارين فيزياء يومية…" },
-    ],
-    emailLabel:       "البريد الإلكتروني",
-    phoneLabel:       "الهاتف (اختياري)",
-    uploadLabel:      "إثبات الدفع (صورة أو PDF)",
-    orderIdLabel:     "رقم الطلب",
-    submitBtn:        "أرسل طلبي",
-    submitSuccess:    "تم استلام طلبك — سنرسل ملف PDF بعد التحقق من الدفع.",
-    refundNote:       "في حالة تعذّر التحقق، نعيد المبلغ أو نمنحك رصيداً.",
-    copyId:           "نسخ رقم الطلب",
-    copied:           "✓ تم",
-    lockLabel:        "محتوى حصري في ملف PDF",
-  },
-  fr: {
-    screenLabel:      (n,tot) => `${n} / ${tot}`,
-    jab1Title:        "Ton identité professionnelle",
-    jab1Sub:          "C'est une boussole — pas un verdict définitif.",
-    jab1StrengthsLabel:"Tes points forts",
-    sharePrompt:      "Partage ton résultat",
-    captionOpts:      (arch, path) => [
-      `Massar m'a donné ${arch} — top voie: ${path} 🧭 Fais le test 👇 #MassarPro`,
-      `Mon identité carrière: ${arch} 🔥 Et toi? massar.ma`,
-      "Orientation Bac Maroc, mais avec des vraies données 👀 massar.ma",
-    ],
-    continueBtn:      "Continuer",
-    backBtn:          "Retour",
-    jab2Title:        "Trois directions pour toi",
-    jab2Sub:          "Tu peux changer d'avis. C'est de l'exploration.",
-    fitLabel:         "Meilleur fit",
-    balLabel:         "Option équilibrée",
-    ambLabel:         "Plus ambitieux",
-    matchPct:         (p) => `${p}% compatibilité`,
-    whyLabel:         "Pourquoi",
-    jab3Title:        "L'échelle de prestige au Maroc",
-    jab3Sub:          "Où tu en es et ce que tu peux atteindre.",
-    typicalReq:       "Prérequis typique",
-    yourPosition:     "Ton niveau actuel",
-    priorityUpgrade:  "Première priorité",
-    strongAvg:        "Moyenne élevée souvent requise (≥15)",
-    veryStrongAvg:    "Très haute moyenne (≥16)",
-    solidAvg:         "Bonne moyenne (≥12)",
-    yourAvg:          (a) => `Ton moy. : ${a.toFixed(1)}/20`,
-    raiseKey:         "Améliore tes notes dans les matières clés",
-    jab4Title:        "Ton plan 7 jours",
-    jab4Sub:          "5 actions concrètes à démarrer aujourd'hui.",
-    jab4Upsell:       "Tu veux le plan complet 90 jours + shortlist écoles ? Obtiens le PDF.",
-    taskDone:         "Fait",
-    rfTitle:          "Dossier PDF complet — 199 MAD",
-    rfSub:            "Envoyé à ton email sous 24h après confirmation du paiement.",
-    rfPrice:          "199 MAD — paiement unique",
-    rfBenefits:       [
-      "Shortlist d'écoles pour ta ville, mobilité et budget (6–12 établissements)",
-      "Plan Prestige A/B/C avec timeline pour ENSA/ENCG/Médecine alternatives",
-      "Stratégie de révision : matières prioritaires + étapes réalistes",
-      "Script de conversation famille (arabe + français) adapté à ta pression",
-      "Matrice de décision : fit / faisabilité / prestige / marché / risque / durée",
-      "Roadmap 90 jours (semaines 2–12) + ressources sélectionnées",
-    ],
-    teaserCards:      [
-      { icon:"🏫", title:"Shortlist écoles de ta ville",  blur:"ENSA Rabat, ENCG Casa, INPT, …" },
-      { icon:"🏆", title:"Plan Prestige A/B/C",           blur:"Plan A : 6 mois intensif → ENSA…" },
-      { icon:"📅", title:"Roadmap 90 jours + ressources", blur:"Semaine 2 : exercices phys. quotidiens…" },
-    ],
-    emailLabel:       "Email",
-    phoneLabel:       "Téléphone (optionnel)",
-    uploadLabel:      "Preuve de paiement (image ou PDF)",
-    orderIdLabel:     "Numéro de commande",
-    submitBtn:        "Envoyer ma demande",
-    submitSuccess:    "Demande reçue — on t'enverra le PDF après vérification du paiement.",
-    refundNote:       "En cas de problème de vérification, remboursement ou crédit garanti.",
-    copyId:           "Copier le numéro",
-    copied:           "✓ Copié",
-    lockLabel:        "Contenu réservé au PDF",
-  },
-  en: {
-    screenLabel:      (n,tot) => `${n} of ${tot}`,
-    jab1Title:        "Your Professional Identity",
-    jab1Sub:          "This is a compass — not a final verdict.",
-    jab1StrengthsLabel:"Your strengths",
-    sharePrompt:      "Share your result",
-    captionOpts:      (arch, path) => [
-      `Massar gave me ${arch} — top path: ${path} 🧭 Try yours 👇 #MassarPro`,
-      `My career identity: ${arch} 🔥 What's yours? massar.ma`,
-      "Moroccan Bac guidance, but with real data 👀 massar.ma",
-    ],
-    continueBtn:      "Continue",
-    backBtn:          "Back",
-    jab2Title:        "Three Directions for You",
-    jab2Sub:          "You can change your mind. This is exploration.",
-    fitLabel:         "Best Fit",
-    balLabel:         "Balanced",
-    ambLabel:         "Most Ambitious",
-    matchPct:         (p) => `${p}% match`,
-    whyLabel:         "Why",
-    jab3Title:        "Prestige Ladder in Morocco",
-    jab3Sub:          "An honest view of where you stand and what's reachable.",
-    typicalReq:       "Typical requirement",
-    yourPosition:     "Your current level",
-    priorityUpgrade:  "First priority",
-    strongAvg:        "Strong average often needed (≥15)",
-    veryStrongAvg:    "Very high average needed (≥16)",
-    solidAvg:         "Solid average (≥12)",
-    yourAvg:          (a) => `Your avg: ${a.toFixed(1)}/20`,
-    raiseKey:         "Raise your grades in key subjects",
-    jab4Title:        "Your 7-Day Starter Plan",
-    jab4Sub:          "5 practical actions you can start today.",
-    jab4Upsell:       "Want the full 90-day plan + school shortlist? Get the PDF.",
-    taskDone:         "Done",
-    rfTitle:          "Full PDF Dossier — 199 MAD",
-    rfSub:            "Delivered to your email within 24h after payment confirmation.",
-    rfPrice:          "199 MAD — one-time payment",
-    rfBenefits:       [
-      "School shortlist for your city, mobility & budget (6–12 institutions)",
-      "Prestige Plan A/B/C with timeline to reach ENSA/ENCG/Medicine alternatives",
-      "Grade-raise strategy: key subjects + realistic steps",
-      "Family conversation script (Arabic + French) tailored to your situation",
-      "Decision matrix: fit / feasibility / prestige / market / risk / time",
-      "90-day roadmap (weeks 2–12) + curated resources",
-    ],
-    teaserCards:      [
-      { icon:"🏫", title:"School shortlist for your city", blur:"ENSA Rabat, ENCG Casa, INPT, …" },
-      { icon:"🏆", title:"Prestige Plan A/B/C",            blur:"Plan A: 6-month intensive → ENSA…" },
-      { icon:"📅", title:"90-day roadmap + resources",     blur:"Week 2: daily physics exercises…" },
-    ],
-    emailLabel:       "Email",
-    phoneLabel:       "Phone (optional)",
-    uploadLabel:      "Payment proof (image or PDF)",
-    orderIdLabel:     "Order ID",
-    submitBtn:        "Submit my request",
-    submitSuccess:    "Request received — we'll send your PDF after verifying payment.",
-    refundNote:       "If we can't verify payment, we'll refund or credit you.",
-    copyId:           "Copy order ID",
-    copied:           "✓ Copied",
-    lockLabel:        "PDF-exclusive content",
-  },
-};
-
-// ── Helper: pick correct RF copy ─────────────────────────────────
-function rf(lang) { return RF_COPY[lang] || RF_COPY.fr || RF_COPY.en || {}; }
-
-// ── Progress bar ─────────────────────────────────────────────────
-function RFProgress({ step, total, lang, dir }) {
-  const c = rf(lang) || {};
-  return (
-    <div style={{
-      display:"flex", alignItems:"center", gap:10,
-      padding:"12px 0 4px", marginBottom:4,
-    }}>
-      <div style={{display:"flex", gap:5, flex:1}}>
-        {Array.from({length:total}).map((_,i) => (
-          <div key={i} style={{
-            flex:1, height:3, borderRadius:2,
-            background: i <= step ? "var(--accent)" : "var(--border)",
-            transition:"background 0.3s",
-          }}/>
-        ))}
-      </div>
-      <span style={{fontSize:11, color:"var(--muted)", whiteSpace:"nowrap", flexShrink:0}}>
-        {c.screenLabel(step+1, total)}
-      </span>
-    </div>
-  );
-}
-
-// ── Sticky bottom nav ────────────────────────────────────────────
-function RFNav({ step, total, onBack, onNext, lang, dir, nextLabel, nextDisabled }) {
-  const c = rf(lang);
-  return (
-    <div style={{
-      position:"sticky", bottom:0, zIndex:50,
-      background:"linear-gradient(0deg, var(--bg) 70%, transparent)",
-      padding:"12px 0",
-      paddingBottom:"max(12px, env(safe-area-inset-bottom, 0px))",
-      display:"flex", gap:10,
-    }}>
-      {step > 0 && (
-        <button className="btn btn-secondary" onClick={onBack}
-          style={{flex:"0 0 auto", minWidth:72}}>
-          {dir==="rtl" ? "→" : "←"} {c.backBtn}
-        </button>
-      )}
-      <button
-        className="btn btn-primary"
-        onClick={onNext}
-        disabled={!!nextDisabled}
-        style={{flex:1, opacity: nextDisabled ? 0.5 : 1}}>
-        {nextLabel || c.continueBtn} {step < total-1 ? (dir==="rtl" ? "←" : "→") : ""}
-      </button>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// PAGE 1 — Career Identity Mirror
-// ─────────────────────────────────────────────────────────────────
-function Jab1Identity({ lang, dir, safeResults, safeRanked, t, traits }) {
-  const c = rf(lang);
-  const [selectedCaption, setSelectedCaption] = React.useState(0);
-  const [copied, setCopied]                   = React.useState(false);
-
-  const archetype = safeResults.archetype || "ACSI";
-  const topCluster = safeResults.topCareer;
-  const topPath = (topCluster && t[CLUSTER_KEY_MAP[topCluster.id]]) || topCluster?.id || "";
-  const rarity  = safeResults.rarity;
-  const conf    = safeResults.confidence;
-  const confClass = conf >= 70 ? "confidence-high" : conf >= 50 ? "confidence-med" : "confidence-low";
-
-  const rarityColors = {
-    common:    "#9ca3af",
-    rare:      "#22d3ee",
-    epic:      "#c084fc",
-    legendary: "#fbbf24",
-  };
-  const rarityColor = rarityColors[rarity] || rarityColors.common;
-
-  const captions = c?.captionOpts ? c.captionOpts(archetype, topPath) : [`${archetype} — ${topPath}`];
-
-  const doCopy = () => {
-    const text = captions[selectedCaption];
-    try {
-      navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
-    } catch {
-      const el = document.createElement("textarea");
-      el.value = text; document.body.appendChild(el); el.select();
-      document.execCommand("copy"); document.body.removeChild(el);
-      setCopied(true); setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const strengthKeys = (safeResults.strengths || []).slice(0,3);
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab1Title}</h2>
-      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab1Sub}</p>
-
-      {/* Archetype hero card */}
-      <div style={{
-        background:`linear-gradient(135deg, rgba(${rarity==="legendary"?"232,161,36":rarity==="epic"?"168,85,247":rarity==="rare"?"34,211,238":"107,114,128"},0.12), var(--surface2))`,
-        border:`1.5px solid ${rarityColor}50`,
-        borderRadius:20, padding:"24px 20px", marginBottom:16, textAlign:"center",
-        boxShadow:`0 0 40px ${rarityColor}15`,
-      }}>
-        <div style={{fontSize:11, fontWeight:800, letterSpacing:2, textTransform:"uppercase",
-          color:rarityColor, marginBottom:8}}>
-          {rarity?.toUpperCase()}
-        </div>
-        <div style={{fontSize:52, marginBottom:8}}>
-          {rarity==="legendary"?"🌟":rarity==="epic"?"💎":rarity==="rare"?"⚡":"🔹"}
-        </div>
-        <div style={{fontSize:28, fontWeight:900, letterSpacing:-0.5, color:"var(--text)", marginBottom:4}}>
-          {archetype}
-        </div>
-        <div style={{fontSize:13, color:"var(--muted)", marginBottom:14}}>
-          {(massarTypeDesc && massarTypeDesc(archetype, t)?.label) || archetype}
-        </div>
-        <div className={`confidence-badge ${confClass}`} style={{display:"inline-flex"}}>
-          {lang==="ar"?"مستوى الثقة":lang==="fr"?"Niveau de confiance":"Confidence"}: {conf}%
-        </div>
-      </div>
-
-      {/* Share section */}
-      <div style={{background:"var(--surface2)", borderRadius:16, padding:16, marginBottom:16}}>
-        <div style={{fontSize:13, fontWeight:700, marginBottom:12}}>{c.sharePrompt}</div>
-        <div style={{display:"flex", flexDirection:"column", gap:8, marginBottom:12}}>
-          {captions.map((cap, i) => (
-            <button key={i}
-              onClick={() => setSelectedCaption(i)}
-              style={{
-                textAlign: dir==="rtl" ? "right" : "left",
-                padding:"10px 14px", borderRadius:10, fontSize:12, lineHeight:1.5,
-                background: selectedCaption===i ? "rgba(232,161,36,0.12)" : "var(--surface3)",
-                border:`1.5px solid ${selectedCaption===i ? "var(--accent)" : "var(--border)"}`,
-                color:"var(--text)", cursor:"pointer", fontFamily:"inherit",
-              }}>
-              {cap}
-            </button>
-          ))}
-        </div>
-        <button className="btn btn-primary" onClick={doCopy} style={{width:"100%"}}>
-          {copied
-            ? (lang==="ar"?"✓ تم النسخ":lang==="fr"?"✓ Copié":"✓ Copied")
-            : (lang==="ar"?"نسخ النص":lang==="fr"?"Copier":"Copy caption")}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// PAGE 2 — Three Directions
-// ─────────────────────────────────────────────────────────────────
-function Jab2Directions({ lang, dir, safeResults, t }) {
-  const c = rf(lang);
-  const threeViews = safeResults?.threeViews || {};
-  if (!threeViews.bestFit && !threeViews.balanced && !threeViews.ambitious) return (
-    <div style={{textAlign:"center",padding:"40px 20px",color:"var(--muted)"}}>
-      {lang==="ar"?"لا توجد توصيات كافية":lang==="fr"?"Données insuffisantes":"Insufficient data for directions"}
-    </div>
-  );
-
-  const cards = [
-    { key:"bestFit",   label:c.fitLabel,  cluster:threeViews.bestFit,   icon:"💡" },
-    { key:"balanced",  label:c.balLabel,  cluster:threeViews.balanced,  icon:"⚖️" },
-    { key:"ambitious", label:c.ambLabel,  cluster:threeViews.ambitious, icon:"🚀" },
-  ].filter(x => x.cluster);
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab2Title}</h2>
-      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab2Sub}</p>
-
-      {cards.map(({key, label, cluster, icon}) => {
-        const clName = (t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id);
-        const pct = Math.round((cluster.scores.final || 0) * 100);
-        const why = (lang==="ar"
-          ? `يتوافق مع ملفك الدراسي والشخصي بنسبة ${pct}%`
-          : lang==="fr"
-          ? `Compatible à ${pct}% avec ton profil`
-          : `${pct}% compatible with your profile`);
-        const eligTag = cluster.eligibilityTag;
-
-        return (
-          <div key={key} style={{
-            background:"var(--surface2)", border:"1.5px solid var(--border)",
-            borderRadius:16, padding:"18px 16px", marginBottom:14,
-            borderLeft: key==="bestFit" ? "3px solid var(--accent3)"
-                      : key==="balanced" ? "3px solid var(--accent2)"
-                      : "3px solid var(--accent)",
-          }}>
-            <div style={{display:"flex", alignItems:"center", gap:10, marginBottom:8}}>
-              <span style={{fontSize:22}}>{icon}</span>
-              <div>
-                <div style={{fontSize:11, fontWeight:700, textTransform:"uppercase",
-                  letterSpacing:1, color:"var(--muted)", marginBottom:2}}>{label}</div>
-                <div style={{fontSize:17, fontWeight:800, color:"var(--text)"}}>{clName}</div>
-              </div>
-              <span style={{
-                marginInlineStart:"auto", fontSize:12, fontWeight:700,
-                background:"rgba(16,185,129,0.12)", color:"var(--accent3)",
-                padding:"3px 10px", borderRadius:20,
-              }}>
-                {c.matchPct(pct)}
-              </span>
-            </div>
-            <p style={{fontSize:13, color:"rgba(232,236,240,0.7)", lineHeight:1.55, margin:0}}>
-              {why}
-            </p>
-            {eligTag === "notEligiblePublic" && (
-              <div style={{marginTop:8, fontSize:11, color:"var(--warn)",
-                background:"rgba(245,158,11,0.08)", padding:"5px 10px",
-                borderRadius:8, display:"inline-block"}}>
-                ⚠️ {lang==="ar"?"تنافسية عالية — المسار الخاص متاح":
-                    lang==="fr"?"Très sélectif — filière privée possible":
-                    "Highly selective — private route available"}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// PAGE 3 — Prestige Ladder
-// ─────────────────────────────────────────────────────────────────
-function Jab3Prestige({ lang, dir, info, safeResults }) {
-  const c = rf(lang);
-  const avg = safeResults.overallAvg || 0;
-  const routes = getPrestigeRoutes(info);
-
-  function getReq(school) {
-    if (/[Mm]édecine|Medicine|طب/.test(school))  return { req: c.veryStrongAvg, gap: avg < 16 ? c.raiseKey : null };
-    if (/ENSA|ENSIAS|INPT|Prépa/.test(school))    return { req: c.strongAvg,     gap: avg < 15 ? c.raiseKey : null };
-    return                                               { req: c.solidAvg,      gap: avg < 12 ? c.raiseKey : null };
-  }
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab3Title}</h2>
-      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab3Sub}</p>
-
-      <div style={{
-        background:"rgba(232,161,36,0.07)", border:"1px solid rgba(232,161,36,0.25)",
-        borderRadius:12, padding:"12px 14px", marginBottom:16, fontSize:13,
-        display:"flex", alignItems:"center", gap:8,
-      }}>
-        <span style={{fontSize:20}}>📊</span>
-        <span style={{color:"var(--text)"}}>{c.yourAvg(avg)}</span>
-      </div>
-
-      {routes.slice(0,4).map((school, i) => {
-        const { req, gap } = getReq(school);
-        return (
-          <div key={i} style={{
-            background:"var(--surface2)", border:"1px solid var(--border)",
-            borderRadius:14, padding:"14px 16px", marginBottom:10,
-          }}>
-            <div style={{fontWeight:700, fontSize:15, marginBottom:6}}>{school}</div>
-            <div style={{display:"flex", flexDirection:"column", gap:4}}>
-              <div style={{fontSize:12, color:"var(--muted)"}}>
-                <span style={{fontWeight:600}}>{c.typicalReq}: </span>{req}
-              </div>
-              <div style={{fontSize:12, color: gap ? "var(--warn)" : "var(--accent3)"}}>
-                <span style={{fontWeight:600}}>{c.yourPosition}: </span>
-                {gap
-                  ? `${avg.toFixed(1)}/20 — ${c.raiseKey}`
-                  : `${avg.toFixed(1)}/20 ✓`}
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// PAGE 4 — 7-Day Starter Plan
-// ─────────────────────────────────────────────────────────────────
-function Jab4Plan({ lang, dir, safeResults, onGoToPDF }) {
-  const c = rf(lang);
-  const [done, setDone] = React.useState({});
-  const topCluster = safeResults.topCareer;
-
-  // Generate 5 practical tasks from top cluster action plan
-  const rawPlan = topCluster?.actionPlan || [];
-  const tasks = [];
-  rawPlan.slice(0,2).forEach(week => {
-    (week.items || []).slice(0,2).forEach(item => {
-      if (tasks.length < 5) tasks.push(typeof item === "string" ? item : item.label || "");
-    });
-  });
-  // If fewer than 5, pad with generic tasks
-  const genericTasks = lang==="ar" ? [
-    "ابحث عن 3 طلاب من نفس شعبتك وتبادل التجارب",
-    "راجع متطلبات القبول في مؤسسة تستهدفها",
-    "اقرأ أو شاهد محتوى عن المجال المقترح (30 دقيقة)",
-    "ارسم خطة أسبوعية للمراجعة",
-    "تحدث مع شخص يعمل في المجال الذي يثير اهتمامك",
-  ] : lang==="fr" ? [
-    "Trouve 3 étudiants dans ta filière et échange avec eux",
-    "Vérifie les prérequis d'une école qui t'intéresse",
-    "Lis ou regarde du contenu sur le domaine proposé (30 min)",
-    "Rédige un planning de révision hebdomadaire",
-    "Parle à quelqu'un qui travaille dans le domaine qui t'attire",
-  ] : [
-    "Connect with 3 students in your track and exchange experiences",
-    "Check admission requirements for one school you're targeting",
-    "Read or watch content about the suggested field (30 min)",
-    "Write a weekly revision plan",
-    "Talk to someone who works in a field that interests you",
-  ];
-  while (tasks.length < 5) tasks.push(genericTasks[tasks.length]);
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <h2 style={{fontSize:20, fontWeight:800, marginBottom:4}}>{c.jab4Title}</h2>
-      <p style={{fontSize:13, color:"var(--muted)", marginBottom:20}}>{c.jab4Sub}</p>
-
-      {tasks.slice(0,5).map((task, i) => (
-        <div key={i}
-          onClick={() => setDone(d => ({...d, [i]: !d[i]}))}
-          style={{
-            display:"flex", alignItems:"flex-start", gap:12, padding:"14px 16px",
-            background:"var(--surface2)", border:`1.5px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
-            borderRadius:14, marginBottom:10, cursor:"pointer",
-            opacity: done[i] ? 0.65 : 1, transition:"all 0.2s",
-          }}>
-          <div style={{
-            width:22, height:22, borderRadius:6, flexShrink:0, marginTop:1,
-            background: done[i] ? "var(--accent3)" : "var(--surface3)",
-            border:`2px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
-            display:"flex", alignItems:"center", justifyContent:"center",
-            fontSize:13, color:"#fff", transition:"all 0.2s",
-          }}>
-            {done[i] && "✓"}
-          </div>
-          <div style={{fontSize:13, color:"var(--text)", lineHeight:1.55, flex:1,
-            textDecoration: done[i] ? "line-through" : "none", textDecorationColor:"var(--muted)"}}>
-            {task}
-          </div>
-          <span style={{fontSize:11, color:"var(--accent)", fontWeight:700, flexShrink:0}}>
-            +10 XP
-          </span>
-        </div>
-      ))}
-
-      <div style={{
-        marginTop:20, padding:"16px 18px",
-        background:"linear-gradient(135deg, rgba(232,161,36,0.1), rgba(59,130,246,0.06))",
-        border:"1px solid rgba(232,161,36,0.3)", borderRadius:14,
-        display:"flex", alignItems:"center", justifyContent:"space-between",
-        gap:12, flexWrap:"wrap",
-      }}>
-        <p style={{fontSize:13, color:"var(--text)", margin:0, flex:1, lineHeight:1.5}}>
-          {c.jab4Upsell}
-        </p>
-        <button className="btn btn-primary" onClick={onGoToPDF}
-          style={{flexShrink:0, minWidth:100}}>
-          📄 PDF →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// RIGHT HOOK — PDF Offer
-// ─────────────────────────────────────────────────────────────────
-function RightHookPDF({ lang, dir, safeResults, t }) {
-  const c = rf(lang);
-  const [email, setEmail]   = React.useState("");
-  const [phone, setPhone]   = React.useState("");
-  const [file, setFile]     = React.useState(null);
-  const [submitted, setSubmitted] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-  const [orderId]           = React.useState(() => genOrderId());
-  const [error, setError]   = React.useState("");
-
-  const handleSubmit = () => {
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
-      setError(lang==="ar"?"يرجى إدخال بريد إلكتروني صحيح":
-               lang==="fr"?"Veuillez entrer un email valide":
-               "Please enter a valid email");
-      return;
-    }
-    if (!file) {
-      setError(lang==="ar"?"يرجى إرفاق إثبات الدفع":
-               lang==="fr"?"Veuillez joindre la preuve de paiement":
-               "Please attach payment proof");
-      return;
-    }
-    try {
-      const entry = {
-        orderId, email, phone: phone || null,
-        fileName: file?.name || null,
-        timestamp: new Date().toISOString(),
-        archetype: safeResults.archetype,
-        topPath: safeResults.topCareer?.id || "",
-      };
-      const existing = JSON.parse(localStorage.getItem("massar_pdf_orders") || "[]");
-      existing.push(entry);
-      localStorage.setItem("massar_pdf_orders", JSON.stringify(existing));
-    } catch {}
-    setSubmitted(true);
-    setError("");
-  };
-
-  const copyOrderId = () => {
-    try { navigator.clipboard.writeText(orderId); } catch { }
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
-  };
-
-  const inputStyle = {
-    width:"100%", padding:"12px 14px",
-    background:"var(--surface2)", border:"1.5px solid var(--border)",
-    borderRadius:10, color:"var(--text)", fontSize:15, outline:"none",
-    fontFamily:"inherit", boxSizing:"border-box", marginBottom:12,
-  };
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      {/* Hero offer card */}
-      <div style={{
-        background:"linear-gradient(135deg, rgba(232,161,36,0.12), rgba(59,130,246,0.08))",
-        border:"1.5px solid rgba(232,161,36,0.4)", borderRadius:20, padding:"22px 18px",
-        marginBottom:18, textAlign:"center",
-        boxShadow:"0 8px 40px rgba(232,161,36,0.12)",
-      }}>
-        <div style={{fontSize:36, marginBottom:8}}>📄</div>
-        <h2 style={{fontSize:19, fontWeight:900, marginBottom:6, letterSpacing:-0.3}}>
-          {c.rfTitle}
-        </h2>
-        <p style={{fontSize:13, color:"var(--muted)", marginBottom:12, lineHeight:1.55}}>
-          {c.rfSub}
-        </p>
-        <div style={{fontSize:22, fontWeight:900, color:"var(--accent)", marginBottom:4}}>
-          {c.rfPrice}
-        </div>
-      </div>
-
-      {/* Benefits list */}
-      <div style={{background:"var(--surface2)", borderRadius:14, padding:"16px 14px", marginBottom:16}}>
-        {(c.rfBenefits||[]).map((b, i) => (
-          <div key={i} style={{
-            display:"flex", gap:10, alignItems:"flex-start",
-            paddingBottom:i<(c.rfBenefits||[]).length-1?10:0,
-            marginBottom:i<(c.rfBenefits||[]).length-1?10:0,
-            borderBottom:i<(c.rfBenefits||[]).length-1?"1px solid var(--border)":"none",
-          }}>
-            <span style={{color:"var(--accent3)", fontSize:14, flexShrink:0, marginTop:2}}>✓</span>
-            <span style={{fontSize:13, color:"var(--text)", lineHeight:1.5}}>{b}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* 3 teaser cards */}
-      <div style={{display:"flex", flexDirection:"column", gap:10, marginBottom:20}}>
-        {(c.teaserCards||[]).map((card, i) => (
-          <div key={i} style={{
-            background:"var(--surface2)", border:"1px solid var(--border)",
-            borderRadius:14, padding:"14px 16px",
-            display:"flex", gap:12, alignItems:"flex-start", position:"relative", overflow:"hidden",
-          }}>
-            <span style={{fontSize:20, flexShrink:0}}>{card.icon}</span>
-            <div style={{flex:1}}>
-              <div style={{fontSize:13, fontWeight:700, marginBottom:4}}>{card.title}</div>
-              <div style={{
-                fontSize:12, color:"var(--muted)", lineHeight:1.4,
-                filter:"blur(4px)", userSelect:"none", pointerEvents:"none",
-              }}>
-                {card.blur}
-              </div>
-            </div>
-            <div style={{
-              position:"absolute", inset:0,
-              background:"linear-gradient(90deg, transparent, rgba(17,24,39,0.85))",
-              display:"flex", alignItems:"center", justifyContent:"flex-end",
-              paddingInlineEnd:14,
-            }}>
-              <div style={{
-                fontSize:11, fontWeight:700, color:"var(--muted)",
-                background:"var(--surface3)", padding:"4px 10px", borderRadius:20,
-                border:"1px solid var(--border)", display:"flex", gap:5, alignItems:"center",
-              }}>
-                🔒 {c.lockLabel}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Payment instructions */}
-      <div style={{
-        background:"rgba(59,130,246,0.07)", border:"1px solid rgba(59,130,246,0.2)",
-        borderRadius:12, padding:"12px 14px", marginBottom:16, fontSize:12, lineHeight:1.6,
-      }}>
-        {lang==="ar"
-          ? "💳 أرسل 199 درهم عبر CIH Pay أو Wafacash أو تحويل بنكي، ثم ارفع إثبات الدفع أدناه."
-          : lang==="fr"
-          ? "💳 Envoyez 199 MAD via CIH Pay, Wafacash ou virement bancaire, puis joignez la preuve ci-dessous."
-          : "💳 Send 199 MAD via CIH Pay, Wafacash or bank transfer, then attach payment proof below."}
-      </div>
-
-      {!submitted ? (
-        <div>
-          {/* Order ID */}
-          <div style={{
-            background:"var(--surface2)", border:"1px solid var(--border)",
-            borderRadius:10, padding:"12px 14px", marginBottom:14,
-            display:"flex", alignItems:"center", justifyContent:"space-between", gap:8,
-          }}>
-            <div>
-              <div style={{fontSize:11, color:"var(--muted)", marginBottom:2}}>{c.orderIdLabel}</div>
-              <div style={{fontFamily:"monospace", fontSize:16, fontWeight:700, color:"var(--accent)"}}>
-                {orderId}
-              </div>
-            </div>
-            <button className="btn btn-secondary" onClick={copyOrderId}
-              style={{fontSize:12, padding:"6px 14px", minHeight:36}}>
-              {copied ? c.copied : c.copyId}
-            </button>
-          </div>
-
-          <input type="email" required placeholder={c.emailLabel} value={email}
-            onChange={e=>setEmail(e.target.value)} style={inputStyle}/>
-          <input type="tel" placeholder={c.phoneLabel} value={phone}
-            onChange={e=>setPhone(e.target.value)} style={inputStyle}/>
-          <label style={{display:"block", fontSize:12, color:"var(--muted)", marginBottom:6}}>
-            {c.uploadLabel}
-          </label>
-          <input type="file" accept="image/*,application/pdf"
-            onChange={e=>setFile(e.target.files[0])}
-            style={{...inputStyle, padding:"10px 12px", fontSize:13, cursor:"pointer"}}/>
-
-          {error && (
-            <div style={{color:"var(--danger)", fontSize:12, marginBottom:10, marginTop:-4}}>
-              {error}
-            </div>
-          )}
-
-          <button className="btn btn-primary" onClick={handleSubmit}
-            style={{width:"100%", marginTop:4, fontSize:15, padding:"15px 24px"}}>
-            {c.submitBtn}
-          </button>
-          <p style={{textAlign:"center", fontSize:11, color:"var(--muted)", marginTop:10, lineHeight:1.5}}>
-            {c.refundNote}
-          </p>
-        </div>
-      ) : (
-        <div style={{
-          textAlign:"center", padding:"32px 20px",
-          background:"rgba(16,185,129,0.08)", borderRadius:16,
-          border:"1px solid rgba(16,185,129,0.3)",
-        }}>
-          <div style={{fontSize:42, marginBottom:12}}>✅</div>
-          <div style={{fontSize:16, fontWeight:700, color:"var(--accent3)", marginBottom:8}}>
-            {c.submitSuccess}
-          </div>
-          <div style={{fontSize:12, color:"var(--muted)", marginTop:6}}>
-            {lang==="ar"?"رقم طلبك":lang==="fr"?"Ton numéro":"Your order ID"}:{" "}
-            <span style={{fontFamily:"monospace", color:"var(--accent)"}}>{orderId}</span>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-
-// ─────────────────────────────────────────────────────────────────
-// Page 1/6 — Identity Mirror
-// ─────────────────────────────────────────────────────────────────
-function Page1Identity({ lang, dir, safeResults, t, safeRanked }) {
-  const [selCap, setSelCap] = React.useState(0);
-  const [copied, setCopied] = React.useState(false);
-  const { archetype = "MLAH", rarity = "common", confidence = 0, learnerType = "architect", learnerSecondary = "striker", archV2: archV2Res } = safeResults || {};
-  // Use v2 archetype for cold reading if available
-  const archV2 = archV2Res || pickArchetypeV2({ traits: safeResults?.traits||{}, confidence });
-  const lt  = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerType])  || (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA.architect) || { ar:{name:'',label:'',tip:''},fr:{name:'',label:'',tip:''},en:{name:'',label:'',tip:''} };
-  const lt2 = (typeof LEARNER_TYPE_DATA !== 'undefined' && LEARNER_TYPE_DATA[learnerSecondary]) || lt;
-  const ltCopy  = lt[lang]  || lt.en;
-  const lt2Copy = lt2[lang] || lt2.en;
-  const topPath = (safeRanked[0] && t[CLUSTER_KEY_MAP[safeRanked[0].id]]) || "";
-  const rarityColors = { common:"#9ca3af", rare:"#22d3ee", epic:"#c084fc", legendary:"#fbbf24" };
-  const rc = rarityColors[rarity] || rarityColors.common;
-  const captions = rf(lang)?.captionOpts ? rf(lang).captionOpts(archetype, topPath) : [`${archetype} — ${topPath}`];
-
-  // Identity mirror — use archV2 cold reading from data contract
-  const _crData = archV2?.coldReading?.[lang] || archV2?.coldReading?.fr || {};
-  const _mrData = archV2?.mirror?.[lang] || archV2?.mirror?.fr || {};
-  const _hqData = archV2?.hookQuestion?.[lang] || archV2?.hookQuestion?.fr || "";
-  // Deterministic mirror blocks from archV2
-  const mirrorBlocks = [
-    { icon:"⚡", key: t?.underPressure     || (lang==="ar"?"تحت الضغط":lang==="fr"?"Sous pression":"Under pressure"),    text: _mrData.pressure    },
-    { icon:"🔋", key: t?.consistencySecret || (lang==="ar"?"للمثابرة":lang==="fr"?"Constance":"Consistency"),           text: _mrData.consistency  },
-    { icon:"🎯", key: t?.unfairAdvantage   || (lang==="ar"?"ميزتك":lang==="fr"?"Avantage":"Your advantage"),            text: _mrData.advantage    },
-    { icon:"🌑", key: t?.blindSpot        || (lang==="ar"?"نقطة عمياء":lang==="fr"?"Point aveugle":"Blind spot"),       text: _mrData.blindSpot    },
-  ].filter(b => b.text);
-
-  const doCopy = () => {
-    try { navigator.clipboard.writeText(captions[selCap]).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000);}); }
-    catch { setCopied(true); setTimeout(()=>setCopied(false),2000); }
-  };
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
-        {t.identityMirrorTitle || "Identity Mirror"} — Page 1/6
-      </div>
-
-      {/* Archetype + learner type row */}
-      <div style={{background:`linear-gradient(135deg,rgba(${rarity==="legendary"?"232,161,36":rarity==="epic"?"168,85,247":rarity==="rare"?"34,211,238":"107,114,128"},0.1),var(--surface2))`,
-        border:`1.5px solid ${rc}40`,borderRadius:18,padding:"18px 16px",marginBottom:14,
-        display:"flex",gap:14,alignItems:"center",flexWrap:"wrap"}}>
-        <div style={{textAlign:"center",flexShrink:0}}>
-          <div style={{fontSize:36}}>{rarity==="legendary"?"🌟":rarity==="epic"?"💎":rarity==="rare"?"⚡":"🔹"}</div>
-          <div style={{fontSize:18,fontWeight:900,color:"var(--text)"}}>{archetype}</div>
-          <div className={`confidence-badge ${confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low"}`}
-            style={{display:"inline-flex",marginTop:4,fontSize:11}}>
-            {confidence}%
-          </div>
-        </div>
-        <div style={{flex:1,minWidth:140}}>
-          <div style={{fontSize:11,color:"var(--muted)",marginBottom:2}}>
-            {t.learnerTitle||"Learner type"}: {(t.learnerTypeIcons||{})[learnerType]||""} {(t.learnerTypes||{})[learnerType]||learnerType}
-          </div>
-          <div style={{fontSize:12,color:"rgba(232,236,240,0.65)",lineHeight:1.4,marginBottom:4}}>
-            {ltCopy?.signature || ltCopy?.label || ""}
-          </div>
-          {learnerSecondary && (
-            <div style={{fontSize:11,color:"var(--muted)"}}>
-              + {(t.learnerTypeIcons||{})[learnerSecondary]||""} {(t.learnerTypes||{})[learnerSecondary]||learnerSecondary}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Archetype Reveal Moment — Arabic only */}
-      {lang === "ar" && archV2 && (
-        <div style={{marginBottom:12,padding:"12px 14px",background:"rgba(232,161,36,0.05)",
-          border:"1px solid rgba(232,161,36,0.15)",borderRadius:12}}>
-          <div style={{fontSize:12,fontWeight:700,color:"var(--accent)",marginBottom:8,letterSpacing:0.5}}>
-            {t?.archetypeRevealWhy || "علاش طلع لك هاد النوع؟"}
-          </div>
-          <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,marginBottom:6,margin:"0 0 6px"}}>
-            {archV2.viralLine?.ar || ""}
-          </p>
-          <div style={{fontSize:12,color:"var(--accent3)",fontWeight:600,marginBottom:4}}>
-            ⚡ {t?.archetypeRevealStr || "القوة ديالك هاد الشهر"}: {archV2.signatureMove?.ar || ""}
-          </div>
-          <div style={{fontSize:11,color:"var(--muted)",fontStyle:"italic"}}>
-            📄 {t?.archetypeRevealNext || "الترقية الجاية — تبان كاملة فملف PDF"}
-          </div>
-        </div>
-      )}
-
-      {/* Cold Reading block */}
-      {(_crData.looks || _crData.truth) && (
-        <div style={{background:"rgba(99,102,241,0.06)",border:"1px solid rgba(99,102,241,0.2)",
-          borderRadius:12,padding:"14px 16px",marginBottom:14}}>
-          <div style={{fontSize:10,fontWeight:800,color:"#6366f1",letterSpacing:1.5,
-            textTransform:"uppercase",marginBottom:10}}>
-            {lang==="ar"?"🔍 القراءة الباردة":lang==="fr"?"🔍 Cold Reading":"🔍 Cold Reading"}
-          </div>
-          {_crData.looks && <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,marginBottom:8}}>{_crData.looks}</p>}
-          {_crData.truth && <p style={{fontSize:13,color:"var(--accent2)",lineHeight:1.7,fontWeight:600,margin:0}}>{_crData.truth}</p>}
-        </div>
-      )}
-
-      {/* Identity mirror blocks */}
-      <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:16}}>
-        {(mirrorBlocks||[]).map((block,i) => (
-          <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",
-            borderRadius:14,padding:"14px 16px"}}>
-            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
-              <span style={{fontSize:18}}>{block.icon}</span>
-              <span style={{fontSize:12,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:0.5}}>
-                {block.key}
-              </span>
-            </div>
-            <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0}}>{block.text}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Hook Question */}
-      {_hqData && (
-        <div style={{background:"rgba(232,161,36,0.06)",border:"1px solid rgba(232,161,36,0.2)",
-          borderRadius:12,padding:"12px 14px",marginBottom:12}}>
-          <div style={{fontSize:10,fontWeight:800,color:"var(--accent)",letterSpacing:1.5,
-            textTransform:"uppercase",marginBottom:6}}>
-            {lang==="ar"?"❓ سؤال للتأمل":lang==="fr"?"❓ Question clé":"❓ Key question"}
-          </div>
-          <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0,fontWeight:600}}>{_hqData}</p>
-        </div>
-      )}
-
-      {/* Morocco Reality Anchor — Arabic only */}
-      {lang === "ar" && (
-        <div style={{marginBottom:12,padding:"14px 16px",background:"rgba(16,185,129,0.04)",
-          border:"1px solid rgba(16,185,129,0.18)",borderRadius:12}}>
-          <div style={{fontSize:11,fontWeight:800,color:"var(--accent3)",letterSpacing:1.5,
-            textTransform:"uppercase",marginBottom:10}}>
-            🇲🇦 {t?.moroccoAnchorTitle || "فين كتربح فالمغرب؟"}
-          </div>
-          <div style={{display:"flex",flexDirection:"column",gap:7}}>
-            <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
-              <span style={{color:"var(--accent3)",flexShrink:0,marginTop:2}}>▸</span>
-              <p style={{fontSize:12,color:"var(--text)",lineHeight:1.6,margin:0}}>
-                {t?.moroccoAnchorSchool || "فالثانوية أو الجامعة: كتفرق لأن كتفكر قبل ما تبدأ — مش بعد ما تضيع الوقت."}
-              </p>
-            </div>
-            <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
-              <span style={{color:"var(--accent3)",flexShrink:0,marginTop:2}}>▸</span>
-              <p style={{fontSize:12,color:"var(--text)",lineHeight:1.6,margin:0}}>
-                {t?.moroccoAnchorFamily || "فالبيت والمجتمع: كتعرف كيفاش تشرح اختياراتك بالأرقام — مش بالكلام الفارغ."}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Credibility line */}
-      <p style={{fontSize:12,color:"var(--muted)",lineHeight:1.5,marginBottom:16,
-        fontStyle:"italic",borderTop:"1px solid var(--border)",paddingTop:10}}>
-        {t?.credibilityLine}
-      </p>
-
-      {/* Share captions */}
-      <div style={{background:"var(--surface2)",borderRadius:14,padding:14}}>
-        <div style={{fontSize:13,fontWeight:700,marginBottom:10}}>
-          {lang==="ar" ? (t?.sharePromptAr || "شارك نتيجتك") : lang==="fr" ? "Partage ton résultat" : "Share your result"}
-        </div>
-        <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
-          {captions.map((cap,i)=>{
-            const arLabels = [t?.shareCaptionShortLbl||"قصير", t?.shareCaptionMedLbl||"متوسط", t?.shareCaptionSavageLbl||"جريء"];
-            const labelColors = ["var(--accent2)","var(--accent)","var(--accent3)"];
-            return (
-              <button key={i} onClick={()=>setSelCap(i)} style={{
-                textAlign:dir==="rtl"?"right":"left",padding:"9px 12px",borderRadius:9,fontSize:12,lineHeight:1.45,
-                border:`1.5px solid ${selCap===i?"var(--accent)":"var(--border)"}`,
-                background:selCap===i?"rgba(232,161,36,0.1)":"var(--surface3)",
-                color:"var(--text)",cursor:"pointer",fontFamily:"inherit",
-                display:"flex",flexDirection:"column",gap:3,
-              }}>
-                {lang==="ar" && i < arLabels.length && (
-                  <span style={{fontSize:10,fontWeight:700,color:labelColors[i],letterSpacing:1}}>
-                    {arLabels[i]}
-                  </span>
-                )}
-                <span>{cap}</span>
-              </button>
-            );
-          })}
-        </div>
-        <button className="btn btn-primary" onClick={doCopy} style={{width:"100%",fontSize:13,padding:"10px 18px"}}>
-          {copied?(lang==="ar"?"✓ تم النسخ":lang==="fr"?"✓ Copié":"✓ Copied"):(lang==="ar"?"نسخ النص":lang==="fr"?"Copier":"Copy caption")}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Page 2/6 — Prestige & Family Reality
-// ─────────────────────────────────────────────────────────────────
-function Page2Prestige({ lang, dir, safeResults, info, t }) {
-  const avg = safeResults.overallAvg || 0;
-  const routes = getPrestigeRoutes(info);
-  const isPostBac = safeResults.journeyStage !== "prebac";
-
-  function badge(school) {
-    const req = /[Mm]édecine|Medicine|طب/.test(school) ? 16 : /ENSA|ENSIAS|INPT|Prépa/.test(school) ? 15 : 12;
-    if (!isPostBac) return { label: lang==="ar"?"استكشاف":lang==="fr"?"À explorer":"To explore", color:"var(--accent2)", bg:"rgba(59,130,246,0.12)" };
-    if (avg >= req) return { label: lang==="ar"?"تنافسي":lang==="fr"?"Compétitif":"Competitive", color:"var(--accent3)", bg:"rgba(16,185,129,0.12)" };
-    if (avg >= req - 1.5) return { label: lang==="ar"?"قريب":lang==="fr"?"Presque":"Almost", color:"var(--accent)", bg:"rgba(232,161,36,0.12)" };
-    return { label: lang==="ar"?"لم يبلغ بعد":lang==="fr"?"Pas encore":"Not yet", color:"var(--muted)", bg:"rgba(107,114,128,0.1)" };
-  }
-
-  const fpField = (info||{}).fpField;
-  const familyTips = {
-    medicine: {
-      ar:["عرض المتطلبات الفعلية بأرقام واضحة","اقتراح بديل ملموس: تمريض أو هندسة طبية","الطلب بوقت للإثبات: 6 أشهر لرفع النقط"],
-      fr:["Présenter les prérequis réels avec des chiffres clairs","Proposer une alternative concrète : soins infirmiers ou génie biomédical","Demander du temps pour prouver : 6 mois pour améliorer les notes"],
-      en:["Present real requirements with clear numbers","Propose a concrete alternative: nursing or biomedical engineering","Ask for time to prove: 6 months to raise grades"],
-    },
-    engineering: {
-      ar:["مشاركة متطلبات المدارس الهندسية بالأرقام","اقتراح ENSA أو FST كبديل قوي","التركيز على الهندسة التطبيقية كمسار جيد"],
-      fr:["Partager les prérequis des écoles d'ingénieurs avec les chiffres","Proposer ENSA ou FST comme alternative solide","Mettre en avant l'ingénierie appliquée comme bon parcours"],
-      en:["Share engineering school requirements with numbers","Propose ENSA or FST as a solid alternative","Highlight applied engineering as a strong path"],
-    },
-    default: {
-      ar:["مشاركة الأرقام الحقيقية دون مشاعر","اقتراح بديل ملموس بقيمة عالية","طلب وقت للإثبات والتجربة"],
-      fr:["Partager les vrais chiffres sans émotions","Proposer une alternative concrète à haute valeur","Demander du temps pour prouver et expérimenter"],
-      en:["Share real numbers without emotion","Propose a concrete high-value alternative","Ask for time to prove and try"],
-    },
-  };
-  const fpTips = (familyTips[fpField] || familyTips.default)[lang] || familyTips.default.en;
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
-        {t.prestigePage2Title||"Prestige & Family"} — Page 2/6
-      </div>
-      {isPostBac && (
-        <div style={{background:"rgba(232,161,36,0.08)",border:"1px solid rgba(232,161,36,0.25)",
-          borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:13,display:"flex",gap:8,alignItems:"center"}}>
-          <span>📊</span>
-          <span>{lang==="ar"?`معدلك: ${avg.toFixed(1)}/20`:lang==="fr"?`Ta moyenne : ${avg.toFixed(1)}/20`:`Your avg: ${avg.toFixed(1)}/20`}</span>
-        </div>
-      )}
-      {routes.slice(0,4).map((school,i)=>{
-        const b = badge(school);
-        return (
-          <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",
-            borderRadius:14,padding:"14px 16px",marginBottom:10}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,flexWrap:"wrap",gap:6}}>
-              <div style={{fontWeight:700,fontSize:14}}>{school}</div>
-              <div style={{fontSize:11,fontWeight:700,color:b.color,background:b.bg,
-                padding:"3px 10px",borderRadius:20}}>{b.label}</div>
-            </div>
-            <div style={{fontSize:12,color:"var(--muted)",lineHeight:1.5}}>
-              {lang==="ar"
-                ? `/[Mm]édecine|Medicine|طب/.test(school)` ? "معدل عالٍ جداً عادةً (≥16) + متطلبات موضوعية في SVT والكيمياء" : "/ENSA|ENSIAS|INPT|Prépa/.test(school)" ? "معدل مرتفع عادةً (≥15) + مستوى قوي في الرياضيات والفيزياء" : "معدل جيد (≥12) + ملف متوازن"
-                : lang==="fr"
-                ? "Prérequis selon l'établissement — varie par cycle et filière"
-                : "Requirements vary by institution and cycle"}
-            </div>
-          </div>
-        );
-      })}
-      {safeResults.familyPressure && fpTips.length > 0 && (
-        <div style={{background:"rgba(245,158,11,0.07)",border:"1px solid rgba(245,158,11,0.25)",
-          borderRadius:14,padding:"14px 16px",marginTop:8}}>
-          <div style={{fontSize:13,fontWeight:700,marginBottom:10}}>
-            {lang==="ar"?"💬 نصائح لمحادثة الأسرة":lang==="fr"?"💬 Conseils pour la famille":"💬 Family conversation tips"}
-          </div>
-          {fpTips.map((tip,i)=>(
-            <div key={i} style={{display:"flex",gap:8,fontSize:12,color:"var(--text)",marginBottom:6}}>
-              <span style={{color:"var(--accent3)",flexShrink:0}}>→</span>
-              <span style={{lineHeight:1.5}}>{tip}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Page 3/6 — Future-Proof & Market 2030
-// ─────────────────────────────────────────────────────────────────
-function Page3Market({ lang, dir, safeResults, t }) {
-  const top3 = safeResults.topThree || [];
-  const hedge = {
-    ar: ["برمجة Python أو تحليل البيانات — مطلوب في معظم المجالات","التواصل الرقمي والمحتوى — ميزة في أي مسار"],
-    fr: ["Python ou analyse de données — demandé dans la plupart des domaines","Communication digitale — atout dans tout parcours"],
-    en: ["Python or data analysis — needed in most fields","Digital communication — advantage in any path"],
-  }[lang] || [];
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
-        {t.marketPage3Title||"Market 2030"} — Page 3/6
-      </div>
-      {top3.map((cluster,i)=>{
-        const name = t[CLUSTER_KEY_MAP[cluster.id]] || cluster.id;
-        const futureScore = Math.round((FUTURE_INDEX[cluster.id]||0.65)*100);
-        const moroccoScore = Math.round((cluster.demandIndex||0.6)*100);
-        const globalScore = Math.round(Math.min(100,(cluster.scores?.market||0.6)*100));
-        const risks = [];
-        if (futureScore < 60) risks.push(lang==="ar"?"مخاطر التشغيل الآلي":lang==="fr"?"Risque d'automatisation":"Automation risk");
-        if (moroccoScore < 50) risks.push(lang==="ar"?"طلب منخفض في المغرب":lang==="fr"?"Faible demande au Maroc":"Low Morocco demand");
-        return (
-          <div key={cluster.id} style={{background:"var(--surface2)",border:"1px solid var(--border)",
-            borderRadius:14,padding:"16px",marginBottom:12}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,flexWrap:"wrap"}}>
-              <span style={{fontSize:20}}>{cluster.icon||"🎯"}</span>
-              <span style={{fontWeight:700,fontSize:14,flex:1}}>{name}</span>
-              <div style={{display:"flex",alignItems:"center",gap:6,background:"rgba(59,130,246,0.1)",
-                padding:"4px 10px",borderRadius:20}}>
-                <span style={{fontSize:11,color:"var(--accent2)"}}>{t.futureProofScore||"Future"}</span>
-                <span style={{fontWeight:800,color:"var(--accent2)",fontSize:13}}>{futureScore}%</span>
-              </div>
-            </div>
-            {[
-              { label: t.moroccoDemandsLabel||"Morocco", val: moroccoScore, color:"var(--accent3)" },
-              { label: t.globalDemandsLabel||"Global",   val: globalScore,  color:"var(--accent2)" },
-            ].map(bar=>(
-              <div key={bar.label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                <span style={{fontSize:11,color:"var(--muted)",width:60,flexShrink:0}}>{bar.label}</span>
-                <div style={{flex:1,height:6,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:`${bar.val}%`,background:bar.color,borderRadius:3,transition:"width 0.8s ease"}}/>
-                </div>
-                <span style={{fontSize:11,fontWeight:700,color:bar.color,width:34}}>{bar.val}%</span>
-              </div>
-            ))}
-            {risks.length > 0 && (
-              <div style={{marginTop:8,display:"flex",gap:6,flexWrap:"wrap"}}>
-                {risks.map((r,ri)=>(
-                  <span key={ri} style={{fontSize:11,color:"var(--warn)",background:"rgba(245,158,11,0.1)",
-                    padding:"2px 8px",borderRadius:12,border:"1px solid rgba(245,158,11,0.25)"}}>⚠️ {r}</span>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
-      <div style={{background:"rgba(99,102,241,0.07)",border:"1px solid rgba(99,102,241,0.2)",
-        borderRadius:12,padding:"12px 14px",marginTop:4}}>
-        <div style={{fontSize:13,fontWeight:700,marginBottom:8}}>
-          {t.hedgeSkillLabel||"Hedge skill"} 🛡️
-        </div>
-        {hedge.map((h,i)=>(
-          <div key={i} style={{fontSize:12,color:"var(--text)",lineHeight:1.5,marginBottom:4,
-            display:"flex",gap:6}}>
-            <span style={{color:"var(--accent2)",flexShrink:0}}>✦</span>{h}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Page 4/6 — Top 3 Directions
-// ─────────────────────────────────────────────────────────────────
-function Page4Directions({ lang, dir, safeResults, t }) {
-  const { threeViews } = safeResults;
-  if (!threeViews?.bestFit && !threeViews?.balanced && !threeViews?.ambitious) return null;
-  const c = rf(lang);
-  const cards = [
-    { key:"bestFit", label:c.fitLabel, cluster:threeViews.bestFit, icon:"💡",
-      accent:"var(--accent3)" },
-    { key:"balanced", label:c.balLabel, cluster:threeViews.balanced, icon:"⚖️",
-      accent:"var(--accent2)" },
-    { key:"ambitious", label:c.ambLabel, cluster:threeViews.ambitious, icon:"🚀",
-      accent:"var(--accent)" },
-  ].filter(x=>x.cluster);
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
-        {t.directionsPage4Title||"Directions"} — Page 4/6
-      </div>
-      <p style={{fontSize:13,color:"var(--muted)",marginBottom:16}}>{c.jab2Sub}</p>
-      {cards.map(({key,label,cluster,icon,accent})=>{
-        const name = t[CLUSTER_KEY_MAP[cluster.id]]||cluster.id;
-        const pct = Math.round((cluster.scores.final||0)*100);
-        const acad = Math.round((cluster.scores.academic||0)*100);
-        const trait = Math.round((cluster.scores.trait||0)*100);
-        const market = Math.round((cluster.scores.market||0)*100);
-        const prestige = Math.round((PRESTIGE_INDEX[cluster.id]||0.5)*100);
-        return (
-          <div key={key} style={{background:"var(--surface2)",border:`1.5px solid ${accent}`,
-            borderRadius:16,padding:"16px",marginBottom:12}}>
-            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10,flexWrap:"wrap"}}>
-              <span style={{fontSize:22}}>{icon}</span>
-              <div>
-                <div style={{fontSize:10,fontWeight:700,textTransform:"uppercase",letterSpacing:1,color:"var(--muted)"}}>{label}</div>
-                <div style={{fontSize:16,fontWeight:800,color:"var(--text)"}}>{name}</div>
-              </div>
-              <span style={{marginInlineStart:"auto",fontSize:13,fontWeight:800,color:accent,
-                background:`${accent}18`,padding:"4px 12px",borderRadius:20}}>{pct}%</span>
-            </div>
-            {[
-              { label:t.academic||lang==="ar"?"دراسي":"Académique", val:acad, color:"var(--accent2)" },
-              { label:t.personality||lang==="ar"?"شخصية":"Personnalité", val:trait, color:"var(--accent3)" },
-              { label:t.market||lang==="ar"?"سوق":"Marché", val:market, color:accent },
-              { label:"Prestige", val:prestige, color:"var(--accent)" },
-            ].map(bar=>(
-              <div key={bar.label} style={{display:"flex",alignItems:"center",gap:8,marginBottom:5}}>
-                <span style={{fontSize:11,color:"var(--muted)",width:65,flexShrink:0}}>{bar.label}</span>
-                <div style={{flex:1,height:5,background:"var(--border)",borderRadius:3,overflow:"hidden"}}>
-                  <div style={{height:"100%",width:`${bar.val}%`,background:bar.color,borderRadius:3}}/>
-                </div>
-                <span style={{fontSize:11,fontWeight:700,color:bar.color,width:30}}>{bar.val}%</span>
-              </div>
-            ))}
-            {cluster.eligibilityTag === "notEligiblePublic" && (
-              <div style={{marginTop:8,fontSize:11,color:"var(--warn)",background:"rgba(245,158,11,0.08)",
-                padding:"4px 10px",borderRadius:8,display:"inline-block"}}>
-                ⚠️ {lang==="ar"?"شروط القبول العام لم تُستوفَ":lang==="fr"?"Conditions d'accès public non remplies":"Public eligibility conditions not met"}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// Page 5/6 — Starter Plan
-// ─────────────────────────────────────────────────────────────────
-function Page5Plan({ lang, dir, safeResults, t, onGoToPDF }) {
-  const c = rf(lang);
-  const [done, setDone] = React.useState({});
-  const [priority, setPriority] = React.useState("stability");
-  const topCluster = safeResults.topCareer;
-  const lt = safeResults.learnerType || "architect";
-
-  const tasks = [];
-  (topCluster?.actionPlan||[]).slice(0,2).forEach(w=>{
-    (w.items||[]).slice(0,2).forEach(item=>{ if(tasks.length<5) tasks.push(typeof item==="string"?item:item.label||""); });
-  });
-  const genericTasks = {
-    ar:["ابحث عن 3 طلاب في نفس شعبتك وتبادل التجارب","راجع متطلبات القبول في مؤسسة تستهدفها","اقرأ أو شاهد 30 دقيقة عن المجال المقترح","ضع جدولاً أسبوعياً للمراجعة","تحدث مع شخص يعمل في المجال"],
-    fr:["Trouve 3 étudiants dans ta filière et échange","Vérifie les prérequis d'une école cible","Lis ou regarde 30 min sur le domaine proposé","Rédige un planning de révision hebdomadaire","Parle à quelqu'un qui travaille dans ce domaine"],
-    en:["Connect with 3 students in your track","Check admission requirements for one target school","Read or watch 30 min about the suggested field","Write a weekly revision plan","Talk to someone working in the field"],
-  }[lang]||[];
-  while(tasks.length<5) tasks.push(genericTasks[tasks.length]||"");
-
-  const quickWins = {
-    architect:{ ar:["رسم خريطة ذهنية لأهداف الأسبوع","قراءة ملخص الفصل الأول قبل الحصة"],
-      fr:["Dessine une carte mentale des objectifs de la semaine","Lis le résumé du premier chapitre avant le cours"],
-      en:["Draw a mind map of this week's goals","Read the chapter summary before class"] },
-    striker:{ ar:["حل 5 تمارين في مادة ضعيفة","إتمام مشروع صغير يُمكن عرضه"],
-      fr:["Résoudre 5 exercices dans une matière faible","Compléter un petit projet présentable"],
-      en:["Solve 5 exercises in a weak subject","Complete a small presentable project"] },
-    diplomat:{ ar:["شرح درس لزميل أو بصوت عالٍ","الانضمام لمجموعة مراجعة"],
-      fr:["Expliquer un cours à un camarade ou à voix haute","Rejoindre un groupe de révision"],
-      en:["Explain a lesson to a peer or aloud","Join a study group"] },
-    sprinter:{ ar:["تحديد موعد نهائي وهمي لمهمة اليوم","إنجاز 3 تمارين في 20 دقيقة"],
-      fr:["Fixer une fausse deadline pour la tâche du jour","Finir 3 exercices en 20 minutes"],
-      en:["Set a fake deadline for today's task","Finish 3 exercises in 20 minutes"] },
-    sentinel:{ ar:["مراجعة 10 دقائق عند نفس الوقت يومياً","تتبع عادة واحدة لمدة 7 أيام"],
-      fr:["Réviser 10 min à la même heure chaque jour","Suivre une habitude pendant 7 jours"],
-      en:["Review 10 min at the same time daily","Track one habit for 7 days"] },
-    visionary:{ ar:["البحث عن شخص يعمل في المجال المُقترح","قراءة ملهِمة واحدة عن المجال"],
-      fr:["Trouver quelqu'un qui travaille dans le domaine proposé","Lire quelque chose d'inspirant sur le domaine"],
-      en:["Find someone working in the suggested field","Read something inspiring about the field"] },
-  };
-  const wins = ((quickWins[lt]||quickWins.architect)[lang]||quickWins.architect.en).slice(0,2);
-
-  const risks = {
-    ar:["مقارنة نفسك بالآخرين بدلاً من التركيز على تقدمك","تأجيل الخطوة الأولى حتى 'الوقت المثالي'"],
-    fr:["Te comparer aux autres au lieu de te concentrer sur ta progression","Reporter la première étape jusqu'au 'moment parfait'"],
-    en:["Comparing yourself to others instead of focusing on your progress","Delaying the first step until the 'perfect time'"],
-  }[lang]||[];
-
-  return (
-    <div style={{animation:"fadeIn 0.4s ease"}}>
-      <div style={{fontSize:11,fontWeight:800,textTransform:"uppercase",letterSpacing:2,color:"var(--muted)",marginBottom:4}}>
-        {t.planPage5Title||"Starter Plan"} — Page 5/6
-      </div>
-
-      {/* 7-day tasks */}
-      <div style={{marginBottom:16}}>
-        <div style={{fontSize:14,fontWeight:700,marginBottom:10}}>
-          {lang==="ar"?"✅ خطة 7 أيام":lang==="fr"?"✅ Plan 7 jours":"✅ 7-day plan"}
-        </div>
-        {tasks.slice(0,5).map((task,i)=>(
-          <div key={i} onClick={()=>setDone(d=>({...d,[i]:!d[i]}))}
-            style={{display:"flex",gap:10,padding:"12px 14px",marginBottom:8,
-              background:"var(--surface2)",border:`1.5px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
-              borderRadius:12,cursor:"pointer",opacity:done[i]?0.65:1,transition:"all 0.18s"}}>
-            <div style={{width:20,height:20,borderRadius:5,flexShrink:0,marginTop:2,
-              background:done[i]?"var(--accent3)":"var(--surface3)",
-              border:`2px solid ${done[i]?"var(--accent3)":"var(--border)"}`,
-              display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff"}}>
-              {done[i]&&"✓"}
-            </div>
-            <span style={{fontSize:13,color:"var(--text)",lineHeight:1.55,flex:1,
-              textDecoration:done[i]?"line-through":"none"}}>{task}</span>
-            <span style={{fontSize:11,color:"var(--accent)",fontWeight:700,flexShrink:0}}>+10 XP</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Quick wins */}
-      <div style={{background:"rgba(16,185,129,0.07)",border:"1px solid rgba(16,185,129,0.2)",
-        borderRadius:12,padding:"12px 14px",marginBottom:12}}>
-        <div style={{fontSize:13,fontWeight:700,marginBottom:8,color:"var(--accent3)"}}>
-          ⚡ {t.weakPoint2Win||"Your wins"}
-        </div>
-        {wins.map((w,i)=>(
-          <div key={i} style={{fontSize:12,color:"var(--text)",marginBottom:5,display:"flex",gap:6}}>
-            <span style={{color:"var(--accent3)"}}>→</span><span style={{lineHeight:1.5}}>{w}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Risk to avoid */}
-      <div style={{background:"rgba(239,68,68,0.06)",border:"1px solid rgba(239,68,68,0.2)",
-        borderRadius:12,padding:"12px 14px",marginBottom:16}}>
-        <div style={{fontSize:13,fontWeight:700,marginBottom:8,color:"#f87171"}}>
-          ⛔ {t.riskAvoid||"Risk to avoid"}
-        </div>
-        {risks.slice(0,1).map((r,i)=>(
-          <div key={i} style={{fontSize:12,color:"var(--text)",lineHeight:1.5}}>{r}</div>
-        ))}
-      </div>
-
-      {/* PDF teaser */}
-      <div style={{background:"linear-gradient(135deg,rgba(232,161,36,0.1),rgba(59,130,246,0.06))",
-        border:"1px solid rgba(232,161,36,0.3)",borderRadius:14,padding:"14px 16px",
-        display:"flex",alignItems:"center",justifyContent:"space-between",gap:12,flexWrap:"wrap"}}>
-        <p style={{fontSize:13,color:"var(--text)",margin:0,flex:1,lineHeight:1.5}}>
-          {c.jab4Upsell}
-        </p>
-        <button className="btn btn-primary" onClick={onGoToPDF} style={{flexShrink:0}}>
-          📄 PDF →
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────
-// RESULTS FLOW — 6-page orchestrator (Page 1/6 → 6/6)
-// ─────────────────────────────────────────────────────────────────
-function ResultsFlow({
-  t, lang, dir, info,
-  marks, whatIfDeltas, setWhatIfDeltas,
-  effectiveMarks, rankedClusters, traits, confidence, mixedSignals, narrative,
-  reality, setReality, restart, onBack,
-  secondaryTop3, overallAvg,
-  journeyStage, preBacData, learnerAnswers,
-}) {
-  const [rfStep, setRfStep] = React.useState(0);
-  const TOTAL = 6;
-
-  // Guard
-  const safeRanked  = Array.isArray(rankedClusters) ? rankedClusters : [];
-  const safeTraits  = (traits && typeof traits === "object") ? traits : {};
-  const safeMarks   = (marks  && typeof marks  === "object") ? marks  : {};
-  const safeInfo    = (info   && typeof info   === "object") ? info   : {};
-  const safeReality = (reality && typeof reality === "object") ? reality : {};
-  const safeConf    = typeof confidence === "number" ? confidence : 0;
-
-  if (safeRanked.length === 0) {
-    return (
-      <div className="card" dir={dir} style={{textAlign:"center", padding:"40px 24px"}}>
-        <div style={{fontSize:48, marginBottom:16}}>📋</div>
-        <h2 style={{marginBottom:12, fontWeight:700}}>
-          {lang==="ar"?"ملفك الشخصي غير مكتمل":lang==="fr"?"Profil incomplet":"Incomplete profile"}
-        </h2>
-        <div style={{display:"flex", gap:12, justifyContent:"center", flexWrap:"wrap", marginTop:16}}>
-          <button className="btn btn-secondary" onClick={()=>onBack?.()}>← {lang==="ar"?"رجوع":lang==="fr"?"Retour":"Back"}</button>
-          <button className="btn btn-danger" onClick={restart}>{t?.restart || "Restart"}</button>
-        </div>
-      </div>
-    );
-  }
-
-  const overallAvgVal = (() => {
-    const vals = Object.values(safeMarks).map(Number).filter(v=>!isNaN(v)&&v>0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
-  })();
-
-  const ltResult    = computeLearnerType(learnerAnswers || {});
-  const safeResults = {
-    archetype:     computeMassarType(safeTraits, safeReality),
-    topCareer:     safeRanked[0] || null,
-    topThree:      safeRanked.slice(0,3),
-    traits:        safeTraits,
-    confidence:    Math.round(Math.min(100, Math.max(0, safeConf))),
-    rarity:        computeRarity(safeConf),
-    overallAvg:    Math.min(20, Math.max(0, overallAvgVal)),
-    threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks) || { bestFit:null, balanced:null, ambitious:null },
-    strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
-    familyPressure:!!safeReality.familyPressure,
-    learnerType:   ltResult.primary,
-    learnerSecondary: ltResult.secondary,
-    learnerScores: ltResult.scores,
-    journeyStage:  journeyStage || "postbac",
-    preBacData:    preBacData || {},
-  };
-
-  const rfCopy = rf(lang);
-  const goNext = () => setRfStep(s => Math.min(TOTAL-1, s+1));
-  const goBack = () => {
-    if (rfStep === 0) onBack?.();
-    else setRfStep(s => Math.max(0, s-1));
-  };
-
-  const screens = [
-    // Page 1/6 — Identity Mirror
-    <Page1Identity key="p1" lang={lang} dir={dir} safeResults={safeResults} t={t} safeRanked={safeRanked}/>,
-    // Page 2/6 — Prestige & Family Reality
-    <Page2Prestige key="p2" lang={lang} dir={dir} safeResults={safeResults} info={safeInfo} t={t}/>,
-    // Page 3/6 — Future-Proof & Market
-    <Page3Market key="p3" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
-    // Page 4/6 — Top 3 Directions
-    <Page4Directions key="p4" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
-    // Page 5/6 — Starter Plan
-    <Page5Plan key="p5" lang={lang} dir={dir} safeResults={safeResults} t={t} onGoToPDF={()=>setRfStep(5)}/>,
-    // Page 6/6 — PDF Offer (Right Hook)
-    <RightHookPDF key="rh" lang={lang} dir={dir} safeResults={safeResults} t={t}/>,
-  ];
-
-  const stepLabels = [
-    lang==="ar"?"الهوية":lang==="fr"?"Identité":"Identity",
-    lang==="ar"?"المكانة":lang==="fr"?"Prestige":"Prestige",
-    lang==="ar"?"السوق":lang==="fr"?"Marché":"Market",
-    lang==="ar"?"الاتجاهات":lang==="fr"?"Directions":"Directions",
-    lang==="ar"?"الخطة":lang==="fr"?"Plan":"Plan",
-    lang==="ar"?"الملف":lang==="fr"?"PDF":"PDF",
-  ];
-
-  return (
-    <div className="card" dir={dir} style={{maxWidth:720, width:"100%"}}>
-      <RFProgress step={rfStep} total={TOTAL} lang={lang} dir={dir}/>
-      <div style={{minHeight:400, paddingBottom:16}}>
-        {screens[Math.min(rfStep, screens.length - 1)] || null}
-      </div>
-      <RFNav
-        step={rfStep} total={TOTAL}
-        onBack={goBack}
-        onNext={goNext}
-        lang={lang} dir={dir}
-        nextLabel={rfStep < TOTAL-1 ? rfCopy.continueBtn : undefined}
-        nextDisabled={rfStep === TOTAL-1}
-      />
-    </div>
-  );
-}
-
 // src/massar/components/StepResults.jsx
 // ─────────────────────────────────────────────────────────────────
 // Goals wired here:
@@ -9875,8 +6208,7 @@ function StepResults({
   }
   // ── End null-safety gate ────────────────────────────────────────
 
-  // SUBJECTS FIX: use getSubjectsForMarks for accurate subject list in results panel
-  const subjs   = getSubjectsForMarks(safeInfo);
+  const subjs   = WATANI_SUBJECTS_BY_TRACK[safeInfo.bacTrack] || [];
   const origAvg = subjs.length ? subjs.reduce((s,k)=>s+(Number(safeMarks[k])||0),0)/subjs.length : 0;
   const adjAvg  = subjs.length ? subjs.reduce((s,k)=>s+(effectiveMarks?.[k]||0),0)/subjs.length : 0;
   const hasDeltas = Object.values(whatIfDeltas || {}).some(d=>Number(d)!==0);
@@ -9885,27 +6217,11 @@ function StepResults({
   // FIX: results page null-safety — safeTop / safeTop3
   const top3     = safeRanked.slice(0,3);
   const safeTop  = top3[0] || null;   // FIX: results page null-safety
-  // D — Prestige-smart fallback: if avg ≥ 14.5, pick best non-health prestige cluster (#4+)
-  //     rather than the old "low-academic, high-demand" logic which surfaced OFPPT-framed paths.
-  const overallAvgForFallback = (() => {
-    const vals = Object.values(safeMarks||{}).map(Number).filter(v=>!isNaN(v)&&v>0);
-    return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
-  })();
-  const fallback = (() => {
-    if (overallAvgForFallback >= 14.5) {
-      // High-avg: pick best non-health cluster outside top-3 sorted by prestige index
-      const top3ids = new Set(top3.map(c=>c.id));
-      const candidate = [...safeRanked]
-        .filter(c => !top3ids.has(c.id) && c.id !== "health")
-        .sort((a,b) => (PRESTIGE_INDEX[b.id]||0.5) - (PRESTIGE_INDEX[a.id]||0.5))[0];
-      return candidate || safeRanked[3] || null;
-    }
-    return safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
-  })();
+  const fallback = safeRanked.find(c=>c.scores.academic<0.4&&c.demandIndex>0.7)||safeRanked[3]||null;
 
   const confClass = safeConf>=70?"confidence-high":safeConf>=50?"confidence-med":"confidence-low";
   const massarType = computeMassarType(safeTraits, safeReality);
-  const typeDesc   = massarTypeDesc(massarType, t, lang);
+  const typeDesc   = massarTypeDesc(massarType, t);
   const traitLabels = {
     ar:{ analytical:"تحليلي", social:"اجتماعي", structure:"منظم", creativity:"مبدع", risk:"مبادر", leadership:"قيادي" },
     fr:{ analytical:"Analytique", social:"Social", structure:"Rigoureux", creativity:"Créatif", risk:"Risque", leadership:"Leader" },
@@ -9927,12 +6243,11 @@ function StepResults({
 
   const safeResults = {
     archetype:     computeMassarType(safeTraits, safeReality),
-    archV2:        pickArchetypeV2({ traits:safeTraits, learnerType:computeLearnerType(learnerAnswers||{}).primary, strengths:Array.isArray(safeReality.strengths)?safeReality.strengths:[], confidence:clamp(safeConf) }),
     topCareer:     safeTop,
     topThree:      top3,
     traits:        safeTraits,
     confidence:    clamp(safeConf),
-    rarity:        computeRarity(clamp(safeConf)),
+    rarity:        getRarity(safeConf),
     overallAvg:    clamp(overallAvgVal, 0, 20),
     threeViews:    computeThreeViews(safeRanked, overallAvgVal, safeInfo, safeMarks),
     strengths:     Array.isArray(safeReality.strengths) ? safeReality.strengths : [],
@@ -9941,7 +6256,7 @@ function StepResults({
   };
 
   // FIX: development debug logs
-  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+  if (typeof window !== "undefined" && import.meta?.env?.DEV) {
     console.groupCollapsed("[Massar] Results built");
     console.log("safeResults:", safeResults);
     console.log("archetype computed:", safeResults.archetype);
@@ -9963,7 +6278,7 @@ function StepResults({
       )}
 
       {/* ── Phase 1: Archetype Hero Identity ── */}
-      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf} archV2={pickArchetypeV2({traits:safeTraits,confidence:safeConf,learnerType:computeLearnerType(learnerAnswers||{}).primary,strengths:Array.isArray(safeReality?.strengths)?safeReality.strengths:[]})}/>
+      <ArchetypeCard massarType={massarType} typeDesc={typeDesc} t={t} lang={lang} traits={safeTraits} top3={top3} confidence={safeConf}/>
 
       {/* ── Phase 2: Abilities System ── */}
       <AbilitiesSection traits={safeTraits} lang={lang}/>
@@ -10095,16 +6410,6 @@ function StepResults({
           rankedClusters={safeRanked} reality={safeReality} setReality={setReality}/>
       )}
 
-      {/* ── WhyThisIsTop: deterministic explainability block (spec §4) ── */}
-      {top3[0] && (
-        <WhyThisIsTop
-          cluster={top3[0]}
-          overallAvg={safeResults.overallAvg}
-          lang={lang}
-          t={t}
-        />
-      )}
-
       {/* ── FIX: multi-view recommendation ── */}
       <ThreeViewPanel
         t={t} lang={lang}
@@ -10194,24 +6499,24 @@ function StepResults({
       )}
 
       {/* ── Phase 9: Truth Mode — collapsed ── */}
-      <CollapsibleSection title={t?.truthModeBtn} defaultOpen={false} accent="var(--muted)">
+      <CollapsibleSection title={t.truthModeBtn} defaultOpen={false} accent="var(--muted)">
         <TruthModeCard t={t} lang={lang} traits={safeTraits} top3={top3}/>
       </CollapsibleSection>
 
       {/* ── Phase 7: Share Card — status symbol ── */}
       {/* FIX: results page null-safety — topCluster may be null; ShareCard handles it internally */}
-      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf} traits={safeTraits}/>
+      <ShareCard t={t} lang={lang} massarType={massarType} topCluster={topCluster} confidence={safeConf}/>
 
       {/* ── Phase 6: Action plan → XP Progression Tracker ── */}
       <div className="section-title">{t.actionPlan}</div>
       <XPProgressionTracker top3={top3} t={t} lang={lang} massarType={massarType} />
 
-      <p className="salary-note">{t?.salaryNote}</p>
+      <p className="salary-note">{t.salaryNote}</p>
 
       {/* CTA + restart */}
       <div style={{display:"flex",gap:12,marginTop:24,flexWrap:"wrap",alignItems:"center"}}>
         <CtaModal t={t} dir={dir}/>
-        <button className="btn btn-danger" onClick={restart}>{t.restart}</button>
+        <button className="btn btn-danger" onClick={restart}>{t?.restart || "Restart"}</button>
       </div>
 
     </div>
@@ -10245,32 +6550,13 @@ function StepResults({
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=IBM+Plex+Sans+Arabic:wght@400;600&family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{
-    background:#0a0e1a;color:#e8ecf0;
-    font-family:'DM Sans',sans-serif;
-    min-height:100vh;
-    /* Prevent text inflation on mobile */
-    -webkit-text-size-adjust:100%; text-size-adjust:100%;
-    /* Smooth font rendering */
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-  /* Arabic: Tajawal primary, proper line height and word spacing */
-  [dir="rtl"]{
-    font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;
-    line-height:1.75;
-    word-spacing:0.02em;
-  }
-  [dir="rtl"] h1,[dir="rtl"] h2,[dir="rtl"] h3{
-    line-height:1.4;
-    font-weight:700;
-  }
-  /* Arabic punctuation spacing */
-  [dir="rtl"] p { text-align: right; }
+  body{background:#0a0e1a;color:#e8ecf0;font-family:'DM Sans',sans-serif;min-height:100vh;}
+  [dir="rtl"]{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;}
 
   /* ── Phase 10: Micro animations ── */
   @keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
   @keyframes barGrow{from{width:0;}to{width:var(--bar-w,100%);}}
-  @keyframes archetypeGlow{0%,100%{filter:drop-shadow(0 0 12px currentColor);}50%{filter:drop-shadow(0 0 28px currentColor);}}  @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
+  @keyframes glowPulse{0%,100%{box-shadow:0 0 8px rgba(232,161,36,0.2);}50%{box-shadow:0 0 22px rgba(232,161,36,0.55),0 0 40px rgba(232,161,36,0.2);}}
   @keyframes scGlowLegendary{
     0%,100%{box-shadow:0 0 0 1.5px rgba(245,158,11,0.7),0 0 0 3px rgba(245,158,11,0.15),0 0 28px rgba(245,158,11,0.4),0 0 0px transparent,0 16px 56px rgba(0,0,0,0.8);}
     50%{box-shadow:0 0 0 1.5px rgba(245,158,11,1),0 0 0 4px rgba(245,158,11,0.25),0 0 48px rgba(245,158,11,0.6),0 0 80px rgba(245,158,11,0.3),0 16px 56px rgba(0,0,0,0.8);}
@@ -10361,57 +6647,15 @@ const css = `
   :root{--bg:#0a0e1a;--surface:#111827;--surface2:#1a2235;--surface3:#222d42;
     --accent:#e8a124;--accent2:#3b82f6;--accent3:#10b981;
     --text:#e8ecf0;--muted:#6b7280;--border:#1f2d45;--danger:#ef4444;--warn:#f59e0b;}
-
-  /* ── Mobile-first root — zero overflow, safe-area, no fixed widths */
-  html { box-sizing: border-box; overflow-x: hidden; }
-  *, *::before, *::after { box-sizing: inherit; }
-  html, body { width: 100%; min-height: 100%; }
-  body {
-    overflow-x: hidden;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-    /* Prevent bounce/overscroll from exposing white bg */
-    background: #0a0e1a;
-  }
-  #root {
-    min-height: 100vh;
-    width: 100%;
-    overflow-x: hidden;
-    isolation: isolate;
-  }
-  .app {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Responsive padding — never wider than screen */
-    padding: clamp(12px, 3vw, 22px) clamp(12px, 4vw, 18px);
-    padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom, 0px)));
-    padding-top: max(12px, env(safe-area-inset-top, 0px));
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-  }
-  .header{text-align:center;margin-bottom:32px;padding-top:16px;width:100%;}
-  .header h1{
-    font-size: clamp(24px,6vw,48px);
+  .app{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px 16px 60px;}
+  .header{text-align:center;margin-bottom:32px;padding-top:16px;}
+  .header h1{font-family:'Playfair Display',serif;font-size:clamp(28px,5vw,48px);
     background:linear-gradient(135deg,#e8a124,#f59e0b,#fbbf24);
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    letter-spacing:-1px;line-height:1.1;
-    word-break:break-word;
-  }
-  [dir="rtl"] .header h1{font-family:'Tajawal','IBM Plex Sans Arabic',sans-serif;letter-spacing:0;}
-  .header p{color:#9ca3af;margin-top:8px;font-size:clamp(13px,3.5vw,15px);}
-
-  /* Fix 1: Card — no fixed max-width wider than viewport, responsive padding */
-  .card{
-    background:var(--surface);border:1px solid var(--border);border-radius:16px;
-    padding: clamp(18px,4vw,28px);
-    width:100%;max-width:720px;
-    box-shadow:0 4px 24px rgba(0,0,0,0.4);
-    box-sizing:border-box;
-  }
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px;line-height:1.1;}
+  [dir="rtl"] .header h1{font-family:'IBM Plex Sans Arabic',sans-serif;}
+  .header p{color:#9ca3af;margin-top:8px;font-size:15px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+    padding:28px;width:100%;max-width:720px;box-shadow:0 4px 24px rgba(0,0,0,0.4);}
   .step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:24px;font-size:13px;color:var(--muted);}
   .step-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
   .step-dot.active{background:var(--accent);}
@@ -10452,14 +6696,8 @@ const css = `
   .mark-row input:focus{border-color:var(--accent);}
   .mark-bar{flex:2;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
   .mark-bar-fill{height:100%;border-radius:3px;transition:width 0.3s;}
-  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;flex-wrap:wrap;}
-  .btn{
-    padding:12px 24px;border-radius:10px;border:none;cursor:pointer;
-    font-size:clamp(13px,3.5vw,14px);font-weight:600;transition:all 0.2s;
-    min-height:48px;/* Fix 5: 48px tap target */
-    display:inline-flex;align-items:center;justify-content:center;
-    font-family:inherit;
-  }
+  .btn-row{display:flex;gap:12px;justify-content:flex-end;margin-top:24px;}
+  .btn{padding:11px 24px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:all 0.2s;}
   .btn-primary{background:var(--accent);color:#000;} .btn-primary:hover{background:#f59e0b;}
   .btn-secondary{background:transparent;border:1.5px solid var(--border);color:var(--muted);}
   .btn-secondary:hover{border-color:var(--text);color:var(--text);}
@@ -10480,20 +6718,9 @@ const css = `
     color:var(--muted);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:6px;transition:color 0.2s;}
   .cta-close:hover{color:var(--text);}
   [dir="rtl"] .cta-close{right:auto;left:14px;}
-  /* Fix 1: results-wrap — full width on mobile, max 900px on desktop */
-  .results-wrap{width:100%;max-width:min(900px,100%);}
+  .results-wrap{width:100%;max-width:900px;}
   .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
-  @media(max-width:600px){
-    .results-grid{grid-template-columns:1fr;}
-    .marks-grid{grid-template-columns:1fr;}
-    .abilities-grid{grid-template-columns:repeat(2,1fr);}
-    .mobility-grid{grid-template-columns:1fr 1fr;}
-    .lang-grid{grid-template-columns:repeat(3,1fr);}
-  }
-  @media(max-width:360px){
-    .lang-grid{grid-template-columns:1fr;}
-    .abilities-grid{grid-template-columns:1fr;}
-  }
+  @media(max-width:600px){.results-grid{grid-template-columns:1fr;}.marks-grid{grid-template-columns:1fr;}}
   .result-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;}
   .result-card.highlight{border-color:var(--accent);background:rgba(232,161,36,0.05);}
   .result-card h3{font-size:14px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:16px;}
@@ -10528,9 +6755,6 @@ const css = `
   .explain-fill{height:100%;border-radius:4px;}
   .explain-pct{font-size:12px;color:var(--text);width:36px;text-align:left;}
   [dir="rtl"] .explain-pct{text-align:right;}
-  /* Arabic glossary overrides — consistent terminology */
-  [dir="rtl"] .pathway-tab[data-tab="university"]::before { content: "المسار الجامعي"; }
-  [dir="rtl"] .best-match-label::before { content: ""; }
   .week-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;}
   .week-label{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
   .week-item{font-size:13px;padding:4px 0;border-bottom:1px solid var(--border);color:var(--text);display:flex;align-items:flex-start;gap:6px;}
@@ -10591,538 +6815,7 @@ const css = `
   .reality-section{margin-bottom:24px;}
   .reality-section-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
   .reality-section-desc{font-size:12px;color:var(--muted);margin-bottom:8px;}
-
-  /* ════════════════════════════════════════════════════════════════
-     HOME MOTION ENGINE (parallax + reveal) — CSS
-  ════════════════════════════════════════════════════════════════ */
-
-  /* ── Scroll reveal base ── */
-  .reveal {
-    opacity: 0;
-    transform: translate3d(0, 20px, 0);
-    transition:
-      opacity 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms),
-      transform 0.6s cubic-bezier(.22,1,.36,1) var(--reveal-delay, 0ms);
-  }
-  .reveal--in, .reveal.is-visible {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-  /* Trust chips stagger */
-  .home-trust-chip {
-    transition-delay: var(--chip-delay, 0ms);
-  }
-
-  /* ── Reduced-motion: everything instant ── */
-  @media (prefers-reduced-motion: reduce) {
-    .reveal, .reveal--in { opacity:1; transform:none; transition:none; }
-    .hp-layer, .hp-float { animation: none !important; }
-    .home-hero { transition: none !important; }
-  }
-
-  /* ════════════════════════════════════════════════════════════════
-     HOME PAGE UI — landing page styles
-  ════════════════════════════════════════════════════════════════ */
-
-  /* ── Home root ── */
-  .home-root {
-    min-height: 100vh;
-    background: #070b16;
-    color: #e8ecf0;
-    font-family: inherit;
-    overflow-x: hidden;
-    position: relative;
-  }
-
-  /* ── Parallax container ── */
-  .home-parallax {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 0;
-  }
-  .hp-layer {
-    position: absolute;
-    border-radius: 50%;
-    pointer-events: none;
-  }
-  /* Layer 1 — large blue orb */
-  .hp-orb1 {
-    width: 700px; height: 700px;
-    top: -180px; left: 50%;
-    transform: translateX(-50%);
-    background: radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%);
-    filter: blur(60px);
-  }
-  /* Layer 2 — subtle grid glow (SVG data-uri, no external asset) */
-  .hp-grid {
-    inset: 0; border-radius: 0;
-    background-image:
-      linear-gradient(rgba(59,130,246,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(59,130,246,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 0%, transparent 75%);
-    opacity: 0.7;
-  }
-  /* Layer 3 — warm gold spotlight */
-  .hp-spot {
-    width: 500px; height: 500px;
-    top: 40px; right: -120px;
-    background: radial-gradient(circle, rgba(232,161,36,0.14) 0%, transparent 65%);
-    filter: blur(80px);
-  }
-
-  /* ── Floating ornaments (CSS keyframes only) ── */
-  .hp-float { position: absolute; pointer-events: none; }
-
-  /* Sparkle — tiny glowing dot cluster */
-  .hp-sparkle {
-    width: 6px; height: 6px;
-    top: 22%; left: 12%;
-    border-radius: 50%;
-    background: #fbbf24;
-    box-shadow:
-      0 0 6px 2px rgba(251,191,36,0.6),
-      18px 30px 0 rgba(251,191,36,0.3),
-      36px 8px 0 rgba(251,191,36,0.2),
-      -14px 40px 0 rgba(59,130,246,0.4);
-    animation: sparkleFloat 7s ease-in-out infinite;
-    z-index: 2;
-  }
-  @keyframes sparkleFloat {
-    0%,100% { transform: translate3d(0,0,0) scale(1);   opacity: 0.7; }
-    40%     { transform: translate3d(4px,-12px,0) scale(1.15); opacity: 1; }
-    70%     { transform: translate3d(-3px,-6px,0) scale(0.9);  opacity: 0.55; }
-  }
-
-  /* Blob — slow drifting ambient shape */
-  .hp-blob {
-    width: 280px; height: 280px;
-    bottom: 15%; right: 6%;
-    border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
-    background: linear-gradient(135deg, rgba(99,102,241,0.14), rgba(232,161,36,0.07));
-    filter: blur(36px);
-    animation: blobDrift 14s ease-in-out infinite;
-    z-index: 0;
-  }
-  @keyframes blobDrift {
-    0%,100% { transform: translate3d(0,0,0) scale(1) rotate(0deg); }
-    33%     { transform: translate3d(-20px,16px,0) scale(1.06) rotate(6deg); }
-    66%     { transform: translate3d(14px,-10px,0) scale(0.96) rotate(-4deg); }
-  }
-
-  /* ── Nav ── */
-  .home-nav {
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 28px;
-    background: rgba(7,11,22,0.72);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-  }
-  .home-nav-brand {
-    font-size: 20px; font-weight: 900; letter-spacing: -0.5px;
-    background: linear-gradient(90deg,#e8a124,#fbbf24);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .home-nav-lang { display:flex; gap:6px; }
-  .home-nav-lang button {
-    padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
-    border: 1.5px solid rgba(255,255,255,0.12); background: transparent;
-    color: rgba(232,236,240,0.6); cursor: pointer; transition: all 0.2s;
-  }
-  .home-nav-lang button.active,
-  .home-nav-lang button:hover {
-    border-color: rgba(232,161,36,0.6); color: #e8a124; background: rgba(232,161,36,0.08);
-  }
-
-  /* ── Hero wrap (sticky anchor) ── */
-  .home-hero-wrap {
-    position: relative; z-index: 1;
-    padding: 0;
-    /* Sticky hero: stays visible for ~260px before scrolling away */
-    min-height: 520px;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .home-hero {
-    position: sticky;
-    top: 60px;
-    width: 100%;
-    text-align: center;
-    padding: 72px 24px 60px;
-    max-width: 760px;
-    margin: 0 auto;
-    transition: transform 0.05s linear;
-  }
-  /* hero card (mouse tilt target) */
-  .home-hero-card {
-    transition: transform 0.18s ease;
-    transform-origin: center center;
-  }
-  .home-hero-eyebrow {
-    display: inline-block; margin-bottom: 18px;
-    padding: 5px 16px; border-radius: 20px;
-    font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-    color: #fbbf24;
-    background: rgba(232,161,36,0.10);
-    border: 1px solid rgba(232,161,36,0.28);
-  }
-  .home-hero h1 {
-    font-size: clamp(32px, 6vw, 64px);
-    font-weight: 900; line-height: 1.07; letter-spacing: -1.5px;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #ffffff 25%, rgba(255,255,255,0.62));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  }
-  .home-hero p {
-    font-size: clamp(15px, 2.2vw, 19px); color: rgba(232,236,240,0.68);
-    line-height: 1.65; margin-bottom: 36px;
-    max-width: 560px; margin-left: auto; margin-right: auto;
-  }
-  [dir="rtl"] .home-hero h1,
-  [dir="rtl"] .home-hero p { font-family: 'Tajawal', sans-serif; }
-
-  /* ── Glass panel behind CTAs ── */
-  .home-hero-glass {
-    display: inline-block;
-    /* Never wider than viewport */
-    width: min(100%, 480px);
-    padding: 20px 24px 18px;
-    border-radius: 20px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.09);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.07) inset;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-sizing: border-box;
-  }
-
-  /* ── CTA buttons ── */
-  .home-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-
-  .home-btn-primary {
-    position: relative; overflow: hidden;
-    padding: 15px 36px; border-radius: 14px;
-    font-size: 16px; font-weight: 800; letter-spacing: -0.2px;
-    color: #0a0e1a;
-    background: linear-gradient(135deg, #fbbf24 0%, #e8a124 60%, #d97706 100%);
-    border: none; cursor: pointer;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 32px rgba(232,161,36,0.45), 0 2px 8px rgba(0,0,0,0.5);
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-    font-family: inherit;
-  }
-  .home-btn-primary::before {
-    content:""; position:absolute; inset:0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 55%);
-    border-radius: inherit; pointer-events:none;
-  }
-  .home-btn-primary:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.35) inset, 0 14px 44px rgba(232,161,36,0.55), 0 4px 12px rgba(0,0,0,0.5);
-  }
-  .home-btn-primary:active { transform: translateY(0) scale(0.99); }
-
-  .home-btn-secondary {
-    padding: 14px 28px; border-radius: 14px;
-    font-size: 15px; font-weight: 700;
-    color: rgba(232,236,240,0.85);
-    background: rgba(255,255,255,0.05);
-    border: 1.5px solid rgba(255,255,255,0.12);
-    cursor: pointer; transition: all 0.2s;
-    backdrop-filter: blur(6px);
-    font-family: inherit;
-  }
-  .home-btn-secondary:hover {
-    border-color: rgba(255,255,255,0.3);
-    background: rgba(255,255,255,0.09); color: #fff;
-  }
-
-  /* ── How it works ── */
-  .home-how {
-    position: relative; z-index: 1;
-    padding: 80px 24px 60px; max-width: 940px; margin: 0 auto;
-  }
-  .home-section-label {
-    text-align: center; font-size: 11px; font-weight: 800;
-    letter-spacing: 2.5px; text-transform: uppercase;
-    color: #e8a124; margin-bottom: 12px;
-  }
-  .home-section-title {
-    text-align: center; font-size: clamp(22px, 4vw, 36px);
-    font-weight: 800; color: #fff; margin-bottom: 44px; letter-spacing: -0.5px;
-  }
-  [dir="rtl"] .home-section-title { font-family: 'Tajawal', sans-serif; }
-
-  /* ── Step cards (3D depth + reveal) ── */
-  .home-steps {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 18px;
-  }
-  .home-step-card {
-    position: relative;
-    background: linear-gradient(145deg, rgba(26,34,53,0.96), rgba(17,24,39,0.97));
-    border-radius: 20px; padding: 28px 24px 26px;
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,0.08) inset,
-      0 -1px 0 rgba(0,0,0,0.4) inset,
-      0 16px 48px rgba(0,0,0,0.5),
-      0 4px 16px rgba(0,0,0,0.3);
-    transition: transform 0.32s cubic-bezier(.22,1,.36,1), box-shadow 0.32s ease;
-    overflow: hidden;
-    cursor: default;
-  }
-  /* border gradient highlight */
-  .home-step-card::after {
-    content:""; position:absolute; inset:0; border-radius:inherit;
-    background: linear-gradient(135deg, rgba(255,255,255,0.09) 0%, transparent 45%);
-    pointer-events:none;
-  }
-  /* Desktop hover tilt */
-  @media (hover: hover) and (pointer: fine) {
-    .home-step-card:hover {
-      transform: perspective(600px) rotateX(-4deg) rotateY(3deg) translateY(-8px);
-      box-shadow:
-        0 1px 0 rgba(255,255,255,0.10) inset,
-        0 28px 64px rgba(0,0,0,0.6),
-        0 8px 24px rgba(59,130,246,0.14);
-    }
-  }
-  /* Mobile — no tilt */
-  @media (hover: none) { .home-step-card:active { transform: scale(0.98); } }
-  [dir="rtl"] .home-step-card:hover {
-    transform: perspective(600px) rotateX(-4deg) rotateY(-3deg) translateY(-8px);
-  }
-  .home-step-num {
-    position: relative; z-index: 1;
-    display: inline-flex; align-items:center; justify-content:center;
-    width: 38px; height: 38px; border-radius: 12px;
-    font-size: 16px; font-weight: 900; color: #0a0e1a;
-    background: linear-gradient(135deg, #fbbf24, #e8a124);
-    margin-bottom: 16px;
-    box-shadow: 0 4px 14px rgba(232,161,36,0.4);
-  }
-  .home-step-card h3 {
-    position: relative; z-index: 1;
-    font-size: 17px; font-weight: 800; color: #fff; margin-bottom: 8px;
-  }
-  .home-step-card p {
-    position: relative; z-index: 1;
-    font-size: 13.5px; color: rgba(232,236,240,0.62); line-height: 1.6;
-  }
-  [dir="rtl"] .home-step-card h3,
-  [dir="rtl"] .home-step-card p { font-family: 'Tajawal', sans-serif; }
-
-  /* ── Trust row ── */
-  .home-trust {
-    position: relative; z-index: 1;
-    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
-    padding: 0 24px 60px;
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-  .home-trust-chip {
-    display: flex; align-items: center; gap: 7px;
-    padding: 9px 18px; border-radius: 30px;
-    font-size: 13px; font-weight: 600;
-    color: rgba(232,236,240,0.8);
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    transition: all 0.2s var(--chip-delay, 0ms);
-  }
-  .home-trust-chip:hover { border-color: rgba(232,161,36,0.4); background: rgba(232,161,36,0.06); }
-  .home-trust-chip-dot { width:7px; height:7px; border-radius:50%; background:#e8a124; flex-shrink:0; }
-  [dir="rtl"] .home-trust-chip { font-family:'Tajawal',sans-serif; }
-
-  /* ── Footer ── */
-  .home-footer {
-    position: relative; z-index: 1;
-    text-align: center; padding: 24px;
-    border-top: 1px solid rgba(255,255,255,0.07);
-    font-size: 12.5px; color: rgba(232,236,240,0.35);
-  }
-  .home-footer a { color: rgba(232,236,240,0.45); text-decoration:none; }
-  .home-footer a:hover { color: #e8a124; }
-
-  /* ── ResultsFlow — 5-screen journey ── */
-  /* Screen fade transition */
-  @keyframes rfFadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  /* Sticky bottom nav safe-area */
-  .rf-sticky-nav {
-    position: sticky;
-    bottom: 0;
-    z-index: 50;
-    background: linear-gradient(0deg, var(--bg) 70%, transparent);
-    padding: 12px 0;
-    padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
-  }
-  /* Progress bar track */
-  .rf-progress-track {
-    display: flex; align-items: center; gap: 10px;
-    padding: 12px 0 4px; margin-bottom: 4px;
-  }
-  /* Teaser card blur overlay */
-  .rf-teaser-blur { filter: blur(4px); user-select: none; pointer-events: none; }
-  /* Mobile: ensure full-width single column */
-  @media (max-width: 480px) {
-    .rf-direction-cards { flex-direction: column; }
-    .rf-teaser-row { flex-direction: column; }
-  }
-
-  /* Reduced-motion: no transitions on result screens */
-  @media (prefers-reduced-motion: reduce) {
-    [style*="animation"] { animation: none !important; }
-  }
-
-  /* Fix: top nav placement — TopBar for wizard ── */
-  .wizard-topbar {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 720px;
-    /* Top safe-area on iPhone notch */
-    padding: max(10px, env(safe-area-inset-top, 0px)) 0 4px;
-    min-height: 52px;
-    box-sizing: border-box;
-    flex-shrink: 0;
-  }
-  .back-home-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 13px; font-weight: 700;
-    color: rgba(232,236,240,0.65);
-    background: rgba(255,255,255,0.065);
-    border: 1px solid rgba(255,255,255,0.13);
-    border-radius: 24px;
-    /* 44px min tap target — iOS HIG */
-    padding: 10px 18px;
-    min-height: 44px;
-    cursor: pointer;
-    transition: color 0.18s, background 0.18s, border-color 0.18s;
-    font-family: inherit;
-    flex-shrink: 0;
-    white-space: nowrap;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-  }
-  .back-home-btn:hover, .back-home-btn:focus {
-    color: #e8a124;
-    background: rgba(232,161,36,0.09);
-    border-color: rgba(232,161,36,0.4);
-  }
-  .back-home-btn:focus-visible { outline: 2px solid #e8a124; outline-offset: 3px; }
-  .back-home-btn:active { transform: scale(0.96); }
-  .wizard-topbar-spacer { flex: 1; }
-  [dir="rtl"] .back-home-btn .back-home-arrow { display: inline-block; transform: scaleX(-1); }
-  @media (max-width: 360px) {
-    .back-home-btn { font-size: 11.5px; padding: 8px 13px; }
-  }
-
-  /* Fix 5: Mobile polish ── */
-  @media (max-width: 480px) {
-    .home-hero { padding: 60px 16px 44px; }
-    .home-hero-glass { padding: 14px 16px; }
-    .hp-blob { display: none; }
-    .home-step-card { padding: 20px 16px 18px; }
-    /* Prevent any card from overflowing viewport */
-    .card { padding: 18px 14px; border-radius: 14px; width: 100%; }
-    .cluster-card { padding: 14px 12px; }
-    .result-card { padding: 16px 12px; }
-    /* Thumb-friendly inputs */
-    .field select, .field input { font-size: 16px; } /* prevents iOS zoom */
-    .mark-row input { font-size: 18px; min-height: 44px; }
-    .btn { min-height: 48px; font-size: 15px; }
-    /* Narrower marks grid on very small screens */
-    .marks-grid { grid-template-columns: 1fr; }
-    /* Better tap target for identity grid */
-    .identity-btn { min-height: 60px; }
-    /* Chip buttons — wrap nicely */
-    .chip-grid { gap: 6px; }
-    /* section headers breathe */
-    .section-title { margin: 16px 0 10px; }
-    /* whatif rows — stack on tiny screens */
-    .whatif-row { flex-direction: column; align-items: flex-start; gap: 6px; }
-    .whatif-label { width: auto; }
-    .whatif-row input[type=range] { width: 100%; }
-    /* Results grid — always 1 col on mobile */
-    .results-grid { grid-template-columns: 1fr !important; }
-    .pathway-tabs { gap: 6px; }
-    .pathway-tab { font-size: 11px; padding: 5px 10px; }
-    /* Mark inputs readable on mobile */
-    .mark-row input { font-size: 18px; padding: 10px 8px; }
-    /* Wider likert buttons on small screens */
-    .likert-btn { width: 40px; height: 40px; }
-    /* Resume banner wraps cleanly */
-    .resume-banner { flex-direction: column; align-items: flex-start; }
-    /* Week cards readable */
-    .week-item { font-size: 12px; }
-    /* What-if inputs */
-    .whatif-row { gap: 6px; }
-    .whatif-label { width: 70px; font-size: 11px; }
-  }
-
-  /* Fix 5: Arabic typography enhancement */
-  [dir="rtl"] .card { font-size: clamp(13px, 3.8vw, 15px); line-height: 1.75; }
-  [dir="rtl"] .q-text { font-size: clamp(14px, 4vw, 16px); line-height: 1.8; }
-  [dir="rtl"] .cluster-title { font-size: clamp(14px, 4vw, 17px); }
-  [dir="rtl"] .mark-label { letter-spacing: 0; font-size: 12px; }
-  [dir="rtl"] .field label { letter-spacing: 0; }
-  [dir="rtl"] .btn { font-size: clamp(13px, 3.8vw, 15px); }
-
-  /* Fix 1: Prevent any child from causing horizontal scroll */
-  .app *, .home-root * { max-width: 100%; }
-  img, svg, video { max-width: 100%; height: auto; }
-
-  /* ── New copy elements ── */
-  /* Parent line under CTA buttons */
-  .home-parent-line {
-    margin-top: 12px; font-size: 12.5px; text-align: center;
-    color: rgba(232,236,240,0.48); line-height: 1.5;
-  }
-  /* Micro trust under hero card */
-  .home-micro-trust {
-    margin-top: 16px; font-size: 12px; text-align: center;
-    color: rgba(232,236,240,0.36); letter-spacing: 0.01em;
-  }
-  /* Value bullets block */
-  .home-value-bullets {
-    position: relative; z-index: 1;
-    max-width: 520px; margin: 0 auto; padding: 0 24px 40px;
-  }
-  .home-value-bullets ul {
-    list-style: none; display: flex; flex-direction: column; gap: 10px;
-  }
-  .home-value-bullets li {
-    display: flex; align-items: baseline; gap: 10px;
-    font-size: 14px; color: rgba(232,236,240,0.75); line-height: 1.5;
-  }
-  [dir="rtl"] .home-value-bullets li { flex-direction: row-reverse; text-align: right; }
-  .home-bullet-dot {
-    font-size: 10px; color: #e8a124; flex-shrink: 0; margin-top: 2px;
-  }
-  /* Reassure row (not-sure + family note) */
-  .home-reassure-row {
-    position: relative; z-index: 1;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px; max-width: 860px; margin: 0 auto; padding: 0 24px 48px;
-  }
-  .home-reassure-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 22px 20px;
-    display: flex; gap: 14px; align-items: flex-start;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
-  }
-  [dir="rtl"] .home-reassure-card { flex-direction: row-reverse; }
-  .home-reassure-icon { font-size: 22px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
-  .home-reassure-card p {
-    font-size: 13.5px; color: rgba(232,236,240,0.68); line-height: 1.65; margin: 0;
-  }
-  [dir="rtl"] .home-reassure-card p { font-family: 'Tajawal', sans-serif; text-align: right; }`;
-
+`;
 
 // ─────────────────────────────────────────────────────────────────
 // DEFAULT STATE
@@ -11132,21 +6825,9 @@ const DEFAULT_INFO = {
   studyLang: "fr", privateBudget: false,
   bacStatus: "before",
   studyAbroad: false, abroadRegion: "france",
-  goal: "prestige",
-  goalMode: "unsure",
-  goalPreference: "prestige",
-  examMode: "watani",
-  examTiming: "post",
-  // SUBJECT MODEL (MOROCCO) FIX: accurate Bac subject selectors
-  examYear:  "bac2",       // "bac1" | "bac2"
-  bac1Field: "SE",         // "SE"|"SM"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac1 only)
-  bac2Track: "SVT",        // "SVT"|"PC"|"SMA"|"SMB"|"ST"|"ECO"|"LSH"|"AA"|"EO"|"BP" (bac2 only)
-  eoOption:  "arabic",     // "arabic"|"sharia" (EO only)
-  bpExtras:  [],           // ["math","physchem","svt"] (BP only)
-  // Legacy fields kept for migration compat
-  examLevel:  "bac2",
-  trackField: "SE",
-  smOption:   "A",
+  goal: "prestige",     // Cultural sensitivity patch (Tier + Goal)
+  goalMode: "unsure",   // Cultural rerank layer — prestige/fit/practical/unsure
+  examMode: "watani", // watani | full_bac
 };
 
 const DEFAULT_REALITY = {
@@ -11164,211 +6845,18 @@ const DEFAULT_REALITY = {
 // ─────────────────────────────────────────────────────────────────
 // APP
 // ─────────────────────────────────────────────────────────────────
-// Safety: ErrorBoundary — catches runtime errors, shows branded fallback + debug copy.
-
-// ─────────────────────────────────────────────────────────────────
-// DebugPanel — hidden by default. Toggle: press D x3 quickly or ?debug=1 in URL
-// ─────────────────────────────────────────────────────────────────
-function DebugPanel({ step, lang, dir, journeyStage, rankedClusters, traits, info, preBacData }) {
-  const [visible, setVisible] = React.useState(() => {
-    try { return new URLSearchParams(window.location.search).get("debug") === "1"; } catch { return false; }
-  });
-  const dKeyRef = React.useRef({ count: 0, timer: null });
-
-  React.useEffect(() => {
-    const onKey = (e) => {
-      if (e.key !== "d" && e.key !== "D") return;
-      dKeyRef.current.count += 1;
-      clearTimeout(dKeyRef.current.timer);
-      dKeyRef.current.timer = setTimeout(() => { dKeyRef.current.count = 0; }, 800);
-      if (dKeyRef.current.count >= 3) { setVisible(v => !v); dKeyRef.current.count = 0; }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
-
-  if (!visible) return null;
-
-  const checks = {
-    "TRANSLATIONS exists": typeof TRANSLATIONS === "object" && !!TRANSLATIONS[lang],
-    "MOROCCAN_ARCHETYPES": typeof MOROCCAN_ARCHETYPES === "object" && Object.keys(MOROCCAN_ARCHETYPES).length > 0,
-    "CLUSTERS array": Array.isArray(typeof CLUSTERS !== "undefined" ? CLUSTERS : null) && (typeof CLUSTERS !== "undefined" ? CLUSTERS : []).length > 0,
-    "rankedClusters": Array.isArray(rankedClusters) && rankedClusters.length > 0,
-    "traits object": traits && typeof traits === "object" && Object.keys(traits).length > 0,
-    "preBacData": !!preBacData && typeof preBacData === "object",
-    "t.next exists": !!(TRANSLATIONS[lang] || {}).next,
-  };
-
-  return (
-    <div dir="ltr" style={{
-      position: "fixed", bottom: 12, left: 12, zIndex: 9999,
-      background: "rgba(0,0,0,0.92)", border: "1px solid #3b82f6",
-      borderRadius: 10, padding: "12px 14px", fontSize: 11,
-      color: "#e2e8f0", fontFamily: "monospace", maxWidth: 280,
-      boxShadow: "0 4px 24px rgba(0,0,0,0.6)",
-    }}>
-      <div style={{fontWeight:700,color:"#3b82f6",marginBottom:6,fontSize:12}}>🐛 Massar Debug Panel</div>
-      <div style={{marginBottom:6}}>
-        <span style={{color:"#94a3b8"}}>Step:</span> <b style={{color:"#fbbf24"}}>{step}</b>
-        {"  "}<span style={{color:"#94a3b8"}}>Lang:</span> <b>{lang}</b>
-        {"  "}<span style={{color:"#94a3b8"}}>Dir:</span> <b>{dir}</b>
-      </div>
-      <div style={{marginBottom:6}}>
-        <span style={{color:"#94a3b8"}}>Journey:</span> <b style={{color:"#a78bfa"}}>{journeyStage || "?"}</b>
-        {"  "}<span style={{color:"#94a3b8"}}>Clusters:</span> <b>{Array.isArray(rankedClusters) ? rankedClusters.length : 0}</b>
-      </div>
-      <div style={{borderTop:"1px solid #1e293b",paddingTop:6,marginTop:4}}>
-        {Object.entries(checks).map(([k,v]) => (
-          <div key={k}>{v ? "✅" : "❌"} {k}</div>
-        ))}
-      </div>
-      <button onClick={() => setVisible(false)} style={{
-        marginTop:8,padding:"3px 8px",borderRadius:4,border:"1px solid #475569",
-        background:"transparent",color:"#94a3b8",cursor:"pointer",fontSize:10,fontFamily:"monospace",
-      }}>× close</button>
-    </div>
-  );
-}
-
-class AppErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, copied: false };
-  }
-  static getDerivedStateFromError(err) { return { hasError: true, error: err }; }
-  componentDidCatch(err, info) {
-    // Always log to console for debugging
-    console.error("[Massar] Uncaught error:", err);
-    console.error("[Massar] Component stack:", info?.componentStack);
-  }
-  resetApp() {
-    try {
-      ["massar_session","massar_cta_emails"].forEach(k => {
-        try { localStorage.removeItem(k); } catch {}
-      });
-    } catch {}
-    window.location.reload();
-  }
-  copyDebug() {
-    const info = [
-      "Massar Error Report",
-      "─────────────────",
-      `Error: ${this.state.error?.message || "Unknown"}`,
-      `URL: ${window.location.href}`,
-      `UA: ${navigator.userAgent}`,
-      `Time: ${new Date().toISOString()}`,
-    ].join("\n");
-    try {
-      navigator.clipboard.writeText(info).then(() => {
-        this.setState({ copied: true });
-        setTimeout(() => this.setState({ copied: false }), 2000);
-      });
-    } catch {
-      // Fallback for environments without clipboard API
-      const el = document.createElement("textarea");
-      el.value = info;
-      document.body.appendChild(el);
-      el.select();
-      document.execCommand("copy");
-      document.body.removeChild(el);
-      this.setState({ copied: true });
-      setTimeout(() => this.setState({ copied: false }), 2000);
-    }
-  }
-  render() {
-    if (!this.state.hasError) return this.props.children;
-    const lang = this.props.lang || "fr";
-    const msgs = {
-      ar: {
-        title:"حدث خطأ غير متوقع",
-        sub:"نعتذر عن هذا الخلل. انقر على «إعادة المحاولة» للمتابعة.",
-        reload:"إعادة التحميل",
-        reset:"مسح البيانات والبدء من جديد",
-        copyDebug:"نسخ معلومات الخطأ",
-        copied:"✓ تم النسخ",
-      },
-      fr: {
-        title:"Une erreur inattendue s'est produite",
-        sub:"Désolé pour ce problème. Cliquez sur «Recharger» pour continuer.",
-        reload:"Recharger",
-        reset:"Réinitialiser l'application",
-        copyDebug:"Copier les infos d'erreur",
-        copied:"✓ Copié",
-      },
-      en: {
-        title:"Something went wrong",
-        sub:"Sorry for the glitch. Click «Reload» to continue.",
-        reload:"Reload",
-        reset:"Reset app",
-        copyDebug:"Copy debug info",
-        copied:"✓ Copied",
-      },
-    };
-    const m = msgs[lang] || msgs.fr;
-    const isRtl = lang === "ar";
-    return (
-      <div dir={isRtl ? "rtl" : "ltr"} style={{
-        minHeight:"100vh", background:"#070b16", color:"#e8ecf0",
-        display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center",
-        gap:16, padding:"32px 20px",
-        fontFamily: isRtl ? "'Tajawal', sans-serif" : "'DM Sans', sans-serif",
-        textAlign:"center", boxSizing:"border-box",
-      }}>
-        <div style={{fontSize:48, marginBottom:4}}>⚠️</div>
-        <div style={{fontSize:clamp(18,5,22), fontWeight:800, maxWidth:400, lineHeight:1.35}}>
-          {m.title}
-        </div>
-        <div style={{fontSize:14, color:"rgba(232,236,240,0.55)", maxWidth:360, lineHeight:1.6}}>
-          {m.sub}
-        </div>
-        <div style={{display:"flex", gap:10, flexWrap:"wrap", justifyContent:"center", marginTop:8}}>
-          <button onClick={() => window.location.reload()} style={{
-            padding:"13px 28px", borderRadius:12, fontWeight:700, fontSize:15,
-            background:"#e8a124", color:"#0a0e1a", border:"none", cursor:"pointer",
-            minHeight:48, fontFamily:"inherit",
-          }}>{m.reload}</button>
-          <button onClick={() => this.resetApp()} style={{
-            padding:"13px 20px", borderRadius:12, fontWeight:700, fontSize:14,
-            background:"rgba(255,255,255,0.07)", color:"#e8ecf0",
-            border:"1px solid rgba(255,255,255,0.15)", cursor:"pointer",
-            minHeight:48, fontFamily:"inherit",
-          }}>{m.reset}</button>
-        </div>
-        <button onClick={() => this.copyDebug()} style={{
-          padding:"8px 16px", borderRadius:8, fontWeight:600, fontSize:12,
-          background:"transparent", color:this.state.copied ? "#10b981" : "rgba(232,236,240,0.4)",
-          border:"1px solid rgba(255,255,255,0.1)", cursor:"pointer",
-          fontFamily:"inherit", marginTop:4, transition:"color 0.2s",
-        }}>
-          {this.state.copied ? m.copied : m.copyDebug}
-        </button>
-        <div style={{fontSize:11, color:"rgba(232,236,240,0.2)", marginTop:8}}>massar.ma</div>
-      </div>
-    );
-  }
-}
-// (clamp is defined globally above — no duplicate needed here)
-
 export default function MassarPro() {
-  const [step,           setStep]           = useState(0);
-  const [lang,           setLang]           = useState("fr");
-  const [answers,        setAnswers]        = useState({});
-  const [info,           setInfo]           = useState(DEFAULT_INFO);
-  const [marks,          setMarks]          = useState({});
-  const [whatIfDeltas,   setWhatIfDeltas]   = useState({});
-  const [reality,        setReality]        = useState(DEFAULT_REALITY);
-  // Journey stage: "prebac" | "postbac"
-  const [journeyStage,   setJourneyStage]   = useState("postbac");
-  // Pre-Bac specific inputs
-  const [preBacData,     setPreBacData]     = useState({});
-  // Learner type answers
-  const [learnerAnswers, setLearnerAnswers] = useState({});
+  const [step,         setStep]         = useState(0);
+  const [lang,         setLang]         = useState("fr");
+  const [answers,      setAnswers]      = useState({});
+  const [info,         setInfo]         = useState(DEFAULT_INFO);
+  const [marks,        setMarks]        = useState({});
+  const [whatIfDeltas, setWhatIfDeltas] = useState({});
+  const [reality,      setReality]      = useState(DEFAULT_REALITY);
   // Goal 1: session banner
-  const [savedSession,   setSavedSession]   = useState(null);
-  // HOME PAGE 3D CSS — view state
-  const [view,           setView]           = useState("home");
+  const [savedSession, setSavedSession] = useState(null);
 
-  const t   = TRANSLATIONS[lang] || TRANSLATIONS.fr; // safe fallback
+  const t   = TRANSLATIONS[lang] || TRANSLATIONS.fr;
   const dir = t?.dir || "ltr";
 
   // ── Goal 1: load saved session on mount ──────────────────────────
@@ -11407,33 +6895,23 @@ export default function MassarPro() {
   const traits = useMemo(() => {
     const result = computeTraits(answers);
     // FIX: development debug logs
-    if (typeof window !== 'undefined' && window.__DEV__) console.log('[Massar] traits computed:', result);
+    if (import.meta?.env?.DEV) console.log("[Massar] traits computed:", result);
     return result;
   }, [answers]);
 
-  const effectiveMarks = useMemo(() => {
-    // SUBJECTS FIX: always use getSubjectsForMarks for the official field+level subject list
-    const subjects = getSubjectsForMarks(info);
-    return buildEffectiveMarks(marks, whatIfDeltas, subjects);
-  },
-    [marks, whatIfDeltas, info.bacTrack, info.examTiming, info.trackField, info.examLevel,
-     info.smOption, info.eoOption, info.bpExtras]
+  const effectiveMarks = useMemo(
+    () => buildEffectiveMarks(marks, whatIfDeltas, WATANI_SUBJECTS_BY_TRACK[info.bacTrack] || []),
+    [marks, whatIfDeltas, info.bacTrack]
   );
 
   const rankedClusters = useMemo(() => {
-    // SUBJECT MODEL (MOROCCO) FIX: use getScoringBacTrack() for all examYear/bac1Field/bac2Track combos
-    const scoreBacTrack = getScoringBacTrack(info);
-    // TASK 2 — inject goal + goalPreference into reality so scorer can read them
-    const realityWithGoal = { ...reality, goal: info.goal || "prestige", goalPreference: info.goalPreference || "prestige",
-      profileBoost: { ...(reality.profileBoost||{}), ...(info.profileBoost||{}) } };
-    let result = computeClusterScores(scoreBacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
-    // PRE-BAC: apply Morocco Credibility Gates A/B/C
-    if (journeyStage === "prebac" && preBacData && Object.keys(preBacData).length > 0) {
-      result = applyPreBacCredibilityGates(result, preBacData, traits, realityWithGoal);
-    }
+    // Cultural sensitivity patch (Tier + Goal) — inject goal into reality so scorer can read it
+    const realityWithGoal = { ...reality, goal: info.goal || "prestige" };
+    const result = computeClusterScores(info.bacTrack, effectiveMarks, traits, info.mobility, info.privateBudget, realityWithGoal);
+    // FIX: development debug logs
     if (typeof window !== "undefined" && window.__DEV__) console.log("[Massar] top clusters computed:", result.slice(0,3).map(c=>c.id));
     return result;
-  }, [info.bacTrack, info.goal, info.goalPreference, effectiveMarks, traits, info.mobility, info.privateBudget, reality, journeyStage, preBacData]);
+  }, [info.bacTrack, info.goal, effectiveMarks, traits, info.mobility, info.privateBudget, reality]);
 
   // Cultural rerank layer — apply post-processing for prestige/fit/practical/unsure
   const overallAvgForRerank = useMemo(() => {
@@ -11455,7 +6933,7 @@ export default function MassarPro() {
 
   // Narrative: useMemo so it updates live when sliders change
   const narrative = useMemo(() => {
-    if (step < 10 || !top3.length) return null;
+    if (step !== 6 || !top3.length) return null;
     // Narrative fix — pass effectiveMarks for subject-calibrated wording
     return generateNarrative(top3, traits, info.bacTrack, lang, reality, effectiveMarks);
   }, [top3, traits, info.bacTrack, lang, step, reality, effectiveMarks]); // eslint-disable-line
@@ -11471,32 +6949,10 @@ export default function MassarPro() {
 
   // ── Render ───────────────────────────────────────────────────────
   return (
-    <AppErrorBoundary lang={lang}>
     <>
       <style>{css}</style>
-
-      {/* HOME PAGE 3D CSS — show landing page when view==="home" */}
-      {view === "home" && (
-        <HomePage
-          lang={lang} setLang={setLang}
-          onStartTest={() => setView("test")}
-          savedSession={savedSession}
-          t={t} dir={dir}
-        />
-      )}
-
-      {/* TEST VIEW (existing) — show wizard when view==="test" */}
-      {view === "test" && (
       <div className="app" dir={dir}>
 
-        {/* Fix: top nav placement — TopBar sits above header, never overlaps title */}
-        <div className="wizard-topbar">
-          <button className="back-home-btn" onClick={() => setView("home")} aria-label={t.backHome || "Home"}>
-            <span className="back-home-arrow" aria-hidden="true">{dir === "rtl" ? "→" : "←"}</span>
-            <span>{t.backHome || "Home"}</span>
-          </button>
-          <span className="wizard-topbar-spacer"/>
-        </div>
         <div className="header">
           <h1>{t.appTitle}</h1>
           <p>{t.appSubtitle}</p>
@@ -11519,78 +6975,44 @@ export default function MassarPro() {
         {step === 0 && (
           <StepLang lang={lang} setLang={setLang} onNext={()=>setStep(1)} t={t} dir={dir}/>
         )}
-        {/* Journey stage selector */}
         {step === 1 && (
-          <StepJourney lang={lang} journeyStage={journeyStage} setJourneyStage={setJourneyStage}
+          <StepPersonality lang={lang} answers={answers} setAnswers={setAnswers}
             onNext={()=>setStep(2)} onBack={()=>setStep(0)} t={t} dir={dir}/>
         )}
         {step === 2 && (
-          <StepPersonality lang={lang} answers={answers} setAnswers={setAnswers}
+          <StepReality lang={lang} reality={reality} setReality={setReality}
             onNext={()=>setStep(3)} onBack={()=>setStep(1)} t={t} dir={dir}/>
         )}
-        {/* Learner Type test (all journeys) */}
         {step === 3 && (
-          <StepLearnerType lang={lang} learnerAnswers={learnerAnswers} setLearnerAnswers={setLearnerAnswers}
+          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
             onNext={()=>setStep(4)} onBack={()=>setStep(2)} t={t} dir={dir}/>
         )}
         {step === 4 && (
-          <StepReality lang={lang} reality={reality} setReality={setReality}
+          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
             onNext={()=>setStep(5)} onBack={()=>setStep(3)} t={t} dir={dir}/>
         )}
-        {/* NEW INPUT: StepProfileBoost */}
         {step === 5 && (
-          <StepProfileBoost lang={lang} reality={reality} setReality={setReality}
-            onNext={()=>setStep(journeyStage==="prebac" ? 6 : 7)} onBack={()=>setStep(4)} t={t} dir={dir}/>
-        )}
-        {/* Pre-Bac inputs (only if prebac journey) */}
-        {step === 6 && journeyStage === "prebac" && (
-          <StepPreBacInputs lang={lang} preBacData={preBacData} setPreBacData={setPreBacData}
-            onNext={()=>setStep(10)} onBack={()=>setStep(5)} t={t} dir={dir}/>
-        )}
-        {/* Post-Bac path: info → marks → bac status */}
-        {step === 7 && journeyStage !== "prebac" && (
-          <StepInfo lang={lang} info={info} setInfo={handleSetInfo}
-            onNext={()=>setStep(8)} onBack={()=>setStep(5)} t={t} dir={dir}/>
-        )}
-        {step === 8 && journeyStage !== "prebac" && (
-          <StepMarks lang={lang} info={info} marks={marks} setMarks={setMarks}
-            onNext={()=>setStep(9)} onBack={()=>setStep(7)} t={t} dir={dir}/>
-        )}
-        {step === 9 && journeyStage !== "prebac" && (
           <StepBacStatus lang={lang} info={info} setInfo={handleSetInfo}
             reality={reality} setReality={setReality}
-            onNext={()=>setStep(10)} onBack={()=>setStep(8)} t={t} dir={dir}/>
+            onNext={()=>setStep(6)} onBack={()=>setStep(4)} t={t} dir={dir}/>
         )}
-        {step === 10 && (
-          // Results flow — both journeys converge here
+        {step === 6 && (
+          // FIX: prevent white screen on results — ErrorBoundary catches any render throw
           <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
-            <ResultsFlow
+            <StepResults
               t={t} lang={lang} dir={dir} info={info}
               marks={marks} whatIfDeltas={whatIfDeltas} setWhatIfDeltas={setWhatIfDeltas}
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
               narrative={narrative} reality={reality} setReality={setReality}
-              restart={restart} onBack={()=>setStep(journeyStage==="prebac" ? 6 : 9)}
+              restart={restart} onBack={()=>setStep(5)}
               secondaryTop3={secondaryTop3}
               overallAvg={overallAvgForRerank}
-              journeyStage={journeyStage}
-              preBacData={preBacData}
-              learnerAnswers={learnerAnswers}
             />
           </ResultsErrorBoundary>
         )}
       </div>
-      )} {/* end view==="test" */}
-      <DebugPanel
-        step={step} lang={lang} dir={dir}
-        journeyStage={journeyStage}
-        rankedClusters={rankedClusters}
-        traits={traits}
-        info={info}
-        preBacData={preBacData}
-      />
     </>
-    </AppErrorBoundary>
   );
 }
 
