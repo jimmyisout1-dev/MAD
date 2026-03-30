@@ -1,4 +1,13 @@
 // MassarPro — self-contained single-file build
+/*
+ * CHANGELOG (Personality Reveal update)
+ * 1. Added PersonalityReveal page (step 10, old results pushed to step 11)
+ * 2. Reveal page: archetype header, 6 identity mirror blocks, mini coach, viral share zone
+ * 3. Share card upgraded: premium collectible, 3 formats, archV2 captions
+ * 4. Richer identity mirror blocks using archV2 data contract
+ * 5. Navigation: reveal → results flow intact; Back/Next work
+ * 6. Build safe: no duplicates, no module-scope DOM, one default export
+ */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
 
@@ -351,6 +360,16 @@ const TRANSLATIONS = {
     resumeDesc: "جلسة محفوظة في متناول يدك – هل تريد الاستمرار من حيث توقفت؟",
     restart: "بدء من جديد",
     revealCard: "اكتشف بطاقتك",
+    revealPageTitle: "هويتك المهنية",
+    revealPageSub: "هاد النتيجة ديالك بصح — مبنية على اختياراتك",
+    revealColdReading: "القراءة الأولى",
+    revealMirrorTitle: "مرآة هويتك",
+    revealCoachTitle: "3 خطوات هاد الأسبوع",
+    revealTrapTitle: "فخ تتجنبو",
+    revealChallengeTitle: "سؤال للتأمل",
+    revealShareTitle: "شارك نتيجتك",
+    revealShareCTA: "اصنع بطاقتك",
+    revealContinue: "كمّل لخريطة الطريق ←",
     downloadStory: "تحميل Story 9:16",
     downloadSquare: "تحميل Square 1:1",
     downloadCard: "تحميل Card 5:7",
@@ -889,6 +908,16 @@ const TRANSLATIONS = {
     resumeDesc: "Reprenez votre progression sans tout recommencer.",
     restart: "Recommencer",
     revealCard: "Révèle ta carte",
+    revealPageTitle: "Ton Identité Pro",
+    revealPageSub: "Ce résultat est le tien — construit sur tes choix",
+    revealColdReading: "Lecture à froid",
+    revealMirrorTitle: "Miroir Identité",
+    revealCoachTitle: "3 moves cette semaine",
+    revealTrapTitle: "Le piège à éviter",
+    revealChallengeTitle: "Question clé",
+    revealShareTitle: "Partage ton résultat",
+    revealShareCTA: "Générer ma carte",
+    revealContinue: "Voir ma roadmap →",
     downloadStory: "Télécharger Story 9:16",
     downloadSquare: "Télécharger Carré 1:1",
     downloadCard: "Télécharger Carte 5:7",
@@ -1442,6 +1471,16 @@ const TRANSLATIONS = {
     resumeDesc: "Pick up right where you left off.",
     restart: "Start Over",
     revealCard: "Reveal my card",
+    revealPageTitle: "Your Career Identity",
+    revealPageSub: "This result is yours — built from your choices",
+    revealColdReading: "Cold Reading",
+    revealMirrorTitle: "Identity Mirror",
+    revealCoachTitle: "3 moves this week",
+    revealTrapTitle: "Trap to avoid",
+    revealChallengeTitle: "Challenge question",
+    revealShareTitle: "Share your result",
+    revealShareCTA: "Generate my card",
+    revealContinue: "See my roadmap →",
     downloadStory: "Download Story 9:16",
     downloadSquare: "Download Square 1:1",
     downloadCard: "Download Card 5:7",
@@ -11243,6 +11282,510 @@ const DEFAULT_REALITY = {
   fpFieldOther: "",
 };
 
+
+// ─────────────────────────────────────────────────────────────────
+// PersonalityReveal — premium identity reveal page
+// Shows after quiz, before 6-page roadmap results flow
+// ─────────────────────────────────────────────────────────────────
+function PersonalityReveal({
+  t, lang, dir, traits, confidence, learnerAnswers,
+  rankedClusters, journeyStage, reality,
+  onContinue, onBack,
+}) {
+  const [cardFmt,     setCardFmt]     = React.useState("card");
+  const [cardBlob,    setCardBlob]    = React.useState(null);
+  const [cardUrl,     setCardUrl]     = React.useState(null);
+  const [generating,  setGenerating]  = React.useState(false);
+  const [captionCopied, setCaptionCopied] = React.useState(false);
+
+  // ── Archetype v2 + derived data ───────────────────────────────
+  const ltResult  = computeLearnerType(learnerAnswers || {});
+  const learnerType = ltResult.primary || "architect";
+  const strengths   = Array.isArray(reality?.strengths) ? reality.strengths : [];
+  const archV2 = React.useMemo(
+    () => pickArchetypeV2({ traits, learnerType, strengths, confidence }),
+    [traits, learnerType, confidence] // eslint-disable-line
+  );
+  const statsV2  = computeDeterministicStats(traits || {});
+  const trSeed   = Math.round(((traits?.analytical||0.5)+(traits?.social||0.5))*100);
+  const serialId = makeSerialId(archV2.code, trSeed);
+  const rarity   = computeRarity(confidence);
+  const rarCol   = {COMMON:"#3b82f6",RARE:"#f59e0b",EPIC:"#a855f7"}[rarity]||"#3b82f6";
+  const rarLbl   = {COMMON:{ar:"عادي",fr:"Commun",en:"Common"},RARE:{ar:"نادر",fr:"Rare",en:"Rare"},EPIC:{ar:"ملحمي",fr:"Épique",en:"Epic"}}[rarity];
+
+  const cr = archV2.coldReading?.[lang] || archV2.coldReading?.en || {};
+  const mr = archV2.mirror?.[lang]      || archV2.mirror?.en      || {};
+  const hq = archV2.hookQuestion?.[lang]|| archV2.hookQuestion?.en|| "";
+  const vl = archV2.viralLine?.[lang]   || archV2.viralLine?.en   || "";
+  const sm = archV2.signatureMove?.[lang]|| archV2.signatureMove?.en|| "";
+  const titleLocal = lang==="ar"?archV2.titleAr:lang==="fr"?archV2.titleFr:archV2.titleEn;
+  const topCluster = Array.isArray(rankedClusters) ? rankedClusters[0] : null;
+
+  // ── 6 rich identity mirror blocks ─────────────────────────────
+  const tr = {
+    analytical: Number(traits?.analytical||0.5), social: Number(traits?.social||0.5),
+    structure:  Number(traits?.structure||0.5),  creativity: Number(traits?.creativity||0.5),
+    risk:       Number(traits?.risk||0.5),       leadership: Number(traits?.leadership||0.5),
+  };
+  const mirrorBlocks6 = [
+    {
+      icon:"⚡",
+      key: lang==="ar"?"تحت الضغط":lang==="fr"?"Sous pression":"Under pressure",
+      text: mr.pressure || (
+        lang==="ar" ? (tr.analytical>0.6 ? "تتحول إلى آلة تحليل — تُبطئ، تُنظّم، تُقرر. الضغط لا يُشلّك، بل يُحدّد تفكيرك." : tr.social>0.6 ? "تبحث عن دعم بشري — حديث قصير مع شخص تثق فيه يعيد توازنك بسرعة." : "تعمل أحسن ملي تحدّد أولوية وحدة وتنجّزها بالكامل قبل ما تنتقل.")
+        : lang==="fr" ? (tr.analytical>0.6 ? "Tu te transformes en machine d'analyse — tu ralentis, organises, décides. La pression te focalise." : tr.social>0.6 ? "Tu cherches un soutien humain — une courte conversation avec quelqu'un de confiance te recentre." : "Tu travailles mieux quand tu identifies une seule priorité et l'exécutes jusqu'au bout.")
+        : (tr.analytical>0.6 ? "You become an analysis machine — you slow down, organize, decide. Pressure doesn't freeze you, it focuses you." : tr.social>0.6 ? "You seek human support — a short talk with a trusted person rebalances you fast." : "You work best with one clear priority executed fully before moving on.")
+      ),
+    },
+    {
+      icon:"🔋",
+      key: lang==="ar"?"باش تبقى ثابت":lang==="fr"?"La constance":"What keeps you consistent",
+      text: mr.consistency || (
+        lang==="ar" ? (learnerType==="sentinel" ? "الروتين هو وقودك. ملي تكسر عادة وحدة، ارجعها فورًا — ما تسناش." : learnerType==="sprinter" ? "خاصك مواعيد حقيقية باش تبقى شاعل. الضغط الاصطناعي يفيدك." : learnerType==="diplomat" ? "خاصك جمهور — مجموعة مراجعة أو شريك يساعدك تكمّل." : "ربط أهدافك بمعنى أعمق كيبقيك ثابت ملي يتراجع الحماس.")
+        : lang==="fr" ? (learnerType==="sentinel" ? "La routine est ton carburant. Dès qu'une habitude casse, récupère-la immédiatement." : learnerType==="sprinter" ? "Tu as besoin de vraies deadlines pour rester motivé. La pression artificielle te sert." : learnerType==="diplomat" ? "Tu as besoin d'un public — un groupe ou un partenaire t'aide à persévérer." : "Relier tes objectifs à un sens plus profond te stabilise quand l'élan baisse.")
+        : (learnerType==="sentinel" ? "Routine is your fuel. The moment a habit breaks, recover it immediately." : learnerType==="sprinter" ? "You need real deadlines to stay motivated. Artificial pressure genuinely helps you." : learnerType==="diplomat" ? "You need an audience — a study group or partner helps you follow through." : "Linking your goals to deeper meaning keeps you steady when enthusiasm fades.")
+      ),
+    },
+    {
+      icon:"🎯",
+      key: lang==="ar"?"ميزتك الخفية":lang==="fr"?"Ton avantage caché":"Your unfair advantage",
+      text: mr.advantage || (
+        lang==="ar" ? (tr.creativity>0.6 ? "كتشوف اللي ما كيتشافش — قدرتك على ربط أفكار بعيدة كتنتج حلول غير متوقعة." : tr.analytical>0.6 ? "كتفكّك المشكلات — قدرتك على تشريح الأنظمة المعقدة ميزة نادرة." : tr.structure>0.6 ? "الاتساق تحت الضغط — ملي يتفكك الآخرون، أنت تثبّت وتنجز." : "الذكاء الاجتماعي — قدرتك على بناء الثقة بسرعة ميزة ما كتتعلّمش.")
+        : lang==="fr" ? (tr.creativity>0.6 ? "Tu vois ce que les autres ne voient pas — relier des idées distantes produit des solutions inattendues." : tr.analytical>0.6 ? "Tu décomposes les problèmes — analyser des systèmes complexes est un avantage rare." : tr.structure>0.6 ? "La constance sous pression — quand les autres s'effondrent, tu stabilises et livres." : "L'intelligence sociale — bâtir la confiance rapidement est un avantage qui ne s'enseigne pas.")
+        : (tr.creativity>0.6 ? "You see what others miss — connecting distant ideas produces unexpected solutions." : tr.analytical>0.6 ? "You break down problems — dissecting complex systems is a rare skill." : tr.structure>0.6 ? "Consistency under pressure — when others fall apart, you stabilize and deliver." : "Social intelligence — building trust fast is an advantage that can't be taught.")
+      ),
+    },
+    {
+      icon:"🌑",
+      key: lang==="ar"?"نقطة عمياء":lang==="fr"?"Point aveugle":"Blind spot",
+      text: mr.blindSpot || (
+        lang==="ar" ? (tr.risk>0.6 ? "الإثارة كتضيّع التخطيط. تأكد أن طاقتك تتحوّل لنتائج حقيقية مو مجرد مشاريع تبدأ." : tr.structure>0.6 ? "الكمالية كتعيق الإنجاز. التقدم 80% في الوقت أحسن من الكمال المتأخر." : tr.social>0.6 ? "الاعتماد على موافقة الناس كيبطّلك. ثق في حكمك في القرارات الصغيرة." : "الانتظار حتى 'الجاهزية الكاملة' كيفوّت الفرص. ابدأ بما عندك دابا.")
+        : lang==="fr" ? (tr.risk>0.6 ? "L'excitation peut faire oublier la planification. Assure-toi que ton énergie se traduit en résultats concrets." : tr.structure>0.6 ? "Le perfectionnisme bloque l'exécution. Un progrès à 80% dans les temps vaut mieux qu'un parfait tardif." : tr.social>0.6 ? "Dépendre de l'approbation peut te ralentir. Fais confiance à ton jugement sur les petites décisions." : "Attendre d'être 'totalement prêt' fait rater des opportunités. Commence avec ce que tu as.")
+        : (tr.risk>0.6 ? "Excitement can overshadow planning. Make sure your energy converts to real results, not just new starts." : tr.structure>0.6 ? "Perfectionism blocks execution. 80% progress on time beats late perfection." : tr.social>0.6 ? "Relying on others' approval can slow you down. Trust your judgment on small decisions." : "Waiting until you're 'fully ready' costs opportunities. Start with what you have now.")
+      ),
+    },
+    {
+      icon:"👁️",
+      key: lang==="ar"?"كيفاش كيشوفك الناس":lang==="fr"?"Comment les autres te lisent":"How people read you",
+      text: lang==="ar"
+        ? (tr.leadership>0.6 ? "الناس كيحسوا بيك قبل ما تهضر. كتعطي انطباع مباشر وموثوق — حتى حين ما تنتبهش." : tr.social>0.6 ? "كتوصل للناس بسرعة — بلا جهيد كبير، الناس كتحس مرتاحة معك." : tr.analytical>0.6 ? "كتبان هادئ وعميق. الناس كتحترمك لأن ما تتكلمش غير ملي عندك شي حقيقي." : "كتعطي انطباع ديال الموثوقية — ملي تعد بشيء، الناس كتعرف أنك غادي تنجزه.")
+        : lang==="fr"
+        ? (tr.leadership>0.6 ? "Les gens te sentent avant que tu parles. Tu dégages une présence directe et fiable — même sans effort." : tr.social>0.6 ? "Tu te connectes vite — sans forcer, les gens se sentent à l'aise avec toi." : tr.analytical>0.6 ? "Tu parais calme et profond. On te respecte parce que tu ne parles que quand tu as quelque chose de réel." : "Tu dégages la fiabilité — quand tu promets quelque chose, les gens savent que tu vas livrer.")
+        : (tr.leadership>0.6 ? "People sense you before you speak. You project a direct, reliable presence — even without trying." : tr.social>0.6 ? "You connect fast — without forcing it, people feel comfortable around you." : tr.analytical>0.6 ? "You come across as calm and deep. People respect you because you only speak when you have something real." : "You project reliability — when you promise something, people know you'll deliver."),
+    },
+    {
+      icon:"💡",
+      key: lang==="ar"?"جملة الواقع":lang==="fr"?"La vérité":"A truth about you",
+      text: lang==="ar"
+        ? (tr.risk>0.6 ? "الطاقة ديالك قوة — بشرط ما دير منها حماسًا فقط. ملي تربطها بخطة، تصبح خطيرة بالإيجاب." : tr.analytical>0.6 ? "عقلك يشتغل باستمرار حتى ملي كتستراح. الفخ هو التحليل الزايد. السر: قرر بـ80% وطبّق." : tr.structure>0.6 ? "الانتظام ديالك ميزة — لكن الكمالية كتقدر تكون حيط. خليها نعال بدل حيط." : "قوّتك الكبرى هي أنك واقعي. ما كتضيعش وقتك في أشياء مو فبلاصتها.")
+        : lang==="fr"
+        ? (tr.risk>0.6 ? "Ton énergie est une force — à condition de ne pas en faire juste de l'enthousiasme. Liée à un plan, elle devient redoutable." : tr.analytical>0.6 ? "Ton cerveau tourne en permanence, même au repos. Le piège : l'analyse excessive. La clé : décider à 80% et exécuter." : tr.structure>0.6 ? "Ta rigueur est une force — mais le perfectionnisme peut devenir un mur. Fais-en une chaussure, pas un obstacle." : "Ta grande force c'est d'être réaliste. Tu ne perds pas ton temps sur ce qui ne tient pas.")
+        : (tr.risk>0.6 ? "Your energy is a superpower — as long as it doesn't stay as enthusiasm. Paired with a plan, it becomes formidable." : tr.analytical>0.6 ? "Your brain runs constantly, even at rest. The trap: over-analysis. The key: decide at 80% and execute." : tr.structure>0.6 ? "Your consistency is a strength — but perfectionism can become a wall. Make it a tool, not a barrier." : "Your real strength is being grounded. You don't waste energy on things that don't hold up."),
+    },
+  ];
+
+  // ── Mini Coach content ─────────────────────────────────────────
+  const getCoachMoves = () => {
+    const moves = {
+      ar: {
+        moves: [
+          tr.analytical>0.6 ? "اكتب تحليل قصير ليوم واحد: شنو أنجزت + شنو بقى" : tr.social>0.6 ? "تواصل مع شخص في المجال اللي يهمك — اسألو سؤال واحد" : "حدّد 3 مهام فقط ليوم غد وأنجزهم بالترتيب",
+          tr.risk>0.6 ? "ابدأ مشروعًا صغيرًا بدون انتظار الجاهزية الكاملة" : tr.structure>0.6 ? "راجع خطتك الأسبوعية وحذف اللي مو ضروري" : "اعمل 25 دقيقة بوضع الهاتف بعيد",
+          "ابحث على شخص يعمل في المسار اللي يعجبك وتعرّف على مساره",
+        ],
+        trap: tr.analytical>0.6 ? "الإفراط في التحليل بدل البدء. دابا: قرر بـ80% من المعلومات." : tr.structure>0.6 ? "الانتظار حتى تكون 'الظروف مثالية'. ابدأ بما عندك." : "الانتشاء بالأفكار بدون تنفيذ. حوّل فكرة وحدة لخطوة دابا.",
+        challenge: tr.analytical>0.6 ? "شنو القرار اللي كنت تؤخّره؟ اكتب 3 خطوات باش تحسمه هاد الأسبوع." : tr.social>0.6 ? "من هو شخص مهم في مسارك المهني تقدر تتواصل معه هاد الأسبوع؟" : "شنو الشيء الوحيد اللي، لو أنجزته هاد الأسبوع، سيغيّر التعادل لصالحك؟",
+      },
+      fr: {
+        moves: [
+          tr.analytical>0.6 ? "Écris une analyse rapide de ta journée : réalisé vs prévu" : tr.social>0.6 ? "Contacte quelqu'un dans le domaine qui t'intéresse — une seule question" : "Liste 3 tâches seulement pour demain et fais-les dans l'ordre",
+          tr.risk>0.6 ? "Lance un mini-projet sans attendre d'être totalement prêt" : tr.structure>0.6 ? "Revois ton planning et supprime ce qui n'est pas essentiel" : "25 minutes de travail profond, téléphone loin",
+          "Trouve quelqu'un qui travaille dans ton domaine cible et découvre son parcours",
+        ],
+        trap: tr.analytical>0.6 ? "L'excès d'analyse au lieu de commencer. Maintenant : décide à 80% des infos." : tr.structure>0.6 ? "Attendre que les conditions soient parfaites. Commence avec ce que tu as." : "Te contenter des idées sans passer à l'action. Transforme une idée en étape concrète.",
+        challenge: tr.analytical>0.6 ? "Quelle décision tu repoussais ? Écris 3 étapes pour la trancher cette semaine." : tr.social>0.6 ? "Qui est une personne clé pour ton parcours que tu peux contacter cette semaine ?" : "Quelle est la seule chose qui, si tu la fais cette semaine, changerait ton momentum ?",
+      },
+      en: {
+        moves: [
+          tr.analytical>0.6 ? "Write a quick end-of-day analysis: done vs planned" : tr.social>0.6 ? "Reach out to someone in your target field — ask one question" : "List only 3 tasks for tomorrow and do them in order",
+          tr.risk>0.6 ? "Start a mini-project without waiting to be fully ready" : tr.structure>0.6 ? "Review your weekly plan and cut what's not essential" : "25 minutes of deep work, phone far away",
+          "Find someone working in your target field and learn their path",
+        ],
+        trap: tr.analytical>0.6 ? "Over-analysis instead of starting. Rule: decide at 80% of info." : tr.structure>0.6 ? "Waiting for perfect conditions. Start with what you have." : "Getting stuck in idea mode. Convert one idea into one concrete step.",
+        challenge: tr.analytical>0.6 ? "What decision were you postponing? Write 3 steps to resolve it this week." : tr.social>0.6 ? "Who's one key person for your path you can contact this week?" : "What's the one thing, if done this week, that changes your momentum?",
+      },
+    };
+    return moves[lang] || moves.en;
+  };
+  const coach = getCoachMoves();
+
+  // ── Canvas download ────────────────────────────────────────────
+  const FMT_SIZES = { card:{w:1260,h:1764}, square:{w:1080,h:1080}, story:{w:1080,h:1920} };
+  const clusterName = topCluster?.id || "";
+
+  const generateCard = () => {
+    if (typeof window === "undefined" || typeof document === "undefined") return;
+    setGenerating(true);
+    try {
+      const { w:W, h:H } = FMT_SIZES[cardFmt] || FMT_SIZES.card;
+      const PAD = Math.round(W * 0.072);
+      const canvas = document.createElement("canvas");
+      canvas.width = W; canvas.height = H;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { setGenerating(false); return; }
+      const isRTL = lang === "ar";
+      const arF = "Tajawal,Cairo,Arial,sans-serif";
+      const enF = "system-ui,-apple-system,sans-serif";
+      const bF = isRTL ? arF : enF;
+
+      // Background
+      const bg = ctx.createLinearGradient(0, 0, W*0.4, H);
+      bg.addColorStop(0,"#07091a"); bg.addColorStop(0.5,"#0b1230"); bg.addColorStop(1,"#0f1840");
+      ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+      // Tile overlay
+      const tile = Math.round(W*0.12);
+      ctx.save(); ctx.globalAlpha=0.04; ctx.strokeStyle="#fbbf24"; ctx.lineWidth=1.5;
+      for (let gx=0;gx<W+tile;gx+=tile) for (let gy=0;gy<H+tile;gy+=tile) {
+        ctx.beginPath();
+        for (let p=0;p<8;p++){const a=(p/8)*Math.PI*2-Math.PI/8,a2=((p+0.5)/8)*Math.PI*2-Math.PI/8,r2=tile*0.38,rI=r2*0.45;
+          p===0?ctx.moveTo(gx+Math.cos(a)*r2,gy+Math.sin(a)*r2):ctx.lineTo(gx+Math.cos(a)*r2,gy+Math.sin(a)*r2);
+          ctx.lineTo(gx+Math.cos(a2)*rI,gy+Math.sin(a2)*rI);}
+        ctx.closePath(); ctx.stroke();
+      }
+      ctx.restore();
+
+      // Glow
+      const ggl=ctx.createRadialGradient(W*0.82,H*0.06,0,W*0.82,H*0.06,W*0.5);
+      ggl.addColorStop(0,rarCol+"28"); ggl.addColorStop(1,"transparent");
+      ctx.fillStyle=ggl; ctx.fillRect(0,0,W,H);
+
+      // Border
+      function rr(x,y,rw,rh,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+rw-r,y);ctx.arcTo(x+rw,y,x+rw,y+r,r);ctx.lineTo(x+rw,y+rh-r);ctx.arcTo(x+rw,y+rh,x+rw-r,y+rh,r);ctx.lineTo(x+r,y+rh);ctx.arcTo(x,y+rh,x,y+rh-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();}
+      ctx.save(); ctx.strokeStyle=rarCol; ctx.lineWidth=3.5; ctx.shadowColor=rarCol; ctx.shadowBlur=28;
+      rr(8,8,W-16,H-16,Math.round(W*0.03)); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.strokeStyle=rarCol+"30"; ctx.lineWidth=1.5;
+      rr(20,20,W-40,H-40,Math.round(W*0.024)); ctx.stroke(); ctx.restore();
+
+      // Helpers
+      function txC(txt,y,font,col,maxW){ctx.save();ctx.font=font;ctx.fillStyle=col;ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillText(txt,W/2,y,maxW||W-PAD*2);ctx.restore();}
+      function txL(txt,y,font,col){ctx.save();ctx.font=font;ctx.fillStyle=col;ctx.textBaseline="alphabetic";if(isRTL){ctx.textAlign="right";ctx.fillText(txt,W-PAD,y,W-PAD*2);}else{ctx.textAlign="left";ctx.fillText(txt,PAD,y,W-PAD*2);}ctx.restore();}
+      function txR(txt,y,font,col){ctx.save();ctx.font=font;ctx.fillStyle=col;ctx.textBaseline="alphabetic";if(isRTL){ctx.textAlign="left";ctx.fillText(txt,PAD,y);}else{ctx.textAlign="right";ctx.fillText(txt,W-PAD,y);}ctx.restore();}
+
+      let y = Math.round(H*0.052);
+      const GOLD="#e8a124",GOLD2="#fbbf24",BLUE2="#3b82f6";
+
+      // MASSAR header
+      txL(`MASSAR | ${new Date().getFullYear()}`,y,`bold ${Math.round(W*0.028)}px ${bF}`,GOLD);
+      const subTxt=isRTL?"محرك الهوية المهنية":"Morocco Career Identity Engine";
+      txL(subTxt,y+Math.round(H*0.022),`${Math.round(W*0.018)}px ${bF}`,"#4b5563");
+
+      // Rarity pill
+      const rarTxt=`${(rarLbl?.[lang]||rarity).toUpperCase()} ✦ ${isRTL?"موثّق":lang==="fr"?"VÉRIFIÉ":"VERIFIED"}`;
+      const rarF=`bold ${Math.round(W*0.022)}px ${bF}`;
+      ctx.font=rarF; const rtw=ctx.measureText(rarTxt).width;
+      const rpW=rtw+W*0.05,rpH=W*0.048;
+      ctx.save();ctx.fillStyle="#1e3a5f";ctx.strokeStyle=rarCol;ctx.lineWidth=1.5;ctx.shadowColor=rarCol;ctx.shadowBlur=12;
+      rr(W/2-rpW/2,y-rpH*0.72,rpW,rpH,rpH/2);ctx.fill();ctx.stroke();ctx.restore();
+      txC(rarTxt,y,rarF,rarCol);
+      y+=Math.round(H*0.04);
+
+      // Divider
+      ctx.save();const rg=ctx.createLinearGradient(PAD,0,W-PAD,0);rg.addColorStop(0,"transparent");rg.addColorStop(0.1,rarCol+"55");rg.addColorStop(0.9,rarCol+"55");rg.addColorStop(1,"transparent");ctx.strokeStyle=rg;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(PAD,y);ctx.lineTo(W-PAD,y);ctx.stroke();ctx.restore();
+      y+=Math.round(H*0.03);
+
+      // Icon emblem
+      const iR=Math.round(W*(cardFmt==="square"?0.17:0.19));
+      const iCX=W/2,iCY=y+iR;
+      [iR*1.28,iR*1.12,iR].forEach((r3,ri)=>{ctx.save();ctx.beginPath();ctx.arc(iCX,iCY,r3,0,Math.PI*2);ctx.strokeStyle=ri===2?rarCol:rarCol+(ri===1?"44":"18");ctx.lineWidth=ri===2?2.5:1.5;ctx.shadowColor=rarCol;ctx.shadowBlur=ri===2?24:8;ctx.stroke();ctx.restore();});
+      ctx.save();ctx.beginPath();for(let p=0;p<6;p++){const a=(p/6)*Math.PI*2-Math.PI/2;p===0?ctx.moveTo(iCX+Math.cos(a)*iR,iCY+Math.sin(a)*iR):ctx.lineTo(iCX+Math.cos(a)*iR,iCY+Math.sin(a)*iR);}ctx.closePath();ctx.strokeStyle=GOLD+"88";ctx.lineWidth=2;ctx.shadowColor=GOLD;ctx.shadowBlur=10;ctx.stroke();ctx.restore();
+      ctx.save();ctx.font=`${Math.round(iR*0.95)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(archV2.icon,iCX,iCY+iR*0.06);ctx.restore();
+      y=iCY+iR+Math.round(H*0.03);
+
+      // Title
+      const nmF=`900 ${Math.round(W*0.072)}px ${bF}`;
+      ctx.save();ctx.font=nmF;const nmG=ctx.createLinearGradient(PAD,0,W-PAD,0);nmG.addColorStop(0,"#ffffff");nmG.addColorStop(0.45,GOLD2);nmG.addColorStop(1,GOLD);ctx.fillStyle=nmG;ctx.textAlign="center";ctx.textBaseline="alphabetic";ctx.fillText(archV2.titleLatin,W/2,y,W-PAD*2);ctx.restore();
+      y+=Math.round(H*0.038);
+      txC(lang==="ar"?archV2.titleAr:lang==="fr"?archV2.titleFr:archV2.titleEn,y,`${Math.round(W*0.028)}px ${bF}`,"#6b7280",W-PAD*2);
+      y+=Math.round(H*0.032);
+      txC(`[ ${archV2.code} ]`,y,`bold ${Math.round(W*0.03)}px monospace,${bF}`,BLUE2,W-PAD*2);
+      y+=Math.round(H*0.038);
+
+      // Divider
+      ctx.save();const dg=ctx.createLinearGradient(PAD,0,W-PAD,0);dg.addColorStop(0,"transparent");dg.addColorStop(0.2,rarCol+"55");dg.addColorStop(0.8,rarCol+"55");dg.addColorStop(1,"transparent");ctx.strokeStyle=dg;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(PAD,y);ctx.lineTo(W-PAD,y);ctx.stroke();ctx.restore();
+      y+=Math.round(H*0.03);
+
+      // 3 stat bars
+      const sp=archV2.statsProfile||{};
+      const s1L=sp.stat1Label?.[lang]||"Stat 1",s2L=sp.stat2Label?.[lang]||"Stat 2",s3L=sp.stat3Label?.[lang]||"Stat 3";
+      const barTW=W-PAD*2,barH=Math.round(H*0.016);
+      const sLF=`bold ${Math.round(W*0.024)}px ${bF}`,sVF=`bold ${Math.round(W*0.024)}px monospace,${bF}`;
+      const sCols=[rarCol,BLUE2,"#10b981"];
+      [[s1L,statsV2.stat1],[s2L,statsV2.stat2],[s3L,statsV2.stat3]].forEach(([lbl,val],si)=>{
+        const sc=sCols[si];
+        txL(lbl,y,sLF,"#9ca3af"); txR(`${val}%`,y,sVF,sc);
+        y+=Math.round(H*0.022);
+        ctx.save();ctx.fillStyle="#0f172a";rr(PAD,y,barTW,barH,barH/2);ctx.fill();ctx.restore();
+        const fw=Math.max(barH,Math.round((val/100)*barTW));
+        const fg=ctx.createLinearGradient(PAD,0,PAD+fw,0);fg.addColorStop(0,sc);fg.addColorStop(1,sc+"88");
+        ctx.save();ctx.fillStyle=fg;ctx.shadowColor=sc;ctx.shadowBlur=8;rr(PAD,y,fw,barH,barH/2);ctx.fill();ctx.restore();
+        y+=barH+Math.round(H*0.026);
+      });
+      y+=Math.round(H*0.01);
+
+      // Top direction
+      const dirLbl=isRTL?"أفضل اتجاه:":lang==="fr"?"Top direction:":"Top direction:";
+      txL(dirLbl,y,`${Math.round(W*0.022)}px ${bF}`,"#6b7280");
+      y+=Math.round(H*0.034);
+      ctx.save();ctx.font=`bold ${Math.round(W*0.038)}px ${bF}`;const cng=ctx.createLinearGradient(PAD,0,W-PAD,0);cng.addColorStop(0,"#f3f4f6");cng.addColorStop(1,GOLD2);ctx.fillStyle=cng;ctx.textBaseline="alphabetic";ctx.textAlign=isRTL?"right":"left";ctx.fillText(clusterName||"—",isRTL?W-PAD:PAD,y,W-PAD*2);ctx.restore();
+      y+=Math.round(H*0.042);
+
+      // Confidence + serial
+      txL(`${isRTL?"التوافق":lang==="fr"?"Compatibilité":"Match"} — ${confidence}%`,y,`600 ${Math.round(W*0.020)}px monospace,${bF}`,GOLD);
+      y+=Math.round(H*0.022);
+      const bW5=W-PAD*2,bH5=Math.round(H*0.016);
+      ctx.save();ctx.fillStyle="#0f172a";rr(PAD,y,bW5,bH5,bH5/2);ctx.fill();ctx.restore();
+      const fw5=Math.max(bH5,Math.round((confidence/100)*bW5));
+      const fg5=ctx.createLinearGradient(PAD,0,PAD+fw5,0);fg5.addColorStop(0,GOLD);fg5.addColorStop(1,GOLD2);
+      ctx.save();ctx.fillStyle=fg5;ctx.shadowColor=GOLD;ctx.shadowBlur=10;rr(PAD,y,fw5,bH5,bH5/2);ctx.fill();ctx.restore();
+
+      // Footer
+      const fy=H-PAD*0.85;
+      ctx.save();const fl=ctx.createLinearGradient(PAD,0,W-PAD,0);fl.addColorStop(0,"transparent");fl.addColorStop(0.12,rarCol+"28");fl.addColorStop(0.88,rarCol+"28");fl.addColorStop(1,"transparent");ctx.strokeStyle=fl;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD,fy-PAD*0.3);ctx.lineTo(W-PAD,fy-PAD*0.3);ctx.stroke();ctx.restore();
+      txL("massarpro.com",fy,`bold ${Math.round(W*0.022)}px ${bF}`,"#374151");
+      txR(serialId,fy,`500 ${Math.round(W*0.018)}px monospace,${bF}`,rarCol+"66");
+
+      // Export
+      if (cardUrl) URL.revokeObjectURL(cardUrl);
+      canvas.toBlob(blob=>{
+        if (!blob) { setGenerating(false); return; }
+        const url = URL.createObjectURL(blob);
+        setCardBlob(blob); setCardUrl(url); setGenerating(false);
+      },"image/png");
+    } catch(e) {
+      console.error("[Massar] card gen error:", e);
+      setGenerating(false);
+    }
+  };
+
+  const downloadCard = () => {
+    if (!cardUrl) return;
+    const a = document.createElement("a");
+    a.href = cardUrl; a.download = `massar-${archV2.code}-${cardFmt}.png`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  };
+
+  // ── Caption ────────────────────────────────────────────────────
+  const captionText = archV2.shareCaption?.[lang]
+    ? archV2.shareCaption[lang] + (clusterName ? `\n${lang==="ar"?"أفضل مسار":lang==="fr"?"Top voie":"Top path"}: ${clusterName} (${confidence}%)\n🔗 massarpro.com` : "")
+    : lang==="ar"
+    ? `طلع ليا «${archV2.titleAr}» ${archV2.icon} — ${archV2.code}\nالتوافق: ${confidence}%\nجرّبها: massarpro.com\n#MassarPro`
+    : lang==="fr"
+    ? `J'ai eu «${archV2.titleFr}» ${archV2.icon} — ${archV2.code}\nCompatibilité: ${confidence}%\nFais le test: massarpro.com\n#MassarPro`
+    : `I got «${archV2.titleEn}» ${archV2.icon} — ${archV2.code}\nMatch: ${confidence}%\nTry yours: massarpro.com\n#MassarPro`;
+
+  const copyCaption = () => {
+    if (typeof navigator === "undefined") return;
+    const doSet=()=>{ setCaptionCopied(true); setTimeout(()=>setCaptionCopied(false),2500); };
+    try { navigator.clipboard.writeText(captionText).then(doSet).catch(()=>fallbackCopyText(captionText,doSet)); }
+    catch { fallbackCopyText(captionText,doSet); }
+  };
+  const fallbackCopyText = (txt,cb) => {
+    const ta=document.createElement("textarea"); ta.value=txt;
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); }catch{}
+    document.body.removeChild(ta); cb();
+  };
+
+  // ── Render ─────────────────────────────────────────────────────
+  const glowStyle = { "--glow":rarCol, boxShadow:`0 0 32px ${rarCol}22` };
+
+  return (
+    <div dir={dir} style={{maxWidth:720,width:"100%",margin:"0 auto",padding:"0 4px"}}>
+
+      {/* ── A: Identity header ── */}
+      <div style={{
+        background:`linear-gradient(135deg,${rarCol}12,rgba(30,41,59,0.6))`,
+        border:`2px solid ${rarCol}55`, borderRadius:20, padding:"24px 20px", marginBottom:18,
+        boxShadow:`0 0 40px ${rarCol}18`,
+      }}>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,color:"var(--muted)",textTransform:"uppercase",marginBottom:10}}>
+          {t?.revealPageTitle||"Identité Pro"} — {journeyStage==="prebac"?"Pré-Bac":"Post-Bac"}
+        </div>
+        <div style={{textAlign:"center",marginBottom:16}}>
+          <div style={{fontSize:54,filter:`drop-shadow(0 0 18px ${rarCol})`}}>{archV2.icon}</div>
+          <div style={{
+            fontSize:30,fontWeight:900,letterSpacing:-0.5,
+            background:`linear-gradient(135deg,#fff,${rarCol},#fbbf24)`,
+            WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:4,
+          }}>{archV2.titleLatin}</div>
+          <div style={{fontSize:17,fontWeight:700,color:"var(--text)",marginBottom:4}}>{titleLocal}</div>
+          <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap",marginBottom:10}}>
+            <span style={{
+              fontSize:11,fontWeight:800,letterSpacing:2,color:rarCol,
+              background:`${rarCol}18`,border:`1px solid ${rarCol}50`,
+              borderRadius:20,padding:"3px 12px",
+            }}>{rarLbl?.[lang]||rarity} ✦ {archV2.code}</span>
+            <span className={`confidence-badge ${confidence>=70?"confidence-high":confidence>=50?"confidence-med":"confidence-low"}`}
+              style={{display:"inline-flex"}}>
+              <span dir="ltr">{confidence}%</span>
+            </span>
+          </div>
+          <div style={{fontSize:13,color:"var(--muted)",fontStyle:"italic",lineHeight:1.55}}>{vl}</div>
+        </div>
+        {sm && (
+          <div style={{
+            textAlign:"center",fontSize:12,color:rarCol,fontWeight:700,
+            background:`${rarCol}0d`,borderRadius:8,padding:"6px 12px",
+          }}>✦ {sm}</div>
+        )}
+      </div>
+
+      {/* ── B: 6 cold reading / mirror blocks ── */}
+      <div style={{marginBottom:18}}>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,color:"var(--muted)",textTransform:"uppercase",marginBottom:12}}>
+          {t?.revealMirrorTitle||"Identity Mirror"}
+        </div>
+
+        {/* Cold reading (looks + truth) */}
+        {(cr.looks||cr.truth) && (
+          <div style={{background:"rgba(99,102,241,0.07)",border:"1px solid rgba(99,102,241,0.2)",borderRadius:12,padding:"14px 16px",marginBottom:10}}>
+            <div style={{fontSize:10,fontWeight:800,color:"#6366f1",letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>
+              {t?.revealColdReading||"Cold Reading"}
+            </div>
+            {cr.looks && <p style={{fontSize:13,color:"var(--text)",lineHeight:1.7,marginBottom:6,margin:0}}>{cr.looks}</p>}
+            {cr.truth && <p style={{fontSize:13,color:rarCol,lineHeight:1.7,fontWeight:600,margin:"6px 0 0"}}>{cr.truth}</p>}
+          </div>
+        )}
+
+        {/* 6 mirror blocks */}
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {mirrorBlocks6.map((b,i)=>(
+            <div key={i} style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:12,padding:"12px 14px"}}>
+              <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:6}}>
+                <span style={{fontSize:16}}>{b.icon}</span>
+                <span style={{fontSize:11,fontWeight:700,color:"var(--muted)",textTransform:"uppercase",letterSpacing:0.5}}>{b.key}</span>
+              </div>
+              <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0}}>{b.text}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Hook question */}
+        {hq && (
+          <div style={{background:`${rarCol}08`,border:`1px solid ${rarCol}30`,borderRadius:12,padding:"14px 16px",marginTop:10}}>
+            <div style={{fontSize:10,fontWeight:800,color:rarCol,letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>
+              {t?.revealChallengeTitle||"Question clé"}
+            </div>
+            <p style={{fontSize:13,color:"var(--text)",lineHeight:1.65,margin:0,fontWeight:600}}>{hq}</p>
+          </div>
+        )}
+      </div>
+
+      {/* ── C: Mini Coach ── */}
+      <div style={{background:"var(--surface2)",border:"1px solid var(--border)",borderRadius:16,padding:"16px 18px",marginBottom:18}}>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,color:"var(--muted)",textTransform:"uppercase",marginBottom:12}}>
+          {t?.revealCoachTitle||"3 moves this week"}
+        </div>
+        <ol style={{margin:0,paddingLeft:dir==="rtl"?0:20,paddingRight:dir==="rtl"?20:0,display:"flex",flexDirection:"column",gap:8}}>
+          {coach.moves.map((m,i)=>(
+            <li key={i} style={{fontSize:13,color:"var(--text)",lineHeight:1.6}}>{m}</li>
+          ))}
+        </ol>
+        <div style={{borderTop:"1px solid var(--border)",marginTop:12,paddingTop:10}}>
+          <div style={{fontSize:10,fontWeight:800,color:"#ef4444",letterSpacing:1.5,textTransform:"uppercase",marginBottom:6}}>
+            {t?.revealTrapTitle||"Trap to avoid"}
+          </div>
+          <p style={{fontSize:13,color:"var(--text)",lineHeight:1.6,margin:0}}>⚠️ {coach.trap}</p>
+        </div>
+      </div>
+
+      {/* ── D: Viral Share Zone ── */}
+      <div style={{marginBottom:20}}>
+        <div style={{fontSize:10,fontWeight:800,letterSpacing:2,color:"var(--muted)",textTransform:"uppercase",marginBottom:12}}>
+          {t?.revealShareTitle||"Share your result"}
+        </div>
+
+        {/* Format picker */}
+        <div style={{display:"flex",gap:6,marginBottom:14,justifyContent:"center"}}>
+          {["card","square","story"].map(f=>(
+            <button key={f} onClick={()=>setCardFmt(f)} style={{
+              padding:"6px 16px",borderRadius:20,fontSize:11,fontWeight:700,
+              border:`1.5px solid ${cardFmt===f?rarCol+"cc":"var(--border)"}`,
+              background:cardFmt===f?`${rarCol}18`:"var(--surface2)",
+              color:cardFmt===f?rarCol:"var(--muted)",cursor:"pointer",
+              transition:"all .18s",
+            }}>
+              {f==="card"?"Card 5:7":f==="square"?"Square 1:1":"Story 9:16"}
+            </button>
+          ))}
+        </div>
+
+        {/* Generate CTA */}
+        <div style={{textAlign:"center",marginBottom:14}}>
+          <button
+            onClick={generateCard}
+            disabled={generating}
+            className="btn btn-primary"
+            style={{fontSize:15,padding:"13px 28px",minWidth:180,opacity:generating?0.7:1}}
+          >
+            {generating
+              ? (lang==="ar"?"جاري الإنشاء…":lang==="fr"?"Génération…":"Generating…")
+              : (t?.revealShareCTA||"Generate my card")}
+          </button>
+        </div>
+
+        {/* Preview + download */}
+        {cardUrl && (
+          <div style={{textAlign:"center",animation:"fadeIn .4s ease"}}>
+            <img
+              src={cardUrl} alt="Massar Card Preview"
+              style={{maxWidth:Math.min(320,cardFmt==="story"?180:280),borderRadius:12,
+                boxShadow:`0 8px 32px ${rarCol}44`,marginBottom:12,display:"block",margin:"0 auto 12px"}}
+            />
+            <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",marginBottom:10}}>
+              <button className="btn btn-primary" onClick={downloadCard} style={{fontSize:13}}>
+                ⬇ {lang==="ar"?"تحميل":lang==="fr"?"Télécharger":"Download PNG"}
+              </button>
+              <button className="btn btn-secondary" onClick={copyCaption} style={{fontSize:13}}>
+                {captionCopied
+                  ? (lang==="ar"?"✓ تم النسخ":lang==="fr"?"✓ Copié":"✓ Copied")
+                  : (t?.copyCaption||"Copy caption")}
+              </button>
+            </div>
+            <div style={{
+              fontSize:12,color:"var(--muted)",lineHeight:1.6,
+              background:"var(--surface2)",borderRadius:8,padding:"8px 12px",
+              textAlign:dir==="rtl"?"right":"left",whiteSpace:"pre-wrap",
+              border:"1px solid var(--border)",maxWidth:360,margin:"0 auto",
+            }}>{captionText}</div>
+          </div>
+        )}
+      </div>
+
+      {/* ── E: Continue button ── */}
+      <div style={{textAlign:"center",paddingTop:8,paddingBottom:24}}>
+        <button
+          className="btn btn-primary"
+          onClick={onContinue}
+          style={{fontSize:15,padding:"14px 32px",minWidth:220}}
+        >
+          {t?.revealContinue||"Continue to roadmap →"}
+        </button>
+        {onBack && (
+          <button
+            className="btn btn-secondary"
+            onClick={onBack}
+            style={{marginTop:10,display:"block",margin:"10px auto 0",fontSize:13}}
+          >
+            ← {t?.back||"Back"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────
 // APP
 // ─────────────────────────────────────────────────────────────────
@@ -11575,7 +12118,20 @@ export default function App() {
             onNext={()=>setStep(10)} onBack={()=>setStep(8)} t={t} dir={dir}/>
         )}
         {step === 10 && (
-          // Results flow — both journeys converge here
+          // Personality Reveal page — personality identity before roadmap
+          <PersonalityReveal
+            t={t} lang={lang} dir={dir}
+            traits={traits} confidence={confidence}
+            learnerAnswers={learnerAnswers}
+            rankedClusters={displayClusters}
+            journeyStage={journeyStage}
+            reality={reality}
+            onContinue={()=>setStep(11)}
+            onBack={()=>setStep(journeyStage==="prebac" ? 6 : 9)}
+          />
+        )}
+        {step === 11 && (
+          // Results flow — full roadmap (was step 10)
           <ResultsErrorBoundary onRestart={restart} restartLabel={t?.restart || "Restart"}>
             <ResultsFlow
               t={t} lang={lang} dir={dir} info={info}
@@ -11583,7 +12139,7 @@ export default function App() {
               effectiveMarks={effectiveMarks} rankedClusters={rankedClusters}
               traits={traits} confidence={confidence} mixedSignals={mixedSignals}
               narrative={narrative} reality={reality} setReality={setReality}
-              restart={restart} onBack={()=>setStep(journeyStage==="prebac" ? 6 : 9)}
+              restart={restart} onBack={()=>setStep(10)}
               secondaryTop3={secondaryTop3}
               overallAvg={overallAvgForRerank}
               journeyStage={journeyStage}
