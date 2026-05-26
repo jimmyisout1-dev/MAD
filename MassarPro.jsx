@@ -11,28 +11,37 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
-// ─── Supabase inline save (no external import needed) ───────────────
-// Reads from Vite env vars. If not set, save is silently skipped.
-const _SB_URL = typeof import.meta !== "undefined" ? (import.meta.env?.VITE_SUPABASE_URL || "") : "";
-const _SB_KEY = typeof import.meta !== "undefined" ? (import.meta.env?.VITE_SUPABASE_ANON_KEY || "") : "";
+// ─── Supabase save via REST fetch — zero dependencies, works on Vercel ──
+// No SDK import needed. Uses Supabase REST API directly with native fetch.
+const _SB_URL = import.meta.env.VITE_SUPABASE_URL      || "";
+const _SB_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "";
 
 async function saveResult({ name="", email="", archetype="", scores={}, recommendations={}, language="fr" } = {}) {
   if (!_SB_URL || !_SB_KEY) {
-    console.warn("⚠️ [MassarPro] Supabase env vars not set — result not saved.");
+    console.warn("⚠️ [MassarPro] Supabase env vars not set — result not saved. Check your .env file.");
     return { success: false, error: "No Supabase config" };
   }
   try {
-    const { createClient } = await import("@supabase/supabase-js");
-    const sb = createClient(_SB_URL, _SB_KEY);
-    const { data, error } = await sb.from("results").insert([{ name, email, archetype, scores, recommendations, language }]).select();
-    if (error) {
-      console.error("❌ [MassarPro] Supabase insert error:", error.message);
-      return { success: false, error: error.message };
+    const response = await fetch(`${_SB_URL}/rest/v1/results`, {
+      method: "POST",
+      headers: {
+        "Content-Type":  "application/json",
+        "apikey":        _SB_KEY,
+        "Authorization": `Bearer ${_SB_KEY}`,
+        "Prefer":        "return=representation",
+      },
+      body: JSON.stringify({ name, email, archetype, scores, recommendations, language }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("❌ [MassarPro] Supabase error:", data?.message || response.statusText);
+      return { success: false, error: data?.message || response.statusText };
     }
-    console.log("✅ [MassarPro] Result saved successfully!", data?.[0]);
-    return { success: true, data: data?.[0] };
+    const saved = Array.isArray(data) ? data[0] : data;
+    console.log("✅ [MassarPro] Result saved successfully!", saved);
+    return { success: true, data: saved };
   } catch (err) {
-    console.error("❌ [MassarPro] Unexpected error:", err.message);
+    console.error("❌ [MassarPro] Network error saving result:", err.message);
     return { success: false, error: err.message };
   }
 }
