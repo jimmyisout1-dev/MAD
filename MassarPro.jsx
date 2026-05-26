@@ -11,7 +11,31 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import { saveResult } from "./services/supabaseClient.js";
+// ─── Supabase inline save (no external import needed) ───────────────
+// Reads from Vite env vars. If not set, save is silently skipped.
+const _SB_URL = typeof import.meta !== "undefined" ? (import.meta.env?.VITE_SUPABASE_URL || "") : "";
+const _SB_KEY = typeof import.meta !== "undefined" ? (import.meta.env?.VITE_SUPABASE_ANON_KEY || "") : "";
+
+async function saveResult({ name="", email="", archetype="", scores={}, recommendations={}, language="fr" } = {}) {
+  if (!_SB_URL || !_SB_KEY) {
+    console.warn("⚠️ [MassarPro] Supabase env vars not set — result not saved.");
+    return { success: false, error: "No Supabase config" };
+  }
+  try {
+    const { createClient } = await import("@supabase/supabase-js");
+    const sb = createClient(_SB_URL, _SB_KEY);
+    const { data, error } = await sb.from("results").insert([{ name, email, archetype, scores, recommendations, language }]).select();
+    if (error) {
+      console.error("❌ [MassarPro] Supabase insert error:", error.message);
+      return { success: false, error: error.message };
+    }
+    console.log("✅ [MassarPro] Result saved successfully!", data?.[0]);
+    return { success: true, data: data?.[0] };
+  } catch (err) {
+    console.error("❌ [MassarPro] Unexpected error:", err.message);
+    return { success: false, error: err.message };
+  }
+}
 
 
 
@@ -594,8 +618,6 @@ const TRANSLATIONS = {
     // Improve Mode inputs
     strengthsNowLabel: "ما الذي تتقنه فعلاً الآن؟",
     strengthsNowDesc: "اختر ما ينطبق عليك (حتى 5)",
-    preferredStyleLabel: "ما أسلوبك المفضل في العمل؟",
-    preferredStyleOptions: { handson:"عملي / يدوي", academic:"أكاديمي / نظري", mixed:"مزيج من الاثنين" },
     strengthsNowOptions: {
       sn_math:"الرياضيات", sn_physics:"الفيزياء", sn_biology:"الأحياء",
       sn_writing:"الكتابة / اللغة", sn_speaking:"الخطابة / التواصل",
